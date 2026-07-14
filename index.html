@@ -153,6 +153,20 @@
   .error-state{color:var(--coral);}
   .error-state code{background:var(--panel-2); padding:2px 6px; border-radius:5px; font-size:12px;}
 
+  .join-card{
+    background:linear-gradient(135deg, rgba(95,225,184,0.10), rgba(156,140,240,0.08));
+    border:1px solid rgba(95,225,184,0.25); border-radius:14px;
+    padding:20px 22px; margin-bottom:24px;
+  }
+  .join-card h3{font-size:15px; margin:0 0 8px; color:var(--text); font-family:'Space Grotesk',sans-serif;}
+  .join-card p{font-size:13.5px; color:var(--muted); line-height:1.6; margin:0 0 12px;}
+  .join-card p:last-child{margin-bottom:0;}
+  .join-btn{
+    display:inline-block; background:var(--mint); color:#0F1B1E; text-decoration:none;
+    font-weight:700; font-size:13px; padding:11px 20px; border-radius:9px;
+  }
+  .join-btn:hover{opacity:0.9;}
+
   @media(max-width:820px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .grid-2{grid-template-columns:1fr;}
@@ -360,6 +374,13 @@
     <section>
       <div class="section-head"><span class="section-num">🔍</span><h2>Buscar profissional</h2></div>
       <p class="section-desc">Essa lista busca a planilha publicada em tempo real toda vez que a página é aberta, mostrando sempre a versão mais recente da base, sem precisar gerar um novo dashboard.</p>
+
+      <div class="join-card">
+        <h3>Está open to work e quer entrar nessa lista?</h3>
+        <p>É só preencher o formulário da comunidade com suas informações. Leva menos de 5 minutos.</p>
+        <p>Um pedido importante: preencha uma única vez. Cadastros duplicados do mesmo perfil são removidos da base, e reincidência tira a pessoa da corrente do bem (ninguém quer isso, então capricha e preenche certinho da primeira vez). Se você já foi recolocado e não faz mais parte do "open to work", avise os admins da CRM Academy ou Mulheres de CRM para tirarem seus dados da lista.</p>
+        <a class="join-btn" href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener">Preencher o formulário</a>
+      </div>
 
       <div class="search-bar">
         <input type="text" class="search-input" id="searchText" placeholder="Buscar por nome, ferramenta, empresa ou área (ex: HubSpot, Salesforce, São Paulo)...">
@@ -769,7 +790,7 @@ function switchTab(tab){
 
 // 👉 COLE AQUI O LINK "Publicar na web" (formato CSV) da aba "Open to Work - Português"
 // Arquivo > Compartilhar > Publicar na web > escolher a aba > formato CSV > Publicar
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?gid=692217056&single=true&output=csv";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?output=csv";
 
 let searchLoaded = false;
 let PEOPLE = [];
@@ -858,25 +879,33 @@ function loadSheet(){
   txt.textContent = 'Conectando à planilha…';
   document.getElementById('searchResults').innerHTML = '<div class="loading-state">Carregando dados em tempo real…</div>';
 
-  fetch(SHEET_CSV_URL, {cache:'no-store'})
-    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(csv => {
-      PEOPLE = parseSheet(csv);
-      searchLoaded = true;
-      dot.className = 'status-dot ok';
-      const now = new Date().toLocaleTimeString('pt-BR');
-      txt.textContent = `Conectado: ${PEOPLE.length} profissionais carregados às ${now}.`;
-      populateSearchFilters();
-      renderSearch();
-    })
-    .catch(err => {
+  const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_CSV_URL);
+
+  function tryFetch(url, isProxy){
+    return fetch(url, {cache:'no-store'})
+      .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+      .then(csv => {
+        PEOPLE = parseSheet(csv);
+        searchLoaded = true;
+        dot.className = 'status-dot ok';
+        const now = new Date().toLocaleTimeString('pt-BR');
+        txt.textContent = `Conectado: ${PEOPLE.length} profissionais carregados às ${now}.` + (isProxy ? ' (via conexão alternativa)' : '');
+        populateSearchFilters();
+        renderSearch();
+      });
+  }
+
+  tryFetch(SHEET_CSV_URL, false).catch(err1 => {
+    // conexao direta falhou (provavelmente bloqueio de CORS); tenta de novo por um caminho alternativo
+    tryFetch(PROXY_URL, true).catch(err2 => {
       dot.className = 'status-dot err';
       txt.textContent = 'Não consegui carregar a planilha.';
       document.getElementById('searchResults').innerHTML = `<div class="error-state">
-        Erro ao buscar os dados: <code>${err.message}</code><br><br>
-        Verifique se o link em <code>SHEET_CSV_URL</code> está correto e se a aba foi publicada como CSV (Arquivo → Compartilhar → Publicar na web).
+        Erro ao buscar os dados: <code>${err1.message}</code><br><br>
+        Coisas para conferir: (1) abra <a href="${SHEET_CSV_URL}" target="_blank" style="color:var(--coral)">este link</a> direto numa aba nova e veja se baixa um arquivo CSV; (2) desative bloqueadores de anúncio ou extensões de privacidade para este site e recarregue a página; (3) confirme que a aba segue publicada em Arquivo → Compartilhar → Publicar na web, no Google Sheets.
       </div>`;
     });
+  });
 }
 
 function populateSearchFilters(){
