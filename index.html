@@ -233,6 +233,52 @@
 
 
   /* ============ PILL FILTERS (genérico) ============ */
+  /* ============ SEARCH TABS (INTERNAL NAVIGATION) ============ */
+  .search-tabs-container{background:#ffffff; border-bottom:1px solid var(--line); margin-bottom:0; position:sticky; top:0; z-index:10;}
+  .search-tabs{display:flex; gap:0; padding:0; border-bottom:1px solid var(--line); max-width:100%; overflow-x:auto;}
+  .search-tab-btn{
+    background:transparent; border:none; border-bottom:3px solid transparent;
+    color:var(--muted); font-size:13.5px; font-weight:600; padding:14px 18px;
+    cursor:pointer; font-family:inherit; white-space:nowrap; display:flex; align-items:center; gap:8px;
+    transition:all 0.2s;
+  }
+  .search-tab-btn:hover{color:var(--text);}
+  .search-tab-btn.active{color:var(--text); border-bottom-color:var(--pink);}
+  .search-tab-btn svg{width:16px; height:16px;}
+
+  /* AI MATCH FORM */
+  .ai-match-form textarea{color:var(--text);}
+  .ai-match-form textarea::placeholder{color:var(--muted);}
+
+  /* AI MATCH RESULTS */
+  .ai-match-card{
+    background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:16px;
+    margin-bottom:14px; display:flex; gap:14px; align-items:flex-start;
+  }
+  .ai-match-score{
+    background:var(--pink); color:#fffff3; font-weight:700; font-size:16px;
+    border-radius:8px; padding:8px 12px; min-width:50px; text-align:center; flex-shrink:0;
+  }
+  .ai-match-content{flex:1;}
+  .ai-match-name{font-family:'Space Grotesk',sans-serif; font-size:14.5px; font-weight:600; color:var(--text); margin-bottom:4px;}
+  .ai-match-meta{font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap; margin-bottom:10px;}
+  .ai-match-meta span{display:inline-flex; align-items:center; gap:4px;}
+  .ai-match-skills{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;}
+  .ai-match-skill-tag{background:var(--accent-tint); color:var(--accent); font-size:11px; font-weight:600; padding:3px 9px; border-radius:50px;}
+  .ai-match-reason{font-size:12px; color:var(--text); line-height:1.5; margin-bottom:12px; background:var(--panel-2); padding:10px; border-radius:8px;}
+  .ai-match-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .ai-match-btn{background:var(--text); color:#fffff3; border:none; border-radius:8px; padding:9px 16px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;}
+  .ai-match-btn:hover{opacity:0.88;}
+  .ai-match-btn.secondary{background:var(--panel-2); color:var(--text); border:1px solid var(--line);}
+  .ai-match-btn.secondary:hover{border-color:var(--accent);}
+
+  /* AI LOADING STATE */
+  .ai-match-loading{text-align:center; padding:40px 20px; color:var(--muted);}
+  .ai-match-loading svg{width:32px; height:32px; animation:spin 2s linear infinite; margin-bottom:12px; color:var(--pink);}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+  .ai-match-error{background:#fee; border:1px solid #fcc; border-radius:9px; padding:14px; color:#c33; font-size:13px; margin-bottom:20px;}
+  .ai-match-empty{text-align:center; padding:40px 20px; color:var(--muted);}
+
   .pill-filters{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px;}
   .pill-filter{
     background:#ffffff; border:1px solid var(--line); color:var(--muted); border-radius:50px;
@@ -803,9 +849,36 @@
   </div><!-- /pageDashboard -->
 
   <div class="tab-page" id="pageSearch">
-    <section>
-      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><h2>Buscar profissional</h2></div>
-      <p class="section-desc">Essa lista busca a planilha publicada em tempo real toda vez que a página é aberta, mostrando sempre a versão mais recente da base, sem precisar gerar um novo dashboard.</p>
+    <!-- ABAS INTERNAS DE BUSCA -->
+    <div class="search-tabs-container">
+      <div class="search-tabs">
+        <button class="search-tab-btn active" id="searchTabAI" onclick="switchSearchTab('ai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7L2 17C2 20.3 6.5 23 12 23C17.5 23 22 20.3 22 17V7L12 2Z"></path><path d="M12 12C13.1 12 14 11.1 14 10C14 8.9 13.1 8 12 8C10.9 8 10 8.9 10 10C10 11.1 10.9 12 12 12Z"></path></svg> Match por IA (Recrutadores)</button>
+        <button class="search-tab-btn" id="searchTabDir" onclick="switchSearchTab('directory')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Diretório Completo</button>
+      </div>
+    </div>
+
+    <!-- SUB-PÁGINA 1: MATCH POR IA -->
+    <section id="searchAIPanel" style="display:block;">
+      <div class="section-head"><span class="section-num">🤖</span><h2>Match de Vaga por IA</h2></div>
+      <p class="section-desc">Cole a descrição da vaga (Job Description) e nós encontramos os profissionais open to work que melhor se encaixam no perfil que você procura.</p>
+
+      <div class="ai-match-form" style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
+        <label for="jobDescription" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:13.5px;">Descrição da Vaga / Job Description *</label>
+        <textarea id="jobDescription" placeholder="Cole aqui a descrição completa da vaga: responsabilidades, requisitos, habilidades desejadas, tecnologias, etc..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:13px; resize:vertical; min-height:140px; margin-bottom:12px; color:var(--text);"></textarea>
+        
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <button class="form-submit-btn" id="btnSubmitJD" onclick="submitJobDescription()" style="background:var(--text); color:#fffff3; border:none; padding:11px 20px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">Encontrar Profissionais Aderentes</button>
+          <span id="aiLoadingIndicator" style="display:none; color:var(--muted); font-size:12px;">🔄 Analisando vaga...</span>
+        </div>
+      </div>
+
+      <div id="aiMatchResults"></div>
+    </section>
+
+    <!-- SUB-PÁGINA 2: DIRETÓRIO COMPLETO -->
+    <section id="searchDirPanel" style="display:none;">
+      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><h2>Diretório Completo</h2></div>
+      <p class="section-desc">Busca manual com filtros avançados — acesso direto aos dados mais recentes da planilha Open to Work da comunidade CRM Academy / Mulheres de CRM.</p>
 
       <div class="join-card">
         <h3>Está open to work e quer entrar nessa lista?</h3>
@@ -4604,6 +4677,97 @@ function pfSubmitReview(toolName){
   pfRenderAllReviews();
   document.querySelector(`[id="pf-reviews-${cardId}"] .pf-accordion-toggle`)?.click?.();
   alert('Obrigada pela avaliação!');
+}
+
+// ============ BUSCA PROFISSIONAL - ABAS INTERNAS ============
+function switchSearchTab(tab){
+  const aiPanel = document.getElementById('searchAIPanel');
+  const dirPanel = document.getElementById('searchDirPanel');
+  const aiBtn = document.getElementById('searchTabAI');
+  const dirBtn = document.getElementById('searchTabDir');
+  
+  if(tab==='ai'){
+    aiPanel.style.display = 'block';
+    dirPanel.style.display = 'none';
+    aiBtn.classList.add('active');
+    dirBtn.classList.remove('active');
+  } else if(tab==='directory'){
+    aiPanel.style.display = 'none';
+    dirPanel.style.display = 'block';
+    aiBtn.classList.remove('active');
+    dirBtn.classList.add('active');
+    if(!searchInitialized){ initSearch(); }
+  }
+  window.scrollTo(0, document.getElementById('pageSearch').offsetTop - 80);
+}
+
+// ============ MATCH DE VAGA POR IA ============
+async function submitJobDescription(){
+  const jdText = document.getElementById('jobDescription').value.trim();
+  if(!jdText){ alert('Por favor, cole a descrição da vaga.'); return; }
+  
+  const btn = document.getElementById('btnSubmitJD');
+  const indicator = document.getElementById('aiLoadingIndicator');
+  const resultsDiv = document.getElementById('aiMatchResults');
+  
+  btn.disabled = true;
+  indicator.style.display = 'inline';
+  resultsDiv.innerHTML = '<div class="ai-match-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><p>Analisando vaga e buscando candidatos...</p></div>';
+  
+  try{
+    const response = await fetch('https://radar-crm-bot.vercel.app/api/match-candidates', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({jobDescription: jdText})
+    });
+    
+    if(!response.ok) throw new Error('Erro na análise');
+    const data = await response.json();
+    renderAIMatchResults(data);
+  } catch(err){
+    resultsDiv.innerHTML = '<div class="ai-match-error">⚠️ Não conseguimos conectar ao serviço de IA no momento. Tente novamente em alguns instantes ou use a busca manual no Diretório Completo.</div>';
+  } finally{
+    btn.disabled = false;
+    indicator.style.display = 'none';
+  }
+}
+
+function renderAIMatchResults(data){
+  const resultsDiv = document.getElementById('aiMatchResults');
+  const matches = data.matches || [];
+  
+  if(!matches.length){
+    resultsDiv.innerHTML = '<div class="ai-match-empty"><p>Nenhum candidato encontrado que se alinhe com a vaga. Tente ajustar a descrição ou use a busca manual no Diretório Completo.</p></div>';
+    return;
+  }
+  
+  resultsDiv.innerHTML = `
+    <div style="margin-bottom:20px; padding:12px; background:var(--panel-2); border-radius:9px; font-size:12px; color:var(--text);">
+      ✅ Encontramos <strong>${matches.length}</strong> profissional(is) que combinam com essa vaga. Estão ordenados por % de aderência.
+    </div>
+  ` + matches.map(m=>`
+    <div class="ai-match-card">
+      <div class="ai-match-score">${m.matchScore}%</div>
+      <div class="ai-match-content">
+        <div class="ai-match-name">${escapeHtml(m.name)}</div>
+        <div class="ai-match-meta">
+          <span>📍 ${escapeHtml(m.city)}</span>
+          <span>💼 ${escapeHtml(m.seniority)}</span>
+          <span>🎯 ${escapeHtml(m.workModel)}</span>
+        </div>
+        <div class="ai-match-skills">
+          ${(m.matchedSkills || []).slice(0, 5).map(s=>`<span class="ai-match-skill-tag">${escapeHtml(s)}</span>`).join('')}
+        </div>
+        <div class="ai-match-reason">
+          <strong>Por que combina:</strong> ${escapeHtml(m.matchReason)}
+        </div>
+        <div class="ai-match-actions">
+          <button class="ai-match-btn" onclick="window.open('https://wa.me/55${m.whatsapp}?text=Olá%20${encodeURIComponent(m.name)}%2C%20gostaria%20de%20conversar%20sobre%20uma%20oportunidade%20de%20CRM', '_blank')">Chamar no WhatsApp</button>
+          <button class="ai-match-btn secondary" onclick="switchSearchTab('directory')">Ver Perfil Completo</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 // ============ SUGERIR FERRAMENTA (PLATAFORMAS) ============
