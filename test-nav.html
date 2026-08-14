@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar CRM - Teste de Navegação</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fffff3; color: #0a303d; }
+  
+  .header { background: #c76b93; color: white; padding: 20px; text-align: center; }
+  
+  .nav-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 15px;
+    background: #f5f5f0;
+    border-bottom: 2px solid #c76b93;
+  }
+  
+  .tab-btn {
+    padding: 10px 15px;
+    border: 2px solid #c76b93;
+    background: white;
+    color: #c76b93;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s;
+  }
+  
+  .tab-btn:hover { background: #c76b93; color: white; }
+  .tab-btn.active { background: #c76b93; color: white; }
+  
+  .content { padding: 30px; }
+  
+  .page { display: none; padding: 20px; background: white; border-radius: 8px; margin: 20px 0; }
+  .page.active { display: block; }
+  
+  .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin: 20px 0; }
+  
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎉 RADAR CRM - Teste de Navegação</h1>
+  <p>Se você vê as abas funcionando, a navegação está OK!</p>
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('home')">🏠 Home</button>
+  <button class="tab-btn" onclick="switchTab('buscar')">🔍 Buscar Profissional</button>
+  <button class="tab-btn" onclick="switchTab('cursos')">📚 Cursos</button>
+  <button class="tab-btn" onclick="switchTab('eventos')">📅 Eventos</button>
+  <button class="tab-btn" onclick="switchTab('ia')">🤖 IA Matching</button>
+</div>
+
+<div class="content">
+
+  <div id="home" class="page active">
+    <div class="success">✅ Navegação está funcionando!</div>
+    <h2>Bem-vindo ao Radar CRM!</h2>
+    <p>Este é um teste para verificar se a navegação está funcionando corretamente.</p>
+    <p>Clique nas abas acima para navegar entre as seções.</p>
+  </div>
+
+  <div id="buscar" class="page">
+    <h2>🔍 Buscar Profissional</h2>
+    <p>IA Matching - Cole uma vaga e encontre candidatos automaticamente!</p>
+    <textarea style="width: 100%; height: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" placeholder="Cole a descrição da vaga aqui..."></textarea>
+  </div>
+
+  <div id="cursos" class="page">
+    <h2>📚 Cursos</h2>
+    <p>Aprenda CRM com os melhores conteúdos da comunidade.</p>
+    <ul style="margin-left: 20px; margin-top: 10px;">
+      <li>HubSpot Certificação</li>
+      <li>Salesforce Admin</li>
+      <li>RD Station Avançado</li>
+    </ul>
+  </div>
+
+  <div id="eventos" class="page">
+    <h2>📅 Eventos</h2>
+    <p>Próximos eventos da comunidade Mulheres de CRM.</p>
+    <ul style="margin-left: 20px; margin-top: 10px;">
+      <li>Masterclass: IA em CRM - 20/Ago</li>
+      <li>Meetup São Paulo - 25/Ago</li>
+      <li>Conferência Anual - 05/Set</li>
+    </ul>
+  </div>
+
+  <div id="ia" class="page">
+    <h2>🤖 IA Matching</h2>
+    <p>Encontre os candidatos perfeitos com nossa IA!</p>
+    <p>Tecnologia: Sentence Transformers + Cosine Similarity</p>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tab) {
+  // Esconder todos
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p => p.classList.remove('active'));
+  
+  // Desativar todos os botões
+  const buttons = document.querySelectorAll('.tab-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  
+  // Mostrar o selecionado
+  document.getElementById(tab).classList.add('active');
+  
+  // Ativar o botão
+  event.target.classList.add('active');
+  
+  console.log('✅ Abra de ' + tab + ' ativada com sucesso!');
+}
+</script>
+
+</body>
+</html>
