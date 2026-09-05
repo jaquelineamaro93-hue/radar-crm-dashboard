@@ -11,6 +11,16 @@
       defaults: '2026-05-30',
       person_profiles: 'identified_only',
   })
+  // PostHog Tracking - Seguro
+  window.posthogTracker = {
+    track: function(event, props) {
+      if (window.posthog) posthog.capture(event, props || {});
+    },
+    pageView: function(section) {
+      if (window.posthog) posthog.capture('$pageview', { $pathname: '/' + section });
+    }
+  };
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
