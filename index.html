@@ -11,14 +11,84 @@
       defaults: '2026-05-30',
       person_profiles: 'identified_only',
   })
-  // PostHog Tracking - Seguro
-  window.posthogTracker = {
-    track: function(event, props) {
-      if (window.posthog) posthog.capture(event, props || {});
-    },
-    pageView: function(section) {
-      if (window.posthog) posthog.capture('$pageview', { $pathname: '/' + section });
+  // ========================================
+  // POSTHOG TRACKING - SPA Analytics
+  // ========================================
+  
+  const trackPageView = (sectionName, properties = {}) => {
+    if (window.posthog) {
+      posthog.capture('$pageview', {
+        $pathname: '/' + sectionName,
+        section: sectionName,
+        timestamp: new Date().toISOString(),
+        ...properties
+      });
     }
+  };
+
+  const trackClick = (elementName, properties = {}) => {
+    if (window.posthog) {
+      posthog.capture('elemento_clicado', {
+        elemento: elementName,
+        $pathname: '/' + (window.currentSection || 'home'),
+        timestamp: new Date().toISOString(),
+        ...properties
+      });
+    }
+  };
+
+  const trackFilter = (sectionName, filterName, filterValue) => {
+    if (window.posthog) {
+      posthog.capture('filtro_aplicado', {
+        section: sectionName,
+        filtro: filterName,
+        valor: filterValue,
+        $pathname: '/' + sectionName,
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  const trackSearch = (sectionName, searchTerm, resultCount) => {
+    if (window.posthog) {
+      posthog.capture('busca_realizada', {
+        section: sectionName,
+        termo_busca: searchTerm,
+        resultados: resultCount,
+        $pathname: '/' + sectionName,
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  const trackSaveVaga = (vagaTitle, vagaCompany) => {
+    if (window.posthog) {
+      posthog.capture('vaga_salva', {
+        vaga_titulo: vagaTitle,
+        vaga_empresa: vagaCompany,
+        $pathname: '/vagas',
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  const identifyUser = (userId, properties = {}) => {
+    if (window.posthog) {
+      posthog.identify(userId, {
+        section_atual: window.currentSection || 'home',
+        timestamp: new Date().toISOString(),
+        ...properties
+      });
+    }
+  };
+
+  window.posthogTracker = {
+    trackPageView,
+    trackClick,
+    trackFilter,
+    trackSearch,
+    trackSaveVaga,
+    identifyUser
   };
 
 </script>
@@ -4575,14 +4645,14 @@ function evBuildFilters(){
   const tipos = [...new Set(evAllEvents.map(e=>e.tipo).filter(Boolean))].sort();
   const fa = document.getElementById("evFa"), ft = document.getElementById("evFt");
   areas.forEach(a=>{ const b=document.createElement("button"); b.className="ev-ftab"; b.dataset.a=a.toLowerCase(); b.textContent=a; fa.appendChild(b); });
-  fa.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fa.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFA=b.dataset.a; evRenderAll(); }));
+  fa.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fa.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFA=b.dataset.a; if(window.posthogTracker) posthogTracker.trackFilter("eventos", "area", b.dataset.a); evRenderAll(); }));
   const allTipos = [...new Set([...tipos,"Curso","Mentoria"])].sort();
   allTipos.forEach(t=>{ const b=document.createElement("button"); b.className="ev-ftab"; b.dataset.t=t.toLowerCase(); b.textContent=t; ft.appendChild(b); });
-  ft.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ ft.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFT=b.dataset.t; evRenderAll(); }));
+  ft.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ ft.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFT=b.dataset.t; if(window.posthogTracker) posthogTracker.trackFilter("eventos", "tipo", b.dataset.t); evRenderAll(); }));
   const fp = document.getElementById("evFp");
-  fp.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fp.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFP=b.dataset.p; evRenderAll(); }));
+  fp.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fp.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFP=b.dataset.p; if(window.posthogTracker) posthogTracker.trackFilter("eventos", "preco", b.dataset.p); evRenderAll(); }));
   const fme = document.getElementById("evFme");
-  fme.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fme.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFMe=b.dataset.me; evRenderAll(); }));
+  fme.querySelectorAll(".ev-ftab").forEach(b=>b.addEventListener("click",()=>{ fme.querySelectorAll(".ev-ftab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); evFMe=b.dataset.me; if(window.posthogTracker) posthogTracker.trackFilter("eventos", "modalidade", b.dataset.me); evRenderAll(); }));
 }
 
 function evPopulateNameSuggestions(){
