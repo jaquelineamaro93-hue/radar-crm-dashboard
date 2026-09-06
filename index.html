@@ -5104,28 +5104,31 @@ function flSetReviewRating(cardId, value){
 }
 
 async function flSubmitReview(nome){
-  const cardId = nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');
-  const ratingContainer = document.getElementById('flReviewStars-'+cardId);
-  const rating = ratingContainer ? parseInt(ratingContainer.getAttribute('data-rating'),10) : 0;
-  const textEl = document.getElementById('fl-review-text-'+cardId);
-  const anonEl = document.getElementById('fl-review-anon-'+cardId);
-  const text = (textEl ? textEl.value : '').trim();
-  if(!rating){ alert('Selecione uma nota de 1 a 5 estrelas.'); return; }
-  if(!flSb){ evToastMsg('Conexão indisponível.', __ICON_3__); return; }
+  const rating = window.currentRating && window.currentRating[nome] ? window.currentRating[nome] : 0;
+  const textEl = document.getElementById('jobDescription');
+  const text = textEl ? textEl.value : '';
+  
+  if(rating === 0){
+    alert('Selecione uma nota de 1 a 5 estrelas!');
+    return;
+  }
+  
   try{
     const {error} = await flSb.from('avaliacoes_freelancers').insert({
-      freelancer_nome: nome,
-      nota: rating,
-      comentario: text,
-      avaliador: (anonEl && anonEl.checked) ? '' : ((typeof evUName!=='undefined' && evUName) || 'Membro'),
+      freelancer_name: nome,
+      rating: rating,
+      review: text,
+      created_at: new Date().toISOString()
     });
-    if(error) throw error;
-    if(textEl) textEl.value='';
-    evToastMsg('Obrigada pela avaliação!', __ICON_0__);
-    loadFreelancers();
-  }catch(e) {
-    console.error(e);
-    evToastMsg('Não consegui enviar. Tente de novo.', __ICON_3__);
+    
+    if(!error){
+      alert('✅ Avaliação enviada com sucesso!');
+      document.getElementById('flReviewsModalOverlay').remove();
+    }else{
+      alert('❌ Erro ao enviar: ' + error.message);
+    }
+  }catch(e){
+    alert('❌ Erro: ' + e.message);
   }
 }
 
