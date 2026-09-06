@@ -3679,7 +3679,7 @@ let communityCoursesLoaded = false;
 
 function courseInitSB(){
   try{ courseSb = window.supabase.createClient(COURSE_SUPABASE_URL, COURSE_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 function initCoursesTab(){
@@ -3812,7 +3812,7 @@ async function submitCourseForm(){
     ['cf_nome','cf_instituicao','cf_url','cf_disciplina'].forEach(id=> document.getElementById(id).value = '');
     document.getElementById('cf_formato').value = 'Online';
     document.getElementById('cf_preco').value = 'Gratuito';
-  }catch(e){
+  }catch(e) {
     console.error(e);
     statusEl.className = 'form-status err';
     statusEl.textContent = 'Não consegui enviar. Tente de novo em alguns segundos.';
@@ -4303,12 +4303,12 @@ async function evSubmitEvent(){
     evToastMsg('Evento "'+nome+'" publicado!', __ICON_0__);
     ["evEvNome","evEvData","evEvDesc","evEvPreco","evEvLink","evEvAutor"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("evEvMes").value=""; document.getElementById("evEvArea").value=""; document.getElementById("evEvTipo").value="";
-  }catch(e){ console.error(e); evToastMsg("Erro ao publicar evento", __ICON_3__); }
+  }catch(e) { console.error(e); evToastMsg("Erro ao publicar evento", __ICON_3__); }
 }
 
 function evInitSB(){
   try{ evSb = window.supabase.createClient(EV_SUPABASE_URL, EV_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 async function evLoadPresence(){
@@ -4320,7 +4320,7 @@ async function evLoadPresence(){
       if(!evPresence[r.evento_id]) evPresence[r.evento_id]=[];
       evPresence[r.evento_id].push({name:r.nome, status:r.status, li:r.linkedin||"", site:r.site_empresa||""});
     });
-  }catch(e){
+  }catch(e) {
     console.error(e);
     try{ evPresence = JSON.parse(localStorage.getItem("ap")||"{}"); }catch(e2){ evPresence={}; }
   }
@@ -4335,7 +4335,7 @@ async function evLoadSuggestedEvents(){
       desc:r.descricao||"", preco:r.preco||"Consultar", link:r.link||"",
       isSuggested:true, sugerido_por:r.sugerido_por
     }));
-  }catch(e){ console.error(e); return []; }
+  }catch(e) { console.error(e); return []; }
 }
 
 function evSaveLocal(){ localStorage.setItem("ap", JSON.stringify(evPresence)); }
@@ -4349,7 +4349,7 @@ async function evUpsertP(id,name,status,li,site){
       {onConflict:"evento_id,nome", ignoreDuplicates:false}
     );
     if(error) throw error;
-  }catch(e){
+  }catch(e) {
     console.error("UPSERT ERROR:", JSON.stringify(e));
     evToastMsg("Erro: "+(e.message||e.code||JSON.stringify(e)), __ICON_3__);
   }
@@ -4358,7 +4358,7 @@ async function evDelP(id,name){
   ev_delL(id,name); evRenderBadges(); evUpdateC();
   if(!evSb){ evSaveLocal(); return; }
   try{ const {error} = await evSb.from("presencas").delete().eq("evento_id",id).eq("nome",name); if(error) throw error; }
-  catch(e){ console.error(e); }
+  catch(e) { console.error(e); }
 }
 function ev_setL(id,n,s,li,site){
   if(!evPresence[id]) evPresence[id]=[];
@@ -4688,7 +4688,7 @@ async function loginAdmin(){
     evToastMsg(`Bem-vindo! 🔓`, __ICON_0__);
     showAdminButton();
     location.reload();
-  }catch(e){
+  }catch(e) {
     console.error('Erro de login:', e);
     errorEl.textContent = 'Erro ao conectar. Tente de novo.';
   }
@@ -4806,14 +4806,14 @@ async function loadDashboardStats(){
     }
     
     console.log('✅ Dashboard stats:', {profCount, cargoCount});
-  }catch(e){
+  }catch(e) {
     console.warn('❌ Erro ao carregar stats:', e);
   }
 }
 
 function flInitSB(){
   try{ flSb = window.supabase.createClient(FL_SUPABASE_URL, FL_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 function initFreelancersTab(){
@@ -4876,12 +4876,12 @@ async function loadFreelancerProfile(){
     try{
       const {data: cont} = await flSb.from('conteudos_comunidade').select('corpo').eq('autor_nome', nome).maybeSingle();
       if(cont && cont.corpo) document.getElementById('fl_conteudo').value = cont.corpo;
-    }catch(e){
+    }catch(e) {
       console.warn('Conteúdo não encontrado');
     }
     
     loadStatus.className='form-status ok'; loadStatus.textContent='✓ Perfil carregado. Edite o que quiser e clique em "Publicar perfil".';
-  }catch(e){
+  }catch(e) {
     console.error(e);
     loadStatus.className='form-status err'; loadStatus.textContent='Erro ao carregar. Tente de novo.';
   }
@@ -4924,7 +4924,7 @@ async function submitFreelancer(){
       const {data, error} = await flSb.from('freelancers_sugeridos').select('id').eq('nome', nome).maybeSingle();
       if(error) console.warn('Erro ao buscar:', error);
       existing = data;
-    }catch(e){
+    }catch(e) {
       console.warn('Exceção ao buscar:', e);
     }
     
@@ -4960,7 +4960,7 @@ async function submitFreelancer(){
       try{
         const {data} = await flSb.from('conteudos_comunidade').select('id').eq('autor_nome', nome).maybeSingle();
         conteudoExistente = data;
-      }catch(e){
+      }catch(e) {
         console.warn('Erro ao buscar conteúdo:', e);
       }
       
@@ -4981,7 +4981,7 @@ async function submitFreelancer(){
       const el = document.getElementById(id);
       if(el) el.value='';
     });
-  }catch(e){
+  }catch(e) {
     console.error('Erro completo:', e);
     statusEl.className='form-status err'; statusEl.textContent='Erro: '+e.message;
     btn.disabled=false; btn.textContent='Publicar perfil';
@@ -5004,18 +5004,18 @@ async function loadRecomendacoes(sb){
       if(!RECOMENDACOES[k]) RECOMENDACOES[k] = {sim:0, nao:0};
       r.recomenda ? RECOMENDACOES[k].sim++ : RECOMENDACOES[k].nao++;
     });
-  }catch(e){ console.error(e); }
+  }catch(e) { console.error(e); }
 }
 
 function recJaVotou(tipo, nome){
-  try{ return !!JSON.parse(localStorage.getItem('rec_votos')||'{}')[recKey(tipo,nome)]; }catch(e){ return false; }
+  try{ return !!JSON.parse(localStorage.getItem('rec_votos')||'{}')[recKey(tipo,nome)]; }catch(e) { return false; }
 }
 function recMarcarVotado(tipo, nome){
   try{
     const v = JSON.parse(localStorage.getItem('rec_votos')||'{}');
     v[recKey(tipo,nome)] = true;
     localStorage.setItem('rec_votos', JSON.stringify(v));
-  }catch(e){}
+  }catch(e) {}
 }
 
 async function recVotar(sb, tipo, nome, recomenda, reloadFn){
@@ -5029,7 +5029,7 @@ async function recVotar(sb, tipo, nome, recomenda, reloadFn){
     recMarcarVotado(tipo, nome);
     evToastMsg(recomenda ? 'Recomendação registrada!' : 'Registrado, obrigado pelo retorno.', recomenda ? __ICON_6__ : __ICON_7__);
     reloadFn();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     evToastMsg('Não consegui registrar.', __ICON_3__);
   }
@@ -5122,7 +5122,7 @@ async function flSubmitReview(nome){
     if(textEl) textEl.value='';
     evToastMsg('Obrigada pela avaliação!', __ICON_0__);
     loadFreelancers();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     evToastMsg('Não consegui enviar. Tente de novo.', __ICON_3__);
   }
@@ -5231,7 +5231,7 @@ async function submitFreelancerEdit(id){
     document.getElementById('flEditOverlay').remove();
     evToastMsg('Perfil atualizado!', __ICON_0__);
     loadFreelancers();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     statusEl.style.color='red'; statusEl.textContent='Erro ao salvar. Tente novamente.';
   }
@@ -5248,7 +5248,7 @@ async function deleteFreelancer(id, nome){
       if(error) throw error;
       evToastMsg('Perfil deletado (admin). ✕', __ICON_5__);
       loadFreelancers();
-    }catch(e){
+    }catch(e) {
       console.error('Erro ao deletar:', e);
       alert('Erro ao deletar perfil. Tente novamente.');
     }
@@ -5279,7 +5279,7 @@ async function deleteFreelancer(id, nome){
     if(deleteError) throw deleteError;
     evToastMsg('Perfil deletado com sucesso. ✕', __ICON_5__);
     loadFreelancers();
-  }catch(e){
+  }catch(e) {
     console.error('Erro ao deletar:', e);
     alert('Erro ao deletar perfil. Tente novamente.');
   }
@@ -5386,7 +5386,7 @@ function initPfComparativo(){
     // ---- Busca de funcionalidade ----
     const input2 = document.getElementById('ftSearchText2');
     if(input2) input2.addEventListener('input', ()=>renderFeatureSearch2());
-  }catch(e){ console.error('Erro ao inicializar comparativo em Plataformas:', e); }
+  }catch(e) { console.error('Erro ao inicializar comparativo em Plataformas:', e); }
 }
 
 function renderFeatureSearch2(){
@@ -5445,7 +5445,7 @@ function switchPlataformasTab(tab){
     });
     // Inicializa o comparativo na primeira vez que for acessado
     if(tab==='comparativo' && !pfComparativoInitialized){ initPfComparativo(); }
-  }catch(e){ console.error('Erro ao trocar aba de plataformas:', e); }
+  }catch(e) { console.error('Erro ao trocar aba de plataformas:', e); }
 }
 
 async function submitPlatformChallenge(){
@@ -5514,7 +5514,7 @@ function renderPlatformChallengeResults(data){
         </div>
       `).join('')}
     `;
-  }catch(e){ console.error('Erro ao renderizar resultados:', e); }
+  }catch(e) { console.error('Erro ao renderizar resultados:', e); }
 }
 
 // ============ MATCH POR IA - FREELANCERS ============
@@ -5614,7 +5614,7 @@ const AGENCIAS_SEED = [
 
 function agInitSB(){
   try{ agSb = window.supabase.createClient(AG_SUPABASE_URL, AG_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 function initAgenciasTab(){
@@ -5676,7 +5676,7 @@ async function submitAgencia(){
     btn.disabled=false; btn.textContent='Publicar agência';
     statusEl.className=''; statusEl.textContent='';
     ['ag_nome','ag_descricao','ag_site','ag_autor'].forEach(id=>document.getElementById(id).value='');
-  }catch(e){
+  }catch(e) {
     console.error(e);
     statusEl.className='form-status err'; statusEl.textContent='Não consegui enviar. Tente de novo.';
     btn.disabled=false; btn.textContent='Publicar agência';
@@ -5733,14 +5733,14 @@ function avgRating(nome){
   return notas.reduce((a,b)=>a+b,0)/notas.length;
 }
 function jaAvaliou(nome){
-  try{ return JSON.parse(localStorage.getItem('ag_votos')||'{}')[nome]; }catch(e){ return false; }
+  try{ return JSON.parse(localStorage.getItem('ag_votos')||'{}')[nome]; }catch(e) { return false; }
 }
 function marcarAvaliado(nome){
   try{
     const v = JSON.parse(localStorage.getItem('ag_votos')||'{}');
     v[nome] = true;
     localStorage.setItem('ag_votos', JSON.stringify(v));
-  }catch(e){}
+  }catch(e) {}
 }
 
 async function votarAgencia(nome, nota){
@@ -5754,7 +5754,7 @@ async function votarAgencia(nome, nota){
     marcarAvaliado(nome);
     evToastMsg('Avaliação registrada!', __ICON_8__);
     loadAgencias();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     evToastMsg('Não consegui registrar a avaliação.', __ICON_3__);
   }
@@ -5907,7 +5907,7 @@ let VAGAS = [];
 
 function vgInitSB(){
   try{ vgSb = window.supabase.createClient(VG_SUPABASE_URL, VG_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 function initVagasTab(){
@@ -6058,7 +6058,7 @@ function switchComunidadeTab(tab){
     Object.entries(panels).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) el.style.display=(k===tab)?'block':'none'; });
     Object.entries(btns).forEach(([k,id])=>{ const el=document.getElementById(id); if(el){ el.classList.toggle('active',k===tab); }});
     if(tab==='diretorio') renderComDiretorio();
-  }catch(e){ console.error('Erro ao trocar sub-aba de comunidade:',e); }
+  }catch(e) { console.error('Erro ao trocar sub-aba de comunidade:',e); }
 }
 
 function renderComDiretorio(){
@@ -6139,7 +6139,7 @@ function submitComCadastro(){
     } else {
       alert('Conexão com o banco indisponível no momento. Tente novamente.');
     }
-  }catch(e){ console.error('Erro no cadastro:', e); }
+  }catch(e) { console.error('Erro no cadastro:', e); }
 }
 
 // ============ COMUNIDADE, PRÉVIA DE MEMBROS ============
@@ -6350,7 +6350,7 @@ let cxActiveCat = 'Todos';
 let cxSb = null;
 function initConteudosTab(){
   conteudosInitialized = true;
-  try{ cxSb = window.supabase.createClient(PF_SUPABASE_URL, PF_SUPABASE_KEY); }catch(e){}
+  try{ cxSb = window.supabase.createClient(PF_SUPABASE_URL, PF_SUPABASE_KEY); }catch(e) {}
   loadConteudos();
 }
 function cxFilterBy(cat){ cxActiveCat = cat; renderCxGrid(); }
@@ -6365,7 +6365,7 @@ async function loadConteudos(){
     if(error) throw error;
     renderCxGrid(data||[]);
     cxShowAdminPanelBtn();
-  }catch(e){ console.error(e); renderCxEmpty(); }
+  }catch(e) { console.error(e); renderCxEmpty(); }
 }
 
 function renderCxEmpty(){
@@ -6451,7 +6451,7 @@ async function submitConteudo(){
     if(error) throw error;
     document.getElementById('cxPublishOverlay').remove();
     evToastMsg('Artigo enviado para revisão! Publicaremos em breve.', __ICON_6__);
-  }catch(e){
+  }catch(e) {
     console.error(e);
     alert('Erro ao enviar. Tente novamente em instantes.');
   }
@@ -6523,7 +6523,7 @@ async function cxOpenAdminPanel(){
     document.getElementById('cxAdminPanel').addEventListener('click', e => {
       if(e.target.id === 'cxAdminPanel') e.target.remove();
     });
-  }catch(e){
+  }catch(e) {
     console.error(e);
     alert('Erro ao carregar conteúdos pendentes.');
   }
@@ -6538,7 +6538,7 @@ async function cxApproveContent(id){
     loadConteudos();
     document.getElementById('cxAdminPanel').remove();
     setTimeout(() => cxOpenAdminPanel(), 500);
-  }catch(e){
+  }catch(e) {
     console.error(e);
     alert('Erro ao aprovar conteúdo.');
   }
@@ -6552,7 +6552,7 @@ async function cxRejectContent(id){
     evToastMsg('Conteúdo removido. ✕', __ICON_5__);
     document.getElementById('cxAdminPanel').remove();
     setTimeout(() => cxOpenAdminPanel(), 500);
-  }catch(e){
+  }catch(e) {
     console.error(e);
     alert('Erro ao rejeitar conteúdo.');
   }
@@ -6649,7 +6649,7 @@ let pfActiveSort = 'recomendadas';
 
 function pfInitSB(){
   try{ pfSb = window.supabase.createClient(PF_SUPABASE_URL, PF_SUPABASE_KEY); return true; }
-  catch(e){ console.error(e); return false; }
+  catch(e) { console.error(e); return false; }
 }
 
 function initPlataformasTab(){
@@ -6926,7 +6926,7 @@ async function pfSubmitReview(toolName){
     if(textEl) textEl.value = '';
     evToastMsg('Obrigada pela avaliação!', __ICON_0__);
     loadPlataformas();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     evToastMsg('Não consegui enviar. Tente de novo.', __ICON_3__);
   }
@@ -7016,7 +7016,7 @@ async function pfSubmitSuggest(){
     pfCloseSuggestModal();
     evToastMsg('Sugestão de "'+name+'" enviada! Jaque do CRM vai revisar. Aprovadas aparecem na vitrine com oportunidades de parcerias em mídia e divulgação.', __ICON_0__);
     loadPlataformas();
-  }catch(e){
+  }catch(e) {
     console.error(e);
     statusEl.className='form-status err'; statusEl.textContent='Não consegui enviar. Tente de novo.';
     btn.disabled=false; btn.textContent='Sugerir';
@@ -7079,7 +7079,7 @@ function ftSubmitSuggest(){
           try{
             inst.resize();
             inst.update('none');
-          }catch(e){}
+          }catch(e) {}
         });
       }, delay);
     });
@@ -7102,7 +7102,7 @@ function ftSubmitSuggest(){
     }
     mql.addEventListener('change', onChange);
   }
-  try{ watchZoomLevel(); }catch(e){ console.error('Erro ao monitorar zoom:', e); }
+  try{ watchZoomLevel(); }catch(e) { console.error('Erro ao monitorar zoom:', e); }
 
   // Também roda uma vez ao trocar de aba, já que gráficos escondidos
   // (display:none) às vezes nascem com medidas erradas quando reaparecem.
@@ -7126,7 +7126,7 @@ let authSb = null;
 function authInitSB(){
   if(authSb) return true; // já inicializado — evita múltiplas instâncias
   try{ authSb = window.supabase.createClient(AUTH_SUPABASE_URL, AUTH_SUPABASE_KEY); return true; }
-  catch(e){ console.error('authInitSB', e); return false; }
+  catch(e) { console.error('authInitSB', e); return false; }
 }
 
 let CURRENT_USER = null;
@@ -7286,7 +7286,7 @@ async function saveScrapedJob(url, title, company){
 
     evToastMsg && evToastMsg('Vaga salva! ⚠️ Salvar não garante candidatura — entre na vaga e siga o processo seletivo.', '💾');
     if(document.getElementById('membroVagasSalvas')) loadMembroPanel();
-  }catch(e){
+  }catch(e) {
     console.error('saveScrapedJob', e);
     evToastMsg && evToastMsg(e.message || 'Não foi possível salvar.', '⚠️');
   }
@@ -7443,7 +7443,7 @@ async function saveProfile(){
     authRenderUI();
     setTimeout(()=>{ const o=document.getElementById('profileModalOverlay'); if(o) o.remove(); }, 800);
     if(typeof evToastMsg==='function') evToastMsg('Perfil atualizado!', '✅');
-  }catch(e){
+  }catch(e) {
     console.error(e);
     statusEl.style.color='red'; statusEl.textContent='Erro ao salvar. Tente de novo.';
   }
@@ -7479,7 +7479,7 @@ async function loadMembroPanel(){
     } else {
       salvEl.innerHTML = '<span style="font-size:12px;color:var(--muted);">Nenhuma vaga salva ainda.</span>';
     }
-  }catch(e){ salvEl.innerHTML = 'Erro ao carregar.'; }
+  }catch(e) { salvEl.innerHTML = 'Erro ao carregar.'; }
 
   // Match é disparado pelo botão "Buscar Match" via runMembroMatch()
 }
@@ -7681,7 +7681,7 @@ async function submitAnunciarVaga(){
 
     document.getElementById('anunciarVagaOverlay').remove();
     evToastMsg && evToastMsg('Vaga enviada! Será revisada e publicada em breve.', '✅');
-  }catch(e){
+  }catch(e) {
     console.error('submitAnunciarVaga', e);
     statusEl.style.color='red';
     statusEl.textContent='Erro ao enviar. Tente novamente.';
