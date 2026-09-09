@@ -5953,7 +5953,11 @@ function loadVagas(){
     container.innerHTML = '<div class="error-state">Não consegui conectar. Recarregue a página.</div>';
     return;
   }
-  vgSb.from('vagas_crm').select('*').order('found_at', {ascending:false}).limit(300)
+  // Otimized query: select only essential columns to avoid timeout
+  vgSb.from('vagas_crm')
+    .select('id,title,company,location,url,found_at,source,category')
+    .order('found_at', {ascending:false})
+    .limit(300)
     .then(({data, error})=>{
       if(error) throw error;
       VAGAS = data || [];
