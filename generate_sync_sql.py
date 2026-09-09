@@ -16,23 +16,24 @@ from typing import Dict, List
 CSV_FILE = "open_to_work.csv"
 
 # Mapa de colunas do CSV para Supabase
+# Colunas da planilha oficial Google Forms Open to Work
 COLUMN_MAP = {
-    "E-mail": "email",
-    "Nome Completo": "nome",
-    "Telefone": "whatsapp",
-    "LinkedIn": "linkedin",
-    "Experiência": "tempo_experiencia",
-    "Área de Interesse": "area_atuacao",
-    "Disponibilidade": "condicao_trabalho",
+    "Nome": "nome",
     "Senioridade": "senioridade",
-    "Ferramentas": "ferramentas",
+    "Tempo de Experiência": "tempo_experiencia",
+    "Área de atuação": "area_atuacao",
+    "Qual Ferramenta você tem experiência/atuou?": "ferramentas",
     "Localização": "localizacao",
-    "Mudar de cidade?": "mudar_cidade",
-    "Última Empresa": "ultima_empresa",
-    "Faixa Salarial (CLT)": "faixa_clt",
-    "Faixa Salarial (PJ)": "faixa_pj",
+    "Condição de trabalho": "condicao_trabalho",
+    "Considerar mudar de Cidade?": "mudar_cidade",
+    "Linkedin": "linkedin",
+    "Número de WhatsApp": "whatsapp",
+    "Última empresa que trabalhou": "ultima_empresa",
+    "Faixa Salarial - CLT": "faixa_clt",
+    "Faixa Salarial - PJ": "faixa_pj",
     "Idioma": "idioma",
-    "Currículo": "curriculo",
+    "Coloque o link público do seu currículo": "curriculo",
+    "Whats clicavel": "whatsapp_clickable",
 }
 
 
@@ -48,22 +49,29 @@ def load_csv(csv_file: str) -> List[Dict]:
 
 
 def normalize_row(row: Dict) -> Dict:
-    """Normaliza uma linha do CSV para o formato Supabase"""
-    email = (row.get("E-mail") or "").strip().lower()
+    """Normaliza uma linha do CSV para o formato Supabase
 
-    if not email:
+    Chave única: Número de WhatsApp (é único por profissional)
+    Se WhatsApp não houver, usa LinkedIn como fallback
+    """
+    whatsapp = (row.get("Número de WhatsApp") or "").strip()
+    linkedin = (row.get("Linkedin") or "").strip()
+
+    # Precisa ter pelo menos WhatsApp ou LinkedIn
+    if not whatsapp and not linkedin:
         return None
 
     normalized = {}
     for csv_col, db_col in COLUMN_MAP.items():
         value = (row.get(csv_col) or "").strip()
-        if value:
+        if value and db_col != "whatsapp_clickable":  # Ignora campo duplicado
             normalized[db_col] = value
 
-    if "email" not in normalized:
-        return None
+    # Garante que whatsapp está presente (é a chave única)
+    if whatsapp:
+        normalized["whatsapp"] = whatsapp
 
-    return normalized
+    return normalized if (normalized.get("whatsapp") or normalized.get("linkedin")) else None
 
 
 def escape_sql_string(value: str) -> str:
@@ -74,7 +82,12 @@ def escape_sql_string(value: str) -> str:
 
 
 def generate_sql(rows: List[Dict]) -> str:
-    """Gera SQL INSERT ... ON CONFLICT para upsert"""
+    """Gera SQL INSERT ... ON CONFLICT para upsert
+
+    Chave única: (whatsapp, nome)
+    Profissionais com mesmo WhatsApp mas nomes diferentes são únicos
+    Profissionais com mesmo WhatsApp E nome são considerados duplicatas
+    """
     normalized = [normalize_row(r) for r in rows]
     normalized = [r for r in normalized if r]  # Remove Nones
 
@@ -91,6 +104,7 @@ def generate_sql(rows: List[Dict]) -> str:
 
     # Cabeçalho
     sql = "-- Sincronização de profissionais Open to Work\n"
+    sql += "-- Chave única: (whatsapp, nome)\n"
     sql += "-- Gerado automaticamente - altere conforme necessário\n\n"
     sql += "INSERT INTO profissionais_open_to_work ("
     sql += ", ".join(columns)
@@ -108,11 +122,11 @@ def generate_sql(rows: List[Dict]) -> str:
     sql += ",\n".join(value_sets)
     sql += "\n"
 
-    # ON CONFLICT
-    sql += "ON CONFLICT (email) DO UPDATE SET\n"
+    # ON CONFLICT usando chave composta (whatsapp, nome)
+    sql += "ON CONFLICT (whatsapp, nome) DO UPDATE SET\n"
     update_parts = []
     for col in columns:
-        if col != "email":  # email é a chave, não deve ser atualizada
+        if col not in ("whatsapp", "nome"):  # Chaves não são atualizadas
             update_parts.append(f"  {col} = EXCLUDED.{col}")
 
     sql += ",\n".join(update_parts)
@@ -121,7 +135,7 @@ def generate_sql(rows: List[Dict]) -> str:
     # Verificação final
     sql += "-- Validação\n"
     sql += f"SELECT COUNT(*) as total_profissionais FROM profissionais_open_to_work;\n"
-    sql += f"SELECT COUNT(*) as total_com_email FROM profissionais_open_to_work WHERE email IS NOT NULL;\n"
+    sql += f"SELECT COUNT(DISTINCT whatsapp) as profissionais_unicos FROM profissionais_open_to_work WHERE whatsapp IS NOT NULL;\n"
 
     return sql
 

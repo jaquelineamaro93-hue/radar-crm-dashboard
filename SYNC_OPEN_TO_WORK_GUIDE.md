@@ -1,13 +1,14 @@
 # 📋 Guia de Sincronização: Open to Work → Supabase
 
 **Data:** 2026-09-09  
-**Status:** ✅ Implementado e testado
+**Status:** ✅ Implementado e testado  
+**Chave Única:** WhatsApp + Nome (composto)
 
 ---
 
 ## 🎯 Objetivo
 
-Sincronizar os 288 profissionais "Open to Work" da planilha Google Sheets oficial para a tabela `profissionais_open_to_work` no Supabase, usando **email como chave única** para evitar duplicações.
+Sincronizar os 288+ profissionais "Open to Work" da planilha Google Sheets oficial para a tabela `profissionais_open_to_work` no Supabase, usando **WhatsApp + Nome como chave composta** para evitar duplicações.
 
 ---
 
@@ -18,11 +19,11 @@ Google Sheets (Open to Work - via Google Forms)
     ↓
 CSV (baixado manualmente)
     ↓
-generate_sync_sql.py → SQL com INSERT ... ON CONFLICT
+generate_sync_sql.py → SQL com INSERT ... ON CONFLICT (whatsapp, nome)
     ↓
 Supabase SQL Editor (executa upsert)
     ↓
-profissionais_open_to_work (email como chave única)
+profissionais_open_to_work (whatsapp + nome como chave única)
 ```
 
 ---
@@ -31,25 +32,29 @@ profissionais_open_to_work (email como chave única)
 
 ### Passo 1: Obter o CSV da Planilha
 
-1. Abra: https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?output=csv
-2. Salve como `open_to_work.csv` na pasta do projeto
-3. Confirme que tem as colunas:
-   - E-mail
-   - Nome Completo
-   - Telefone
-   - LinkedIn
-   - Experiência
-   - Área de Interesse
-   - Disponibilidade
+1. Abra a planilha Google Sheets de Open to Work
+2. Exporte como CSV
+3. Salve como `open_to_work.csv` na pasta do projeto
+4. Confirme que tem as colunas **EXATAS**:
+   - Carimbo de data/hora
+   - Nome
    - Senioridade
-   - Ferramentas
+   - Tempo de Experiência
+   - Área de atuação
+   - Qual Ferramenta você tem experiência/atuou?
    - Localização
-   - Mudar de cidade?
-   - Última Empresa
-   - Faixa Salarial (CLT)
-   - Faixa Salarial (PJ)
+   - Condição de trabalho
+   - Considerar mudar de Cidade?
+   - Linkedin
+   - Número de WhatsApp ← **CHAVE ÚNICA (parte 1)**
+   - Última empresa que trabalhou
+   - Grupo Afirmativo
+   - Pertence a qual grupo afirmativo?
+   - Faixa Salarial - CLT
+   - Faixa Salarial - PJ
    - Idioma
-   - Currículo
+   - Coloque o link público do seu currículo
+   - Whats clicavel
 
 ### Passo 2: Gerar SQL
 
@@ -75,22 +80,32 @@ Isso gera um arquivo `sync_data.sql` com:
 
 ## ✅ Garantias de Segurança
 
-### Chave Única: EMAIL
-- ✅ Se profissional já existe (mesmo email), dados são **atualizados**
+### Chave Única Composta: (WhatsApp, Nome)
+- ✅ Profissional é único por **WhatsApp + Nome**
+- ✅ Se profissional já existe (mesmo WhatsApp E nome), dados são **atualizados**
 - ✅ Se profissional é novo, é **inserido**
 - ✅ Nenhuma duplicata é criada
+- ✅ Mesmo WhatsApp com nome diferente = profissional diferente
 
 ### Validação
 ```sql
 -- Após executar sync, confirme:
-SELECT COUNT(*) FROM profissionais_open_to_work;
+SELECT COUNT(*) as total FROM profissionais_open_to_work;
 -- Deve ser ≥ 288 (ou número de profissionais no CSV)
 
-SELECT COUNT(*) FROM profissionais_open_to_work WHERE email IS NULL;
--- Deve ser 0 (todos têm email)
+SELECT COUNT(*) FROM profissionais_open_to_work WHERE whatsapp IS NULL;
+-- Deve ser 0 (todos têm WhatsApp como chave)
 
 -- Verificar profissionais específicos:
-SELECT email, nome, senioridade FROM profissionais_open_to_work ORDER BY criado_em DESC LIMIT 10;
+SELECT whatsapp, nome, senioridade, area_atuacao 
+FROM profissionais_open_to_work 
+ORDER BY criado_em DESC LIMIT 10;
+
+-- Detectar duplicatas (antes de sync):
+SELECT whatsapp, nome, COUNT(*) as qty
+FROM profissionais_open_to_work
+GROUP BY whatsapp, nome
+HAVING COUNT(*) > 1;
 ```
 
 ---
@@ -120,23 +135,22 @@ SELECT email, nome, senioridade FROM profissionais_open_to_work ORDER BY criado_
 Coluna | Tipo | Constraint | Descrição
 ---|---|---|---
 `id` | bigint | PK, auto-increment | ID único
-`email` | text | UNIQUE | Chave única para upsert
-`nome` | text | - | Nome completo
-`whatsapp` | text | nullable | Telefone/WhatsApp
+`nome` | text | parte de UNIQUE (whatsapp, nome) | Nome completo ← CHAVE
+`whatsapp` | text | parte de UNIQUE (whatsapp, nome) | Telefone/WhatsApp ← CHAVE
 `linkedin` | text | nullable | Perfil LinkedIn
+`senioridade` | text | nullable | Junior/Mid/Senior
 `tempo_experiencia` | text | nullable | Anos de experiência
 `area_atuacao` | text | nullable | Área de especialização
-`condicao_trabalho` | text | nullable | Tempo integral/Freelancer/etc
-`senioridade` | text | nullable | Junior/Mid/Senior
 `ferramentas` | text | nullable | Ferramentas e tecnologias
 `localizacao` | text | nullable | Cidade/Estado
+`condicao_trabalho` | text | nullable | Tempo integral/Freelancer/etc
 `mudar_cidade` | text | nullable | Sim/Não
 `ultima_empresa` | text | nullable | Último empregador
 `faixa_clt` | text | nullable | Salário CLT esperado
 `faixa_pj` | text | nullable | Tarifa PJ esperada
 `idioma` | text | nullable | Idiomas
 `curriculo` | text | nullable | URL do currículo
-`criado_em` | timestamp | default now() | Data de criação
+`criado_em` | timestamp | default now() | Data de criação/última atualização
 
 ---
 
