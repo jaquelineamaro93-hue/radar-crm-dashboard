@@ -768,7 +768,7 @@
     <!-- Comunidade (dourado) -->
     <button class="tab-btn" data-pilar="community" id="navComunidade" onclick="switchTab('comunidade')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Comunidade</button>
     <button class="tab-btn" data-pilar="community" id="navPatrocinio" onclick="switchTab('patrocinio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 21 12 17.27 5.8 21 7 14.14l-5-4.87 7.1-1.01L12 2z"></path></svg> Seja Patrocinador</button>
-    <button class="tab-btn" data-pilar="research" id="navPesquisa" onclick="switchTab('pesquisa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Pesquisas</button>
+    <button class="tab-btn" data-pilar="research" id="navPesquisa" onclick="switchTab('pesquisa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Pesquisas & Censo</button>
   </div>
 
   <div class="tab-page" id="pageMembro">
@@ -1655,7 +1655,7 @@
 
       <!-- Filtros -->
       <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin:20px 0;">
-        <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 12px;">🔍 Filtros</h3>
+        <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 12px;">Filtros</h3>
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px;">
           <!-- Busca por Cargo -->
@@ -1732,11 +1732,11 @@
           <p style="font-size:12.5px; color:#1e3a8a; line-height:1.55; margin:0;">O salário bruto CLT <strong>não é o custo real</strong> pra você. A empresa paga FGTS, INSS patronal, férias e 13º por fora. O que você <em>recebe de verdade</em> é o salário líquido, mas o custo total inclui todos esses encargos somados.</p>
         </div>
         <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:16px 18px;">
-          <div style="font-size:11px; font-weight:700; color:#047857; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">📊 O que você precisa faturar como PJ</div>
+          <div style="font-size:11px; font-weight:700; color:#047857; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">O que você precisa faturar como PJ</div>
           <p style="font-size:12.5px; color:#064e3b; line-height:1.55; margin:0;">Como PJ, <strong>você paga tudo que a empresa pagava</strong>: imposto (DAS-MEI ou Simples), plano de saúde, contador, equipamento. Além disso, precisa guardar uma reserva pra cobrir meses sem projeto. O faturamento necessário é sempre <strong>maior</strong> que o salário CLT bruto.</p>
         </div>
         <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:16px 18px;">
-          <div style="font-size:11px; font-weight:700; color:#b45309; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">⚠️ Como usar a simulação</div>
+          <div style="font-size:11px; font-weight:700; color:#b45309; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Como usar a simulação</div>
           <p style="font-size:12.5px; color:#78350f; line-height:1.55; margin:0;">Preencha os campos com os valores reais do seu pacote CLT e dos custos que você teria como PJ. O gráfico e o resumo mostram a diferença visual mês a mês. Use como referência na negociação, e confirme com um contador antes de decidir.</p>
         </div>
       </div>
@@ -2580,15 +2580,15 @@
       <!-- Cabeçalho com Sub-abas de Navegação -->
       <div style="background:white; border-radius:12px; padding:20px; margin-bottom:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06); display:flex; flex-direction:column; md-flex-direction:row; justify-content:space-between; align-items:flex-start; gap:16px;">
         <div>
-          <h2 style="font-size:18px; font-weight:700; color:var(--text); margin:0 0 4px 0;">📊 Pesquisas & Censo da Comunidade</h2>
+          <h2 style="font-size:18px; font-weight:700; color:var(--text); margin:0 0 4px 0;">Pesquisas & Censo da Comunidade</h2>
           <p style="font-size:13px; color:var(--muted); margin:0;">Participe das nossas iniciativas para mapear o mercado e gerar dados de inteligência. Links compartilháveis para cada pesquisa.</p>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:8px; background:var(--bg-section); padding:8px; border-radius:10px; border:1px solid var(--line);">
           <button onclick="switchSubTab('crm')" id="subnav-crm" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.12);">
-            ⏱️ Implementação CRMs
+            Implementação de CRMs
           </button>
           <button onclick="switchSubTab('censo')" id="subnav-censo" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:white; color:var(--text); border:1px solid var(--line); cursor:pointer; transition:all 0.2s; hover:background:var(--bg-section);">
-            📋 Censo de Membros
+            Censo de Membros
           </button>
         </div>
       </div>
@@ -2602,15 +2602,15 @@
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px;">
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">⏱️ Tempo</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Tempo</div>
             <div style="font-size:13px; color:var(--text);">5-7 minutos</div>
           </div>
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">🔒 Dados</div>
-            <div style="font-size:13px; color:var(--text);">Confidenciais</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Confidencialidade</div>
+            <div style="font-size:13px; color:var(--text);">Dados protegidos</div>
           </div>
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">📊 Impacto</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Impacto</div>
             <div style="font-size:13px; color:var(--text);">Melhores decisões</div>
           </div>
         </div>
@@ -2637,21 +2637,21 @@
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px;">
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">⏱️ Tempo</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Tempo</div>
             <div style="font-size:13px; color:var(--text);">10-12 minutos</div>
           </div>
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">🔒 Dados</div>
-            <div style="font-size:13px; color:var(--text);">Confidenciais</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Confidencialidade</div>
+            <div style="font-size:13px; color:var(--text);">Dados protegidos</div>
           </div>
           <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
-            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">📊 Impacto</div>
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">Impacto</div>
             <div style="font-size:13px; color:var(--text);">Guia a comunidade</div>
           </div>
         </div>
 
         <div style="background:rgba(37,99,235,0.1); border-left:4px solid #2563eb; padding:14px; border-radius:8px; margin-bottom:20px;">
-          <div style="font-weight:600; color:var(--text); margin-bottom:6px; font-size:13px;">ℹ️ Informação Importante</div>
+          <div style="font-weight:600; color:var(--text); margin-bottom:6px; font-size:13px;">Informação Importante</div>
           <div style="font-size:12px; color:var(--muted); line-height:1.6;">
             Este censo é fundamental para entendermos melhor o perfil da comunidade. Suas respostas são completamente confidenciais e usadas apenas para melhorar nossos serviços. Obrigado por participar!
           </div>
