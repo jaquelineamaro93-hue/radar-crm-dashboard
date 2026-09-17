@@ -769,7 +769,6 @@
     <button class="tab-btn" data-pilar="community" id="navComunidade" onclick="switchTab('comunidade')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Comunidade</button>
     <button class="tab-btn" data-pilar="community" id="navPatrocinio" onclick="switchTab('patrocinio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 21 12 17.27 5.8 21 7 14.14l-5-4.87 7.1-1.01L12 2z"></path></svg> Seja Patrocinador</button>
     <button class="tab-btn" data-pilar="research" id="navPesquisa" onclick="switchTab('pesquisa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Pesquisas</button>
-    <button class="tab-btn" data-pilar="research" id="navCenso" onclick="switchTab('censo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> Censo</button>
   </div>
 
   <div class="tab-page" id="pageMembro">
@@ -2575,82 +2574,103 @@
     </section>
   </div><!-- /pagePatrocinio -->
 
-  <!-- PESQUISA: IMPLEMENTAÇÃO DE CRMs -->
+  <!-- PESQUISAS: IMPLEMENTAÇÃO DE CRMs + CENSO (com sub-abas) -->
   <div class="tab-page" id="pagePesquisa">
     <section>
-      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><h2>Pesquisa: Implementação de CRMs</h2></div>
-      <p class="section-desc">Entenda melhor o processo de implementação de sistemas CRM e compartilhe sua experiência com nossa comunidade.</p>
+      <!-- Cabeçalho com Sub-abas de Navegação -->
+      <div style="background:white; border-radius:12px; padding:20px; margin-bottom:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06); display:flex; flex-direction:column; md-flex-direction:row; justify-content:space-between; align-items:flex-start; gap:16px;">
+        <div>
+          <h2 style="font-size:18px; font-weight:700; color:var(--text); margin:0 0 4px 0;">📊 Pesquisas & Censo da Comunidade</h2>
+          <p style="font-size:13px; color:var(--muted); margin:0;">Participe das nossas iniciativas para mapear o mercado e gerar dados de inteligência. Links compartilháveis para cada pesquisa.</p>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; background:var(--bg-section); padding:8px; border-radius:10px; border:1px solid var(--line);">
+          <button onclick="switchSubTab('crm')" id="subnav-crm" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.12);">
+            ⏱️ Implementação CRMs
+          </button>
+          <button onclick="switchSubTab('censo')" id="subnav-censo" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:white; color:var(--text); border:1px solid var(--line); cursor:pointer; transition:all 0.2s; hover:background:var(--bg-section);">
+            📋 Censo de Membros
+          </button>
+        </div>
+      </div>
 
-      <div style="background:white; border-radius:12px; padding:24px; margin:20px 0; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">⏱️ Tempo</div>
+      <!-- Sub-página 1: Pesquisa de CRMs (Link: conexaocrm.com/#pesquisa-crm) -->
+      <div id="subpage-crm" class="subpage-content" style="background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <div style="border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:20px;">
+          <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 4px 0;">Pesquisa de Mercado — Tempo de Implementação de CRMs no Brasil</h3>
+          <p style="font-size:12px; color:var(--muted); margin:0;">Link direto: <span style="color:var(--accent); font-family:monospace; font-weight:600;">conexaocrm.com/#pesquisa-crm</span> — compartilhe este link para mostrar esta pesquisa específica</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px;">
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">⏱️ Tempo</div>
             <div style="font-size:13px; color:var(--text);">5-7 minutos</div>
           </div>
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">🔒 Dados</div>
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">🔒 Dados</div>
             <div style="font-size:13px; color:var(--text);">Confidenciais</div>
           </div>
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">📊 Impacto</div>
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">📊 Impacto</div>
             <div style="font-size:13px; color:var(--text);">Melhores decisões</div>
           </div>
         </div>
 
-        <iframe
-          style="width:100%; border:none; border-radius:8px; overflow:hidden;"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSfOI1j75hNqjwNe87JBecAu2KkJp5iczoiRYZbGKUs6FfcIQw/viewform?embedded=true"
-          height="2884"
-          frameborder="0"
-          marginheight="0"
-          marginwidth="0">
-          Carregando…
-        </iframe>
+        <div style="width:100%; border:none; border-radius:8px; overflow:hidden;">
+          <iframe
+            style="width:100%; border:none; display:block;"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfOI1j75hNqjwNe87JBecAu2KkJp5iczoiRYZbGKUs6FfcIQw/viewform?embedded=true"
+            height="2884"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0">
+            Carregando…
+          </iframe>
+        </div>
       </div>
-    </section>
-  </div><!-- /pagePesquisa -->
 
-  <!-- CENSO: MEMBROS & PARCEIROS -->
-  <div class="tab-page" id="pageCenso">
-    <section>
-      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="21" x2="9" y2="9"></line><line x1="21" y1="9" x2="3" y2="9"></line></svg></span><h2>Censo: Membros & Parceiros</h2></div>
-      <p class="section-desc">Censo anual da comunidade Conexão CRM. Ajude-nos a entender melhor quem você é e como a comunidade pode evoluir.</p>
+      <!-- Sub-página 2: Censo de Membros (Link: conexaocrm.com/#pesquisa-censo) -->
+      <div id="subpage-censo" class="subpage-content" style="display:none; background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <div style="border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:20px;">
+          <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 4px 0;">Censo da Comunidade CRM Academy & Parceiros</h3>
+          <p style="font-size:12px; color:var(--muted); margin:0;">Link direto: <span style="color:var(--accent); font-family:monospace; font-weight:600;">conexaocrm.com/#pesquisa-censo</span> — compartilhe este link para mostrar este censo específico</p>
+        </div>
 
-      <div style="background:white; border-radius:12px; padding:24px; margin:20px 0; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">⏱️ Tempo</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px;">
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">⏱️ Tempo</div>
             <div style="font-size:13px; color:var(--text);">10-12 minutos</div>
           </div>
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">🔒 Dados</div>
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">🔒 Dados</div>
             <div style="font-size:13px; color:var(--text);">Confidenciais</div>
           </div>
-          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
-            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">📊 Impacto</div>
+          <div style="background:rgba(37,99,235,0.08); border-left:4px solid #2563eb; padding:14px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; color:#2563eb; margin-bottom:3px;">📊 Impacto</div>
             <div style="font-size:13px; color:var(--text);">Guia a comunidade</div>
           </div>
         </div>
 
-        <div style="background:rgba(190,143,99,0.1); border-left:4px solid #be8f63; padding:16px; border-radius:8px; margin-bottom:24px;">
-          <div style="font-weight:600; color:var(--text); margin-bottom:8px;">ℹ️ Informação Importante</div>
-          <div style="font-size:13px; color:var(--muted); line-height:1.6;">
+        <div style="background:rgba(37,99,235,0.1); border-left:4px solid #2563eb; padding:14px; border-radius:8px; margin-bottom:20px;">
+          <div style="font-weight:600; color:var(--text); margin-bottom:6px; font-size:13px;">ℹ️ Informação Importante</div>
+          <div style="font-size:12px; color:var(--muted); line-height:1.6;">
             Este censo é fundamental para entendermos melhor o perfil da comunidade. Suas respostas são completamente confidenciais e usadas apenas para melhorar nossos serviços. Obrigado por participar!
           </div>
         </div>
 
-        <iframe
-          style="width:100%; border:none; border-radius:8px; overflow:hidden;"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSc5ZavVMe76fE7kVJIUDr1_ElGDFXglYlrNYvN-Pi0mYgfojQ/viewform?embedded=true"
-          height="4001"
-          frameborder="0"
-          marginheight="0"
-          marginwidth="0">
-          Carregando…
-        </iframe>
+        <div style="width:100%; border:none; border-radius:8px; overflow:hidden;">
+          <iframe
+            style="width:100%; border:none; display:block;"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSc5ZavVMe76fE7kVJIUDr1_ElGDFXglYlrNYvN-Pi0mYgfojQ/viewform?embedded=true"
+            height="4001"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0">
+            Carregando…
+          </iframe>
+        </div>
       </div>
     </section>
-  </div><!-- /pageCenso -->
+  </div><!-- /pagePesquisa -->
 
   <!-- MODAL: NOME + LINKEDIN + EMPRESA -->
   <div id="evNmModal" class="ev-modal-overlay" role="dialog" aria-modal="true">
@@ -3239,7 +3259,6 @@ function switchTab(tab){
   document.getElementById('pageComunidade').classList.toggle('active', tab==='comunidade');
   document.getElementById('pagePatrocinio').classList.toggle('active', tab==='patrocinio');
   document.getElementById('pagePesquisa').classList.toggle('active', tab==='pesquisa');
-  document.getElementById('pageCenso').classList.toggle('active', tab==='censo');
   document.getElementById('navDashboard').classList.toggle('active', tab==='dashboard');
   document.getElementById('navSearch').classList.toggle('active', tab==='search');
   document.getElementById('navCourses').classList.toggle('active', tab==='courses');
@@ -3255,7 +3274,6 @@ function switchTab(tab){
   document.getElementById('navPlataformas').classList.toggle('active', tab==='plataformas');
   document.getElementById('navPatrocinio').classList.toggle('active', tab==='patrocinio');
   if(document.getElementById('navPesquisa')) document.getElementById('navPesquisa').classList.toggle('active', tab==='pesquisa');
-  if(document.getElementById('navCenso')) document.getElementById('navCenso').classList.toggle('active', tab==='censo');
   if(document.getElementById('navComunidade')) document.getElementById('navComunidade').classList.toggle('active', tab==='comunidade');
   if(tab==='comunidade' && typeof PEOPLE !== 'undefined' && PEOPLE.length) renderComunidadeMembros();
   if(tab==='conteudos' && !conteudosInitialized){ initConteudosTab(); }
@@ -7965,6 +7983,66 @@ async function submitAnunciarVaga(){
     statusEl.textContent='Erro ao enviar. Tente novamente.';
   }
 }
+
+// ====== GERENCIAMENTO DE SUB-ABAS COM URLS COMPARTILHÁVEIS ======
+// Função para alternar sub-abas dentro de Pesquisas
+function switchSubTab(subName, updateHash = true) {
+  const isCrm = subName === 'crm';
+
+  const crmTab = document.getElementById('subpage-crm');
+  const censoTab = document.getElementById('subpage-censo');
+  const btnCrm = document.getElementById('subnav-crm');
+  const btnCenso = document.getElementById('subnav-censo');
+
+  if(!crmTab || !censoTab || !btnCrm || !btnCenso) return;
+
+  if (isCrm) {
+    crmTab.style.display = 'block';
+    censoTab.style.display = 'none';
+    btnCrm.style.background = '#2563eb';
+    btnCrm.style.color = 'white';
+    btnCrm.style.border = 'none';
+    btnCenso.style.background = 'white';
+    btnCenso.style.color = 'var(--text)';
+    btnCenso.style.border = '1px solid var(--line)';
+    if (updateHash) window.location.hash = 'pesquisa-crm';
+  } else {
+    censoTab.style.display = 'block';
+    crmTab.style.display = 'none';
+    btnCenso.style.background = '#2563eb';
+    btnCenso.style.color = 'white';
+    btnCenso.style.border = 'none';
+    btnCrm.style.background = 'white';
+    btnCrm.style.color = 'var(--text)';
+    btnCrm.style.border = '1px solid var(--line)';
+    if (updateHash) window.location.hash = 'pesquisa-censo';
+  }
+}
+
+// Monitora quando o URL muda (ex: alguém cola um link direto #pesquisa-crm)
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash;
+  if (hash === '#pesquisa-censo') {
+    switchTab('pesquisa');
+    switchSubTab('censo', false);
+  } else if (hash === '#pesquisa-crm' || hash === '#pesquisa') {
+    switchTab('pesquisa');
+    switchSubTab('crm', false);
+  }
+});
+
+// Ao carregar a página, verifica se veio com link direto (#pesquisa-crm ou #pesquisa-censo)
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash === '#pesquisa-censo') {
+    switchTab('pesquisa');
+    switchSubTab('censo', false);
+  } else if (hash === '#pesquisa-crm') {
+    switchTab('pesquisa');
+    switchSubTab('crm', false);
+  }
+});
+// ====== FIM: GERENCIAMENTO DE SUB-ABAS ======
 
 document.addEventListener('DOMContentLoaded', authInit);
 
