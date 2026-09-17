@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radar CRM: Profissionais Open to Work</title>
+
+<!-- Open Graph Meta Tags (para links compartilhados) -->
+<meta property="og:title" content="Conexão CRM - Profissionais Open to Work">
+<meta property="og:description" content="Conecte com profissionais qualificados em busca de oportunidades. Dashboard de recrutamento com acesso a vagas e candidatos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.conexaocrm.com">
+<meta property="og:image" content="https://www.conexaocrm.com/og-image.png">
+<meta property="og:site_name" content="Conexão CRM">
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Conexão CRM - Profissionais Open to Work">
+<meta name="twitter:description" content="Conecte com profissionais qualificados em busca de oportunidades. Dashboard de recrutamento com acesso a vagas e candidatos.">
+<meta name="twitter:image" content="https://www.conexaocrm.com/og-image.png">
+
+<!-- Additional Meta Tags -->
+<meta name="description" content="Conexão CRM: Plataforma de recrutamento com profissionais open to work, vagas e análise de dados. Conecte com os melhores talentos.">
+<meta name="theme-color" content="#0a303d">
 <script>
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}p||((p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",p.onerror=function(){p=null},(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r));var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="Sn Cn init Hn Un Gn Yi zn Kn qn capture Vn kn calculateEventProperties es register register_once register_for_session unregister unregister_for_session os Bn ss getFeatureFlag getFeatureFlagPayload getFeatureFlagResult getAllFeatureFlags isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync ls identify setPersonProperties unsetPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset us shutdown setIdentity clearIdentity get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException addExceptionStep captureLog startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty rs Xn createPersonProfile setInternalOrTestUser ns $n vs opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing Jn debug tr At getPageViewId captureTraceFeedback captureTraceMetric Ln".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
   posthog.init('phc_kgp9G7BtuHzt83dvrPibj9ADn3WHkJ7Qr7gvpNTF94f6', {
@@ -178,6 +196,10 @@
   .tab-btn[data-pilar="community"]{border-color:#fde68a; color:#92400e; background:#fffdf5;}
   .tab-btn[data-pilar="community"]:hover{border-color:#d97706; background:#fffbeb;}
   .tab-btn[data-pilar="community"].active{background:#fffbeb; border-color:#d97706; color:#b45309; font-weight:700;}
+  /* Pesquisa, laranja */
+  .tab-btn[data-pilar="research"]{border-color:#fed7aa; color:#92400e; background:#fffbf0;}
+  .tab-btn[data-pilar="research"]:hover{border-color:#f97316; background:#fff7ed;}
+  .tab-btn[data-pilar="research"].active{background:#fff7ed; border-color:#f97316; color:#ea580c; font-weight:700;}
   .tab-page{display:none;}
   .tab-page.active{display:block;}
 
@@ -463,6 +485,7 @@
   .ev-live{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--mint);}
   .ev-dot{width:7px;height:7px;background:var(--mint);border-radius:50%;box-shadow:0 0 6px var(--mint);animation:evpulse 2s infinite;display:inline-block;}
   @keyframes evpulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+  @keyframes fadeInVaga{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   .ev-btn-suggest{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;color:#fffff3;border:none;background:var(--mint);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
   .ev-btn-suggest:hover{opacity:0.9;}
   .ev-btn-name{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9px;color:var(--mint);border:1px solid var(--line);background:var(--panel-2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
@@ -745,6 +768,7 @@
     <!-- Comunidade (dourado) -->
     <button class="tab-btn" data-pilar="community" id="navComunidade" onclick="switchTab('comunidade')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Comunidade</button>
     <button class="tab-btn" data-pilar="community" id="navPatrocinio" onclick="switchTab('patrocinio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 21 12 17.27 5.8 21 7 14.14l-5-4.87 7.1-1.01L12 2z"></path></svg> Seja Patrocinador</button>
+    <button class="tab-btn" data-pilar="research" id="navPesquisa" onclick="switchTab('pesquisa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Pesquisas & Censo</button>
   </div>
 
   <div class="tab-page" id="pageMembro">
@@ -1626,43 +1650,73 @@
 
   <div class="tab-page" id="pageVagas">
     <section>
-      <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div style="display:flex;align-items:center;gap:10px;"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span><h2>Vagas de CRM</h2></div><button onclick="openAnunciarVagaModal()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Anunciar vaga</button></div>
-      <p class="section-desc">Vagas de CRM, Salesforce, HubSpot, Growth, Marketing de relacionamento e áreas correlatas, coletadas automaticamente de várias fontes (LinkedIn, Gupy, Indeed, InfoJobs, Vagas.com e outras).</p>
-      <div class="note">
-        Atualização automática uma vez por dia. Vagas somem da lista depois de 60 dias. Isso não é um levantamento manual, é um robô de coleta: pode ocasionalmente trazer algo fora do escopo ou perder uma vaga que não segue os termos de busca configurados.
-      </div>
+      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span><h2>Vagas de CRM & MarTech</h2></div>
+      <p class="section-desc">Encontre oportunidades de carreira em CRM, liderança e estratégia digital. Vagas verificadas e atualizadas em tempo real.</p>
 
-      <div class="ev-header-row" style="margin-top:16px;">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-          <span class="ev-cpill" id="vagasTotal">0 vagas</span>
-          <span class="ev-live"><span class="ev-dot"></span> Atualizado automaticamente</span>
-        </div>
-      </div>
+      <!-- Filtros -->
+      <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin:20px 0;">
+        <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 12px;">Filtros</h3>
 
-      <div class="search-bar">
-        <input type="text" class="search-input" id="vagasSearchText" placeholder="Buscar por cargo, empresa...">
-        <div class="filter-bar" style="position:static;">
-          <div class="filter-field">
-            <label for="fFonte">Fonte</label>
-            <select id="fFonte"><option value="">Todas</option></select>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px;">
+          <!-- Busca por Cargo -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Cargo / Título</label>
+            <input type="text" id="filtro-cargo-hub" placeholder="Ex: CRM Manager" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit;" onkeyup="aplicarFiltrosVagas()">
           </div>
-          <div class="filter-field">
-            <label for="fSenioridadeVaga">Nível</label>
-            <select id="fSenioridadeVaga"><option value="">Todos</option></select>
+
+          <!-- Busca por Empresa -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Empresa</label>
+            <input type="text" id="filtro-empresa-hub" placeholder="Ex: Salesforce" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit;" onkeyup="aplicarFiltrosVagas()">
           </div>
-          <div class="filter-field">
-            <label for="vagasSortSelect">Ordenar por</label>
-            <select id="vagasSortSelect" onchange="renderVagas()">
-              <option value="recentes">Mais recentes</option>
-              <option value="az">A → Z</option>
+
+          <!-- Filtro por Nível -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Nível</label>
+            <select id="filtro-nivel-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="">Todos os níveis</option>
+              <option value="Júnior">Júnior</option>
+              <option value="Pleno">Pleno</option>
+              <option value="Sênior">Sênior</option>
+              <option value="Liderança">Liderança</option>
+              <option value="C-Level">C-Level</option>
             </select>
           </div>
-          <span class="filter-count" id="vagasCount">carregando...</span>
-          <button class="filter-reset" id="btnResetVagas">Limpar filtros</button>
+
+          <!-- Ordenação -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
+            <select id="filtro-ordem-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="recente">Mais Recentes</option>
+              <option value="empresa">Empresa (A-Z)</option>
+              <option value="cargo">Cargo (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button onclick="aplicarFiltrosVagas()" style="background:var(--text); color:#fffff3; border:none; border-radius:8px; padding:8px 14px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">🔎 Buscar</button>
+          <button onclick="limparFiltrosVagas()" style="background:var(--line); color:var(--text); border:none; border-radius:8px; padding:8px 14px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">✕ Limpar</button>
         </div>
       </div>
 
-      <div id="vagasResults"></div>
+      <!-- Status e Contagem -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="font-weight:700; font-size:13px; margin:0; color:var(--text);">Vagas Disponíveis</h3>
+          <p style="font-size:12px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas</p>
+        </div>
+        <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">🔄 Atualizar</button>
+      </div>
+
+      <!-- Grid de Vagas -->
+      <div id="vagasContainerHub" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;">
+        <div style="grid-column:1/-1; text-align:center; padding:32px 16px;">
+          <div style="font-size:32px; margin-bottom:8px;">⌛</div>
+          <p style="font-size:12px; color:var(--muted);">Carregando vagas...</p>
+        </div>
+      </div>
+
     </section>
   </div><!-- /pageVagas -->
 
@@ -1678,11 +1732,11 @@
           <p style="font-size:12.5px; color:#1e3a8a; line-height:1.55; margin:0;">O salário bruto CLT <strong>não é o custo real</strong> pra você. A empresa paga FGTS, INSS patronal, férias e 13º por fora. O que você <em>recebe de verdade</em> é o salário líquido, mas o custo total inclui todos esses encargos somados.</p>
         </div>
         <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:16px 18px;">
-          <div style="font-size:11px; font-weight:700; color:#047857; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">📊 O que você precisa faturar como PJ</div>
+          <div style="font-size:11px; font-weight:700; color:#047857; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">O que você precisa faturar como PJ</div>
           <p style="font-size:12.5px; color:#064e3b; line-height:1.55; margin:0;">Como PJ, <strong>você paga tudo que a empresa pagava</strong>: imposto (DAS-MEI ou Simples), plano de saúde, contador, equipamento. Além disso, precisa guardar uma reserva pra cobrir meses sem projeto. O faturamento necessário é sempre <strong>maior</strong> que o salário CLT bruto.</p>
         </div>
         <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:16px 18px;">
-          <div style="font-size:11px; font-weight:700; color:#b45309; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">⚠️ Como usar a simulação</div>
+          <div style="font-size:11px; font-weight:700; color:#b45309; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Como usar a simulação</div>
           <p style="font-size:12.5px; color:#78350f; line-height:1.55; margin:0;">Preencha os campos com os valores reais do seu pacote CLT e dos custos que você teria como PJ. O gráfico e o resumo mostram a diferença visual mês a mês. Use como referência na negociação, e confirme com um contador antes de decidir.</p>
         </div>
       </div>
@@ -2520,6 +2574,91 @@
     </section>
   </div><!-- /pagePatrocinio -->
 
+  <!-- PESQUISAS: IMPLEMENTAÇÃO DE CRMs + CENSO (com sub-abas) -->
+  <div class="tab-page" id="pagePesquisa">
+    <section>
+      <!-- Cabeçalho com Sub-abas de Navegação -->
+      <div style="background:white; border-radius:12px; padding:20px; margin-bottom:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06); display:flex; flex-direction:column; md-flex-direction:row; justify-content:space-between; align-items:flex-start; gap:16px;">
+        <div>
+          <h2 style="font-size:18px; font-weight:700; color:var(--text); margin:0 0 4px 0;">Pesquisas & Censo da Comunidade</h2>
+          <p style="font-size:13px; color:var(--muted); margin:0;">Participe das nossas iniciativas para mapear o mercado e gerar dados de inteligência. Links compartilháveis para cada pesquisa.</p>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; background:var(--bg-section); padding:8px; border-radius:10px; border:1px solid var(--line);">
+          <button onclick="switchSubTab('crm')" id="subnav-crm" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.12);">
+            Implementação de CRMs
+          </button>
+          <button onclick="switchSubTab('censo')" id="subnav-censo" style="padding:10px 16px; font-size:12px; font-weight:600; border-radius:8px; background:white; color:var(--text); border:1px solid var(--line); cursor:pointer; transition:all 0.2s; hover:background:var(--bg-section);">
+            Censo de Membros
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-página 1: Pesquisa de CRMs (Link: conexaocrm.com/#pesquisa-crm) -->
+      <div id="subpage-crm" class="subpage-content" style="background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 20px 0;">Pesquisa de Mercado — Tempo de Implementação de CRMs no Brasil</h3>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px;">
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tempo</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">5-7 min</div>
+          </div>
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Confidencialidade</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">Protegido</div>
+          </div>
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Impacto</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">Alto</div>
+          </div>
+        </div>
+
+        <div style="width:100%; border:none; border-radius:8px; overflow:hidden;">
+          <iframe
+            style="width:100%; border:none; display:block;"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfOI1j75hNqjwNe87JBecAu2KkJp5iczoiRYZbGKUs6FfcIQw/viewform?embedded=true"
+            height="2884"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0">
+            Carregando…
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Sub-página 2: Censo de Membros (Link: conexaocrm.com/#pesquisa-censo) -->
+      <div id="subpage-censo" class="subpage-content" style="display:none; background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 20px 0;">Censo da Comunidade CRM Academy & Parceiros</h3>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px;">
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tempo</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">10-12 min</div>
+          </div>
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Confidencialidade</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">Protegido</div>
+          </div>
+          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Impacto</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);">Estratégico</div>
+          </div>
+        </div>
+
+        <div style="width:100%; border:none; border-radius:8px; overflow:hidden;">
+          <iframe
+            style="width:100%; border:none; display:block;"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSc5ZavVMe76fE7kVJIUDr1_ElGDFXglYlrNYvN-Pi0mYgfojQ/viewform?embedded=true"
+            height="4001"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0">
+            Carregando…
+          </iframe>
+        </div>
+      </div>
+    </section>
+  </div><!-- /pagePesquisa -->
+
   <!-- MODAL: NOME + LINKEDIN + EMPRESA -->
   <div id="evNmModal" class="ev-modal-overlay" role="dialog" aria-modal="true">
     <div class="ev-mbox">
@@ -3106,6 +3245,7 @@ function switchTab(tab){
   document.getElementById('pagePlataformas').classList.toggle('active', tab==='plataformas');
   document.getElementById('pageComunidade').classList.toggle('active', tab==='comunidade');
   document.getElementById('pagePatrocinio').classList.toggle('active', tab==='patrocinio');
+  document.getElementById('pagePesquisa').classList.toggle('active', tab==='pesquisa');
   document.getElementById('navDashboard').classList.toggle('active', tab==='dashboard');
   document.getElementById('navSearch').classList.toggle('active', tab==='search');
   document.getElementById('navCourses').classList.toggle('active', tab==='courses');
@@ -3120,6 +3260,7 @@ function switchTab(tab){
   document.getElementById('navConteudos').classList.toggle('active', tab==='conteudos');
   document.getElementById('navPlataformas').classList.toggle('active', tab==='plataformas');
   document.getElementById('navPatrocinio').classList.toggle('active', tab==='patrocinio');
+  if(document.getElementById('navPesquisa')) document.getElementById('navPesquisa').classList.toggle('active', tab==='pesquisa');
   if(document.getElementById('navComunidade')) document.getElementById('navComunidade').classList.toggle('active', tab==='comunidade');
   if(tab==='comunidade' && typeof PEOPLE !== 'undefined' && PEOPLE.length) renderComunidadeMembros();
   if(tab==='conteudos' && !conteudosInitialized){ initConteudosTab(); }
@@ -3133,7 +3274,7 @@ function switchTab(tab){
   if(tab==='agencias' && !agenciasInitialized){ initAgenciasTab(); }
   if(tab==='ferramentas' && !ferramentasInitialized){ initFerramentasTab(); }
   if(tab==='ferramentas' && !compareCRMsInitialized){ initCompareCRMsTab(); }
-  if(tab==='vagas' && !vagasInitialized){ initVagasTab(); }
+  if(tab==='vagas'){ carregarVagasHub(); if(!vagasAutoRefreshStarted){ setInterval(carregarVagasHub, 60000); vagasAutoRefreshStarted = true; } }
   if(tab==='calc' && !calcInitialized){ initCalcTab(); }
 
   // Rola a página para o topo do conteúdo ao trocar de aba, para não deixar
@@ -3169,6 +3310,126 @@ function switchSearchTab(tab){
   }catch(err){
     console.error('Erro ao trocar aba de busca:', err);
   }
+}
+
+// ============ VAGAS DE CRM (Integrado no Hub) ============
+let todasAsVagasHub = [];
+
+function sanitizeInputVagas(str, maxLen = 200) {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/<[^>]*>/g, '').replace(/javascript:/gi, '').replace(/on\w+\s*=/gi, '').replace(/script/gi, '').trim().slice(0, maxLen);
+}
+
+function escapeHtmlVagas(str) {
+  if (!str || typeof str !== 'string') return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatarDataVagas(dataString) {
+  if (!dataString) return '';
+  try {
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
+async function carregarVagasHub() {
+  const container = document.getElementById('vagasContainerHub');
+  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
+
+  try {
+    const { data, error } = await supabase
+      .from('vagas_crm')
+      .select('id, cargo, empresa, nivel, fonte, link, salario, descricao, requisitos, criado_em')
+      .order('criado_em', { ascending: false });
+
+    if (error) {
+      console.error("Erro ao carregar vagas:", error.message);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">📭</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga cadastrada no momento.</p></div>';
+      document.getElementById('totalVagasHub').textContent = '0';
+      document.getElementById('vagasCountHub').textContent = '0';
+      return;
+    }
+
+    todasAsVagasHub = data;
+    document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
+    renderizarVagasHub(todasAsVagasHub);
+  } catch (err) {
+    console.error('Erro inesperado ao carregar vagas:', err);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+  }
+}
+
+function renderizarVagasHub(vagas) {
+  const container = document.getElementById('vagasContainerHub');
+  if (!vagas || vagas.length === 0) {
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px;"><div style="font-size:24px; margin-bottom:8px;">🔍</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada.</p></div>';
+    document.getElementById('vagasCountHub').textContent = '0';
+    return;
+  }
+
+  document.getElementById('vagasCountHub').textContent = vagas.length;
+  container.innerHTML = vagas.map((vaga, idx) => `
+    <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
+      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo || '')}</h3>
+      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa || '')}</p>
+
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+        ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📌 ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
+        ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📊 ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
+      </div>
+
+      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.descricao.substring(0, 100))}${vaga.descricao.length > 100 ? '...' : ''}</p>` : ''}
+
+      ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
+
+      ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;">💰 ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
+
+      <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
+        <span style="color:var(--muted);">${formatarDataVagas(vaga.criado_em) ? 'Publicada: ' + formatarDataVagas(vaga.criado_em) : ''}</span>
+        ${vaga.link ? `<a href="${escapeHtmlVagas(vaga.link)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function aplicarFiltrosVagas() {
+  const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
+  const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
+  const nivel = document.getElementById('filtro-nivel-hub').value;
+  const ordem = document.getElementById('filtro-ordem-hub').value;
+
+  let vagasFiltradas = todasAsVagasHub.filter(vaga => {
+    const cargo_match = !cargo || (vaga.cargo && vaga.cargo.toLowerCase().includes(cargo.toLowerCase()));
+    const empresa_match = !empresa || (vaga.empresa && vaga.empresa.toLowerCase().includes(empresa.toLowerCase()));
+    const nivel_match = !nivel || (vaga.nivel && vaga.nivel.toLowerCase() === nivel.toLowerCase());
+    return cargo_match && empresa_match && nivel_match;
+  });
+
+  if (ordem === 'empresa') {
+    vagasFiltradas.sort((a, b) => (a.empresa || '').localeCompare(b.empresa || ''));
+  } else if (ordem === 'cargo') {
+    vagasFiltradas.sort((a, b) => (a.cargo || '').localeCompare(b.cargo || ''));
+  }
+
+  renderizarVagasHub(vagasFiltradas);
+}
+
+function limparFiltrosVagas() {
+  document.getElementById('filtro-cargo-hub').value = '';
+  document.getElementById('filtro-empresa-hub').value = '';
+  document.getElementById('filtro-nivel-hub').value = '';
+  document.getElementById('filtro-ordem-hub').value = 'recente';
+  renderizarVagasHub(todasAsVagasHub);
 }
 
 // ============ MATCH DE VAGA POR IA ============
@@ -3260,9 +3521,9 @@ function renderAIMatchResults(data){
 }
 
 
-// 👉 COLE AQUI O LINK "Publicar na web" (formato CSV) da aba "Open to Work - Português"
-// Arquivo > Compartilhar > Publicar na web > escolher a aba > formato CSV > Publicar
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?gid=692217056&single=true&output=csv";
+// 👉 Link CSV publicado - Open to Work (Profissionais buscando trabalho)
+// ✅ Atualizado em 09/09/2026 - Após restauração de dados
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?output=csv";
 
 let searchLoaded = false;
 let PEOPLE = [];
@@ -5105,30 +5366,43 @@ function flSetReviewRating(cardId, value){
 
 async function flSubmitReview(nome){
   const rating = window.currentRating && window.currentRating[nome] ? window.currentRating[nome] : 0;
-  const textEl = document.getElementById('jobDescription');
-  const text = textEl ? textEl.value : '';
-  
+  const cid = nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');
+  const textEl = document.getElementById('fl-review-text-' + cid);
+  const anonCheckEl = document.getElementById('fl-review-anon-' + cid);
+  const text = textEl ? textEl.value.trim() : '';
+  const isAnon = anonCheckEl ? anonCheckEl.checked : true;
+
   if(rating === 0){
     alert('Selecione uma nota de 1 a 5 estrelas!');
     return;
   }
-  
+
   try{
-    const {error} = await flSb.from('avaliacoes_freelancers').insert({
-      freelancer_name: nome,
-      rating: rating,
-      review: text,
+    const reviewData = {
+      freelancer_nome: nome,
+      nota: rating,
+      comentario: text || null,
+      avaliador: isAnon ? null : 'Usuário',
       created_at: new Date().toISOString()
-    });
-    
-    if(!error){
-      alert('✅ Avaliação enviada com sucesso!');
-      document.getElementById('flReviewsModalOverlay').remove();
-    }else{
+    };
+
+    const {error} = await flSb.from('avaliacoes_freelancers').insert([reviewData]);
+
+    if(error){
       alert('❌ Erro ao enviar: ' + error.message);
+      console.error(error);
+    }else{
+      alert('✅ Avaliação enviada com sucesso!');
+      textEl.value = '';
+      window.currentRating[nome] = 0;
+      document.querySelectorAll('#flReviewStars-' + cid + ' button').forEach(function(btn){
+        btn.style.color = 'var(--line)';
+      });
+      loadFreelancers();
     }
   }catch(e){
     alert('❌ Erro: ' + e.message);
+    console.error(e);
   }
 }
 
@@ -5907,6 +6181,7 @@ const VG_SUPABASE_URL = "https://rwkbpafpniwzvlkfngag.supabase.co";
 const VG_SUPABASE_KEY = "sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
 let vgSb = null;
 let vagasInitialized = false;
+let vagasAutoRefreshStarted = false;
 let VAGAS = [];
 
 function vgInitSB(){
@@ -5940,7 +6215,11 @@ function loadVagas(){
     container.innerHTML = '<div class="error-state">Não consegui conectar. Recarregue a página.</div>';
     return;
   }
-  vgSb.from('vagas_crm').select('*').order('found_at', {ascending:false}).limit(300)
+  // Otimized query: select only essential columns to avoid timeout
+  vgSb.from('vagas_crm')
+    .select('id,title,company,location,url,found_at,source,category')
+    .order('found_at', {ascending:false})
+    .limit(300)
     .then(({data, error})=>{
       if(error) throw error;
       VAGAS = data || [];
@@ -7691,6 +7970,66 @@ async function submitAnunciarVaga(){
     statusEl.textContent='Erro ao enviar. Tente novamente.';
   }
 }
+
+// ====== GERENCIAMENTO DE SUB-ABAS COM URLS COMPARTILHÁVEIS ======
+// Função para alternar sub-abas dentro de Pesquisas
+function switchSubTab(subName, updateHash = true) {
+  const isCrm = subName === 'crm';
+
+  const crmTab = document.getElementById('subpage-crm');
+  const censoTab = document.getElementById('subpage-censo');
+  const btnCrm = document.getElementById('subnav-crm');
+  const btnCenso = document.getElementById('subnav-censo');
+
+  if(!crmTab || !censoTab || !btnCrm || !btnCenso) return;
+
+  if (isCrm) {
+    crmTab.style.display = 'block';
+    censoTab.style.display = 'none';
+    btnCrm.style.background = '#2563eb';
+    btnCrm.style.color = 'white';
+    btnCrm.style.border = 'none';
+    btnCenso.style.background = 'white';
+    btnCenso.style.color = 'var(--text)';
+    btnCenso.style.border = '1px solid var(--line)';
+    if (updateHash) window.location.hash = 'pesquisa-crm';
+  } else {
+    censoTab.style.display = 'block';
+    crmTab.style.display = 'none';
+    btnCenso.style.background = '#2563eb';
+    btnCenso.style.color = 'white';
+    btnCenso.style.border = 'none';
+    btnCrm.style.background = 'white';
+    btnCrm.style.color = 'var(--text)';
+    btnCrm.style.border = '1px solid var(--line)';
+    if (updateHash) window.location.hash = 'pesquisa-censo';
+  }
+}
+
+// Monitora quando o URL muda (ex: alguém cola um link direto #pesquisa-crm)
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash;
+  if (hash === '#pesquisa-censo') {
+    switchTab('pesquisa');
+    switchSubTab('censo', false);
+  } else if (hash === '#pesquisa-crm' || hash === '#pesquisa') {
+    switchTab('pesquisa');
+    switchSubTab('crm', false);
+  }
+});
+
+// Ao carregar a página, verifica se veio com link direto (#pesquisa-crm ou #pesquisa-censo)
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash === '#pesquisa-censo') {
+    switchTab('pesquisa');
+    switchSubTab('censo', false);
+  } else if (hash === '#pesquisa-crm') {
+    switchTab('pesquisa');
+    switchSubTab('crm', false);
+  }
+});
+// ====== FIM: GERENCIAMENTO DE SUB-ABAS ======
 
 document.addEventListener('DOMContentLoaded', authInit);
 
