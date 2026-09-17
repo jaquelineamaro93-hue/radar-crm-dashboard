@@ -764,6 +764,8 @@
     <!-- Comunidade (dourado) -->
     <button class="tab-btn" data-pilar="community" id="navComunidade" onclick="switchTab('comunidade')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Comunidade</button>
     <button class="tab-btn" data-pilar="community" id="navPatrocinio" onclick="switchTab('patrocinio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 21 12 17.27 5.8 21 7 14.14l-5-4.87 7.1-1.01L12 2z"></path></svg> Seja Patrocinador</button>
+    <button class="tab-btn" data-pilar="research" id="navPesquisa" onclick="switchTab('pesquisa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Pesquisas</button>
+    <button class="tab-btn" data-pilar="research" id="navCenso" onclick="switchTab('censo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> Censo</button>
   </div>
 
   <div class="tab-page" id="pageMembro">
@@ -2569,6 +2571,83 @@
     </section>
   </div><!-- /pagePatrocinio -->
 
+  <!-- PESQUISA: IMPLEMENTAÇÃO DE CRMs -->
+  <div class="tab-page" id="pagePesquisa">
+    <section>
+      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><h2>Pesquisa: Implementação de CRMs</h2></div>
+      <p class="section-desc">Entenda melhor o processo de implementação de sistemas CRM e compartilhe sua experiência com nossa comunidade.</p>
+
+      <div style="background:white; border-radius:12px; padding:24px; margin:20px 0; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">⏱️ Tempo</div>
+            <div style="font-size:13px; color:var(--text);">5-7 minutos</div>
+          </div>
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">🔒 Dados</div>
+            <div style="font-size:13px; color:var(--text);">Confidenciais</div>
+          </div>
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">📊 Impacto</div>
+            <div style="font-size:13px; color:var(--text);">Melhores decisões</div>
+          </div>
+        </div>
+
+        <iframe
+          style="width:100%; border:none; border-radius:8px; overflow:hidden;"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfOI1j75hNqjwNe87JBecAu2KkJp5iczoiRYZbGKUs6FfcIQw/viewform?embedded=true"
+          height="2884"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0">
+          Carregando…
+        </iframe>
+      </div>
+    </section>
+  </div><!-- /pagePesquisa -->
+
+  <!-- CENSO: MEMBROS & PARCEIROS -->
+  <div class="tab-page" id="pageCenso">
+    <section>
+      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="21" x2="9" y2="9"></line><line x1="21" y1="9" x2="3" y2="9"></line></svg></span><h2>Censo: Membros & Parceiros</h2></div>
+      <p class="section-desc">Censo anual da comunidade Conexão CRM. Ajude-nos a entender melhor quem você é e como a comunidade pode evoluir.</p>
+
+      <div style="background:white; border-radius:12px; padding:24px; margin:20px 0; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">⏱️ Tempo</div>
+            <div style="font-size:13px; color:var(--text);">10-12 minutos</div>
+          </div>
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">🔒 Dados</div>
+            <div style="font-size:13px; color:var(--text);">Confidenciais</div>
+          </div>
+          <div style="background:rgba(190,143,99,0.08); border-left:4px solid #be8f63; padding:16px; border-radius:8px;">
+            <div style="font-size:14px; font-weight:600; color:#be8f63; margin-bottom:4px;">📊 Impacto</div>
+            <div style="font-size:13px; color:var(--text);">Guia a comunidade</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(190,143,99,0.1); border-left:4px solid #be8f63; padding:16px; border-radius:8px; margin-bottom:24px;">
+          <div style="font-weight:600; color:var(--text); margin-bottom:8px;">ℹ️ Informação Importante</div>
+          <div style="font-size:13px; color:var(--muted); line-height:1.6;">
+            Este censo é fundamental para entendermos melhor o perfil da comunidade. Suas respostas são completamente confidenciais e usadas apenas para melhorar nossos serviços. Obrigado por participar!
+          </div>
+        </div>
+
+        <iframe
+          style="width:100%; border:none; border-radius:8px; overflow:hidden;"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSc5ZavVMe76fE7kVJIUDr1_ElGDFXglYlrNYvN-Pi0mYgfojQ/viewform?embedded=true"
+          height="4001"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0">
+          Carregando…
+        </iframe>
+      </div>
+    </section>
+  </div><!-- /pageCenso -->
+
   <!-- MODAL: NOME + LINKEDIN + EMPRESA -->
   <div id="evNmModal" class="ev-modal-overlay" role="dialog" aria-modal="true">
     <div class="ev-mbox">
@@ -3155,6 +3234,8 @@ function switchTab(tab){
   document.getElementById('pagePlataformas').classList.toggle('active', tab==='plataformas');
   document.getElementById('pageComunidade').classList.toggle('active', tab==='comunidade');
   document.getElementById('pagePatrocinio').classList.toggle('active', tab==='patrocinio');
+  document.getElementById('pagePesquisa').classList.toggle('active', tab==='pesquisa');
+  document.getElementById('pageCenso').classList.toggle('active', tab==='censo');
   document.getElementById('navDashboard').classList.toggle('active', tab==='dashboard');
   document.getElementById('navSearch').classList.toggle('active', tab==='search');
   document.getElementById('navCourses').classList.toggle('active', tab==='courses');
@@ -3169,6 +3250,8 @@ function switchTab(tab){
   document.getElementById('navConteudos').classList.toggle('active', tab==='conteudos');
   document.getElementById('navPlataformas').classList.toggle('active', tab==='plataformas');
   document.getElementById('navPatrocinio').classList.toggle('active', tab==='patrocinio');
+  if(document.getElementById('navPesquisa')) document.getElementById('navPesquisa').classList.toggle('active', tab==='pesquisa');
+  if(document.getElementById('navCenso')) document.getElementById('navCenso').classList.toggle('active', tab==='censo');
   if(document.getElementById('navComunidade')) document.getElementById('navComunidade').classList.toggle('active', tab==='comunidade');
   if(tab==='comunidade' && typeof PEOPLE !== 'undefined' && PEOPLE.length) renderComunidadeMembros();
   if(tab==='conteudos' && !conteudosInitialized){ initConteudosTab(); }
