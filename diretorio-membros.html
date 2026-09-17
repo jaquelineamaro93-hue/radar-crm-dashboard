@@ -208,12 +208,11 @@
     // ============================================================================
     // CONFIGURAÇÃO DO SUPABASE
     // ============================================================================
-    // IMPORTANTE: Substitua pelas credenciais reais do seu projeto Supabase
-    const SUPABASE_URL = 'SUA_SUPABASE_URL_AQUI';
-    const SUPABASE_ANON_KEY = 'SUA_SUPABASE_ANON_KEY_AQUI';
+    const SUPABASE_URL = 'https://rwkbpafpniwzvlkfngag.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3a2JwYWZwbml3enZsa2ZuZ2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NzAxNzAsImV4cCI6MjA5NjI0NjE3MH0.zADJYzs3dXFvo51EAbf3Pu5-Oa7Fqsos4oN69ybvMy8';
 
     // Validação de configuração
-    if (SUPABASE_URL === 'SUA_SUPABASE_URL_AQUI' || SUPABASE_ANON_KEY === 'SUA_SUPABASE_ANON_KEY_AQUI') {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.error('⚠️ Configurar as credenciais do Supabase em diretorio-membros.html');
       document.body.innerHTML = '<div style="padding: 40px; text-align: center;"><h1>⚠️ Configuração Faltando</h1><p>Configure SUPABASE_URL e SUPABASE_ANON_KEY no arquivo diretorio-membros.html</p></div>';
     }
