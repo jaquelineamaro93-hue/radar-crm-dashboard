@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Membro - Conexão CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .spinner {
+      border: 3px solid #e5e7eb;
+      border-top: 3px solid #4f46e5;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100">
+  <div id="app" class="min-h-screen"></div>
+
+  <script>
+    // ============================================================================
+    // CONFIGURAÇÃO SUPABASE
+    // ============================================================================
+    const SUPABASE_URL = 'https://rwkbpafpniwzvlkfngag.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3a2JwYWZwbml3enZsa2ZuZ2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY1Njk2NzcsImV4cCI6MjA0MjE0NTY3N30.qK6FgH1mSLw0_l2-Ea8XvVslPBmpC7-8Fn-Wx6l0vSU';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ============================================================================
+    // FUNÇÕES DE SEGURANÇA
+    // ============================================================================
+    function sanitizeInput(str, maxLen = 500) {
+      return String(str)
+        .replace(/<[^>]*>/g, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+\s*=/gi, '')
+        .replace(/script/gi, '')
+        .trim()
+        .slice(0, maxLen);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    // ============================================================================
+    // ESTADO GLOBAL
+    // ============================================================================
+    let estadoApp = {
+      usuarioLogado: null,
+      perfil: null,
+      vagas: [],
+      vagasSalvas: [],
+      vagasMatches: [],
+      carregando: true,
+      abaSelecionada: 'dashboard'
+    };
+
+    // ============================================================================
+    // AUTENTICAÇÃO
+    // ============================================================================
+    function obterEmailLogado() {
+      return sessionStorage.getItem('email_usuario_logado');
+    }
+
+    function fazerLogout() {
+      sessionStorage.removeItem('email_usuario_logado');
+      window.location.href = '/index.html';
+    }
+
+    async function verificarAutenticacao() {
+      const email = obterEmailLogado();
+
+      if (!email) {
+        renderizarTelaLogin();
+        return false;
+      }
+
+      estadoApp.usuarioLogado = email;
+      return true;
+    }
+
+    // ============================================================================
+    // CARREGAMENTO DE DADOS
+    // ============================================================================
+    async function carregarPerfil() {
+      try {
+        const email = estadoApp.usuarioLogado;
+        const { data, error } = await supabase
+          .from('diretorio_membros')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (error) throw error;
+        estadoApp.perfil = data;
+      } catch (erro) {
+        console.error('Erro ao carregar perfil:', erro);
+        estadoApp.perfil = null;
+      }
+    }
+
+    async function carregarVagas() {
+      try {
+        const { data, error } = await supabase
+          .from('vagas_crm')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        estadoApp.vagas = data || [];
+      } catch (erro) {
+        console.error('Erro ao carregar vagas:', erro);
+        estadoApp.vagas = [];
+      }
+    }
+
+    async function carregarVagasSalvas() {
+      try {
+        const email = estadoApp.usuarioLogado;
+        const { data, error } = await supabase
+          .from('vagas_salvas')
+          .select('*')
+          .eq('email_usuario', email)
+          .order('data_salvamento', { ascending: false });
+
+        if (error) throw error;
+        estadoApp.vagasSalvas = data || [];
+      } catch (erro) {
+        console.error('Erro ao carregar vagas salvas:', erro);
+        estadoApp.vagasSalvas = [];
+      }
+    }
+
+    // ============================================================================
+    // BOT DE MATCHING
+    // ============================================================================
+    function calcularScoreMatching(perfil, vaga) {
+      if (!perfil || !vaga) return 0;
+
+      let score = 0;
+      const maxScore = 100;
+
+      // Score por ferramentas (40%)
+      if (perfil.ferramentas && vaga.requisitos) {
+        const ferramentasPerfil = perfil.ferramentas.toLowerCase().split(',').map(f => f.trim());
+        const ferramentasVaga = vaga.requisitos.toLowerCase().split(',').map(f => f.trim());
+
+        const matchesFerramenta = ferramentasPerfil.filter(f =>
+          ferramentasVaga.some(fv => fv.includes(f) || f.includes(fv))
+        ).length;
+
+        score += (matchesFerramenta / ferramentasVaga.length) * 40;
+      }
+
+      // Score por senioridade (30%)
+      if (perfil.senioridade && vaga.nivel) {
+        const nivelPerfil = perfil.senioridade.toLowerCase();
+        const nivelVaga = vaga.nivel.toLowerCase();
+
+        const hierarquia = { 'júnior': 1, 'pleno': 2, 'sênior': 3, 'liderança': 4, 'c-level': 5 };
+        const ptPerfil = hierarquia[nivelPerfil] || 0;
+        const ptVaga = hierarquia[nivelVaga] || 0;
+
+        if (ptPerfil >= ptVaga) {
+          score += 30;
+        } else if (Math.abs(ptPerfil - ptVaga) === 1) {
+          score += 15;
+        }
+      }
+
+      // Score por área (30%)
+      if (perfil.area && vaga.area) {
+        if (perfil.area.toLowerCase() === vaga.area.toLowerCase()) {
+          score += 30;
+        } else if (vaga.area.toLowerCase().includes(perfil.area.toLowerCase())) {
+          score += 15;
+        }
+      }
+
+      return Math.round(score);
+    }
+
+    function gerarVagasMatches() {
+      if (!estadoApp.perfil || !estadoApp.vagas.length) {
+        estadoApp.vagasMatches = [];
+        return;
+      }
+
+      estadoApp.vagasMatches = estadoApp.vagas
+        .map(vaga => ({
+          ...vaga,
+          scoreMatching: calcularScoreMatching(estadoApp.perfil, vaga)
+        }))
+        .filter(vaga => vaga.scoreMatching > 0)
+        .sort((a, b) => b.scoreMatching - a.scoreMatching)
+        .slice(0, 5);
+    }
+
+    // ============================================================================
+    // GERENCIAR VAGAS SALVAS
+    // ============================================================================
+    async function salvarVaga(vagaId) {
+      try {
+        const email = estadoApp.usuarioLogado;
+        const { data, error } = await supabase
+          .from('vagas_salvas')
+          .insert([{ email_usuario: email, vaga_id: vagaId }])
+          .select();
+
+        if (error) throw error;
+
+        await carregarVagasSalvas();
+        renderizar();
+      } catch (erro) {
+        if (erro.message?.includes('duplicate')) {
+          alert('⚠️ Esta vaga já está salva!');
+        } else {
+          alert('❌ Erro ao salvar vaga: ' + erro.message);
+        }
+      }
+    }
+
+    async function removerVagaSalva(vagaId) {
+      try {
+        const email = estadoApp.usuarioLogado;
+        const { error } = await supabase
+          .from('vagas_salvas')
+          .delete()
+          .eq('email_usuario', email)
+          .eq('vaga_id', vagaId);
+
+        if (error) throw error;
+
+        await carregarVagasSalvas();
+        renderizar();
+      } catch (erro) {
+        alert('❌ Erro ao remover vaga: ' + erro.message);
+      }
+    }
+
+    function vagaEstaSalva(vagaId) {
+      return estadoApp.vagasSalvas.some(v => v.vaga_id === vagaId);
+    }
+
+    // ============================================================================
+    // RENDERIZAÇÃO
+    // ============================================================================
+    function renderizarTelaLogin() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-600 to-indigo-800">
+          <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div class="text-center mb-6">
+              <h1 class="text-3xl font-bold text-indigo-600 mb-2">Conexão CRM</h1>
+              <p class="text-slate-600">Painel do Membro</p>
+            </div>
+
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Email do Membro</label>
+              <input
+                type="email"
+                id="email-login"
+                placeholder="seu@email.com"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+            </div>
+
+            <button
+              onclick="fazerLoginManual()"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+            >
+              Acessar Painel
+            </button>
+
+            <div class="mt-6 pt-6 border-t border-slate-200">
+              <p class="text-center text-sm text-slate-600">
+                Não tem cadastro?
+                <a href="/diretorio-membros.html" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                  Cadastre-se aqui
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.fazerLoginManual = function() {
+      const email = document.getElementById('email-login').value.trim();
+
+      if (!email || !email.includes('@')) {
+        alert('⚠️ Digite um email válido!');
+        return;
+      }
+
+      sessionStorage.setItem('email_usuario_logado', email);
+      location.reload();
+    };
+
+    function renderizarHeader() {
+      const perfil = estadoApp.perfil || {};
+      return `
+        <header class="bg-white shadow-md sticky top-0 z-50">
+          <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between mb-4">
+              <h1 class="text-2xl font-bold text-indigo-600">Conexão CRM</h1>
+              <div class="flex items-center gap-4">
+                <div class="text-right">
+                  <p class="font-semibold text-slate-800">Olá, ${escapeHtml(perfil.nome || 'Membro')}!</p>
+                  <p class="text-sm text-slate-600">${escapeHtml(perfil.area || 'Área não definida')}</p>
+                </div>
+                <button
+                  onclick="fazerLogout()"
+                  class="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-semibold transition"
+                >
+                  Sair
+                </button>
+              </div>
+            </div>
+
+            <!-- Abas de Navegação -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+              ${['dashboard', 'vagas-para-voce', 'vagas-salvas', 'editar-perfil'].map(aba => `
+                <button
+                  onclick="estadoApp.abaSelecionada='${aba}'; renderizar()"
+                  class="px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
+                    estadoApp.abaSelecionada === aba
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }"
+                >
+                  ${aba === 'dashboard' ? '📊 Dashboard' :
+                    aba === 'vagas-para-voce' ? '🎯 Vagas para Você' :
+                    aba === 'vagas-salvas' ? '⭐ Vagas Salvas' :
+                    '✏️ Editar Perfil'}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </header>
+      `;
+    }
+
+    function renderizarDashboard() {
+      const perfil = estadoApp.perfil || {};
+      return `
+        <div class="max-w-7xl mx-auto px-6 py-8">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Card Perfil -->
+            <div class="lg:col-span-1 bg-white rounded-xl shadow-md p-6">
+              <h2 class="text-xl font-bold text-slate-800 mb-4">Seu Perfil</h2>
+              <div class="space-y-3 text-sm">
+                <div>
+                  <p class="text-slate-600">Nome</p>
+                  <p class="font-semibold text-slate-800">${escapeHtml(perfil.nome || 'N/A')}</p>
+                </div>
+                <div>
+                  <p class="text-slate-600">Área</p>
+                  <p class="font-semibold text-slate-800">${escapeHtml(perfil.area || 'N/A')}</p>
+                </div>
+                <div>
+                  <p class="text-slate-600">Senioridade</p>
+                  <p class="font-semibold text-slate-800">${escapeHtml(perfil.senioridade || 'N/A')}</p>
+                </div>
+                <div>
+                  <p class="text-slate-600">Ferramentas</p>
+                  <p class="font-semibold text-slate-800 text-xs">${escapeHtml(perfil.ferramentas || 'N/A')}</p>
+                </div>
+              </div>
+              <button
+                onclick="estadoApp.abaSelecionada='editar-perfil'; renderizar()"
+                class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+              >
+                Editar Perfil
+              </button>
+            </div>
+
+            <!-- Seção Vagas para Você -->
+            <div class="lg:col-span-2 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl shadow-md p-6">
+              <h2 class="text-xl font-bold text-slate-800 mb-4">🎯 Vagas para Você</h2>
+              <p class="text-slate-600 mb-4">Baseado nas suas ferramentas e senioridade, encontramos vagas compatíveis:</p>
+
+              ${estadoApp.vagasMatches.length > 0 ? `
+                <div class="space-y-3">
+                  ${estadoApp.vagasMatches.slice(0, 3).map(vaga => `
+                    <div class="bg-white rounded-lg p-4 border-l-4 border-indigo-600">
+                      <div class="flex justify-between items-start mb-2">
+                        <div>
+                          <p class="font-semibold text-slate-800">${escapeHtml(vaga.cargo)}</p>
+                          <p class="text-sm text-slate-600">${escapeHtml(vaga.empresa)}</p>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded">
+                          ${vaga.scoreMatching}% Match
+                        </span>
+                      </div>
+                      <p class="text-xs text-slate-600 line-clamp-2">${escapeHtml(vaga.descricao || '')}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <p class="text-slate-600 italic">Nenhuma vaga compatível encontrada no momento.</p>
+              `}
+
+              <button
+                onclick="estadoApp.abaSelecionada='vagas-para-voce'; renderizar()"
+                class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+              >
+                Ver Todas as Matches →
+              </button>
+            </div>
+          </div>
+
+          <!-- Vagas Salvas Rápidas -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">⭐ Últimas Vagas Salvas</h2>
+            ${estadoApp.vagasSalvas.length > 0 ? `
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                ${estadoApp.vagasSalvas.slice(0, 4).map((vs, idx) => {
+                  const vaga = estadoApp.vagas.find(v => v.id === vs.vaga_id);
+                  if (!vaga) return '';
+                  return `
+                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                      <p class="font-semibold text-slate-800 text-sm mb-1">${escapeHtml(vaga.cargo)}</p>
+                      <p class="text-xs text-slate-600 mb-3">${escapeHtml(vaga.empresa)}</p>
+                      <button
+                        onclick="removerVagaSalva(${vs.vaga_id})"
+                        class="w-full text-xs bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded transition"
+                      >
+                        ✕ Remover
+                      </button>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : `
+              <p class="text-slate-600 italic">Você ainda não salvou nenhuma vaga.</p>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizarVagasParaVoce() {
+      return `
+        <div class="max-w-7xl mx-auto px-6 py-8">
+          <div class="mb-6">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">🎯 Vagas Compatíveis com Seu Perfil</h1>
+            <p class="text-slate-600">Mostrando ${estadoApp.vagasMatches.length} vagas com match baseado em ferramentas e senioridade</p>
+          </div>
+
+          ${estadoApp.vagasMatches.length > 0 ? `
+            <div class="space-y-4">
+              ${estadoApp.vagasMatches.map((vaga, idx) => `
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-600 fade-in hover:shadow-lg transition" style="animation-delay: ${idx * 50}ms">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div>
+                      <p class="text-sm text-slate-600 mb-1">Cargo</p>
+                      <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo)}</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-slate-600 mb-1">Empresa</p>
+                      <p class="font-semibold text-slate-800">${escapeHtml(vaga.empresa)}</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-slate-600 mb-1">Nível</p>
+                      <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                        ${escapeHtml(vaga.nivel || 'N/A')}
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm text-slate-600 mb-1">Score de Match</p>
+                      <p class="text-3xl font-bold text-indigo-600">${vaga.scoreMatching}%</p>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <p class="text-slate-700 text-sm">${escapeHtml(vaga.descricao || 'Sem descrição')}</p>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    ${vaga.requisitos ? `
+                      <div>
+                        <p class="font-semibold text-slate-800 text-sm mb-2">📋 Requisitos</p>
+                        <p class="text-sm text-slate-600">${escapeHtml(vaga.requisitos)}</p>
+                      </div>
+                    ` : ''}
+                    ${vaga.beneficios ? `
+                      <div>
+                        <p class="font-semibold text-slate-800 text-sm mb-2">🎁 Benefícios</p>
+                        <p class="text-sm text-slate-600">${escapeHtml(vaga.beneficios)}</p>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  ${vaga.salario_minimo || vaga.salario_maximo ? `
+                    <div class="bg-emerald-50 rounded-lg p-3 mb-4">
+                      <p class="font-semibold text-emerald-700">
+                        💰 R$ ${escapeHtml(vaga.salario_minimo || '...')} - R$ ${escapeHtml(vaga.salario_maximo || '...')}
+                      </p>
+                    </div>
+                  ` : ''}
+
+                  <div class="flex gap-3">
+                    <button
+                      onclick="${vagaEstaSalva(vaga.id) ? `removerVagaSalva(${vaga.id})` : `salvarVaga(${vaga.id})`}"
+                      class="flex-1 py-2 px-4 rounded-lg font-semibold transition ${
+                        vagaEstaSalva(vaga.id)
+                          ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }"
+                    >
+                      ${vagaEstaSalva(vaga.id) ? '⭐ Salva' : '☆ Salvar Vaga'}
+                    </button>
+                    ${vaga.url_candidatura ? `
+                      <a
+                        href="${escapeHtml(vaga.url_candidatura)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-semibold transition text-center"
+                      >
+                        Candidatar →
+                      </a>
+                    ` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="bg-slate-100 rounded-lg p-8 text-center">
+              <p class="text-slate-600 mb-2">Nenhuma vaga compatível encontrada.</p>
+              <p class="text-sm text-slate-500">Complete seu perfil com ferramentas e senioridade para melhorar as recomendações!</p>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderizarVagasSalvas() {
+      return `
+        <div class="max-w-7xl mx-auto px-6 py-8">
+          <h1 class="text-3xl font-bold text-slate-800 mb-6">⭐ Suas Vagas Salvas</h1>
+
+          ${estadoApp.vagasSalvas.length > 0 ? `
+            <div class="space-y-4">
+              ${estadoApp.vagasSalvas.map((vs, idx) => {
+                const vaga = estadoApp.vagas.find(v => v.id === vs.vaga_id);
+                if (!vaga) return '';
+                return `
+                  <div class="bg-white rounded-lg shadow-md p-6 fade-in" style="animation-delay: ${idx * 50}ms">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo)}</p>
+                        <p class="text-slate-600">${escapeHtml(vaga.empresa)}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-slate-600 mb-1">Nível</p>
+                        <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                          ${escapeHtml(vaga.nivel || 'N/A')}
+                        </span>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-sm text-slate-600 mb-1">Salário</p>
+                        <p class="font-semibold text-emerald-600">
+                          R$ ${escapeHtml(vaga.salario_minimo || 'N/A')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p class="text-slate-700 mb-4 text-sm">${escapeHtml(vaga.descricao || '')}</p>
+
+                    <div class="flex gap-3">
+                      <button
+                        onclick="removerVagaSalva(${vs.vaga_id})"
+                        class="flex-1 bg-red-100 text-red-700 hover:bg-red-200 py-2 px-4 rounded-lg font-semibold transition"
+                      >
+                        ✕ Remover dos Salvos
+                      </button>
+                      ${vaga.url_candidatura ? `
+                        <a
+                          href="${escapeHtml(vaga.url_candidatura)}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-semibold transition text-center"
+                        >
+                          Candidatar →
+                        </a>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `
+            <div class="bg-slate-100 rounded-lg p-8 text-center">
+              <p class="text-slate-600 mb-4">Você ainda não salvou nenhuma vaga.</p>
+              <button
+                onclick="estadoApp.abaSelecionada='vagas-para-voce'; renderizar()"
+                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                Explorar Vagas →
+              </button>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderizarEditarPerfil() {
+      const perfil = estadoApp.perfil || {};
+      return `
+        <div class="max-w-2xl mx-auto px-6 py-8">
+          <h1 class="text-3xl font-bold text-slate-800 mb-6">✏️ Editar Seu Perfil</h1>
+
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Nome</label>
+                <p class="text-slate-800">${escapeHtml(perfil.nome || 'N/A')}</p>
+                <p class="text-xs text-slate-500 mt-1">Para atualizar, acesse /diretorio-membros.html</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                <p class="text-slate-800">${escapeHtml(perfil.email || 'N/A')}</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Área de Atuação</label>
+                <p class="text-slate-800">${escapeHtml(perfil.area || 'N/A')}</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Senioridade</label>
+                <p class="text-slate-800">${escapeHtml(perfil.senioridade || 'N/A')}</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Ferramentas</label>
+                <p class="text-slate-800 text-sm">${escapeHtml(perfil.ferramentas || 'N/A')}</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">LinkedIn</label>
+                ${perfil.linkedin ? `
+                  <a href="${escapeHtml(perfil.linkedin)}" target="_blank" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                    Abrir LinkedIn →
+                  </a>
+                ` : `
+                  <p class="text-slate-600">Não informado</p>
+                `}
+              </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p class="text-blue-800 text-sm">
+                <strong>💡 Dica:</strong> Para atualizar suas informações de perfil, acesse a página
+                <a href="/diretorio-membros.html" class="font-semibold hover:underline">Diretório de Membros</a>
+                e refaça seu cadastro.
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizar() {
+      const app = document.getElementById('app');
+      let conteudo = renderizarHeader();
+
+      switch (estadoApp.abaSelecionada) {
+        case 'vagas-para-voce':
+          conteudo += renderizarVagasParaVoce();
+          break;
+        case 'vagas-salvas':
+          conteudo += renderizarVagasSalvas();
+          break;
+        case 'editar-perfil':
+          conteudo += renderizarEditarPerfil();
+          break;
+        default:
+          conteudo += renderizarDashboard();
+      }
+
+      app.innerHTML = conteudo;
+    }
+
+    // ============================================================================
+    // INICIALIZAÇÃO
+    // ============================================================================
+    async function inicializar() {
+      const autenticado = await verificarAutenticacao();
+
+      if (!autenticado) {
+        return;
+      }
+
+      try {
+        await Promise.all([
+          carregarPerfil(),
+          carregarVagas(),
+          carregarVagasSalvas()
+        ]);
+
+        gerarVagasMatches();
+        estadoApp.carregando = false;
+        renderizar();
+
+        // Auto-refresh a cada 60 segundos
+        setInterval(() => {
+          carregarVagas().then(() => {
+            gerarVagasMatches();
+            renderizar();
+          });
+        }, 60000);
+
+      } catch (erro) {
+        console.error('Erro ao inicializar:', erro);
+        alert('❌ Erro ao carregar dados. Recarregue a página.');
+      }
+    }
+
+    // Iniciar quando página carregar
+    window.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+</body>
+</html>
