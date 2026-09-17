@@ -1064,14 +1064,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Profissionais Open to Work
           </button>
-          <button class="search-tab-btn" id="searchTabPesquisa1" onclick="switchSearchTab('pesquisa1')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path><path d="M12.5 7H11v6l5.25 3.15"></path></svg>
-            Pesquisa CRMs
-          </button>
-          <button class="search-tab-btn" id="searchTabPesquisa2" onclick="switchSearchTab('pesquisa2')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5s-5 2.24-5 5v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-2c1.66 0 3 1.34 3 3v2h-6V6c0-1.66 1.34-3 3-3z"></path></svg>
-            Censo da Comunidade
-          </button>
         </div>
       </div>
 
@@ -1143,29 +1135,6 @@
         </div>
 
         <div id="searchResults"></div>
-      </section>
-
-      <!-- SUB-PÁGINA 3: PESQUISA CRMs -->
-      <section id="searchPesquisa1Panel" style="display:none;">
-        <div class="section-desc" style="margin-bottom:20px;">
-          <p>Compartilhe suas experiências com implementações de CRM! Esta pesquisa ajuda a comunidade a entender melhor quais ferramentas funcionam melhor em diferentes contextos.</p>
-        </div>
-        <div style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:20px; overflow-x:auto;">
-          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfOI1j75hNqjwNe87JBecAu2KkJp5iczoiRYZbGKUs6FfcIQw/viewform?embedded=true" width="100%" height="2884" frameborder="0" marginheight="0" marginwidth="0" style="min-width:100%; border:none; border-radius:8px;">Carregando formulário…</iframe>
-        </div>
-      </section>
-
-      <!-- SUB-PÁGINA 4: CENSO MEMBROS -->
-      <section id="searchPesquisa2Panel" style="display:none;">
-        <div class="section-desc" style="margin-bottom:20px;">
-          <p style="margin-bottom:12px;">Censo anual da comunidade Conexão CRM. Seus dados nos ajudam a entender melhor o mercado de CRM no Brasil e gerar insights para toda a comunidade.</p>
-          <p style="color:#c76b93; font-weight:600; font-size:12px;">
-            🔒 <strong>Privacidade:</strong> Seus dados pessoais não serão compartilhados. Respeitamos a LGPD e todas as regulamentações de proteção de dados.
-          </p>
-        </div>
-        <div style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:20px; overflow-x:auto;">
-          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc5ZavVMe76fE7kVJIUDr1_ElGDFXglYlrNYvN-Pi0mYgfojQ/viewform?embedded=true" width="100%" height="4017" frameborder="0" marginheight="0" marginwidth="0" style="min-width:100%; border:none; border-radius:8px;">Carregando formulário…</iframe>
-        </div>
       </section>
     </section>
   </div><!-- /pageSearch -->
@@ -3200,42 +3169,20 @@ function switchSearchTab(tab){
   try{
     const aiPanel = document.getElementById('searchAIPanel');
     const dirPanel = document.getElementById('searchDirPanel');
-    const pesquisa1Panel = document.getElementById('searchPesquisa1Panel');
-    const pesquisa2Panel = document.getElementById('searchPesquisa2Panel');
     const aiBtn = document.getElementById('searchTabAI');
     const dirBtn = document.getElementById('searchTabDir');
-    const pesquisa1Btn = document.getElementById('searchTabPesquisa1');
-    const pesquisa2Btn = document.getElementById('searchTabPesquisa2');
-
     if(!aiPanel || !dirPanel || !aiBtn || !dirBtn) return;
-    if(!pesquisa1Panel || !pesquisa2Panel || !pesquisa1Btn || !pesquisa2Btn) return;
-
-    // Hide all panels
-    aiPanel.style.display = 'none';
-    dirPanel.style.display = 'none';
-    pesquisa1Panel.style.display = 'none';
-    pesquisa2Panel.style.display = 'none';
-
-    // Deactivate all buttons
-    aiBtn.classList.remove('active');
-    dirBtn.classList.remove('active');
-    pesquisa1Btn.classList.remove('active');
-    pesquisa2Btn.classList.remove('active');
-
-    // Show selected tab
     if(tab==='ai'){
       aiPanel.style.display = 'block';
+      dirPanel.style.display = 'none';
       aiBtn.classList.add('active');
+      dirBtn.classList.remove('active');
     } else if(tab==='directory'){
+      aiPanel.style.display = 'none';
       dirPanel.style.display = 'block';
+      aiBtn.classList.remove('active');
       dirBtn.classList.add('active');
       if(typeof searchLoaded !== 'undefined' && !searchLoaded){ loadSheet(); }
-    } else if(tab==='pesquisa1'){
-      pesquisa1Panel.style.display = 'block';
-      pesquisa1Btn.classList.add('active');
-    } else if(tab==='pesquisa2'){
-      pesquisa2Panel.style.display = 'block';
-      pesquisa2Btn.classList.add('active');
     }
   }catch(err){
     console.error('Erro ao trocar aba de busca:', err);
