@@ -3250,8 +3250,16 @@ async function carregarVagasHub() {
   container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
 
   try {
-    const { data, error } = await supabase.from('vagas_crm').select('*').order('created_at', { ascending: false });
-    if (error) throw error;
+    const { data, error } = await supabase
+      .from('vagas_crm')
+      .select('id, cargo, empresa, nivel, fonte, link, salario, descricao, requisitos, criado_em')
+      .order('criado_em', { ascending: false });
+
+    if (error) {
+      console.error("Erro ao carregar vagas:", error.message);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+      return;
+    }
 
     if (!data || data.length === 0) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">📭</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga cadastrada no momento.</p></div>';
@@ -3264,7 +3272,7 @@ async function carregarVagasHub() {
     document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
-    console.error('Erro ao carregar vagas:', err);
+    console.error('Erro inesperado ao carregar vagas:', err);
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
   }
 }
@@ -3280,24 +3288,23 @@ function renderizarVagasHub(vagas) {
   document.getElementById('vagasCountHub').textContent = vagas.length;
   container.innerHTML = vagas.map((vaga, idx) => `
     <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
-      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
-      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
+      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo || '')}</h3>
+      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa || '')}</p>
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
-        ${vaga.regiao ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📍 ${escapeHtmlVagas(vaga.regiao)}</span>` : ''}
+        ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📌 ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📊 ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
-        ${vaga.tipo_contrato ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📋 ${escapeHtmlVagas(vaga.tipo_contrato)}</span>` : ''}
       </div>
 
-      ${vaga.description ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.description.substring(0, 100))}${vaga.description.length > 100 ? '...' : ''}</p>` : ''}
+      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.descricao.substring(0, 100))}${vaga.descricao.length > 100 ? '...' : ''}</p>` : ''}
 
       ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
 
-      ${vaga.faixa_salarial ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;">💰 ${escapeHtmlVagas(vaga.faixa_salarial)}</div>` : ''}
+      ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;">💰 ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
 
       <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
-        <span style="color:var(--muted);">${formatarDataVagas(vaga.created_at) ? 'Publicada: ' + formatarDataVagas(vaga.created_at) : ''}</span>
-        ${vaga.url_candidatura ? `<a href="${escapeHtmlVagas(vaga.url_candidatura)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
+        <span style="color:var(--muted);">${formatarDataVagas(vaga.criado_em) ? 'Publicada: ' + formatarDataVagas(vaga.criado_em) : ''}</span>
+        ${vaga.link ? `<a href="${escapeHtmlVagas(vaga.link)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
       </div>
     </div>
   `).join('');
