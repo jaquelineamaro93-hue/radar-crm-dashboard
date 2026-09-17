@@ -481,6 +481,7 @@
   .ev-live{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--mint);}
   .ev-dot{width:7px;height:7px;background:var(--mint);border-radius:50%;box-shadow:0 0 6px var(--mint);animation:evpulse 2s infinite;display:inline-block;}
   @keyframes evpulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+  @keyframes fadeInVaga{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   .ev-btn-suggest{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;color:#fffff3;border:none;background:var(--mint);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
   .ev-btn-suggest:hover{opacity:0.9;}
   .ev-btn-name{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9px;color:var(--mint);border:1px solid var(--line);background:var(--panel-2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
@@ -1644,43 +1645,73 @@
 
   <div class="tab-page" id="pageVagas">
     <section>
-      <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div style="display:flex;align-items:center;gap:10px;"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span><h2>Vagas de CRM</h2></div><button onclick="openAnunciarVagaModal()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Anunciar vaga</button></div>
-      <p class="section-desc">Vagas de CRM, Salesforce, HubSpot, Growth, Marketing de relacionamento e áreas correlatas, coletadas automaticamente de várias fontes (LinkedIn, Gupy, Indeed, InfoJobs, Vagas.com e outras).</p>
-      <div class="note">
-        Atualização automática uma vez por dia. Vagas somem da lista depois de 60 dias. Isso não é um levantamento manual, é um robô de coleta: pode ocasionalmente trazer algo fora do escopo ou perder uma vaga que não segue os termos de busca configurados.
-      </div>
+      <div class="section-head"><span class="section-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span><h2>Vagas de CRM & MarTech</h2></div>
+      <p class="section-desc">Encontre oportunidades de carreira em CRM, liderança e estratégia digital. Vagas verificadas e atualizadas em tempo real.</p>
 
-      <div class="ev-header-row" style="margin-top:16px;">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-          <span class="ev-cpill" id="vagasTotal">0 vagas</span>
-          <span class="ev-live"><span class="ev-dot"></span> Atualizado automaticamente</span>
-        </div>
-      </div>
+      <!-- Filtros -->
+      <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin:20px 0;">
+        <h3 style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 12px;">🔍 Filtros</h3>
 
-      <div class="search-bar">
-        <input type="text" class="search-input" id="vagasSearchText" placeholder="Buscar por cargo, empresa...">
-        <div class="filter-bar" style="position:static;">
-          <div class="filter-field">
-            <label for="fFonte">Fonte</label>
-            <select id="fFonte"><option value="">Todas</option></select>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px;">
+          <!-- Busca por Cargo -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Cargo / Título</label>
+            <input type="text" id="filtro-cargo-hub" placeholder="Ex: CRM Manager" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit;" onkeyup="aplicarFiltrosVagas()">
           </div>
-          <div class="filter-field">
-            <label for="fSenioridadeVaga">Nível</label>
-            <select id="fSenioridadeVaga"><option value="">Todos</option></select>
+
+          <!-- Busca por Empresa -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Empresa</label>
+            <input type="text" id="filtro-empresa-hub" placeholder="Ex: Salesforce" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit;" onkeyup="aplicarFiltrosVagas()">
           </div>
-          <div class="filter-field">
-            <label for="vagasSortSelect">Ordenar por</label>
-            <select id="vagasSortSelect" onchange="renderVagas()">
-              <option value="recentes">Mais recentes</option>
-              <option value="az">A → Z</option>
+
+          <!-- Filtro por Nível -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Nível</label>
+            <select id="filtro-nivel-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="">Todos os níveis</option>
+              <option value="Júnior">Júnior</option>
+              <option value="Pleno">Pleno</option>
+              <option value="Sênior">Sênior</option>
+              <option value="Liderança">Liderança</option>
+              <option value="C-Level">C-Level</option>
             </select>
           </div>
-          <span class="filter-count" id="vagasCount">carregando...</span>
-          <button class="filter-reset" id="btnResetVagas">Limpar filtros</button>
+
+          <!-- Ordenação -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
+            <select id="filtro-ordem-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="recente">Mais Recentes</option>
+              <option value="empresa">Empresa (A-Z)</option>
+              <option value="cargo">Cargo (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button onclick="aplicarFiltrosVagas()" style="background:var(--text); color:#fffff3; border:none; border-radius:8px; padding:8px 14px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">🔎 Buscar</button>
+          <button onclick="limparFiltrosVagas()" style="background:var(--line); color:var(--text); border:none; border-radius:8px; padding:8px 14px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">✕ Limpar</button>
         </div>
       </div>
 
-      <div id="vagasResults"></div>
+      <!-- Status e Contagem -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="font-weight:700; font-size:13px; margin:0; color:var(--text);">Vagas Disponíveis</h3>
+          <p style="font-size:12px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas</p>
+        </div>
+        <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;">🔄 Atualizar</button>
+      </div>
+
+      <!-- Grid de Vagas -->
+      <div id="vagasContainerHub" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;">
+        <div style="grid-column:1/-1; text-align:center; padding:32px 16px;">
+          <div style="font-size:32px; margin-bottom:8px;">⌛</div>
+          <p style="font-size:12px; color:var(--muted);">Carregando vagas...</p>
+        </div>
+      </div>
+
     </section>
   </div><!-- /pageVagas -->
 
@@ -3151,7 +3182,7 @@ function switchTab(tab){
   if(tab==='agencias' && !agenciasInitialized){ initAgenciasTab(); }
   if(tab==='ferramentas' && !ferramentasInitialized){ initFerramentasTab(); }
   if(tab==='ferramentas' && !compareCRMsInitialized){ initCompareCRMsTab(); }
-  if(tab==='vagas' && !vagasInitialized){ initVagasTab(); }
+  if(tab==='vagas'){ carregarVagasHub(); if(!vagasAutoRefreshStarted){ setInterval(carregarVagasHub, 60000); vagasAutoRefreshStarted = true; } }
   if(tab==='calc' && !calcInitialized){ initCalcTab(); }
 
   // Rola a página para o topo do conteúdo ao trocar de aba, para não deixar
@@ -3187,6 +3218,119 @@ function switchSearchTab(tab){
   }catch(err){
     console.error('Erro ao trocar aba de busca:', err);
   }
+}
+
+// ============ VAGAS DE CRM (Integrado no Hub) ============
+let todasAsVagasHub = [];
+
+function sanitizeInputVagas(str, maxLen = 200) {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/<[^>]*>/g, '').replace(/javascript:/gi, '').replace(/on\w+\s*=/gi, '').replace(/script/gi, '').trim().slice(0, maxLen);
+}
+
+function escapeHtmlVagas(str) {
+  if (!str || typeof str !== 'string') return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatarDataVagas(dataString) {
+  if (!dataString) return '';
+  try {
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
+async function carregarVagasHub() {
+  const container = document.getElementById('vagasContainerHub');
+  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
+
+  try {
+    const { data, error } = await supabase.from('vagas_crm').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">📭</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga cadastrada no momento.</p></div>';
+      document.getElementById('totalVagasHub').textContent = '0';
+      document.getElementById('vagasCountHub').textContent = '0';
+      return;
+    }
+
+    todasAsVagasHub = data;
+    document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
+    renderizarVagasHub(todasAsVagasHub);
+  } catch (err) {
+    console.error('Erro ao carregar vagas:', err);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+  }
+}
+
+function renderizarVagasHub(vagas) {
+  const container = document.getElementById('vagasContainerHub');
+  if (!vagas || vagas.length === 0) {
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px;"><div style="font-size:24px; margin-bottom:8px;">🔍</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada.</p></div>';
+    document.getElementById('vagasCountHub').textContent = '0';
+    return;
+  }
+
+  document.getElementById('vagasCountHub').textContent = vagas.length;
+  container.innerHTML = vagas.map((vaga, idx) => `
+    <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
+      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
+      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
+
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+        ${vaga.regiao ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📍 ${escapeHtmlVagas(vaga.regiao)}</span>` : ''}
+        ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📊 ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
+        ${vaga.tipo_contrato ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📋 ${escapeHtmlVagas(vaga.tipo_contrato)}</span>` : ''}
+      </div>
+
+      ${vaga.description ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.description.substring(0, 100))}${vaga.description.length > 100 ? '...' : ''}</p>` : ''}
+
+      ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
+
+      ${vaga.faixa_salarial ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;">💰 ${escapeHtmlVagas(vaga.faixa_salarial)}</div>` : ''}
+
+      <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
+        <span style="color:var(--muted);">${formatarDataVagas(vaga.created_at) ? 'Publicada: ' + formatarDataVagas(vaga.created_at) : ''}</span>
+        ${vaga.url_candidatura ? `<a href="${escapeHtmlVagas(vaga.url_candidatura)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function aplicarFiltrosVagas() {
+  const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
+  const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
+  const nivel = document.getElementById('filtro-nivel-hub').value;
+  const ordem = document.getElementById('filtro-ordem-hub').value;
+
+  let vagasFiltradas = todasAsVagasHub.filter(vaga => {
+    const cargo_match = !cargo || (vaga.cargo && vaga.cargo.toLowerCase().includes(cargo.toLowerCase()));
+    const empresa_match = !empresa || (vaga.empresa && vaga.empresa.toLowerCase().includes(empresa.toLowerCase()));
+    const nivel_match = !nivel || (vaga.nivel && vaga.nivel.toLowerCase() === nivel.toLowerCase());
+    return cargo_match && empresa_match && nivel_match;
+  });
+
+  if (ordem === 'empresa') {
+    vagasFiltradas.sort((a, b) => (a.empresa || '').localeCompare(b.empresa || ''));
+  } else if (ordem === 'cargo') {
+    vagasFiltradas.sort((a, b) => (a.cargo || '').localeCompare(b.cargo || ''));
+  }
+
+  renderizarVagasHub(vagasFiltradas);
+}
+
+function limparFiltrosVagas() {
+  document.getElementById('filtro-cargo-hub').value = '';
+  document.getElementById('filtro-empresa-hub').value = '';
+  document.getElementById('filtro-nivel-hub').value = '';
+  document.getElementById('filtro-ordem-hub').value = 'recente';
+  renderizarVagasHub(todasAsVagasHub);
 }
 
 // ============ MATCH DE VAGA POR IA ============
@@ -5938,6 +6082,7 @@ const VG_SUPABASE_URL = "https://rwkbpafpniwzvlkfngag.supabase.co";
 const VG_SUPABASE_KEY = "sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
 let vgSb = null;
 let vagasInitialized = false;
+let vagasAutoRefreshStarted = false;
 let VAGAS = [];
 
 function vgInitSB(){
