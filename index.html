@@ -3329,22 +3329,50 @@ function formatarDataVagas(dataString) {
   }
 }
 
+// Inicializar cliente Supabase para Vagas
+let vagasSb = null;
+function initVagasSupabase() {
+  if (!vagasSb && window.supabase) {
+    try {
+      vagasSb = window.supabase.createClient(
+        "https://rwkbpafpniwzvlkfngag.supabase.co",
+        "sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C"
+      );
+      console.log('[VAGAS] Cliente Supabase inicializado com sucesso');
+      return true;
+    } catch (e) {
+      console.error('[VAGAS] Erro ao inicializar Supabase:', e);
+      return false;
+    }
+  }
+  return vagasSb !== null;
+}
+
 async function carregarVagasHub() {
   const container = document.getElementById('vagasContainerHub');
   container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
 
   try {
-    const { data, error } = await supabase
+    // Garantir que o cliente Supabase está inicializado
+    if (!initVagasSupabase()) {
+      console.error('[VAGAS] Cliente Supabase não disponível');
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao conectar ao banco de dados. Tente novamente.</p></div>';
+      return;
+    }
+
+    console.log('[VAGAS] Iniciando consulta de vagas...');
+    const { data, error } = await vagasSb
       .from('vagas_crm')
       .select('id, cargo, empresa, nivel, fonte, link, salario, descricao, requisitos, criado_em')
       .order('criado_em', { ascending: false });
 
     if (error) {
-      console.error("Erro ao carregar vagas:", error.message);
-      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+      console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
 
+    console.log('[VAGAS] Dados recebidos:', data?.length || 0, 'vagas');
     if (!data || data.length === 0) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">📭</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga cadastrada no momento.</p></div>';
       document.getElementById('totalVagasHub').textContent = '0';
@@ -3356,8 +3384,8 @@ async function carregarVagasHub() {
     document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
-    console.error('Erro inesperado ao carregar vagas:', err);
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+    console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
 
@@ -8023,7 +8051,11 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 // ====== FIM: GERENCIAMENTO DE SUB-ABAS ======
 
-document.addEventListener('DOMContentLoaded', authInit);
+document.addEventListener('DOMContentLoaded', () => {
+  authInit();
+  initVagasSupabase();
+  console.log('[INIT] Supabase para Vagas inicializado');
+});
 
 </script>
 </body>
