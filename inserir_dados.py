@@ -17,13 +17,13 @@ with open('cargos.json', encoding='utf-8') as f:
 print(f"📊 {len(profs)} profissionais")
 print(f"📊 {len(cargos)} cargos\n")
 
-# Inserir em lotes
+# Inserir em lotes (UPSERT para evitar erros de chave duplicada)
 def inserir_lotes(tabela, dados, tamanho_lote=100):
     total = len(dados)
     for i in range(0, total, tamanho_lote):
         lote = dados[i:i+tamanho_lote]
         try:
-            sb.table(tabela).insert(lote).execute()
+            sb.table(tabela).upsert(lote, ignore_duplicates=True).execute()
             progress = min(i+len(lote), total)
             print(f"  ✅ {progress}/{total}")
         except Exception as e:

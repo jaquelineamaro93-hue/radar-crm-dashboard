@@ -15,10 +15,10 @@ prof_data = json.loads(prof_json)
 
 print(f"📊 {len(prof_data)} profissionais")
 
-# Inserir
+# Inserir (UPSERT para evitar erros de chave duplicada)
 for i in range(0, len(prof_data), 100):
     lote = prof_data[i:i+100]
-    sb.table('profissionais_open_to_work').insert(lote).execute()
+    sb.table('profissionais_open_to_work').upsert(lote, ignore_duplicates=True).execute()
     print(f"✅ {min(i+100, len(prof_data))}/{len(prof_data)}")
 
 print("✅ PRONTO!")

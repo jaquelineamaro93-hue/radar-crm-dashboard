@@ -225,7 +225,7 @@ def populate_test_data():
         vaga['url_hash'] = generate_url_hash(vaga['url'])
 
         try:
-            response = supabase.table('vagas_crm').insert(vaga, ignore_duplicates=True).execute()
+            response = supabase.table('vagas_crm').upsert(vaga, ignore_duplicates=True).execute()
             inserted += 1
             print(f"✅ {vaga['title']} ({vaga['location']})")
         except Exception as e:
