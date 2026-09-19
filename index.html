@@ -3512,17 +3512,19 @@ async function aplicarFiltrosVagas() {
     }
 
     if (nivel && nivel !== '') {
-      const nivelLower = nivel.toLowerCase();
+      const nivelNorm = nivel.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-      if (nivelLower === 'liderança' || nivelLower === 'lideranca') {
-        query = query.or('title.ilike.%gerente%,title.ilike.%coordenador%,title.ilike.%coordenad%,title.ilike.%supervisor%,title.ilike.%head%,title.ilike.%diretor%,title.ilike.%director%,title.ilike.%líder%,title.ilike.%lider%,title.ilike.%manager%,title.ilike.%chief%');
-      } else if (nivelLower === 'sênior' || nivelLower === 'senior') {
-        query = query.or('title.ilike.%sênior%,title.ilike.%senior%,title.ilike.%sr.%,title.ilike.% sr %,title.ilike.%lead%');
-      } else if (nivelLower === 'pleno') {
-        query = query.or('title.ilike.%pleno%,title.ilike.%pl.%,title.ilike.% pl %,title.ilike.%mid-level%,title.ilike.%mid level%');
-      } else if (nivelLower === 'júnior' || nivelLower === 'junior') {
-        query = query.or('title.ilike.%júnior%,title.ilike.%junior%,title.ilike.%jr.%,title.ilike.% jr %,title.ilike.%trainee%,title.ilike.%iniciante%');
-      } else if (nivelLower === 'estágio' || nivelLower === 'estagio') {
+      if (nivelNorm.includes('clevel') || nivelNorm === 'executivo') {
+        query = query.or('title.ilike.%ceo%,title.ilike.%cto%,title.ilike.%cfo%,title.ilike.%coo%,title.ilike.%cro%,title.ilike.%cmo%,title.ilike.%chief%,title.ilike.%vice%,title.ilike.%vp%,title.ilike.%diretor%,title.ilike.%diretora%,title.ilike.%presidente%');
+      } else if (nivelNorm.includes('lideranca')) {
+        query = query.or('title.ilike.%gerente%,title.ilike.%coordenador%,title.ilike.%coordenad%,title.ilike.%supervisor%,title.ilike.%head%,title.ilike.%líder%,title.ilike.%lider%,title.ilike.%manager%');
+      } else if (nivelNorm.includes('senior')) {
+        query = query.or('title.ilike.%sênior%,title.ilike.%senior%,title.ilike.%sr%,title.ilike.%lead%');
+      } else if (nivelNorm.includes('pleno')) {
+        query = query.or('title.ilike.%pleno%,title.ilike.%pl%,title.ilike.%mid-level%,title.ilike.%mid level%');
+      } else if (nivelNorm.includes('junior')) {
+        query = query.or('title.ilike.%júnior%,title.ilike.%junior%,title.ilike.%jr%,title.ilike.%trainee%,title.ilike.%iniciante%');
+      } else if (nivelNorm.includes('estagio')) {
         query = query.or('title.ilike.%estágio%,title.ilike.%estagio%,title.ilike.%intern%,title.ilike.%aprendiz%');
       }
     }
