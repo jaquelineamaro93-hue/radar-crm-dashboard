@@ -1683,6 +1683,19 @@
             </select>
           </div>
 
+          <!-- Filtro por Plataforma -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Plataforma</label>
+            <select id="filtro-plataforma-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="">Todas as Plataformas</option>
+              <option value="Catho">Catho</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Gupy">Gupy</option>
+              <option value="Indeed">Indeed</option>
+              <option value="Infojobs">Infojobs</option>
+            </select>
+          </div>
+
           <!-- Ordenação -->
           <div>
             <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
@@ -2597,11 +2610,7 @@
       <div id="subpage-crm" class="subpage-content" style="background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
         <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 20px 0;">Pesquisa de Mercado — Tempo de Implementação de CRMs no Brasil</h3>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px;">
-          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
-            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tempo</div>
-            <div style="font-size:14px; font-weight:600; color:var(--text);">5-7 min</div>
-          </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
           <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
             <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Confidencialidade</div>
             <div style="font-size:14px; font-weight:600; color:var(--text);">Protegido</div>
@@ -2629,11 +2638,7 @@
       <div id="subpage-censo" class="subpage-content" style="display:none; background:white; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(10,48,61,0.06);">
         <h3 style="font-size:15px; font-weight:700; color:var(--text); margin:0 0 20px 0;">Censo da Comunidade CRM Academy & Parceiros</h3>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px;">
-          <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
-            <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tempo</div>
-            <div style="font-size:14px; font-weight:600; color:var(--text);">10-12 min</div>
-          </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
           <div style="background:white; border:1px solid #e2e8f0; padding:14px; border-radius:8px;">
             <div style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Confidencialidade</div>
             <div style="font-size:14px; font-weight:600; color:var(--text);">Protegido</div>
@@ -3337,22 +3342,50 @@ function formatarDataVagas(dataString) {
   }
 }
 
+// Inicializar cliente Supabase para Vagas
+let vagasSb = null;
+function initVagasSupabase() {
+  if (!vagasSb && window.supabase) {
+    try {
+      vagasSb = window.supabase.createClient(
+        "https://rwkbpafpniwzvlkfngag.supabase.co",
+        "sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C"
+      );
+      console.log('[VAGAS] Cliente Supabase inicializado com sucesso');
+      return true;
+    } catch (e) {
+      console.error('[VAGAS] Erro ao inicializar Supabase:', e);
+      return false;
+    }
+  }
+  return vagasSb !== null;
+}
+
 async function carregarVagasHub() {
   const container = document.getElementById('vagasContainerHub');
   container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
 
   try {
-    const { data, error } = await supabase
-      .from('vagas_crm')
-      .select('id, cargo, empresa, nivel, fonte, link, salario, descricao, requisitos, criado_em')
-      .order('criado_em', { ascending: false });
-
-    if (error) {
-      console.error("Erro ao carregar vagas:", error.message);
-      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+    // Garantir que o cliente Supabase está inicializado
+    if (!initVagasSupabase()) {
+      console.error('[VAGAS] Cliente Supabase não disponível');
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao conectar ao banco de dados. Tente novamente.</p></div>';
       return;
     }
 
+    console.log('[VAGAS] Iniciando consulta de vagas...');
+    const { data, error } = await vagasSb
+      .from('vagas_crm')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
+      return;
+    }
+
+    console.log('[VAGAS] Dados recebidos:', data?.length || 0, 'vagas');
     if (!data || data.length === 0) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">📭</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga cadastrada no momento.</p></div>';
       document.getElementById('totalVagasHub').textContent = '0';
@@ -3364,9 +3397,58 @@ async function carregarVagasHub() {
     document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
-    console.error('Erro inesperado ao carregar vagas:', err);
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas</p></div>';
+    console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
   }
+}
+
+function obterModalidade(vaga) {
+  const textoCompleto = `${vaga.work_model || ''} ${vaga.location || ''} ${vaga.title || ''} ${vaga.description || ''}`.toLowerCase();
+
+  if (textoCompleto.includes('remoto') || textoCompleto.includes('home office') || textoCompleto.includes('teletrabalho')) {
+    return { label: 'Remoto', badge: 'Remoto', icon: '🏠', color: 'rgba(34,197,94,0.1)', textColor: 'var(--accent)' };
+  }
+  if (textoCompleto.includes('híbrido') || textoCompleto.includes('hibrido')) {
+    return { label: 'Híbrido', badge: 'Híbrido', icon: '🔄', color: 'rgba(59,130,246,0.1)', textColor: '#3b82f6' };
+  }
+  if (vaga.location && vaga.location !== 'Não informado' && vaga.location.toLowerCase() !== 'não informado') {
+    return { label: `Presencial - ${vaga.location}`, badge: 'Presencial', icon: '🏢', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+  }
+  return { label: 'A combinar', badge: 'A combinar', icon: '📍', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+}
+
+function obterEmpresa(vaga) {
+  let empresa = vaga.empresa || vaga.company || vaga.employer || '';
+
+  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
+    if (vaga.title) {
+      const match = vaga.title.match(/.*?\s*-\s*(.+?)$/);
+      if (match && match[1]) {
+        empresa = match[1].trim();
+      }
+    }
+  }
+
+  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
+    empresa = 'Empresa Confidencial';
+  }
+
+  return empresa;
+}
+
+function mapearCampoVaga(vaga) {
+  return {
+    cargo: vaga.cargo || vaga.title || vaga.job_title || '',
+    empresa: obterEmpresa(vaga),
+    nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
+    fonte: vaga.fonte || vaga.source || vaga.job_source || '',
+    descricao: vaga.descricao || vaga.description || '',
+    requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
+    salario: vaga.salario || vaga.salary || vaga.salary_range || '',
+    criado_em: vaga.criado_em || vaga.created_at || vaga.posted_at || '',
+    link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
+    modalidade: obterModalidade(vaga)
+  };
 }
 
 function renderizarVagasHub(vagas) {
@@ -3378,17 +3460,20 @@ function renderizarVagasHub(vagas) {
   }
 
   document.getElementById('vagasCountHub').textContent = vagas.length;
-  container.innerHTML = vagas.map((vaga, idx) => `
+  container.innerHTML = vagas.map((vagaRaw, idx) => {
+    const vaga = mapearCampoVaga(vagaRaw);
+    return `
     <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
-      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo || '')}</h3>
-      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa || '')}</p>
+      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
+      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+        ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📌 ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📊 ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
 
-      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.descricao.substring(0, 100))}${vaga.descricao.length > 100 ? '...' : ''}</p>` : ''}
+      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${escapeHtmlVagas(vaga.descricao)}</p>` : ''}
 
       ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
 
@@ -3399,37 +3484,93 @@ function renderizarVagasHub(vagas) {
         ${vaga.link ? `<a href="${escapeHtmlVagas(vaga.link)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
-function aplicarFiltrosVagas() {
-  const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
-  const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
-  const nivel = document.getElementById('filtro-nivel-hub').value;
-  const ordem = document.getElementById('filtro-ordem-hub').value;
+async function aplicarFiltrosVagas() {
+  const container = document.getElementById('vagasContainerHub');
+  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
 
-  let vagasFiltradas = todasAsVagasHub.filter(vaga => {
-    const cargo_match = !cargo || (vaga.cargo && vaga.cargo.toLowerCase().includes(cargo.toLowerCase()));
-    const empresa_match = !empresa || (vaga.empresa && vaga.empresa.toLowerCase().includes(empresa.toLowerCase()));
-    const nivel_match = !nivel || (vaga.nivel && vaga.nivel.toLowerCase() === nivel.toLowerCase());
-    return cargo_match && empresa_match && nivel_match;
-  });
+  try {
+    initVagasSupabase();
 
-  if (ordem === 'empresa') {
-    vagasFiltradas.sort((a, b) => (a.empresa || '').localeCompare(b.empresa || ''));
-  } else if (ordem === 'cargo') {
-    vagasFiltradas.sort((a, b) => (a.cargo || '').localeCompare(b.cargo || ''));
+    const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
+    const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
+    const nivel = document.getElementById('filtro-nivel-hub').value;
+    const plataforma = document.getElementById('filtro-plataforma-hub').value;
+    const ordem = document.getElementById('filtro-ordem-hub').value;
+
+    let query = vagasSb.from('vagas_crm').select('*');
+
+    if (cargo) {
+      query = query.ilike('title', `%${cargo}%`);
+    }
+
+    if (empresa) {
+      query = query.ilike('company', `%${empresa}%`);
+    }
+
+    if (nivel && nivel !== '') {
+      const nivelNorm = nivel.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      if (nivelNorm.includes('clevel') || nivelNorm === 'executivo') {
+        query = query.or('title.ilike.%ceo%,title.ilike.%cto%,title.ilike.%cfo%,title.ilike.%coo%,title.ilike.%cro%,title.ilike.%cmo%,title.ilike.%chief%,title.ilike.%vice%,title.ilike.%vp%,title.ilike.%diretor%,title.ilike.%diretora%,title.ilike.%presidente%');
+      } else if (nivelNorm.includes('lideranca')) {
+        query = query.or('title.ilike.%gerente%,title.ilike.%coordenador%,title.ilike.%coordenad%,title.ilike.%supervisor%,title.ilike.%head%,title.ilike.%líder%,title.ilike.%lider%,title.ilike.%manager%');
+      } else if (nivelNorm.includes('senior')) {
+        query = query.or('title.ilike.%sênior%,title.ilike.%senior%,title.ilike.%sr%,title.ilike.%lead%');
+      } else if (nivelNorm.includes('pleno')) {
+        query = query.or('title.ilike.%pleno%,title.ilike.%pl%,title.ilike.%mid-level%,title.ilike.%mid level%');
+      } else if (nivelNorm.includes('junior')) {
+        query = query.or('title.ilike.%júnior%,title.ilike.%junior%,title.ilike.%jr%,title.ilike.%trainee%,title.ilike.%iniciante%');
+      } else if (nivelNorm.includes('estagio')) {
+        query = query.or('title.ilike.%estágio%,title.ilike.%estagio%,title.ilike.%intern%,title.ilike.%aprendiz%');
+      }
+    }
+
+    if (plataforma) {
+      query = query.ilike('source', `%${plataforma}%`);
+    }
+
+    if (ordem === 'empresa') {
+      query = query.order('company', { ascending: true });
+    } else if (ordem === 'cargo') {
+      query = query.order('title', { ascending: true });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    query = query.limit(300);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">🔍</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada com esses critérios.</p></div>';
+      document.getElementById('vagasCountHub').textContent = '0';
+      return;
+    }
+
+    renderizarVagasHub(data);
+  } catch (err) {
+    console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
   }
-
-  renderizarVagasHub(vagasFiltradas);
 }
 
 function limparFiltrosVagas() {
   document.getElementById('filtro-cargo-hub').value = '';
   document.getElementById('filtro-empresa-hub').value = '';
   document.getElementById('filtro-nivel-hub').value = '';
+  document.getElementById('filtro-plataforma-hub').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
-  renderizarVagasHub(todasAsVagasHub);
+  carregarVagasHub();
 }
 
 // ============ MATCH DE VAGA POR IA ============
