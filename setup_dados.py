@@ -68,13 +68,13 @@ for idx, row in df_cargo.iterrows():
 
 print(f"✅ {len(cargo_data)} cargos\n")
 
-# INSERIR EM LOTES
+# INSERIR EM LOTES (UPSERT para evitar erros de chave duplicada)
 def inserir_lotes(tabela, dados, tamanho_lote=100):
     total = len(dados)
     for i in range(0, total, tamanho_lote):
         lote = dados[i:i+tamanho_lote]
         try:
-            sb.table(tabela).insert(lote).execute()
+            sb.table(tabela).upsert(lote, ignore_duplicates=True).execute()
             progress = min(i+len(lote), total)
             print(f"  ✅ {progress}/{total}")
         except Exception as e:

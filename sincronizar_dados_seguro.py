@@ -106,12 +106,12 @@ def sincronizar_com_verificacao(tabela, dados_novos, chave_unica_fn):
         print(f"  ✅ Novos registros a inserir: {len(dados_para_inserir)}")
 
         if dados_para_inserir:
-            # Inserir em lotes
+            # Inserir em lotes (UPSERT para evitar erros de chave duplicada)
             tamanho_lote = 50
             for i in range(0, len(dados_para_inserir), tamanho_lote):
                 lote = dados_para_inserir[i:i+tamanho_lote]
                 try:
-                    sb.table(tabela).insert(lote).execute()
+                    sb.table(tabela).upsert(lote, ignore_duplicates=True).execute()
                     progress = min(i+len(lote), len(dados_para_inserir))
                     print(f"    ✅ {progress}/{len(dados_para_inserir)}")
                 except Exception as e:
