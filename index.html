@@ -3402,17 +3402,52 @@ async function carregarVagasHub() {
   }
 }
 
+function obterModalidade(vaga) {
+  const textoCompleto = `${vaga.work_model || ''} ${vaga.location || ''} ${vaga.title || ''} ${vaga.description || ''}`.toLowerCase();
+
+  if (textoCompleto.includes('remoto') || textoCompleto.includes('home office') || textoCompleto.includes('teletrabalho')) {
+    return { label: 'Remoto', badge: 'Remoto', icon: '🏠', color: 'rgba(34,197,94,0.1)', textColor: 'var(--accent)' };
+  }
+  if (textoCompleto.includes('híbrido') || textoCompleto.includes('hibrido')) {
+    return { label: 'Híbrido', badge: 'Híbrido', icon: '🔄', color: 'rgba(59,130,246,0.1)', textColor: '#3b82f6' };
+  }
+  if (vaga.location && vaga.location !== 'Não informado' && vaga.location.toLowerCase() !== 'não informado') {
+    return { label: `Presencial - ${vaga.location}`, badge: 'Presencial', icon: '🏢', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+  }
+  return { label: 'A combinar', badge: 'A combinar', icon: '📍', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+}
+
+function obterEmpresa(vaga) {
+  let empresa = vaga.empresa || vaga.company || vaga.employer || '';
+
+  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
+    if (vaga.title) {
+      const match = vaga.title.match(/.*?\s*-\s*(.+?)$/);
+      if (match && match[1]) {
+        empresa = match[1].trim();
+      }
+    }
+  }
+
+  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
+    empresa = 'Empresa Confidencial';
+  }
+
+  return empresa;
+}
+
 function mapearCampoVaga(vaga) {
   return {
     cargo: vaga.cargo || vaga.title || vaga.job_title || '',
-    empresa: vaga.empresa || vaga.company || vaga.employer || '',
+    empresa: obterEmpresa(vaga),
     nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
     fonte: vaga.fonte || vaga.source || vaga.job_source || '',
     descricao: vaga.descricao || vaga.description || '',
     requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
     salario: vaga.salario || vaga.salary || vaga.salary_range || '',
     criado_em: vaga.criado_em || vaga.created_at || vaga.posted_at || '',
-    link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || ''
+    link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
+    modalidade: obterModalidade(vaga)
   };
 }
 
@@ -3433,11 +3468,12 @@ function renderizarVagasHub(vagas) {
       <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+        ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📌 ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📊 ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
 
-      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4;">${escapeHtmlVagas(vaga.descricao.substring(0, 100))}${vaga.descricao.length > 100 ? '...' : ''}</p>` : ''}
+      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${escapeHtmlVagas(vaga.descricao)}</p>` : ''}
 
       ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
 
