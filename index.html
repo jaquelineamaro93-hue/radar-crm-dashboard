@@ -8172,11 +8172,32 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 // ====== FIM: GERENCIAMENTO DE SUB-ABAS ======
 
-document.addEventListener('DOMContentLoaded', () => {
-  authInit();
-  initVagasSupabase();
-  console.log('[INIT] Supabase para Vagas inicializado');
-});
+// ====== INTEGRAÇÃO OPENAI VIA SUPABASE EDGE FUNCTION ======
+async function processarComOpenAI(promptTexto) {
+  try {
+    if (!supabase) {
+      console.error('Supabase não inicializado');
+      return null;
+    }
+
+    const { data, error } = await supabase.functions.invoke('openai-assistant', {
+      body: { prompt: promptTexto }
+    });
+
+    if (error) {
+      console.error('Erro ao chamar Edge Function:', error);
+      return null;
+    }
+
+    return data?.resposta || null;
+  } catch (e) {
+    console.error('processarComOpenAI:', e);
+    return null;
+  }
+}
+// ====== FIM: INTEGRAÇÃO OPENAI ======
+
+document.addEventListener('DOMContentLoaded', authInit);
 
 </script>
 </body>
