@@ -3363,8 +3363,8 @@ async function carregarVagasHub() {
     console.log('[VAGAS] Iniciando consulta de vagas...');
     const { data, error } = await vagasSb
       .from('vagas_crm')
-      .select('id, cargo, empresa, nivel, fonte, link, salario, descricao, requisitos, criado_em')
-      .order('criado_em', { ascending: false });
+      .select('*')
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
@@ -3389,6 +3389,20 @@ async function carregarVagasHub() {
   }
 }
 
+function mapearCampoVaga(vaga) {
+  return {
+    cargo: vaga.cargo || vaga.title || vaga.job_title || '',
+    empresa: vaga.empresa || vaga.company || vaga.employer || '',
+    nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
+    fonte: vaga.fonte || vaga.source || vaga.job_source || '',
+    descricao: vaga.descricao || vaga.description || '',
+    requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
+    salario: vaga.salario || vaga.salary || vaga.salary_range || '',
+    criado_em: vaga.criado_em || vaga.created_at || vaga.posted_at || '',
+    link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || ''
+  };
+}
+
 function renderizarVagasHub(vagas) {
   const container = document.getElementById('vagasContainerHub');
   if (!vagas || vagas.length === 0) {
@@ -3398,10 +3412,12 @@ function renderizarVagasHub(vagas) {
   }
 
   document.getElementById('vagasCountHub').textContent = vagas.length;
-  container.innerHTML = vagas.map((vaga, idx) => `
+  container.innerHTML = vagas.map((vagaRaw, idx) => {
+    const vaga = mapearCampoVaga(vagaRaw);
+    return `
     <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
-      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo || '')}</h3>
-      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa || '')}</p>
+      <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
+      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;">📌 ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
@@ -3419,7 +3435,8 @@ function renderizarVagasHub(vagas) {
         ${vaga.link ? `<a href="${escapeHtmlVagas(vaga.link)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar →</a>` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function aplicarFiltrosVagas() {
