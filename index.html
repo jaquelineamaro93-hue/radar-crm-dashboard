@@ -1683,6 +1683,19 @@
             </select>
           </div>
 
+          <!-- Filtro por Plataforma -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Plataforma</label>
+            <select id="filtro-plataforma-hub" style="width:100%; font-size:12px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
+              <option value="">Todas as Plataformas</option>
+              <option value="Catho">Catho</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Gupy">Gupy</option>
+              <option value="Indeed">Indeed</option>
+              <option value="Infojobs">Infojobs</option>
+            </select>
+          </div>
+
           <!-- Ordenação -->
           <div>
             <label style="display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
@@ -3439,34 +3452,75 @@ function renderizarVagasHub(vagas) {
   }).join('');
 }
 
-function aplicarFiltrosVagas() {
-  const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
-  const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
-  const nivel = document.getElementById('filtro-nivel-hub').value;
-  const ordem = document.getElementById('filtro-ordem-hub').value;
+async function aplicarFiltrosVagas() {
+  const container = document.getElementById('vagasContainerHub');
+  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;">⌛</div><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
 
-  let vagasFiltradas = todasAsVagasHub.filter(vaga => {
-    const cargo_match = !cargo || (vaga.cargo && vaga.cargo.toLowerCase().includes(cargo.toLowerCase()));
-    const empresa_match = !empresa || (vaga.empresa && vaga.empresa.toLowerCase().includes(empresa.toLowerCase()));
-    const nivel_match = !nivel || (vaga.nivel && vaga.nivel.toLowerCase() === nivel.toLowerCase());
-    return cargo_match && empresa_match && nivel_match;
-  });
+  try {
+    initVagasSupabase();
 
-  if (ordem === 'empresa') {
-    vagasFiltradas.sort((a, b) => (a.empresa || '').localeCompare(b.empresa || ''));
-  } else if (ordem === 'cargo') {
-    vagasFiltradas.sort((a, b) => (a.cargo || '').localeCompare(b.cargo || ''));
+    const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
+    const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
+    const nivel = document.getElementById('filtro-nivel-hub').value;
+    const plataforma = document.getElementById('filtro-plataforma-hub').value;
+    const ordem = document.getElementById('filtro-ordem-hub').value;
+
+    let query = vagasSb.from('vagas_crm').select('*');
+
+    if (cargo) {
+      query = query.ilike('title', `%${cargo}%`);
+    }
+
+    if (empresa) {
+      query = query.ilike('company', `%${empresa}%`);
+    }
+
+    if (nivel) {
+      query = query.eq('level', nivel);
+    }
+
+    if (plataforma) {
+      query = query.ilike('source', `%${plataforma}%`);
+    }
+
+    if (ordem === 'empresa') {
+      query = query.order('company', { ascending: true });
+    } else if (ordem === 'cargo') {
+      query = query.order('title', { ascending: true });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    query = query.limit(300);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">🔍</div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada com esses critérios.</p></div>';
+      document.getElementById('vagasCountHub').textContent = '0';
+      return;
+    }
+
+    renderizarVagasHub(data);
+  } catch (err) {
+    console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;">❌</div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
   }
-
-  renderizarVagasHub(vagasFiltradas);
 }
 
 function limparFiltrosVagas() {
   document.getElementById('filtro-cargo-hub').value = '';
   document.getElementById('filtro-empresa-hub').value = '';
   document.getElementById('filtro-nivel-hub').value = '';
+  document.getElementById('filtro-plataforma-hub').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
-  renderizarVagasHub(todasAsVagasHub);
+  carregarVagasHub();
 }
 
 // ============ MATCH DE VAGA POR IA ============
