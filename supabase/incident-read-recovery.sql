@@ -1,0 +1,8 @@
+-- Preserve incident records; exclude the observed bulk insertion window from public reads.
+CREATE INDEX IF NOT EXISTS crm_clean_plataformas_sugeridas ON public.plataformas_sugeridas (created_at DESC,id) WHERE (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE POLICY crm_incident_read_boundary ON public.plataformas_sugeridas AS RESTRICTIVE FOR SELECT TO anon, authenticated USING (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE INDEX IF NOT EXISTS crm_clean_avaliacoes_plataformas ON public.avaliacoes_plataformas (created_at DESC,id) WHERE (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE POLICY crm_incident_read_boundary ON public.avaliacoes_plataformas AS RESTRICTIVE FOR SELECT TO anon, authenticated USING (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE INDEX IF NOT EXISTS crm_clean_recomendacoes ON public.recomendacoes (created_at DESC,id) WHERE (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE POLICY crm_incident_read_boundary ON public.recomendacoes AS RESTRICTIVE FOR SELECT TO anon, authenticated USING (created_at < timestamptz '2026-09-20 08:46:00+00' OR created_at >= timestamptz '2026-09-20 10:00:00+00');
+CREATE POLICY crm_platform_approved_boundary ON public.plataformas_sugeridas AS RESTRICTIVE FOR SELECT TO anon, authenticated USING (aprovado IS TRUE OR (SELECT public.crm_is_admin()) OR submitted_by=(SELECT auth.uid()));

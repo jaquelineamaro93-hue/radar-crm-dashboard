@@ -994,7 +994,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 .pf-card,.pro-card{background:#19191d!important;color:#f4f4f5!important;border:1px solid #3d3d45!important;border-radius:16px;min-width:0}
 .pf-card h3,.pro-card h3{color:#f4f4f5!important;margin:0;font-size:1.15rem}.pf-card p,.pro-card p{color:#cbd0d9;font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
 .pf-card .pf-tag{background:#25252b;color:#ddd;border-color:#555}.pf-card .pf-cat{color:#ffab70}.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}.pf-card{align-self:start;height:auto}.pf-card > .p-btn{flex:0 0 auto;min-height:44px}.result-grid{align-items:start}
-.crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.crm-review-actions button{flex:1;min-width:130px}
+.crm-review-scroll{max-height:min(620px,65vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:8px}.pro-card{align-self:start;height:auto}.crm-catalog-status{grid-column:1/-1}.crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.crm-review-actions button{flex:1;min-width:130px}
 .crm-review-box button,.crm-review-box summary{font-family:inherit;font-size:1rem;font-weight:600;line-height:1.4;min-height:44px;cursor:pointer}.crm-review-box .crm-button{background:#ff963f!important;color:#151515!important;border:1px solid #ff963f!important;padding:12px 16px}
 .crm-review-box .crm-outline{background:#25252b!important;color:#ffb47c!important;border:1px solid #a87551!important}.crm-review-box button:disabled{opacity:.6;cursor:wait}
 .crm-review-box details{margin-top:14px}.crm-review-box summary{padding:12px 0;color:#f4f4f5}.crm-review-form{display:grid;gap:14px;background:#232329;border:1px solid #4c4c55;border-radius:12px;padding:16px;margin:14px 0}
@@ -3141,8 +3141,8 @@ const ROWS = [{"senioridade": "Pleno", "exp": "entre 2  a 3 anos", "condicao": "
 const SENIORITY_ORDER = ['Estágio','Júnior','Transição de carreira','Pleno','Especialista','Sênior','Coordenação','Gerente'];
 const EXP_ORDER = ['menos de 1 ano','entre 1 a 2 anos','entre 2  a 3 anos','entre 3 a 4 anos','entre 4 a 5 anos','entre 5 a 6 anos','mais de 6 anos'];
 
-Chart.defaults.color = '#718289';
-Chart.defaults.borderColor = '#e4ddc8';
+Chart.defaults.color = '#e5e7eb';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.16)';
 Chart.defaults.font.family = "Inter, sans-serif";
 if(window.ChartDataLabels){ Chart.register(ChartDataLabels); }
 Chart.defaults.set('plugins.datalabels', {
@@ -3242,8 +3242,8 @@ function render(){
     type:'bar',
     data:{ labels: gSen.map(g=>[g.label,'(n='+g.n+')']),
       datasets:[
-        {label:'CLT médio', data: gSen.map(g=>g.clt), backgroundColor:'#0a303d', borderRadius:4},
-        {label:'PJ médio', data: gSen.map(g=>g.pj), backgroundColor:'#8b664b', borderRadius:4}
+        {label:'CLT médio', data: gSen.map(g=>g.clt), backgroundColor:'#55c9df', borderRadius:4},
+        {label:'PJ médio', data: gSen.map(g=>g.pj), backgroundColor:'#db9a6c', borderRadius:4}
       ]},
     options:{ responsive:true,
       maintainAspectRatio:false,
@@ -3251,7 +3251,7 @@ function render(){
       plugins:{
         legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
       },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:11}}} } }
   });
@@ -3272,8 +3272,8 @@ function render(){
     type:'line',
     data:{ labels: gExp.map(g=>[g.label,'(n='+g.n+')']),
       datasets:[
-        {label:'CLT médio', data: gExp.map(g=>g.clt), borderColor:'#0a303d', backgroundColor:'rgba(10,48,61,0.15)', fill:true, tension:0.35},
-        {label:'PJ médio', data: gExp.map(g=>g.pj), borderColor:'#a3623f', backgroundColor:'rgba(163,98,63,0.1)', fill:true, tension:0.35}
+        {label:'CLT médio', data: gExp.map(g=>g.clt), borderColor:'#55c9df', backgroundColor:'rgba(85,201,223,0.18)', fill:true, tension:0.35},
+        {label:'PJ médio', data: gExp.map(g=>g.pj), borderColor:'#f59e63', backgroundColor:'rgba(163,98,63,0.1)', fill:true, tension:0.35}
       ]},
     options:{ responsive:true,
       maintainAspectRatio:false,
@@ -3281,7 +3281,7 @@ function render(){
       plugins:{
         legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.raw)}},
-        datalabels:{display:true, align:'top', offset:6, color:'#0a303d', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
+        datalabels:{display:true, align:'top', offset:6, color:'#f3f4f6', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
       },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:10.5}}} } }
   });
@@ -3290,7 +3290,7 @@ function render(){
   charts.workmode = new Chart(document.getElementById('chartWorkmode'), {
     type:'doughnut',
     data:{ labels: gWork.map(g=>g.label+' ('+g.n+')'),
-      datasets:[{data: gWork.map(g=>g.n), backgroundColor:['#0a303d','#8b664b','#be8f63','#a3623f'], borderWidth:0}] },
+      datasets:[{data: gWork.map(g=>g.n), backgroundColor:['#55c9df','#db9a6c','#be8f63','#f59e63'], borderWidth:0}] },
     options:{ responsive:true,
       maintainAspectRatio:false, plugins:{
       legend:{position:'bottom',labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
@@ -3309,8 +3309,8 @@ function render(){
     type:'bar',
     data:{ labels: gCity.map(g=>g.label),
       datasets:[
-        {label:'Nº de profissionais', data: gCity.map(g=>g.n), backgroundColor:'#0a303d', borderRadius:4, yAxisID:'y'},
-        {label:'CLT médio (R$)', data: gCity.map(g=>g.clt), type:'line', borderColor:'#a3623f', backgroundColor:'#a3623f', yAxisID:'y1', tension:0.3}
+        {label:'Nº de profissionais', data: gCity.map(g=>g.n), backgroundColor:'#55c9df', borderRadius:4, yAxisID:'y'},
+        {label:'CLT médio (R$)', data: gCity.map(g=>g.clt), type:'line', borderColor:'#f59e63', backgroundColor:'#f59e63', yAxisID:'y1', tension:0.3}
       ]},
     options:{ responsive:true,
       maintainAspectRatio:false,
@@ -3319,7 +3319,7 @@ function render(){
         legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
         datalabels:{
           display: ctx => ctx.datasetIndex===0,
-          anchor:'end', align:'top', color:'#0a303d', font:{size:11,weight:'600'},
+          anchor:'end', align:'top', color:'#f3f4f6', font:{size:11,weight:'600'},
           formatter:v=>v
         }
       },
@@ -3331,7 +3331,7 @@ function render(){
   charts.diversity = new Chart(document.getElementById('chartDiversity'), {
     type:'pie',
     data:{ labels: gDiv.map(g=>g.label+' ('+g.n+')'),
-      datasets:[{data: gDiv.map(g=>g.n), backgroundColor:['#8b664b','#0a303d','#a3623f','#be8f63','#4f7d78'], borderWidth:0}] },
+      datasets:[{data: gDiv.map(g=>g.n), backgroundColor:['#db9a6c','#55c9df','#f59e63','#be8f63','#4f7d78'], borderWidth:0}] },
     options:{ responsive:true,
       maintainAspectRatio:false, plugins:{
       legend:{position:'bottom',labels:{boxWidth:14,font:{size:12.5},padding:14,usePointStyle:true,pointStyle:'circle'}},
@@ -3375,8 +3375,8 @@ new Chart(document.getElementById('chartPorte'), {
   data:{
     labels: COMPANY_DATA.porte.labels.map((l,i)=>[l,'(n='+COMPANY_DATA.porte.n[i]+')']),
     datasets:[
-      {label:'CLT médio', data: COMPANY_DATA.porte.clt, backgroundColor:'#0a303d', borderRadius:4},
-      {label:'PJ médio', data: COMPANY_DATA.porte.pj, backgroundColor:'#8b664b', borderRadius:4}
+      {label:'CLT médio', data: COMPANY_DATA.porte.clt, backgroundColor:'#55c9df', borderRadius:4},
+      {label:'PJ médio', data: COMPANY_DATA.porte.pj, backgroundColor:'#db9a6c', borderRadius:4}
     ]
   },
   options:{
@@ -3386,7 +3386,7 @@ new Chart(document.getElementById('chartPorte'), {
     plugins:{
       legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
       tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.raw)}},
-      datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
+      datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
     },
     scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:11}}} }
   }
@@ -3397,8 +3397,8 @@ new Chart(document.getElementById('chartSetor'), {
   data:{
     labels: COMPANY_DATA.setor.labels.map((l,i)=>[l,'(n='+COMPANY_DATA.setor.n[i]+')']),
     datasets:[
-      {label:'CLT médio', data: COMPANY_DATA.setor.clt, backgroundColor:'#0a303d', borderRadius:4},
-      {label:'PJ médio', data: COMPANY_DATA.setor.pj, backgroundColor:'#8b664b', borderRadius:4}
+      {label:'CLT médio', data: COMPANY_DATA.setor.clt, backgroundColor:'#55c9df', borderRadius:4},
+      {label:'PJ médio', data: COMPANY_DATA.setor.pj, backgroundColor:'#db9a6c', borderRadius:4}
     ]
   },
   options:{
@@ -3409,7 +3409,7 @@ new Chart(document.getElementById('chartSetor'), {
     plugins:{
       legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
       tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.raw)}},
-      datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
+      datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
     },
     scales:{ x:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, y:{ticks:{font:{size:12}}} }
   }
@@ -3426,7 +3426,7 @@ new Chart(document.getElementById('chartSetorCount'), {
   type:'bar',
   data:{
     labels: setorPorCount.map(s=>s.label),
-    datasets:[{label:'Nº de profissionais', data: setorPorCount.map(s=>s.n), backgroundColor:'#8b664b', borderRadius:4}]
+    datasets:[{label:'Nº de profissionais', data: setorPorCount.map(s=>s.n), backgroundColor:'#db9a6c', borderRadius:4}]
   },
   options:{
     indexAxis:'y',
@@ -3435,7 +3435,7 @@ new Chart(document.getElementById('chartSetorCount'), {
     layout:{padding:{right:34}},
     plugins:{
       legend:{display:false},
-      datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:11,weight:'600'}}
+      datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:11,weight:'600'}}
     },
     scales:{ x:{ticks:{font:{size:11}}}, y:{ticks:{font:{size:11.5}}} }
   }
@@ -3450,7 +3450,7 @@ new Chart(document.getElementById('chartGender'), {
     labels: GENDER_DATA.labels,
     datasets:[
       {label:'Mulheres', data: GENDER_DATA.mulheres_clt, backgroundColor:'#c76b93', borderRadius:4},
-      {label:'Demais', data: GENDER_DATA.outros_clt, backgroundColor:'#0a303d', borderRadius:4}
+      {label:'Demais', data: GENDER_DATA.outros_clt, backgroundColor:'#55c9df', borderRadius:4}
     ]
   },
   options:{
@@ -3460,7 +3460,7 @@ new Chart(document.getElementById('chartGender'), {
     plugins:{
       legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
       tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.raw)}},
-      datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:9.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
+      datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:9.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''}
     },
     scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:9.5}}} }
   }
@@ -3490,7 +3490,7 @@ new Chart(document.getElementById('chartTools'), {
     layout:{padding:{right:30}},
     plugins:{
       legend:{display:false},
-      datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:11,weight:'600'}}
+      datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:11,weight:'600'}}
     },
     scales:{ x:{ticks:{font:{size:11}}}, y:{ticks:{font:{size:11.5}}} }
   }
@@ -4503,11 +4503,11 @@ function renderCargos(){
   cargosCharts.nivel = new Chart(document.getElementById('chartGNivel'), {
     type:'bar',
     data:{ labels: gNiv.map(g=>[g.label,'(n='+g.n+')']),
-      datasets:[{label:'Salário médio', data: gNiv.map(g=>g.sal), backgroundColor:'#0a303d', borderRadius:4}] },
+      datasets:[{label:'Salário médio', data: gNiv.map(g=>g.sal), backgroundColor:'#55c9df', borderRadius:4}] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:10.5}}} } }
   });
   const sortedNiv = [...gNiv].filter(g=>g.sal!=null).sort((a,b)=>b.sal-a.sal);
@@ -4520,11 +4520,11 @@ function renderCargos(){
   cargosCharts.porte = new Chart(document.getElementById('chartGPorte'), {
     type:'bar',
     data:{ labels: gPorte.map(g=>[g.label,'(n='+g.n+')']),
-      datasets:[{label:'Salário médio', data: gPorte.map(g=>g.sal), backgroundColor:'#8b664b', borderRadius:4}] },
+      datasets:[{label:'Salário médio', data: gPorte.map(g=>g.sal), backgroundColor:'#db9a6c', borderRadius:4}] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}} } }
   });
 
@@ -4532,10 +4532,10 @@ function renderCargos(){
   cargosCharts.ramo = new Chart(document.getElementById('chartGRamo'), {
     type:'bar',
     data:{ labels: gRamo.map(g=>g.label),
-      datasets:[{label:'Salário médio', data: gRamo.map(g=>g.sal), backgroundColor:'#a3623f', borderRadius:4}] },
+      datasets:[{label:'Salário médio', data: gRamo.map(g=>g.sal), backgroundColor:'#f59e63', borderRadius:4}] },
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, layout:{padding:{right:34}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ x:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:10.5}}}, y:{ticks:{font:{size:11}}} } }
   });
 
@@ -4543,7 +4543,7 @@ function renderCargos(){
   cargosCharts.modelo = new Chart(document.getElementById('chartGModelo'), {
     type:'doughnut',
     data:{ labels: gModelo.map(g=>g.label+' ('+g.n+')'),
-      datasets:[{data: gModelo.map(g=>g.n), backgroundColor:['#0a303d','#8b664b','#be8f63'], borderWidth:0}] },
+      datasets:[{data: gModelo.map(g=>g.n), backgroundColor:['#55c9df','#db9a6c','#be8f63'], borderWidth:0}] },
     options:{ responsive:true,
       maintainAspectRatio:false, plugins:{
       legend:{position:'bottom',labels:{boxWidth:14,font:{size:12.5},padding:14,usePointStyle:true,pointStyle:'circle'}},
@@ -4555,7 +4555,7 @@ function renderCargos(){
   cargosCharts.exp = new Chart(document.getElementById('chartGExp'), {
     type:'line',
     data:{ labels: gExp.map(g=>[g.label,'(n='+g.n+')']),
-      datasets:[{label:'Salário médio', data: gExp.map(g=>g.sal), borderColor:'#0a303d', backgroundColor:'rgba(10,48,61,0.15)', fill:true, tension:0.35}] },
+      datasets:[{label:'Salário médio', data: gExp.map(g=>g.sal), borderColor:'#55c9df', backgroundColor:'rgba(85,201,223,0.18)', fill:true, tension:0.35}] },
     options:{ responsive:true,
       maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}} },
@@ -4569,7 +4569,7 @@ function renderStaticCargosCharts(){
     data:{ labels: CRM_RANKING.labels,
       datasets:[{label:'Menções', data: CRM_RANKING.n, backgroundColor:'#4f7d78', borderRadius:4}] },
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, layout:{padding:{right:30}},
-      plugins:{ legend:{display:false}, datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:11,weight:'600'}} },
+      plugins:{ legend:{display:false}, datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:11,weight:'600'}} },
       scales:{ x:{ticks:{font:{size:11}}}, y:{ticks:{font:{size:11.5}}} } }
   });
 
@@ -4581,7 +4581,7 @@ function renderStaticCargosCharts(){
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10.5,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}}, x:{ticks:{font:{size:10}}} } }
   });
 
@@ -4607,11 +4607,11 @@ function renderStaticCargosCharts(){
   new Chart(document.getElementById('chartGeneroTotal'), {
     type:'bar',
     data:{ labels: CARGOS_CHARTS.genero_total.labels.map((l,i)=>l+' (n='+CARGOS_CHARTS.genero_total.n[i]+')'),
-      datasets:[{label:'Salário médio', data: CARGOS_CHARTS.genero_total.sal, backgroundColor:['#a3623f','#0a303d'], borderRadius:4}] },
+      datasets:[{label:'Salário médio', data: CARGOS_CHARTS.genero_total.sal, backgroundColor:['#f59e63','#55c9df'], borderRadius:4}] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:11,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:11,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}} } }
   });
 
@@ -4620,14 +4620,14 @@ function renderStaticCargosCharts(){
     type:'bar',
     data:{ labels: gn.labels.map((l,i)=>[l,'(F:'+gn.fem_n[i]+' M:'+gn.masc_n[i]+')']),
       datasets:[
-        {label:'Feminino', data: gn.fem_sal, backgroundColor:'#a3623f', borderRadius:4},
-        {label:'Masculino', data: gn.masc_sal, backgroundColor:'#0a303d', borderRadius:4},
+        {label:'Feminino', data: gn.fem_sal, backgroundColor:'#f59e63', borderRadius:4},
+        {label:'Masculino', data: gn.masc_sal, backgroundColor:'#55c9df', borderRadius:4},
       ] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{labels:{boxWidth:14,font:{size:12},padding:14,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:9,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:9,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:10.5}}}, x:{ticks:{font:{size:9}}} } }
   });
 
@@ -4636,14 +4636,14 @@ function renderStaticCargosCharts(){
     type:'bar',
     data:{ labels: cn.labels,
       datasets:[
-        {label:'Empregados', data: cn.empregado_salario, backgroundColor:'#0a303d', borderRadius:4},
-        {label:'Open to Work', data: cn.otw_salario, backgroundColor:'#8b664b', borderRadius:4},
+        {label:'Empregados', data: cn.empregado_salario, backgroundColor:'#55c9df', borderRadius:4},
+        {label:'Open to Work', data: cn.otw_salario, backgroundColor:'#db9a6c', borderRadius:4},
       ] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{labels:{boxWidth:14,font:{size:13},padding:16,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRLg(c.raw)}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10,weight:'600'}, formatter:v=>v?'R$'+Math.round(v/1000)+'k':''} },
       scales:{ y:{ticks:{callback:v=>'R$'+(v/1000)+'k',font:{size:11}}} } }
   });
 
@@ -4652,14 +4652,14 @@ function renderStaticCargosCharts(){
     type:'bar',
     data:{ labels: cm.labels,
       datasets:[
-        {label:'Empregados', data: cm.empregado_pct, backgroundColor:'#0a303d', borderRadius:4},
-        {label:'Open to Work', data: cm.otw_pct, backgroundColor:'#8b664b', borderRadius:4},
+        {label:'Empregados', data: cm.empregado_pct, backgroundColor:'#55c9df', borderRadius:4},
+        {label:'Open to Work', data: cm.otw_pct, backgroundColor:'#db9a6c', borderRadius:4},
       ] },
     options:{ responsive:true,
       maintainAspectRatio:false, layout:{padding:{top:22}},
       plugins:{ legend:{labels:{boxWidth:14,font:{size:12},padding:14,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}},
-        datalabels:{display:true, anchor:'end', align:'top', color:'#0a303d', font:{size:10,weight:'600'}, formatter:v=>v+'%'} },
+        datalabels:{display:true, anchor:'end', align:'top', color:'#f3f4f6', font:{size:10,weight:'600'}, formatter:v=>v+'%'} },
       scales:{ y:{ticks:{callback:v=>v+'%',font:{size:11}}} } }
   });
 
@@ -4668,8 +4668,8 @@ function renderStaticCargosCharts(){
     type:'line',
     data:{ labels: ce.labels,
       datasets:[
-        {label:'Empregados', data: ce.empregado_pct, borderColor:'#0a303d', backgroundColor:'rgba(10,48,61,0.15)', fill:true, tension:0.3},
-        {label:'Open to Work', data: ce.otw_pct, borderColor:'#8b664b', backgroundColor:'rgba(139,102,75,0.12)', fill:true, tension:0.3},
+        {label:'Empregados', data: ce.empregado_pct, borderColor:'#55c9df', backgroundColor:'rgba(85,201,223,0.18)', fill:true, tension:0.3},
+        {label:'Open to Work', data: ce.otw_pct, borderColor:'#db9a6c', backgroundColor:'rgba(139,102,75,0.12)', fill:true, tension:0.3},
       ] },
     options:{ responsive:true,
       maintainAspectRatio:false,
@@ -5324,14 +5324,25 @@ async function submitFreelancer(){
 }
 
 // ============ RECOMENDAR / NÃO RECOMENDAR (compartilhado entre Freelancers e Agências) ============
+let CRM_RECS_READY=false;
 let RECOMENDACOES = {};
+
+async function crmReadCommunityRows(sb,table,columns,approved=false){
+ const rows=[]; const pageSize=500;
+ for(let page=0;page<20;page++){
+  let query=sb.from(table).select(columns).or('created_at.lt.2026-09-20T08:46:00Z,created_at.gte.2026-09-20T10:00:00Z').order('created_at',{ascending:false}).order('id',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
+  if(approved)query=query.eq('aprovado',true);
+  const {data,error}=await query;if(error)throw error;rows.push(...(data||[]));if((data||[]).length<pageSize)return rows;
+ }
+ throw Error('A lista é muito grande para carregar de uma vez. Tente novamente mais tarde.');
+}
 
 function recKey(tipo, nome){ return tipo+'::'+nome; }
 
 async function loadRecomendacoes(sb){
   if(!sb) return;
   try{
-    const {data, error} = await sb.from('recomendacoes').select('*');
+    const data = await crmReadCommunityRows(sb,'recomendacoes','id,tipo,nome,recomenda,created_at'); const error=null;
     if(error) throw error;
     RECOMENDACOES = {};
     (data||[]).forEach(r=>{
@@ -5339,7 +5350,8 @@ async function loadRecomendacoes(sb){
       if(!RECOMENDACOES[k]) RECOMENDACOES[k] = {sim:0, nao:0};
       r.recomenda ? RECOMENDACOES[k].sim++ : RECOMENDACOES[k].nao++;
     });
-  }catch(e) { console.error(e); }
+    CRM_RECS_READY=true;return true;
+  }catch(e) { console.error('Não foi possível carregar recomendações',e);return false; }
 }
 
 function recJaVotou(tipo, nome){
@@ -5376,7 +5388,7 @@ async function recVotar(sb, tipo, nome, recomenda, reloadFn){
   }finally{crmReviewPending.delete(pendingKey);}
 }
 
-const AVATAR_PALETTE = ['#0a303d','#8b664b','#a3623f','#be8f63','#4f7d78','#5b7c99','#a97ca0','#5b8c6f'];
+const AVATAR_PALETTE = ['#55c9df','#db9a6c','#f59e63','#be8f63','#4f7d78','#5b7c99','#a97ca0','#5b8c6f'];
 function avatarColorFor(nome){
   let hash = 0;
   for(let i=0;i<nome.length;i++){ hash = nome.charCodeAt(i) + ((hash<<5)-hash); }
@@ -5631,11 +5643,11 @@ function initPfComparativo(){
       new Chart(canvas2, {
         type:'bar',
         data:{ labels: ordenado.map(o=>o.tool),
-          datasets:[{label:'% de cobertura', data: ordenado.map(o=>o.pct), backgroundColor:'#0a303d', borderRadius:4}] },
+          datasets:[{label:'% de cobertura', data: ordenado.map(o=>o.pct), backgroundColor:'#55c9df', borderRadius:4}] },
         options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, layout:{padding:{right:34}},
           plugins:{ legend:{display:false},
             tooltip:{callbacks:{label:c=>c.raw+'% ('+CRM_TOOLS_DATA.totais[ordenado[c.dataIndex].tool]+'/'+CRM_TOOLS_DATA.total_geral+')'}},
-            datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:11,weight:'600'}, formatter:v=>v+'%'} },
+            datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:11,weight:'600'}, formatter:v=>v+'%'} },
           scales:{ x:{ticks:{callback:v=>v+'%',font:{size:10.5}}}, y:{ticks:{font:{size:11}}} } }
       });
     }
@@ -6007,10 +6019,10 @@ function initFerramentasTab(){
   new Chart(document.getElementById('chartFerramentasTotal'), {
     type:'bar',
     data:{ labels: ordenado.map(o=>o.tool),
-      datasets:[{label:'% de cobertura', data: ordenado.map(o=>o.pct), backgroundColor:'#0a303d', borderRadius:4}] },
+      datasets:[{label:'% de cobertura', data: ordenado.map(o=>o.pct), backgroundColor:'#55c9df', borderRadius:4}] },
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, layout:{padding:{right:34}},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+'% ('+ordenado[c.dataIndex].n+'/'+CRM_TOOLS_DATA.total_geral+')'}},
-        datalabels:{display:true, anchor:'end', align:'right', color:'#0a303d', font:{size:11,weight:'600'}, formatter:v=>v+'%'} },
+        datalabels:{display:true, anchor:'end', align:'right', color:'#f3f4f6', font:{size:11,weight:'600'}, formatter:v=>v+'%'} },
       scales:{ x:{ticks:{callback:v=>v+'%',font:{size:10.5}}}, y:{ticks:{font:{size:11}}} } }
   });
 
@@ -6409,23 +6421,23 @@ function renderChartCltPj(cltParts, pjParts){
       labels: ['CLT (mensal)', 'PJ (faturamento necessário)'],
       datasets: [
         { label:'Base + 13º/Férias/FGTS prop.', data:[cltParts[0], 0], backgroundColor:'#5b7c99', stack:'s' },
-        { label:'Benefícios CLT', data:[cltParts[1], 0], backgroundColor:'#0a303d', stack:'s' },
+        { label:'Benefícios CLT', data:[cltParts[1], 0], backgroundColor:'#55c9df', stack:'s' },
         { label:'Equivalente ao líquido CLT', data:[0, pjParts[0]], backgroundColor:'#5b7c99', stack:'s' },
-        { label:'Custos operacionais PJ', data:[0, pjParts[1]], backgroundColor:'#a3623f', stack:'s' },
+        { label:'Custos operacionais PJ', data:[0, pjParts[1]], backgroundColor:'#f59e63', stack:'s' },
         { label:'Impostos (MEI/Simples)', data:[0, pjParts[2]], backgroundColor:'#be8f63', stack:'s' },
-        { label:'Reserva de segurança', data:[0, pjParts[3]], backgroundColor:'#8b664b', stack:'s' },
+        { label:'Reserva de segurança', data:[0, pjParts[3]], backgroundColor:'#db9a6c', stack:'s' },
       ],
     },
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'bottom', labels:{color:'#0a303d', font:{size:11}, boxWidth:12}},
+        legend:{position:'bottom', labels:{color:'#f3f4f6', font:{size:11}, boxWidth:12}},
         tooltip:{callbacks:{label:c=> c.dataset.label+': '+fmtBRL(c.raw)}},
         datalabels:{display:false},
       },
       scales:{
-        x:{ stacked:true, ticks:{color:'#718289'}, grid:{color:'#e4ddc8'} },
-        y:{ stacked:true, ticks:{color:'#718289', callback:v=>fmtBRL(v)}, grid:{color:'#e4ddc8'} },
+        x:{ stacked:true, ticks:{color:'#e5e7eb'}, grid:{color:'#e4ddc8'} },
+        y:{ stacked:true, ticks:{color:'#e5e7eb', callback:v=>fmtBRL(v)}, grid:{color:'#e4ddc8'} },
       },
     },
   });
@@ -6741,6 +6753,7 @@ const PF_TOOLS_SEED = [
   {name:'Iterable', cat:'CDP', site:'https://iterable.com/?utm_source=conexaocrm_comu_jaqueamaro', desc:'Plataforma de automação e crescimento cross-channel baseada em dados para construir experiências de comunicação individualizadas em escala.', tags:['Cross-channel','Growth']},
 ];
 let PF_TOOLS = PF_TOOLS_SEED.map(t=>({...t,isSuggested:false}));
+let PF_REVIEWS_READY=false;
 let PF_AVALIACOES = {}; // { toolName: [{nota, comentario, avaliador}] }
 let pfActiveCat = 'Todos';
 let pfActiveSort = 'recomendadas';
@@ -6786,19 +6799,19 @@ async function pfRejectSuggest(id){
   loadPlataformas();
 }
 
-function loadPlataformas(){
+async function loadPlataformas(){
   const gridEl = document.getElementById('pfGrid');
   renderPfGrid();
   if(!pfSb){
     gridEl.insertAdjacentHTML('afterbegin','<p role="status">Catálogo original disponível. Não foi possível atualizar sugestões e avaliações.</p>');
     return;
   }
-  Promise.all([
-    pfSb.from('plataformas_sugeridas').select('*').eq('aprovado', true).order('created_at', {ascending:false}),
-    pfSb.from('avaliacoes_plataformas').select('*'),
+  return Promise.all([
+    crmReadCommunityRows(pfSb,'plataformas_sugeridas','id,nome,categoria,descricao,site,created_at',true).then(data=>({data})).catch(error=>({error})),
+    crmReadCommunityRows(pfSb,'avaliacoes_plataformas','id,plataforma_nome,nota,comentario,avaliador,created_at').then(data=>({data})).catch(error=>({error})),
     loadRecomendacoes(pfSb),
-  ]).then(([pfRes, avRes])=>{
-    if(pfRes.error) throw pfRes.error;
+  ]).then(([pfRes, avRes, recReady])=>{
+    if(pfRes.error) console.warn('Sugestões indisponíveis',pfRes.error);
     if(avRes.error) console.warn('Avaliações indisponíveis',avRes.error);
     const sugeridas = (pfRes.data||[]).map(t=>({
       name: t.nome, cat: t.categoria || 'CRM', desc:t.descricao||'', tags: [], site: t.site || t.url || '', isSuggested:true
@@ -6807,13 +6820,13 @@ function loadPlataformas(){
     const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
     const seedNames = new Set(PF_TOOLS_SEED.map(t=>norm(t.name)));
     const novasSugeridas = sugeridas.filter(t=>!seedNames.has(norm(t.name)));
-    PF_TOOLS = [...PF_TOOLS_SEED.map(t=>({...t, isSuggested:false})), ...novasSugeridas];
+    if(!pfRes.error)PF_TOOLS = [...PF_TOOLS_SEED.map(t=>({...t, isSuggested:false})), ...novasSugeridas];
 
-    PF_AVALIACOES = {};
+    if(!avRes.error){PF_REVIEWS_READY=true;PF_AVALIACOES = {};
     (avRes.data||[]).forEach(a=>{
       if(!PF_AVALIACOES[a.plataforma_nome]) PF_AVALIACOES[a.plataforma_nome] = [];
       PF_AVALIACOES[a.plataforma_nome].push(a);
-    });
+    });}
 
     // atualiza filtro de categorias com o que veio das sugeridas também
     const catsExtra = [...new Set(PF_TOOLS.map(t=>t.cat).filter(Boolean))];
@@ -6827,10 +6840,11 @@ function loadPlataformas(){
 
     renderPfGrid();
     pfShowAdminPanel();
+    if(pfRes.error||avRes.error||!recReady)gridEl.insertAdjacentHTML('afterbegin','<p class="crm-catalog-status" role="status">Parte dos dados não pôde ser atualizada. Os dados já carregados foram mantidos. <button onclick="loadPlataformas()">Tentar novamente</button></p>');
   }).catch(e=>{
     console.error(e);
     renderPfGrid();
-    gridEl.insertAdjacentHTML('afterbegin','<p role="status">Exibindo o catálogo disponível. Não foi possível atualizar os dados. <button onclick="loadPlataformas()">Tentar novamente</button></p>');
+    gridEl.insertAdjacentHTML('afterbegin','<p class="crm-catalog-status" role="status">Exibindo o catálogo disponível. Não foi possível atualizar os dados. <button onclick="loadPlataformas()">Tentar novamente</button></p>');
   });
 }
 
@@ -7167,7 +7181,7 @@ function activateLoggedArea(userProfile){
   const loginBtn = document.getElementById('loginBtn');
   if(loginBtn && !isAdminLoggedIn && !currentUserEmail){
     loginBtn.textContent = nome.split(' ')[0].toUpperCase();
-    loginBtn.style.background = '#0a303d';
+    loginBtn.style.background = '#55c9df';
     loginBtn.onclick = openAccountModal;
   }
 }
@@ -8058,8 +8072,8 @@ function crmValidateSubmission(payload){
 }
 function crmReviewSection(kind,name,reviews){
  const cid=kind+'-'+flCardId(name),avg=reviews.length?(reviews.reduce((a,r)=>a+Number(r.nota),0)/reviews.length).toFixed(1):null;
- const rec=RECOMENDACOES[recKey(kind,name)]||{sim:0,nao:0};
- return '<section class="crm-review-box" data-kind="'+kind+'" data-name="'+escapeHtml(name)+'"><p>'+(avg?'Avaliação: '+avg+' / 5 · '+reviews.length+' opiniões':'Ainda sem avaliações')+'</p><div class="crm-review-actions"><button type="button" class="crm-button crm-outline" onclick="crmRecommend(this)">Recomendar ('+rec.sim+')</button><button type="button" class="crm-button crm-outline" onclick="crmOpenReview(this)">Avaliar e comentar</button></div><p class="crm-review-status" role="status" aria-live="polite"></p><details><summary>Avaliações e comentários ('+reviews.length+')</summary><form class="crm-review-form" onsubmit="crmSubmitReviewForm(event)"><label>Sua nota</label><div class="crm-rating-row" data-rating="0" role="group" aria-label="Escolha uma nota de 1 a 5">'+[1,2,3,4,5].map(v=>'<button type="button" data-value="'+v+'" aria-label="Nota '+v+' de 5" aria-pressed="false" onclick="crmChooseRating(this)">'+v+' ★</button>').join('')+'</div><label for="crm-comment-'+cid+'">Conte como foi sua experiência (opcional)</label><textarea id="crm-comment-'+cid+'" name="comment" maxlength="1000" placeholder="Escreva sua avaliação aqui…"></textarea><label><input type="checkbox" name="anonymous" checked> Publicar sem mostrar meu nome</label><p class="crm-review-hint">É necessário estar logado. Até 5 envios em 24 horas, somando todos os formulários. Termos impróprios não são aceitos.</p><button class="crm-button" type="submit">Enviar avaliação</button><p class="crm-review-status" role="status" aria-live="polite"></p></form>'+reviews.map(r=>'<article class="crm-review-item"><strong>'+Number(r.nota)+' / 5</strong> · '+escapeHtml(r.avaliador||'Membro anônimo')+'<p>'+escapeHtml(r.comentario||'Sem comentário.')+'</p></article>').join('')+'</details></section>';
+ const rec=RECOMENDACOES[recKey(kind,name)]||{sim:0,nao:0};const reviewsReady=kind!=='plataforma'||PF_REVIEWS_READY;
+ return '<section class="crm-review-box" data-kind="'+kind+'" data-name="'+escapeHtml(name)+'"><p>'+(!reviewsReady?'Carregando avaliações…':avg?'Avaliação: '+avg+' / 5 · '+reviews.length+' opiniões':'Ainda sem avaliações')+'</p><div class="crm-review-actions"><button type="button" class="crm-button crm-outline" onclick="crmRecommend(this)">Recomendar'+(CRM_RECS_READY?' ('+rec.sim+')':'')+'</button><button type="button" class="crm-button crm-outline" onclick="crmOpenReview(this)">Avaliar e comentar</button></div><p class="crm-review-status" role="status" aria-live="polite"></p><details><summary>Avaliações e comentários'+(reviewsReady?' ('+reviews.length+')':'')+'</summary><div class="crm-review-scroll" tabindex="0" aria-label="Formulário e avaliações"><form class="crm-review-form" onsubmit="crmSubmitReviewForm(event)"><label>Sua nota</label><div class="crm-rating-row" data-rating="0" role="group" aria-label="Escolha uma nota de 1 a 5">'+[1,2,3,4,5].map(v=>'<button type="button" data-value="'+v+'" aria-label="Nota '+v+' de 5" aria-pressed="false" onclick="crmChooseRating(this)">'+v+' ★</button>').join('')+'</div><label for="crm-comment-'+cid+'">Conte como foi sua experiência (opcional)</label><textarea id="crm-comment-'+cid+'" name="comment" maxlength="1000" placeholder="Escreva sua avaliação aqui…"></textarea><label><input type="checkbox" name="anonymous" checked> Publicar sem mostrar meu nome</label><p class="crm-review-hint">É necessário estar logado. Até 5 envios em 24 horas, somando todos os formulários. Termos impróprios não são aceitos.</p><button class="crm-button" type="submit">Enviar avaliação</button><p class="crm-review-status" role="status" aria-live="polite"></p></form>'+reviews.map(r=>'<article class="crm-review-item"><strong>'+Number(r.nota)+' / 5</strong> · '+escapeHtml(r.avaliador||'Membro anônimo')+'<p>'+escapeHtml(r.comentario||'Sem comentário.')+'</p></article>').join('')+'</div></details></section>';
 }
 function crmChooseRating(button){const row=button.parentElement;row.dataset.rating=button.dataset.value;row.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
 function crmOpenReview(button){const box=button.closest('.crm-review-box');box.querySelector('details').open=true;box.querySelector('.crm-rating-row button').focus();}
