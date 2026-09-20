@@ -993,7 +993,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 <style id="crm-reviews-v2">
 .pf-card,.pro-card{background:#19191d!important;color:#f4f4f5!important;border:1px solid #3d3d45!important;border-radius:16px;min-width:0}
 .pf-card h3,.pro-card h3{color:#f4f4f5!important;margin:0;font-size:1.15rem}.pf-card p,.pro-card p{color:#cbd0d9;font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
-.pf-card .pf-tag{background:#25252b;color:#ddd;border-color:#555}.pf-card .pf-cat{color:#ffab70}.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.pf-card .pf-tag{background:#25252b;color:#ddd;border-color:#555}.pf-card .pf-cat{color:#ffab70}.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}.pf-card{align-self:start;height:auto}.pf-card > .p-btn{flex:0 0 auto;min-height:44px}.result-grid{align-items:start}
 .crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.crm-review-actions button{flex:1;min-width:130px}
 .crm-review-box button,.crm-review-box summary{font-family:inherit;font-size:1rem;font-weight:600;line-height:1.4;min-height:44px;cursor:pointer}.crm-review-box .crm-button{background:#ff963f!important;color:#151515!important;border:1px solid #ff963f!important;padding:12px 16px}
 .crm-review-box .crm-outline{background:#25252b!important;color:#ffb47c!important;border:1px solid #a87551!important}.crm-review-box button:disabled{opacity:.6;cursor:wait}
@@ -3919,11 +3919,18 @@ function parseSheet(csvText){
 
 async function loadSheet(){
  const epoch=crmAuthEpoch;const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');dot.className='status-dot';txt.textContent='Carregando profissionais…';crmSkeleton(crmById('searchResults'));
- try{const people=await crmFetchDirectory('talents',false);if(epoch!==crmAuthEpoch)return;
-  PEOPLE=people.map(p=>({...p,linkedin:p.linkedin||'',whatsapp:p.whatsapp||'',grupo:'',cidadeNorm:extractCidadeEstado(p.local||'').cidade,estadoNorm:extractCidadeEstado(p.local||'').estado}));searchLoaded=true;dot.className='status-dot ok';txt.textContent=PEOPLE.length+' profissionais · '+'Open to Work, contatos públicos';populateSearchFilters();renderSearch();crmById('searchResults').removeAttribute('aria-busy');
+ try{const people=await crmFetchDirectory('talents',crmSignedIn());if(epoch!==crmAuthEpoch)return;
+  PEOPLE=people.map(p=>({...p,condicao:crmWorkModel(p.condicao),linkedin:p.linkedin||'',whatsapp:p.whatsapp||'',grupo:'',cidadeNorm:extractCidadeEstado(p.local||'').cidade,estadoNorm:extractCidadeEstado(p.local||'').estado}));searchLoaded=true;dot.className='status-dot ok';txt.textContent=PEOPLE.length+' profissionais · '+'Open to Work, contatos públicos';populateSearchFilters();renderSearch();crmById('searchResults').removeAttribute('aria-busy');
  }catch(e){if(epoch!==crmAuthEpoch)return;dot.className='status-dot err';txt.textContent=e.message;crmById('searchResults').removeAttribute('aria-busy');document.getElementById('searchResults').innerHTML='<p class="empty-state">Não foi possível carregar os profissionais. <button onclick="loadSheet()">Tentar novamente</button></p>';}
 }
 
+function crmWorkModel(value){
+ const raw=String(value||'').trim(), key=normalizeAccents(raw.toLowerCase());
+ if(/^remot[oa]$/.test(key))return 'Remoto';
+ if(/^hibrid[oa]$/.test(key))return 'Híbrido';
+ if(key==='presencial')return 'Presencial';
+ return raw;
+}
 function populateSearchFilters(){
   const fill = (id, values) => {
     const sel = document.getElementById(id);
@@ -5185,7 +5192,7 @@ setTimeout(() => {
 
 // ============ CARREGAR ESTATÍSTICAS REAIS DO DASHBOARD ============
 async function loadDashboardStats(){
- try{const people=await crmFetchDirectory('talents',false);const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent=String(people.length);}catch{const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent='—';}
+ try{const people=await crmFetchDirectory('talents',crmSignedIn());const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent=String(people.length);}catch{const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent='—';}
 }
 
 function flInitSB(){
