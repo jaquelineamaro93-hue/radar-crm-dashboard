@@ -989,6 +989,21 @@ header.crm-navbar{position:sticky;top:0;z-index:90;display:block;height:80px;min
 .pill-filter{background:#232323;color:#e4e4e4}.pill-filter.active{background:#ff8a3d;color:#171717;border-color:#ff8a3d}
 button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3px}
 </style>
+
+<style id="crm-reviews-v2">
+.pf-card,.pro-card{background:#19191d!important;color:#f4f4f5!important;border:1px solid #3d3d45!important;border-radius:16px;min-width:0}
+.pf-card h3,.pro-card h3{color:#f4f4f5!important;margin:0;font-size:1.15rem}.pf-card p,.pro-card p{color:#cbd0d9;font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
+.pf-card .pf-tag{background:#25252b;color:#ddd;border-color:#555}.pf-card .pf-cat{color:#ffab70}.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.crm-review-actions button{flex:1;min-width:130px}
+.crm-review-box button,.crm-review-box summary{font-family:inherit;font-size:1rem;font-weight:600;line-height:1.4;min-height:44px;cursor:pointer}.crm-review-box .crm-button{background:#ff963f!important;color:#151515!important;border:1px solid #ff963f!important;padding:12px 16px}
+.crm-review-box .crm-outline{background:#25252b!important;color:#ffb47c!important;border:1px solid #a87551!important}.crm-review-box button:disabled{opacity:.6;cursor:wait}
+.crm-review-box details{margin-top:14px}.crm-review-box summary{padding:12px 0;color:#f4f4f5}.crm-review-form{display:grid;gap:14px;background:#232329;border:1px solid #4c4c55;border-radius:12px;padding:16px;margin:14px 0}
+.crm-review-form label{font-size:1rem;color:#f4f4f5}.crm-review-form textarea{box-sizing:border-box;width:100%;min-height:110px;resize:vertical;background:#18181c!important;color:#f5f5f5!important;border:1px solid #74747f;border-radius:8px;padding:12px;font:inherit;touch-action:manipulation}
+.crm-rating-row{display:flex;gap:8px;flex-wrap:wrap}.crm-rating-row button{width:46px;height:46px;background:#24242b;color:#ffd0aa;border:1px solid #9c765b;border-radius:8px;font-size:1rem}.crm-rating-row button[aria-pressed=true]{background:#6b391b!important;color:white;border:2px solid #ff9b54}
+.crm-review-status{margin:0;color:#ffceaa;white-space:pre-wrap;overflow-wrap:anywhere}.crm-review-hint{font-size:.875rem!important;color:#b9bfca!important}.crm-review-item{padding:12px 0;border-top:1px solid #46464e}.crm-review-item p{white-space:pre-wrap;margin:8px 0}
+body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
+@media(max-width:700px){.crm-review-actions{flex-direction:column;align-items:stretch}.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
+</style>
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2348,7 +2363,7 @@ crmShowSurveyReminder();
     <!-- Sub-aba 1: Vitrine -->
     <section id="pfPanelVitrine" style="display:block;">
       <div class="section-head"><span class="section-num"></span><h2>Plataformas Recomendadas</h2></div>
-      <p class="section-desc">Vitrine de ferramentas curadas pela comunidade, com nota do produto e nota de integração ao ecossistema de CRM avaliadas separadamente.</p>
+      <p class="section-desc">Vitrine de ferramentas curadas pela comunidade, com avaliações e recomendações de quem usa as ferramentas.</p>
       <div style="margin-bottom:18px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
         <button class="form-submit-btn" id="pfSuggestBtn" onclick="pfOpenSuggestModal()" style="background:var(--text); color:#fffff3; border:none; padding:11px 18px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">+ Sugerir ferramenta</button>
         <span class="section-desc" style="margin:0; font-size:14px;">Conhece uma ferramenta que deveria estar na vitrine?</span>
@@ -3607,7 +3622,7 @@ async function carregarVagasHub() {
 
     if (error) {
       console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
-      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
 
@@ -3624,7 +3639,7 @@ async function carregarVagasHub() {
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
 
@@ -3707,7 +3722,7 @@ function renderizarVagasHub(vagas) {
 
       <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
         <span style="color:var(--muted);">${formatarDataVagas(vaga.criado_em) ? 'Publicada: ' + formatarDataVagas(vaga.criado_em) : ''}</span>
-        ${vaga.link ? `<a href="${escapeHtmlVagas(vaga.link)}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar </a>` : ''}
+        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar </a>` : ''}
       </div>
     </div>
   `;
@@ -3773,7 +3788,7 @@ async function aplicarFiltrosVagas() {
 
     if (error) {
       console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
-      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (error.message || 'Erro desconhecido') + '</p></div>';
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
 
@@ -3786,7 +3801,7 @@ async function aplicarFiltrosVagas() {
     renderizarVagasHub(data);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + (err.message || 'Erro desconhecido') + '</p></div>';
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
 
@@ -4299,7 +4314,7 @@ async function submitCourseForm(){
   }catch(e) {
     console.error(e);
     statusEl.className = 'form-status err';
-    statusEl.textContent = 'Não consegui enviar. Tente de novo em alguns segundos.';
+    statusEl.textContent = crmSubmissionError(e);
     btn.disabled = false; btn.textContent = 'Enviar para aprovação';
   }
 }
@@ -4338,7 +4353,7 @@ function loadCommunityCourses(){
     .catch(err => {
       dot.className = 'status-dot err';
       txt.textContent = 'Não consegui carregar os cursos da comunidade.';
-      document.getElementById('communityCourseResults').innerHTML = `<div class="error-state">Erro: <code>${err.message}</code></div>`;
+      document.getElementById('communityCourseResults').innerHTML = `<div class="error-state">Erro: <code>${escapeHtml(err.message)}</code></div>`;
     });
 }
 
@@ -4789,7 +4804,7 @@ async function evSubmitEvent(){
     evToastMsg('Evento enviado para aprovação.','');
     ["evEvNome","evEvData","evEvDesc","evEvPreco","evEvLink","evEvAutor"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("evEvMes").value=""; document.getElementById("evEvArea").value=""; document.getElementById("evEvTipo").value="";
-  }catch(e) { console.error(e); evToastMsg("Não foi possível enviar o evento", __ICON_3__); }
+  }catch(e) { console.error(e); evToastMsg(crmSubmissionError(e), __ICON_3__); }
 }
 
 function evInitSB(){
@@ -5445,7 +5460,7 @@ async function loadFreelancers(){
   if(!flSb&&!flInitSB())throw Error('Conexão indisponível.');
   const [data,reviews]=await Promise.all([crmFetchDirectory('freelancers'),flSb.from('avaliacoes_freelancers').select('freelancer_nome,nota,comentario,avaliador').order('created_at',{ascending:false})]);
   if(epoch!==crmAuthEpoch)return;FREELANCERS=data;
-  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];renderFreelancers();
+  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();
  }catch(e){if(epoch!==crmAuthEpoch)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
 }
 function flSubRT(){
@@ -5589,9 +5604,9 @@ async function deleteFreelancer(id, nome){
 function flCardId(nome){return 'n'+Array.from(nome).map(c=>c.codePointAt(0).toString(16)).join('-');}
 function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome);}
 function freelancerCardHtml(f){
- const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id)),cid=flCardId(f.nome),reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- const avg=reviews.length?(reviews.reduce((sum,r)=>sum+Number(r.nota),0)/reviews.length).toFixed(1):null;
- return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria)+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSignedIn()&&crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener">Portfólio</a>':'')+'</div><details class="crm-freela-reviews"><summary>Avaliações '+(avg?'· '+avg+' / 5':'')+' ('+reviews.length+')</summary>'+reviews.map(r=>'<div class="pf-review-item"><strong>'+Number(r.nota)+' / 5</strong> · '+escapeHtml(r.avaliador||'Membro anônimo')+'<p>'+escapeHtml(r.comentario||'')+'</p></div>').join('')+'<div class="pf-review-form"><p>Sua avaliação</p><div id="flReviewStars-'+cid+'" data-rating="0" role="group" aria-label="Nota de 1 a 5">'+[1,2,3,4,5].map(v=>'<button type="button" class="crm-rating" aria-pressed="false" aria-label="Nota '+v+' de 5" data-value="'+v+'" onclick="flSetReviewRating(this.parentElement.id.substring(14),'+v+')">'+v+' ★</button>').join('')+'</div><label for="fl-review-text-'+cid+'">Sua experiência (opcional)</label><textarea id="fl-review-text-'+cid+'" maxlength="1000"></textarea><label><input type="checkbox" id="fl-review-anon-'+cid+'" checked> Enviar como anônimo</label><button type="button" class="crm-button" id="fl-review-submit-'+cid+'" onclick="flReviewAt('+index+')">Enviar avaliação</button></div></details></article>';
+ const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
+ const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
+ return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSignedIn()&&crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
@@ -5722,7 +5737,7 @@ function renderPlatformChallengeResults(data){
             <div class="ai-match-skills">${(m.matchedTags||[]).map(t=>`<span class="ai-match-skill-tag">${escapeHtml(t)}</span>`).join('')}</div>
             <div class="ai-match-reason"><strong>Por que combina:</strong> ${escapeHtml(m.matchReason||'')}</div>
             <div class="ai-match-actions">
-              ${m.site ? `<a class="ai-match-btn" href="${escapeHtml(m.site)}" target="_blank" rel="noopener">Visitar site</a>` : ''}
+              ${m.site ? `<a class="ai-match-btn" href="${escapeHtml(crmSafeUrl(m.site))}" target="_blank" rel="noopener">Visitar site</a>` : ''}
               <button class="ai-match-btn secondary" onclick="switchPlataformasTab('vitrine')">Ver Vitrine Completa</button>
             </div>
           </div>
@@ -5843,7 +5858,7 @@ async function submitAgencia(){
     ['ag_nome','ag_descricao','ag_site','ag_autor'].forEach(id=>document.getElementById(id).value='');
   }catch(e) {
     console.error(e);
-    statusEl.className='form-status err'; statusEl.textContent='Não consegui enviar. Tente de novo.';
+    statusEl.className='form-status err'; statusEl.textContent=crmSubmissionError(e);
     btn.disabled=false; btn.textContent='Enviar para aprovação';
   }
 }
@@ -5866,6 +5881,7 @@ function loadAgencias(){
     const sugeridas = (agRes.data||[]).map(a=>({...a, isSuggested:true}));
     const agencyNames=new Set();
     AGENCIAS = [...AGENCIAS_SEED.map(a=>({...a, isSuggested:false})), ...sugeridas].filter(a=>{const key=(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();if(!key||agencyNames.has(key))return false;agencyNames.add(key);return true;});
+    window.AG_REVIEWS=avRes.data||[];
     AVALIACOES = {};
     (avRes.data||[]).forEach(v=>{
       if(!AVALIACOES[v.agencia_nome]) AVALIACOES[v.agencia_nome] = [];
@@ -5884,30 +5900,14 @@ function loadAgencias(){
     renderAgencias();
     crmAgencyModeration();
   }).catch(err=>{
-    container.innerHTML = `<div class="error-state">Erro: <code>${err.message}</code></div>`;
+    container.innerHTML = `<div class="error-state">Erro: <code>${escapeHtml(err.message)}</code></div>`;
   });
 }
 function agSubRT(){
   // Refresh on navigation and after an action; do not reload the catalogue per insert.
 }
 
-async function crmAgencyModeration(){
-  let panel=document.getElementById('crmAgencyModeration');
-  if(!isAdminLoggedIn||!authSb){panel?.remove();return;}
-  if(!panel){panel=document.createElement('details');panel.id='crmAgencyModeration';const summary=document.createElement('summary');summary.textContent='Administradora: revisar sugestões de agências';panel.append(summary);const list=document.createElement('div');list.className='crm-agency-pending';panel.append(list);document.getElementById('agenciaResults').before(panel);}
-  const result=await authSb.from('agencias_sugeridas').select('id,nome,especialidade,descricao,site').eq('aprovado',false).order('created_at',{ascending:false}).limit(50);
-  if(!isAdminLoggedIn){panel.remove();return;}
-  const list=panel.querySelector('.crm-agency-pending');list.replaceChildren();
-  if(result.error){list.textContent='Não foi possível carregar as sugestões.';return;}
-  if(!result.data?.length){list.textContent='Nenhuma sugestão pendente.';return;}
-  for(const row of result.data){
-    const item=document.createElement('article');item.style.cssText='padding:16px;border-bottom:1px solid var(--line)';
-    const title=document.createElement('h3');title.textContent=row.nome;item.append(title);
-    const desc=document.createElement('p');desc.textContent=row.descricao||row.especialidade||'';item.append(desc);
-    if(crmSafeUrl(row.site)){const link=document.createElement('a');link.textContent='Conferir site';link.href=crmSafeUrl(row.site);link.target='_blank';link.rel='noopener noreferrer';item.append(link);}
-    const approve=document.createElement('button');approve.className='crm-button';approve.textContent='Aprovar';approve.addEventListener('click',async()=>{approve.disabled=true;const r=await authSb.from('agencias_sugeridas').update({aprovado:true}).eq('id',row.id);if(r.error){approve.disabled=false;evToastMsg('Não foi possível aprovar.','');return;}loadAgencias();});item.append(approve);list.append(item);
-  }
-}
+async function crmAgencyModeration(){document.getElementById('crmAgencyModeration')?.remove();}
 
 function avgRating(nome){
   const notas = AVALIACOES[nome];
@@ -5960,43 +5960,8 @@ function starRowHtml(nome){
 }
 
 function agenciaCardHtml(a){
-  const avg = avgRating(a.nome);
-  const nStars = (AVALIACOES[a.nome]||[]).length;
-  const {total, pct} = recData('agencia', a.nome);
-  const isTop = total>=2 && pct>=80;
-  const color = avatarColorFor(a.nome);
-  const sugBadge = a.isSuggested ? `<span class="ev-new-badge">Sugerido por ${escapeHtml(a.sugerido_por||'comunidade')}</span>` : '';
-  return `
-    <div class="pro-card${isTop?' top':''}">
-      ${isTop ? '<div class="pro-ribbon">Recomendado</div>' : ''}
-      <div class="pro-head">
-        <div class="pro-avatar" style="background:${color};">${escapeHtml(initialsFor(a.nome))}</div>
-        <div class="pro-headtext">
-          <div class="pro-name">${escapeHtml(a.nome)}</div>
-          <span class="pro-tag">${escapeHtml(a.especialidade)}</span>
-        </div>
-      </div>
-      <div class="pro-body">
-        ${sugBadge ? `<div style="margin-bottom:8px;">${sugBadge}</div>` : ''}
-        <div class="pro-desc">${a.descricao ? escapeHtml(a.descricao) : 'Sem descrição informada.'}</div>
-        <div class="pro-metrics">
-          ${avg!=null
-            ? metricRowHtml('Avaliação', Math.round(avg/5*100), avg.toFixed(1)+' / 5', 'var(--amber)', nStars+(nStars===1?' nota':' notas'))
-            : `<div class="badge-empty">Sem nota em estrelas ainda</div>`}
-          ${total
-            ? metricRowHtml('Indicação', pct, pct+'%', 'var(--mint)', total+(total===1?' avaliação':' avaliações'))
-            : `<div class="badge-empty">Ainda sem recomendações</div>`}
-        </div>
-      </div>
-      <div class="pro-footer">
-        ${starRowHtml(a.nome)}
-        ${recVoteButtons('agencia', a.nome, 'agSb', 'loadAgencias')}
-        <div class="pro-links">
-          ${crmSafeUrl(a.site) ? `<a class="ev-cta" href="${escapeHtml(crmSafeUrl(a.site))}" target="_blank" rel="noopener noreferrer"> Site</a>` : ''}
-        </div>
-      </div>
-    </div>
-  `;
+ const reviews=(window.AG_REVIEWS||[]).filter(r=>r.agencia_nome===a.nome);
+ return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar" style="background:'+avatarColorFor(a.nome)+'">'+escapeHtml(initialsFor(a.nome))+'</div><div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
 }
 function renderAgencias(){
   const q = (document.getElementById('agenciaSearchText').value||'').toLowerCase().trim();
@@ -6138,7 +6103,7 @@ function loadVagas(){
     })
     .catch(err=>{
       document.getElementById('vagasCount').textContent = 'erro';
-      container.innerHTML = `<div class="error-state">Erro: <code>${err.message}</code><br><br>Se a tabela ainda estiver vazia, é porque o bot de coleta ainda não rodou nenhuma vez com a integração nova.</div>`;
+      container.innerHTML = `<div class="error-state">Erro: <code>${escapeHtml(err.message)}</code><br><br>Se a tabela ainda estiver vazia, é porque o bot de coleta ainda não rodou nenhuma vez com a integração nova.</div>`;
     });
 }
 function vgSubRT(){
@@ -6193,8 +6158,8 @@ function vagaCardHtml(v){
       <div class="vaga-footer">
         <span class="vaga-date">${vgFormatDate(v.published_at || v.found_at)}</span>
         <div style="display:flex;gap:8px;align-items:center;">
-          ${CURRENT_USER ? `<button data-url="${escapeHtml(v.url)}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;padding:6px 10px;font-size:11px;color:var(--muted);font-family:inherit;display:inline-flex;align-items:center;gap:4px;" title="Salvar não garante candidatura"> Salvar</button>` : ''}
-          <a class="ev-cta" href="${escapeHtml(v.url)}" target="_blank" rel="noopener"> Ver vaga</a>
+          ${CURRENT_USER ? `<button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;padding:6px 10px;font-size:11px;color:var(--muted);font-family:inherit;display:inline-flex;align-items:center;gap:4px;" title="Salvar não garante candidatura"> Salvar</button>` : ''}
+          <a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener"> Ver vaga</a>
         </div>
       </div>
     </div>
@@ -6297,7 +6262,7 @@ function renderComunidadeMembros(){
       <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">${escapeHtml([p.senioridade, p.area].filter(Boolean).join(' · '))}</div>
       ${p.ferramentas ? `<div style="font-size:11px; color:var(--accent); margin-bottom:10px;">${escapeHtml(p.ferramentas.slice(0,40))}${p.ferramentas.length>40?'...':''}</div>` : ''}
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        ${p.linkedin ? `<a href="${escapeHtml(p.linkedin)}" target="_blank" rel="noopener" class="pf-site-btn" style="font-size:11px; padding:5px 10px;">LinkedIn</a>` : ''}
+        ${p.linkedin ? `<a href="${escapeHtml(crmSafeUrl(p.linkedin))}" target="_blank" rel="noopener" class="pf-site-btn" style="font-size:11px; padding:5px 10px;">LinkedIn</a>` : ''}
         ${p.whatsapp ? `<a href="https://wa.me/55${escapeHtml(String(p.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener" class="ai-match-btn" style="font-size:11px; padding:5px 10px;">WhatsApp</a>` : ''}
         ${(!p.linkedin && !p.whatsapp) ? `<span style="font-size:11px;color:var(--muted);">Open to Work</span>` : ''}
       </div>
@@ -6782,7 +6747,7 @@ function initPlataformasTab(){
   plataformasInitialized = true;
   pfInitSB();
   const filtersEl = document.getElementById('pfFilters');
-  filtersEl.innerHTML = PF_CATEGORIES.map(c=>`<button class="pill-filter${c==='Todos'?' active':''}" data-cat="${c}" onclick="pfFilterBy('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('');
+  filtersEl.innerHTML = PF_CATEGORIES.map(c=>`<button class="pill-filter${c==='Todos'?' active':''}" data-cat="${escapeHtml(c)}" onclick="pfFilterBy(this.dataset.cat)">${escapeHtml(c)}</button>`).join('');
   loadPlataformas();
   pfSubRT();
 }
@@ -6829,7 +6794,7 @@ function loadPlataformas(){
     if(pfRes.error) throw pfRes.error;
     if(avRes.error) console.warn('Avaliações indisponíveis',avRes.error);
     const sugeridas = (pfRes.data||[]).map(t=>({
-      name: t.nome, cat: t.categoria || 'CRM', tags: [], site: t.site || '', isSuggested:true
+      name: t.nome, cat: t.categoria || 'CRM', desc:t.descricao||'', tags: [], site: t.site || t.url || '', isSuggested:true
     }));
     // Evita duplicar se alguém sugerir um nome que já está na lista inicial (comparação sem acentuação/maiúsculas).
     const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
@@ -6850,7 +6815,7 @@ function loadPlataformas(){
     });
     const filtersEl = document.getElementById('pfFilters');
     if(filtersEl && catsExtra.length){
-      filtersEl.innerHTML = PF_CATEGORIES.map(c=>`<button class="pill-filter${c===pfActiveCat?' active':''}" data-cat="${c}" onclick="pfFilterBy('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('');
+      filtersEl.innerHTML = PF_CATEGORIES.map(c=>`<button class="pill-filter${c===pfActiveCat?' active':''}" data-cat="${escapeHtml(c)}" onclick="pfFilterBy(this.dataset.cat)">${escapeHtml(c)}</button>`).join('');
     }
 
     renderPfGrid();
@@ -6895,56 +6860,7 @@ function renderPfGrid(){
   }
   const gridEl = document.getElementById('pfGrid');
   if(!list.length){ gridEl.innerHTML = '<div class="empty-state">Nenhuma ferramenta nesta categoria. <button onclick="pfFilterBy(\'Todos\')">Ver todas as ferramentas</button></div>'; return; }
-  gridEl.innerHTML = list.map(t=>{
-    const k = recKey('plataforma', t.name);
-    const votes = (RECOMENDACOES[k] && RECOMENDACOES[k].sim) || 0;
-    const reviews = PF_AVALIACOES[t.name] || [];
-    const avg = pfAvgRating(t.name);
-    const cardId = flCardId(t.name);
-    return `
-    <div class="pf-card" id="pf-card-${cardId}">
-      <div class="pf-card-head"><div><span class="pf-cat">${escapeHtml(t.cat)}</span><h4>${escapeHtml(t.name)}</h4></div></div>
-      ${t.desc ? `<div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:4px;">${escapeHtml(t.desc)}</div>` : ''}
-      ${avg!==null ? `<div class="pf-metric"><div class="pf-metric-row"><span>Avaliação da comunidade</span><b>${avg.toFixed(1)} / 5</b></div><div class="pf-bar"><div class="pf-bar-fill" style="width:${(avg/5*100).toFixed(0)}%;"></div></div></div>` : '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Ainda sem avaliações da comunidade.</div>'}
-      ${(t.tags&&t.tags.length) ? `<div class="pf-tags">${t.tags.map(tg=>`<span class="pf-tag">${escapeHtml(tg)}</span>`).join('')}</div>` : ''}
-      ${crmSafeUrl(t.site) ? `<a class="pf-site-btn" href="${escapeHtml(crmSafeUrl(t.site))}" target="_blank" rel="noopener noreferrer"> Visitar site</a>` : ''}
-
-      <div class="pf-card-footer">
-        <button class="pf-vote-btn${recJaVotou('plataforma', t.name) ? ' voted' : ''}" onclick="pfVote(${escapeHtml(JSON.stringify(t.name))})">
-           Recomendar
-          <span class="pf-vote-count">${votes}</span>
-        </button>
-        <button class="pf-accordion-toggle" onclick="pfToggleReviews(${escapeHtml(JSON.stringify(t.name))}, this)">
-           Avaliar / comentários (${reviews.length})
-
-        </button>
-      </div>
-
-      <div class="pf-reviews-panel" id="pf-reviews-${cardId}">
-        <div id="pf-reviews-list-${cardId}">${reviews.map(r=>`
-          <div class="pf-review-item">
-            <div class="pf-review-header">
-              <span class="pf-review-stars">${Number(r.nota)} / 5</span>
-              <span class="pf-review-author">${escapeHtml(r.avaliador || 'Membro Anônimo')}</span>
-            </div>
-            ${r.comentario ? `<div class="pf-review-text">${escapeHtml(r.comentario)}</div>` : ''}
-          </div>
-        `).join('')}</div>
-        <div class="pf-review-form">
-          <div id="pfReviewStars-${cardId}" style="display:flex;gap:4px;margin-bottom:8px;" data-rating="0">
-            ${[1,2,3,4,5].map(v=>`<button type="button" onclick="pfSetReviewRating('${cardId}',${v})" style="background:none;border:none;cursor:pointer;font-size:20px;line-height:1;color:#cbd5e1;padding:0;" data-value="${v}">${v}</button>`).join('')}
-          </div>
-          <textarea id="pf-review-text-${cardId}" placeholder="Compartilhe sua experiência com essa ferramenta (opcional)..." maxlength="200"></textarea>
-          <div class="pf-form-row">
-            <label>
-              <input type="checkbox" id="pf-review-anon-${cardId}" checked> Enviar como anônimo
-            </label>
-            <button onclick="pfSubmitReview(${escapeHtml(JSON.stringify(t.name))})">Enviar avaliação</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `}).join('');
+  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head"><div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3></div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
 }
 
 // ============ PLATAFORMAS RECOMENDADAS - VOTAÇÃO E REVIEWS (Supabase) ============
@@ -6999,7 +6915,7 @@ async function pfSubmitReview(toolName){
     loadPlataformas();
   }catch(e) {
     console.error(e);
-    evToastMsg('Não consegui enviar. Tente de novo.', __ICON_3__);
+    evToastMsg(crmSubmissionError(e), __ICON_3__);
   }finally{crmReviewPending.delete(pendingKey);}
 }
 
@@ -7084,7 +7000,7 @@ async function pfSubmitSuggest(){
     loadPlataformas();
   }catch(e) {
     console.error(e);
-    statusEl.className='form-status err'; statusEl.textContent='Não consegui enviar. Tente de novo.';
+    statusEl.className='form-status err'; statusEl.textContent=crmSubmissionError(e);
     btn.disabled=false; btn.textContent='Sugerir';
   }
 }
@@ -7480,6 +7396,7 @@ async function saveProfile(){
   };
   statusEl.style.color='var(--muted)'; statusEl.textContent='Salvando...';
   try{
+    crmValidateSubmission(payload);
     const photo=document.getElementById('pf_photo')?.files?.[0];
     if(photo){
       if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>5242880)throw new Error('PHOTO_INVALID');
@@ -7499,7 +7416,7 @@ async function saveProfile(){
     if(typeof evToastMsg==='function') evToastMsg('Perfil atualizado!', '');
   }catch(e) {
     console.error(e);
-    statusEl.style.color='red'; statusEl.textContent=e.message==='PHOTO_INVALID'?'Escolha uma foto JPG, PNG ou WebP de até 5 MB.':'Não foi possível salvar o perfil ou a foto. Seus campos continuam aqui para tentar novamente.';
+    statusEl.style.color='red'; statusEl.textContent=e.message==='PHOTO_INVALID'?'Escolha uma foto JPG, PNG ou WebP de até 5 MB.':crmSubmissionError(e);
   }
 }
 
@@ -7611,8 +7528,8 @@ function runMembroMatch(){
         </div>
         ${v.toolMatches.length ? `<div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;"> ${v.toolMatches.join(', ')}</div>` : ''}
         <div style="display:flex;gap:8px;align-items:center;">
-          <button data-url="${escapeHtml(v.url)}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted);"> Salvar</button>
-          <a class="ev-cta" href="${escapeHtml(v.url)}" target="_blank" rel="noopener" style="font-size:11px;">Ver vaga </a>
+          <button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted);"> Salvar</button>
+          <a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px;">Ver vaga </a>
         </div>
         <div style="font-size:10px;color:var(--muted);margin-top:6px;"> Salvar não garante candidatura, entre na vaga e siga o processo seletivo.</div>
         </div>`;
@@ -8025,7 +7942,7 @@ async function crmVerifySubmission(table,session){
  const challenge=await crmVerificationAPI({action:'issue',table},session);
  return new Promise((resolve,reject)=>{
   const dialog=document.createElement('dialog');dialog.className='crm-join-dialog';
-  dialog.innerHTML='<form><h2>Confirme seu envio</h2><p>Responda à verificação para continuar. Sugestões e pedidos só serão publicados após aprovação.</p><label class="crm-field">'+escapeHtml(challenge.question)+'<input name="answer" inputmode="numeric" pattern="[0-9]{1,3}" autocomplete="off" required aria-label="Resposta da verificação"></label><div style="position:absolute;left:-10000px" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div><p role="status" aria-live="polite"></p><button type="submit" class="crm-button">Confirmar e enviar</button><button type="button" class="crm-button crm-outline">Cancelar</button><small>Até 2 envios por minuto e 10 por dia por conta. A verificação expira em 5 minutos.</small></form>';
+  dialog.innerHTML='<form><h2>Confirme seu envio</h2><p>Responda à verificação para continuar. Sugestões e pedidos só serão publicados após aprovação.</p><label class="crm-field">'+escapeHtml(challenge.question)+'<input name="answer" inputmode="numeric" pattern="[0-9]{1,3}" autocomplete="off" required aria-label="Resposta da verificação"></label><div style="position:absolute;left:-10000px" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div><p role="status" aria-live="polite"></p><button type="submit" class="crm-button">Confirmar e enviar</button><button type="button" class="crm-button crm-outline">Cancelar</button><small>Até 5 envios por conta em 24 horas, somando os formulários do portal. A verificação expira em 5 minutos.</small></form>';
   let done=false;const finish=(error)=>{if(done)return;done=true;dialog.close();dialog.remove();error?reject(error):resolve();};
   dialog.querySelector('button[type=button]').onclick=()=>finish(Error('Envio cancelado.'));
   dialog.addEventListener('cancel',e=>{e.preventDefault();finish(Error('Envio cancelado.'));});
@@ -8041,7 +7958,9 @@ async function crmSecureInsert(table,payload){
  if(crmSubmitBusy)return {data:null,error:Error('Já existe um envio em andamento.')};
  crmSubmitBusy=true;
  try{
+  crmValidateSubmission(payload);
   const session=await crmRequireSession('Entre para recomendar ou enviar uma sugestão.');if(!session)throw Error('Faça login para enviar.');
+  const quota=await authSb.rpc('crm_submission_status');if(quota.error)throw quota.error;if(quota.data?.remaining===0)throw Error('Limite de 5 envios em 24 horas atingido. Novos envios liberados em '+new Date(quota.data.retry_at).toLocaleString('pt-BR')+'.');
   const userId=CURRENT_USER.id,epoch=crmAuthEpoch;
   await crmVerifySubmission(table,session);
   if(epoch!==crmAuthEpoch||CURRENT_USER?.id!==userId)throw Error('Sua sessão mudou. Entre novamente.');
@@ -8050,9 +7969,9 @@ async function crmSecureInsert(table,payload){
   const row={...rows[0]};
   if(crmModerationTables[table]){row.moderation_status='pending';row.submitted_by=userId;if(table==='crm_submission_requests'){row.user_id=userId;row.status='pending';}else row.aprovado=false;}
   const result=await authSb.from(table).insert(row);
-  if(result.error)evToastMsg(result.error.message||'Não foi possível enviar.','');
+  if(result.error)result.error.message=crmSubmissionError(result.error);
   return result;
- }catch(error){evToastMsg(error.message,'');return {data:null,error};}finally{crmSubmitBusy=false;}
+ }catch(error){return {data:null,error};}finally{crmSubmitBusy=false;}
 }
 function crmSubmissionGate(){if(crmSignedIn())return true;crmJoin('Faça login gratuito para recomendar ou enviar conteúdo.');return false;}
 async function crmOpenAdmin(){
@@ -8110,6 +8029,47 @@ document.addEventListener('DOMContentLoaded',()=>{
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
  crmRefreshAdmin().then(()=>{if(location.hash==='#admin'&&crmAdminVerified)crmOpenAdmin();});
 });
+
+</script>
+<script id="crm-reviews-v2">
+const crmReviewKinds={freelancer:{table:'avaliacoes_freelancers',field:'freelancer_nome',reload:()=>loadFreelancers()},agencia:{table:'avaliacoes_agencias',field:'agencia_nome',reload:()=>loadAgencias()},plataforma:{table:'avaliacoes_plataformas',field:'plataforma_nome',reload:()=>loadPlataformas()}};
+function crmSubmissionError(error){
+ const msg=error?.message||'';
+ if(error?.code==='23505'||/já avaliou|duplicate key/i.test(msg))return 'Você já enviou sua avaliação ou recomendação para este item. Cada conta pode participar uma vez em cada opção.';
+ if(/termos impróprios/i.test(msg))return 'O texto contém termos impróprios. Revise antes de enviar.';
+ if(/limite|verificação|sessão|login|link|conteúdo|nota|cancelado|conta/i.test(msg))return msg;
+ return 'Não foi possível gravar. Seu texto foi mantido. Tente novamente em instantes.';
+}
+function crmValidateSubmission(payload){
+ const inspect=value=>{
+  if(typeof value==='string'){
+   const t=value.normalize('NFD').replace(/[\u0300-\u036f\u200b-\u200d\ufeff]/g,'').toLowerCase().replace(/[013457@$!]/g,c=>({'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','@':'a','$':'s','!':'i'}[c]));
+   const words=['caralho','porra','puta','puto','putaria','merda','buceta','boceta','piranha','fdp','foder','foda','fudido','arrombado','arrombada','meupiru'];
+   if(words.some(w=>new RegExp('(^|[^a-z])'+w.split('').join('[^a-z0-9]*')+'([^a-z]|$)','i').test(t))||/filh[oa]\s+da\s+puta|vai\s+se\s+foder/i.test(t))throw Error('O texto contém termos impróprios. Revise antes de enviar.');
+  }else if(Array.isArray(value))value.forEach(inspect);else if(value&&typeof value==='object')Object.values(value).forEach(inspect);
+ };inspect(payload);
+}
+function crmReviewSection(kind,name,reviews){
+ const cid=kind+'-'+flCardId(name),avg=reviews.length?(reviews.reduce((a,r)=>a+Number(r.nota),0)/reviews.length).toFixed(1):null;
+ const rec=RECOMENDACOES[recKey(kind,name)]||{sim:0,nao:0};
+ return '<section class="crm-review-box" data-kind="'+kind+'" data-name="'+escapeHtml(name)+'"><p>'+(avg?'Avaliação: '+avg+' / 5 · '+reviews.length+' opiniões':'Ainda sem avaliações')+'</p><div class="crm-review-actions"><button type="button" class="crm-button crm-outline" onclick="crmRecommend(this)">Recomendar ('+rec.sim+')</button><button type="button" class="crm-button crm-outline" onclick="crmOpenReview(this)">Avaliar e comentar</button></div><p class="crm-review-status" role="status" aria-live="polite"></p><details><summary>Avaliações e comentários ('+reviews.length+')</summary><form class="crm-review-form" onsubmit="crmSubmitReviewForm(event)"><label>Sua nota</label><div class="crm-rating-row" data-rating="0" role="group" aria-label="Escolha uma nota de 1 a 5">'+[1,2,3,4,5].map(v=>'<button type="button" data-value="'+v+'" aria-label="Nota '+v+' de 5" aria-pressed="false" onclick="crmChooseRating(this)">'+v+' ★</button>').join('')+'</div><label for="crm-comment-'+cid+'">Conte como foi sua experiência (opcional)</label><textarea id="crm-comment-'+cid+'" name="comment" maxlength="1000" placeholder="Escreva sua avaliação aqui…"></textarea><label><input type="checkbox" name="anonymous" checked> Publicar sem mostrar meu nome</label><p class="crm-review-hint">É necessário estar logado. Até 5 envios em 24 horas, somando todos os formulários. Termos impróprios não são aceitos.</p><button class="crm-button" type="submit">Enviar avaliação</button><p class="crm-review-status" role="status" aria-live="polite"></p></form>'+reviews.map(r=>'<article class="crm-review-item"><strong>'+Number(r.nota)+' / 5</strong> · '+escapeHtml(r.avaliador||'Membro anônimo')+'<p>'+escapeHtml(r.comentario||'Sem comentário.')+'</p></article>').join('')+'</details></section>';
+}
+function crmChooseRating(button){const row=button.parentElement;row.dataset.rating=button.dataset.value;row.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
+function crmOpenReview(button){const box=button.closest('.crm-review-box');box.querySelector('details').open=true;box.querySelector('.crm-rating-row button').focus();}
+async function crmRecommend(button){
+ const box=button.closest('.crm-review-box'),status=box.querySelector('.crm-review-status'),{kind,name}=box.dataset,key='recommend:'+kind+':'+name;
+ if(crmReviewPending.has(key))return;crmReviewPending.add(key);button.disabled=true;status.textContent='';
+ try{const {error}=await crmSecureInsert('recomendacoes',{tipo:kind,nome:name,recomenda:true,avaliador:''});if(error)throw error;button.textContent='Recomendado ✓';status.textContent='Recomendação gravada!';await loadRecomendacoes(authSb);}
+ catch(error){status.textContent=crmSubmissionError(error);button.disabled=false;}finally{crmReviewPending.delete(key);}
+}
+async function crmSubmitReviewForm(event){
+ event.preventDefault();const form=event.target,box=form.closest('.crm-review-box'),{kind,name}=box.dataset,config=crmReviewKinds[kind],button=form.querySelector('[type=submit]'),status=form.querySelector('.crm-review-status');
+ const rating=Number(form.querySelector('.crm-rating-row').dataset.rating),key=kind+':'+name;
+ if(!Number.isInteger(rating)||rating<1||rating>5){status.textContent='Escolha uma nota de 1 a 5 antes de enviar.';return;}
+ if(crmReviewPending.has(key))return;crmReviewPending.add(key);button.disabled=true;button.textContent='Enviando…';status.textContent='';
+ try{const {error}=await crmSecureInsert(config.table,{[config.field]:name,nota:rating,comentario:form.elements.comment.value.trim(),avaliador:form.elements.anonymous.checked?'':(CURRENT_PROFILE?.full_name||'Membro')});if(error)throw error;status.textContent='Avaliação gravada!';form.reset();form.querySelector('.crm-rating-row').dataset.rating='0';form.querySelectorAll('[aria-pressed]').forEach(b=>b.setAttribute('aria-pressed','false'));evToastMsg('Avaliação gravada!','');await config.reload();}
+ catch(error){status.textContent=crmSubmissionError(error);}finally{crmReviewPending.delete(key);button.disabled=false;button.textContent='Enviar avaliação';}
+}
 
 </script>
 </body>
