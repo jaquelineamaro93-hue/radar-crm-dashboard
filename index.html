@@ -1004,6 +1004,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
 @media(max-width:700px){.crm-review-actions{flex-direction:column;align-items:stretch}.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
+<link rel="stylesheet" href="/assets/workspace.css?v=20260921-1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -7740,6 +7741,7 @@ let crmActiveRoute='inicio',crmWasSignedIn=false,crmAuthEpoch=0,crmValidatedUser
 function crmSignedIn(){return !!CURRENT_USER&&CURRENT_USER.id===crmValidatedUserId;}
 function crmToggleMenu(open){const next=typeof open==='boolean'?open:!document.body.classList.contains('crm-menu-open');document.body.classList.toggle('crm-menu-open',next);crmById('crmMenuToggle').setAttribute('aria-expanded',String(next));}
 function crmClearPrivateData(){
+ window.CXWorkspace?.clear();
  crmAdminVerified=false;isAdminLoggedIn=false;crmById('crmAdminNav')?.setAttribute('hidden','');crmById('crmModerationList')?.replaceChildren();
  isAdminLoggedIn=false;currentUserRole=null;
  for(const id of ['membroDetalhes','membroAvatar'])document.getElementById(id)?.replaceChildren();
@@ -7795,9 +7797,10 @@ function crmNavigate(route,updateHash=true){
  const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
  if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{crmById('crmPages').append(crmById(id));}
  const base=route==='mercado'?'dashboard':route==='vagas-salvas'?'membro':route==='membros'?'comunidade':route;
- if(!['admin','membros','patrocinio/apoiadores','quem-somos','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
+ if(!window.CXWorkspace?.handles(route)&&!['admin','membros','patrocinio/apoiadores','quem-somos','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
  document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.id===id));
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+ if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
  if(route==='freelancers')loadFreelancers();
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
@@ -8093,5 +8096,6 @@ async function crmSubmitReviewForm(event){
 }
 
 </script>
+<script src="/assets/workspace.js?v=20260921-1"></script>
 </body>
 </html>
