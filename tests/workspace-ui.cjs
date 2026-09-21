@@ -15,6 +15,19 @@ if(route!=='parceiras'){click('[data-cx=edit]');fill('title','Título atualizado
 if(['propostas','contratos'].includes(route)){click('[data-cx=preview]');assert(w.document.querySelector('.cx-preview').textContent.includes('Escopo de teste local.'));click('[data-cx=close]');}
 }
 await w.CXWorkspace.open('workspace-precificar');w.document.querySelector('[data-calc]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert(w.document.querySelector('[data-estimate]').textContent.includes('4.400'));
-await w.CXWorkspace.open('workspace-studio');assert(w.document.querySelector('.cx-stats'));w.CXWorkspace.clear();assert.equal(w.document.querySelector('#cxWorkspace').textContent,'');
+await w.CXWorkspace.open('workspace-studio');assert(w.document.querySelector('.cx-stats'));
+const portal=[{id:'received-1',title:'Pedido recebido',status:'new',recipient_id:'test-owner',requester_id:'client',brief:'Escopo do projeto',contact:'client@example.invalid'},{id:'sent-1',title:'Pedido enviado',status:'new',recipient_id:null,requester_id:'test-owner'}];
+db.crm_freelancer_requests=portal;
+w.CXConnections={requests:async()=>structuredClone(portal),inbox(){}};
+const writesBefore=calls.filter(c=>c.op!=='read').length;
+await w.CXWorkspace.open('workspace-pipeline');
+assert.equal(w.document.querySelectorAll('.cx-deal').length,2,'Manual plus received, never sent');
+assert(w.document.querySelector('[data-portal-summary]').textContent.includes('1 pedidos recebidos · 1 enviados · 1 aguardando vínculo'));
+assert.equal(calls.filter(c=>c.op!=='read').length,writesBefore,'Aggregation creates no copies');
+const select=w.document.querySelector('[data-stage="received-1"]');select.value='won';select.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
+assert.equal(portal[0].status,'won');assert.equal(db.crm_consultant_deals.length,1);assert.equal(calls.at(-2)?.op==='insert',false);
+await w.CXWorkspace.open('workspace-studio');assert.equal(w.document.querySelector('.cx-stat strong').textContent,'1','Won portal deal excluded from active count');
+portal[0].status='new';await w.CXWorkspace.refresh();assert.equal(w.document.querySelector('.cx-stat strong').textContent,'2','Received portal deal included');
+w.CXWorkspace.clear();assert.equal(w.document.querySelector('#cxWorkspace').textContent,'');
 console.log(`PASS: ${scripts} inline scripts parse; all 6 business routes; four isolated business table mappings; create/edit/read; repeated submit locked; previews; calculator; logout clears private DOM; navigation does not write.`);
 })().catch(e=>{console.error(e);process.exit(1)});
