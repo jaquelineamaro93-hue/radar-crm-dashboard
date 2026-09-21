@@ -6949,8 +6949,8 @@ let CURRENT_PROFILE = null;
 async function handleGoogleLogin(){
  if(crmSignedIn()){crmNavigate('membros');return;}
  if(!authSb&&!authInitSB())throw Error('Não foi possível iniciar o login.');
- const {error}=await authSb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
- if(error){crmJoin('Não foi possível iniciar o login com Google.');crmById('crmJoinError').textContent=error.message;}
+ if(!window.CXGoogleLogin)throw Error('Atualize a página para iniciar o acesso.');
+ return window.CXGoogleLogin.open();
 }
 
 async function handleLogout(){return crmLogout();}
@@ -7831,6 +7831,7 @@ async function crmLoadModeration(){
  const list=crmById('crmModerationList'),status=crmById('crmModerationStatus');
  list.replaceChildren();status.textContent='Carregando solicitações…';
  if(!crmSignedIn())return;await crmRefreshAdmin();if(!crmAdminVerified){status.textContent='Acesso restrito à administradora.';return;}
+ await window.CXConnections?.moderation();
  const epoch=crmAuthEpoch,filter=crmById('crmModerationFilter').value,state=crmById('crmModerationState').value;
  let count=0;const errors=[];
  for(const [table,label] of Object.entries(crmModerationTables)){
@@ -7918,7 +7919,8 @@ async function crmSubmitReviewForm(event){
 }
 
 </script>
+<script src="/assets/google-login.js?v=20260921-4"></script>
 <script src="/assets/workspace.js?v=20260921-3"></script>
-<script src="/assets/connections.js?v=20260921-3"></script>
+<script src="/assets/connections.js?v=20260921-4"></script>
 </body>
 </html>
