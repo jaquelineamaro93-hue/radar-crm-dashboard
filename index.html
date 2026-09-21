@@ -1004,7 +1004,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
 @media(max-width:700px){.crm-review-actions{flex-direction:column;align-items:stretch}.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
-<link rel="stylesheet" href="/assets/workspace.css?v=20260921-1">
+<link rel="stylesheet" href="/assets/workspace.css?v=20260921-3">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2430,213 +2430,22 @@ crmShowSurveyReminder();
     </section>
   </div><div class="tab-page" id="pageComunidade">
     <!-- SUB-PÁGINA 1: GRUPOS -->
-    <section id="comPanelGrupos" style="display:block;">
-      <div class="section-head"><span class="section-num">01</span><h2>Grupos &amp; Comunidades</h2></div>
-      <p class="section-desc">O maior ecossistema de CRM, CX e RevOps do Brasil. Entre nos grupos certos e construa sua rede.</p>
-
-      <div class="stat-grid" style="margin-bottom:28px;">
-        <div class="stat"><div class="num">6.000+</div><div class="label">Membros ativos</div></div>
-        <div class="stat"><div class="num">2</div><div class="label">Comunidades fundadas</div></div>
-        <div class="stat"><div class="num" id="dashProfissionais">…</div><div class="label">Profissionais open to work</div></div>
-        <div class="stat"><div class="num">+12</div><div class="label">Eventos por ano</div></div>
-      </div>
-
-      <!-- CRM ACADEMY COMMUNITY -->
-      <div style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
-        <div style="width:4px; height:20px; background:#059669; border-radius:2px;"></div>
-        <span style="font-size:14px; font-weight:700; color:#047857; text-transform:uppercase; letter-spacing:0.06em;">CRM Academy Community</span>
-      </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:28px;">
-
-        <div class="card" style="border-left:4px solid #059669;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Comunidade Geral</div>
-              <div style="font-size:14px;color:var(--muted);">6.000+ membros</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Comunidade aberta de CRM no Brasil, dúvidas, dicas, vagas e networking.</p>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <a href="https://chat.whatsapp.com/By6Zdhf3QDrGNJ5tJnCqvf" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-               WhatsApp
-            </a>
-            <a href="https://www.linkedin.com/company/crmacademy-community" target="_blank" rel="noopener" class="ai-match-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-               LinkedIn
-            </a>
-          </div>
-        </div>
-
-        <div class="card" style="border-left:4px solid #d97706;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Vagas de CRM</div>
-              <div style="font-size:14px;color:var(--muted);">Oportunidades em tempo real</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Vagas de CRM, Salesforce, HubSpot, RD Station e correlatas, dois grupos para maior alcance.</p>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <a href="https://chat.whatsapp.com/HzDBCVGKemkJTWz6P7yf2W" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-               Vagas 1
-            </a>
-            <a href="https://chat.whatsapp.com/DfLxb6mupR3D0NxdIOfZs7" target="_blank" rel="noopener" class="ai-match-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-               Vagas 2
-            </a>
-          </div>
-        </div>
-
-        <div class="card" style="border-left:4px solid #1a56db;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Liderança em CRM</div>
-              <div style="font-size:14px;color:var(--muted);">Heads, coordenadores e gestores</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Grupo para líderes de CRM trocarem experiências sobre gestão de time, estratégia e resultados.</p>
-          <a href="https://chat.whatsapp.com/JUGbK0qW2qRGHuuPm5NjhC" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #9333ea;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Estudos Marketing Cloud</div>
-              <div style="font-size:14px;color:var(--muted);">Salesforce MC</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Grupo de estudos focado em Salesforce Marketing Cloud, casos, dúvidas e certificações.</p>
-          <a href="https://chat.whatsapp.com/DLoECehAMzV1FB8iSpBvmJ" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #0ea5e9;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Estudo Braze</div>
-              <div style="font-size:14px;color:var(--muted);">Customer Engagement Platform</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Grupo de estudos sobre Braze, automações, campanhas, segmentação e casos de uso reais.</p>
-          <a href="https://chat.whatsapp.com/LgNXXYR3cWe6l9tX7f4U5b" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #059669;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Estudo Insider One</div>
-              <div style="font-size:14px;color:var(--muted);">Plataforma de CRM &amp; Personalização</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Grupo de estudos sobre Insider, jornadas, personalização, integrações e certificações.</p>
-          <a href="https://chat.whatsapp.com/FxHPL9i5oJDCXaIsDkP1iO" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-      </div>
-
-      <!-- MULHERES DE CRM -->
-      <div style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
-        <div style="width:4px; height:20px; background:#c76b93; border-radius:2px;"></div>
-        <span style="font-size:14px; font-weight:700; color:#c76b93; text-transform:uppercase; letter-spacing:0.06em;">Mulheres de CRM, Exclusivo para Mulheres</span>
-      </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:28px;">
-
-        <div class="card" style="border-left:4px solid #c76b93;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Geral</div>
-              <div style="font-size:14px;color:var(--muted);">Comunidade exclusiva</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Executivas, lideranças e profissionais mulheres em CRM e RevOps, networking e troca de experiências.</p>
-          <a href="https://chat.whatsapp.com/GPJ5Pti7gVd5m6BuJmhewf" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #c76b93;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Vagas</div>
-              <div style="font-size:14px;color:var(--muted);">Oportunidades exclusivas</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Vagas de emprego em CRM e áreas correlatas compartilhadas especialmente para mulheres da comunidade.</p>
-          <a href="https://chat.whatsapp.com/EOxrDYIKN6JB8EKBh43Ceo" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #c76b93;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Encontros</div>
-              <div style="font-size:14px;color:var(--muted);">Eventos presenciais e online</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Agenda de encontros, meetups e eventos exclusivos da comunidade Mulheres de CRM.</p>
-          <a href="https://chat.whatsapp.com/EUWCWfBs74VCsQFXKXvE5G" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #c76b93;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Clube do Livro</div>
-              <div style="font-size:14px;color:var(--muted);">Leitura e crescimento</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Clube do livro mensal da comunidade, leituras sobre liderança, CRM, marketing e carreira.</p>
-          <a href="https://chat.whatsapp.com/IDjk9nTy4mDCILSRATA4vm" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Entrar no grupo
-          </a>
-        </div>
-
-        <div class="card" style="border-left:4px solid #be8f63;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text);">Mentoria SOMA</div>
-              <div style="font-size:14px;color:var(--muted);">Programa de aceleração</div>
-            </div>
-          </div>
-          <p style="font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.55;">Mentoria individual e em grupo para profissionais de CRM que querem acelerar a carreira com estrutura e comunidade.</p>
-          <a href="https://wa.me/5511986067420?text=Ol%C3%A1%2C+tenho+interesse+na+Mentoria+SOMA+de+CRM" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:7px 12px;">
-             Saber mais
-          </a>
-        </div>
-
-      </div>
-
-      <!-- Sobre a fundadora -->
-      <div class="card" style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
-        <div style="flex:1; min-width:220px;">
-          <div style="font-size:14px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;">Fundadora</div>
-          <div style="font-weight:700; font-size:16px; color:var(--text); margin-bottom:2px;">Jaqueline Amaro</div>
-          <div style="font-size:14px; color:var(--muted); margin-bottom:12px;">CRM Academy Community &amp; Mulheres de CRM</div>
-          <p style="font-size:14px; color:var(--text); line-height:1.6; margin-bottom:14px;">10 anos em CX, 6 em CRM. Criou a CRM Academy Community e o Mulheres de CRM para democratizar o acesso a conhecimento, vagas e networking qualificado no ecossistema de CRM brasileiro.</p>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <a href="https://www.linkedin.com/in/jaqueline-amaro/" target="_blank" rel="noopener" class="ai-match-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:14px;"> LinkedIn</a>
-            <a href="https://wa.me/5511986067420" target="_blank" rel="noopener" class="ai-match-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:14px;"> WhatsApp</a>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="comPanelGrupos" class="cx-groups" style="display:block"><header class="cx-groups-intro"><p class="cx-kicker">CONEXÃO CRM</p><h2>Encontre a sua comunidade</h2><p>Troque experiências, conheça profissionais e acompanhe conversas que fazem sentido para o seu momento em CRM.</p></header><span id="dashProfissionais" hidden></span>
+<section class="cx-group-section"><header><span class="cx-kicker">01</span><h3>CRM Academy Community</h3><p>Conhecimento, carreira e prática em CRM</p></header><div class="cx-group-list">
+<article class="cx-group-row"><div><h4>Comunidade Geral</h4><p>Comunidade aberta de CRM no Brasil, dúvidas, dicas, vagas e networking.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/By6Zdhf3QDrGNJ5tJnCqvf" target="_blank" rel="noopener noreferrer">WhatsApp <span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/company/crmacademy-community" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Vagas de CRM</h4><p>Vagas de CRM, Salesforce, HubSpot, RD Station e correlatas, dois grupos para maior alcance.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/HzDBCVGKemkJTWz6P7yf2W" target="_blank" rel="noopener noreferrer">Vagas 1 <span aria-hidden="true">↗</span></a><a href="https://chat.whatsapp.com/DfLxb6mupR3D0NxdIOfZs7" target="_blank" rel="noopener noreferrer">Vagas 2 <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Liderança em CRM</h4><p>Grupo para líderes de CRM trocarem experiências sobre gestão de time, estratégia e resultados.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/JUGbK0qW2qRGHuuPm5NjhC" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Estudos Marketing Cloud</h4><p>Grupo de estudos focado em Salesforce Marketing Cloud, casos, dúvidas e certificações.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/DLoECehAMzV1FB8iSpBvmJ" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Estudo Braze</h4><p>Grupo de estudos sobre Braze, automações, campanhas, segmentação e casos de uso reais.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/LgNXXYR3cWe6l9tX7f4U5b" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Estudo Insider One</h4><p>Grupo de estudos sobre Insider, jornadas, personalização, integrações e certificações.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/FxHPL9i5oJDCXaIsDkP1iO" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+</div></section>
+<section class="cx-group-section"><header><span class="cx-kicker">02</span><h3>Mulheres de CRM</h3><p>Um espaço de troca e desenvolvimento para mulheres</p></header><div class="cx-group-list">
+<article class="cx-group-row"><div><h4>Geral</h4><p>Executivas, lideranças e profissionais mulheres em CRM e RevOps, networking e troca de experiências.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/GPJ5Pti7gVd5m6BuJmhewf" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Vagas</h4><p>Vagas de emprego em CRM e áreas correlatas compartilhadas especialmente para mulheres da comunidade.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/EOxrDYIKN6JB8EKBh43Ceo" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Encontros</h4><p>Agenda de encontros, meetups e eventos exclusivos da comunidade Mulheres de CRM.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/EUWCWfBs74VCsQFXKXvE5G" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Clube do Livro</h4><p>Clube do livro mensal da comunidade, leituras sobre liderança, CRM, marketing e carreira.</p></div><div class="cx-group-links"><a href="https://chat.whatsapp.com/IDjk9nTy4mDCILSRATA4vm" target="_blank" rel="noopener noreferrer">Entrar no grupo <span aria-hidden="true">↗</span></a></div></article>
+<article class="cx-group-row"><div><h4>Mentoria SOMA</h4><p>Mentoria individual e em grupo para profissionais de CRM que querem acelerar a carreira com estrutura e comunidade.</p></div><div class="cx-group-links"><a href="https://wa.me/5511986067420?text=Ol%C3%A1%2C+tenho+interesse+na+Mentoria+SOMA+de+CRM" target="_blank" rel="noopener noreferrer">Saber mais <span aria-hidden="true">↗</span></a></div></article>
+</div></section><footer class="cx-groups-footer"><p>Uma iniciativa de Jaqueline Amaro para aproximar pessoas, conhecimento e oportunidades em CRM.</p><a href="https://www.linkedin.com/in/jaqueline-amaro/" target="_blank" rel="noopener noreferrer">Conheça a fundadora ↗</a></footer></section>
 
     <!-- SUB-PÁGINA 2: DIRETÓRIO -->
     <!-- SUB-PÁGINA 3: CADASTRO -->
@@ -2875,7 +2684,7 @@ crmShowSurveyReminder();
     </div><section id="crmPublicMatch" class="tab-page"><h2>Encontre talentos para a sua vaga</h2><div class="search-tabs-container"><div class="search-tabs" role="group" aria-label="Modo de busca">
 <button class="search-tab-btn" type="button" aria-pressed="false" onclick="switchSearchTab('directory')">Profissionais Open to Work</button>
 <button class="search-tab-btn active" type="button" aria-pressed="true" onclick="switchSearchTab('ai')">Match por IA</button>
-</div></div><div class="ai-match-form card"><label class="crm-field" for="publicJobDescription">Descrição da vaga<textarea id="publicJobDescription" rows="7" minlength="20" maxlength="12000" placeholder="Responsabilidades, competências e ferramentas exigidas"></textarea></label><button id="btnPublicMatch" class="crm-button" type="button" onclick="crmRunAIForm('candidates','publicJobDescription','btnPublicMatch','publicMatchLoading','publicMatchResults',crmRenderPublicMatch)">Encontrar profissionais</button><p id="publicMatchLoading" role="status" style="display:none">Analisando os requisitos da vaga...</p></div><div id="publicMatchResults" aria-live="polite"></div></section><section id="crmPersonalDashboard" class="tab-page"><div class="crm-dashboard-heading"><div><p class="crm-eyebrow">SEU ESPAÇO / CONEXÃO CRM</p><h1 id="crmWelcome">Bem-vindo à comunidade.</h1><p id="crmDashboardContext"></p></div><label class="crm-field">Como você quer usar o portal?<select id="crmPortalRole" onchange="crmSaveProfilePreference('portal_role',this.value)"><option value="member">Profissional / Membro</option><option value="recruiter">Recrutador / Empresa</option></select></label></div><div id="crmDashboardCards" class="crm-solution-grid"></div><div class="crm-preferences"><h2>Meu momento profissional</h2><label><input type="checkbox" id="crmOpenToWork" onchange="crmSaveProfilePreference('open_to_work',this.checked)"> Estou aberto(a) a oportunidades</label><p class="crm-muted">Preferência do seu perfil. Para entrar na vitrine, complete o cadastro de profissional.</p><button class="crm-button crm-outline" onclick="openProfileModal()">Completar meu perfil </button></div></section><section id="crmRecruiterAI" class="tab-page"><h1>Compare seu perfil com a vaga.</h1><p class="crm-muted">Cole a descrição da vaga ou importe um arquivo de texto para comparar os requisitos com as competências do seu perfil.</p><label class="crm-field">Importar descrição (.txt, até 50 KB)<input id="crmJDFile" type="file" accept=".txt,text/plain"></label><p id="crmJDFileStatus" role="status"></p><section id="searchAIPanel" style="display:block;">
+</div></div><div class="ai-match-form card"><label class="crm-field" for="publicJobDescription">Descrição da vaga<textarea id="publicJobDescription" rows="7" minlength="20" maxlength="12000" placeholder="Responsabilidades, competências e ferramentas exigidas"></textarea></label><button id="btnPublicMatch" class="crm-button" type="button" onclick="crmRunAIForm('candidates','publicJobDescription','btnPublicMatch','publicMatchLoading','publicMatchResults',crmRenderPublicMatch)">Encontrar profissionais</button><p id="publicMatchLoading" role="status" style="display:none">Analisando os requisitos da vaga...</p></div><div id="publicMatchResults" aria-live="polite"></div></section><section id="crmPersonalDashboard" class="tab-page"><div class="crm-dashboard-heading"><div><p class="crm-eyebrow">SEU ESPAÇO / CONEXÃO CRM</p><h1 id="crmWelcome">Bem-vindo à comunidade.</h1><p id="crmDashboardContext"></p></div><label class="crm-field">Como você quer usar o portal?<select id="crmPortalRole" onchange="crmSaveProfilePreference('portal_role',this.value)"><option value="member">Profissional / Membro</option><option value="recruiter">Recrutador / Empresa</option></select></label></div><div id="crmDashboardCards" class="crm-solution-grid"></div><div class="crm-preferences"><h2>Meu momento profissional</h2><label><input type="checkbox" id="crmOpenToWork" onchange="crmSaveProfilePreference('open_to_work',this.checked)"> Tenho interesse em oportunidades</label><p class="crm-muted">Preferência do seu perfil. Para entrar na vitrine, complete o cadastro de profissional.</p><button class="crm-button crm-outline" onclick="openProfileModal()">Completar meu perfil </button></div></section><section id="crmRecruiterAI" class="tab-page"><h1>Compare seu perfil com a vaga.</h1><p class="crm-muted">Cole a descrição da vaga ou importe um arquivo de texto para comparar os requisitos com as competências do seu perfil.</p><label class="crm-field">Importar descrição (.txt, até 50 KB)<input id="crmJDFile" type="file" accept=".txt,text/plain"></label><p id="crmJDFileStatus" role="status"></p><section id="searchAIPanel" style="display:block;">
         <div class="ai-match-form" style="background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
           <label for="jobDescription" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:14px;">Descrição da vaga (Job Description) *</label>
           <textarea id="jobDescription" placeholder="Cole aqui a descrição completa da vaga: responsabilidades, requisitos, habilidades desejadas, ferramentas de CRM, senioridade, etc..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:14px; resize:vertical; min-height:140px; margin-bottom:12px; color:var(--text);" maxlength="12000"></textarea>
@@ -5193,7 +5002,7 @@ setTimeout(() => {
 
 // ============ CARREGAR ESTATÍSTICAS REAIS DO DASHBOARD ============
 async function loadDashboardStats(){
- try{const people=await crmFetchDirectory('talents',crmSignedIn());const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent=String(people.length);}catch{const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent='—';}
+ try{const people=await crmFetchDirectory('talents',crmSignedIn());const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent=String(people.length);}catch{const stat=document.getElementById('dashProfissionais');if(stat)stat.textContent='-';}
 }
 
 function flInitSB(){
@@ -5626,7 +5435,7 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSignedIn()&&crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
+ return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSignedIn()&&crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
@@ -5976,7 +5785,7 @@ function starRowHtml(nome){
     const filled = avg!=null && i<=Math.round(avg);
     stars += `<button type="button" class="star-btn${filled?' filled':''}" ${disabled?'disabled':''} onclick="votarAgencia(${escapeHtml(JSON.stringify(nome))}, ${i})" aria-label="Avaliar com nota ${i} de 5" title="Avaliar com nota ${i} de 5">★ ${i}</button>`;
   }
-  return `<p class="crm-rating-label">${disabled?'Sua avaliação foi enviada':'Avalie esta agência — escolha de 1 a 5'}</p><div class="stars" style="margin-bottom:4px;">${stars}</div>`;
+  return `<p class="crm-rating-label">${disabled?'Sua avaliação foi enviada':'Avalie esta agência, escolha de 1 a 5'}</p><div class="stars" style="margin-bottom:4px;">${stars}</div>`;
 }
 
 function agenciaCardHtml(a){
@@ -7327,6 +7136,7 @@ async function authInit(){
 }
 
 
+function crmPersonalGreeting(name){const mode=CURRENT_PROFILE?.language_preference;return (mode==='feminina'?'Bem-vinda, ':mode==='masculina'?'Bem-vindo, ':'Olá, ')+name;}
 function openProfileModal(){
   if(!CURRENT_USER) return;
   const p = CURRENT_PROFILE || {};
@@ -7346,7 +7156,7 @@ function openProfileModal(){
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
           ${foto ? `<img src="${foto}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;" referrerpolicy="no-referrer">` : `<div style="width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;">${nome.charAt(0)}</div>`}
           <div>
-            <div class="fd" style="font-size:16px;font-weight:700;color:var(--text);">Olá, ${escapeHtml(nome.split(' ')[0])}!</div>
+            <div class="fd" style="font-size:16px;font-weight:700;color:var(--text);">${escapeHtml(crmPersonalGreeting(nome.split(' ')[0]))}</div>
             <div style="font-size:12px;color:var(--muted);">Complete seu perfil para ver o Match Score nas vagas</div>
           </div>
         </div>
@@ -7354,6 +7164,15 @@ function openProfileModal(){
         <label class="ev-ilabel">Seu nome completo</label>
         <input id="pf_nome" class="ev-ifield" type="text" placeholder="Nome Sobrenome" value="${escapeHtml(nome)}" style="margin-bottom:12px;">
 
+        <label class="ev-ilabel" for="pf_gender">Como você se identifica? <span>(opcional)</span></label>
+        <select id="pf_gender" class="ev-ifield" style="margin-bottom:12px;">
+          ${[['','Prefiro não informar'],['feminino','Feminino'],['masculino','Masculino'],['nao_binario','Não binário'],['outra_identidade','Outra identidade']].map(([v,l])=>`<option value="${v}" ${(p.gender_identity||'')===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <label class="ev-ilabel" for="pf_language">Como prefere que a gente se refira a você?</label>
+        <select id="pf_language" class="ev-ifield" style="margin-bottom:8px;">
+          ${[['neutra','Sem marcação de gênero'],['feminina','No feminino'],['masculina','No masculino']].map(([v,l])=>`<option value="${v}" ${(p.language_preference||'neutra')===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Essas informações são privadas e ajudam a personalizar a linguagem do seu espaço. Você pode alterá-las ou deixar de informar quando quiser.</p>
         <label class="ev-ilabel" for="pf_photo">Foto do perfil</label>
         <input id="pf_photo" type="file" accept="image/jpeg,image/png,image/webp" style="display:block;max-width:100%;margin-bottom:8px;">
         <p style="font-size:12px;color:var(--muted);">JPG, PNG ou WebP, até 5 MB. A foto será salva ao clicar em Salvar perfil.</p>
@@ -7410,6 +7229,8 @@ async function saveProfile(){
     full_name: (document.getElementById('pf_nome').value||'').trim(),
     headline: (document.getElementById('pf_headline').value||'').trim(),
     seniority: document.getElementById('pf_seniority').value,
+    gender_identity: document.getElementById('pf_gender').value || null,
+    language_preference: document.getElementById('pf_language').value,
     tools,
     work_model: workModel,
     linkedin_url: (document.getElementById('pf_linkedin').value||'').trim(),
@@ -7447,7 +7268,7 @@ async function crmRenderSavedProfile(){
   if(!user)return;
   const details=document.getElementById('membroDetalhes');
   if(details){
-    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio]];
+    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
     details.innerHTML='<div class="crm-profile-details">'+fields.map(([label,value])=>'<section><h3>'+label+'</h3><p>'+escapeHtml(value||'Não informado')+'</p></section>').join('')+(crmSafeUrl(p.linkedin_url)?'<a href="'+escapeHtml(crmSafeUrl(p.linkedin_url))+'" target="_blank" rel="noopener noreferrer">Ver LinkedIn</a>':'')+'<p>'+(isAdminLoggedIn?'Administradora':'Membro')+'</p></div>';
   }
   let photo=crmSafeUrl(user.user_metadata?.avatar_url||'');
@@ -7741,6 +7562,7 @@ let crmActiveRoute='inicio',crmWasSignedIn=false,crmAuthEpoch=0,crmValidatedUser
 function crmSignedIn(){return !!CURRENT_USER&&CURRENT_USER.id===crmValidatedUserId;}
 function crmToggleMenu(open){const next=typeof open==='boolean'?open:!document.body.classList.contains('crm-menu-open');document.body.classList.toggle('crm-menu-open',next);crmById('crmMenuToggle').setAttribute('aria-expanded',String(next));}
 function crmClearPrivateData(){
+ window.CXConnections?.clear();
  window.CXWorkspace?.clear();
  crmAdminVerified=false;isAdminLoggedIn=false;crmById('crmAdminNav')?.setAttribute('hidden','');crmById('crmModerationList')?.replaceChildren();
  isAdminLoggedIn=false;currentUserRole=null;
@@ -7784,7 +7606,7 @@ function crmSetLanding(show){
  if(show){crmById('publicHero').style.display='';document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));}
 }
 function crmNavigate(route,updateHash=true){
- route=({calculadora:'calc',agenda:'eventos'})[route]||route;
+ route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
  if(route==='inicio'){
   crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';window.posthogTracker?.pageView('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'','#'+route);(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
@@ -7805,7 +7627,7 @@ function crmNavigate(route,updateHash=true){
  if(route==='freelancers')loadFreelancers();
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
  if(route==='membros')crmOpenMemberTab('diretorio');
- if(route==='comunidade')switchComunidadeTab('grupos');
+ if(route==='comunidade'){switchComunidadeTab('grupos');window.CXConnections?.partners();}
  if(route==='vagas-salvas')loadMembroPanel();
  if(route==='dashboard')crmRenderPersonalDashboard();
  if(route==='meus-eventos')crmLoadMyEvents();
@@ -7843,7 +7665,7 @@ async function crmOpenContact(button){
 function crmSafeUrl(value){try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:'';}catch{return '';}}
 function crmRenderPersonalDashboard(){
  const recruiter=CURRENT_PROFILE?.portal_role==='recruiter';crmById('crmPortalRole').value=recruiter?'recruiter':'member';
- crmById('crmWelcome').textContent='Olá, '+(CURRENT_PROFILE?.full_name||CURRENT_USER?.user_metadata?.full_name||'membro').split(' ')[0]+'.';
+ crmById('crmWelcome').textContent=crmPersonalGreeting((CURRENT_PROFILE?.full_name||CURRENT_USER?.user_metadata?.full_name||'pessoa da comunidade').split(' ')[0]);
  crmById('crmDashboardContext').textContent=recruiter?'Encontre as pessoas certas para o próximo desafio.':'Seu próximo passo começa com uma boa conexão.';
  const items=recruiter?[['membros','Membros da comunidade','Conheça os profissionais que fazem parte da comunidade.'],['match-recrutador','Match de candidatos por IA','Cole uma descrição de vaga e compare competências.'],['freelancers','Contratar freelancers','Encontre especialistas para seus projetos.'],['publicar','Publicar vaga / agência','Envie sua oportunidade para análise da comunidade.']]:[['vagas-salvas','Minhas vagas & match','Retome suas oportunidades salvas e compare com seu perfil.'],['membro','Meu perfil profissional','Atualize suas ferramentas, senioridade e disponibilidade.'],['meus-eventos','Meus eventos & artigos','Organize sua agenda e compartilhe seus aprendizados.'],['vagas','Explorar vagas de CRM','Encontre sua próxima oportunidade com os filtros do mural.']];
  crmById('crmDashboardCards').innerHTML=items.map(([route,title,desc])=>'<a class="crm-solution-card" href="#'+route+'" data-crm-route="'+route+'"><span></span><h3>'+title+'</h3><p>'+desc+'</p></a>').join('');
@@ -8096,6 +7918,7 @@ async function crmSubmitReviewForm(event){
 }
 
 </script>
-<script src="/assets/workspace.js?v=20260921-1"></script>
+<script src="/assets/workspace.js?v=20260921-3"></script>
+<script src="/assets/connections.js?v=20260921-3"></script>
 </body>
 </html>

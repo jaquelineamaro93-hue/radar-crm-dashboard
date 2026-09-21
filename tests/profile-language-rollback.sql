@@ -1,0 +1,24 @@
+BEGIN;
+CREATE TEMP TABLE language_fixture(uid uuid,sid uuid,other_uid uuid);
+GRANT SELECT ON language_fixture TO authenticated;
+INSERT INTO language_fixture VALUES(gen_random_uuid(),gen_random_uuid(),gen_random_uuid());
+INSERT INTO auth.users(id,email,email_confirmed_at,role,aud) SELECT uid,'language-'||uid||'@example.invalid',now(),'authenticated','authenticated' FROM language_fixture UNION ALL SELECT other_uid,'language-'||other_uid||'@example.invalid',now(),'authenticated','authenticated' FROM language_fixture;
+INSERT INTO auth.sessions(id,user_id,created_at,updated_at) SELECT sid,uid,now(),now() FROM language_fixture;
+SELECT set_config('request.jwt.claims',(SELECT jsonb_build_object('sub',uid,'session_id',sid,'role','authenticated')::text FROM language_fixture),true);
+SET LOCAL ROLE authenticated;
+DO $$ DECLARE f record; n int; BEGIN
+ SELECT * INTO f FROM language_fixture;
+ INSERT INTO public.profiles(id,gender_identity,language_preference) VALUES(f.uid,'feminino','feminina') ON CONFLICT(id) DO UPDATE SET gender_identity=excluded.gender_identity,language_preference=excluded.language_preference;
+ ASSERT EXISTS(SELECT 1 FROM public.profiles WHERE id=f.uid AND gender_identity='feminino' AND language_preference='feminina'),'Preference not saved';
+ UPDATE public.profiles SET gender_identity='masculino',language_preference='masculina' WHERE id=f.uid;
+ ASSERT EXISTS(SELECT 1 FROM public.profiles WHERE id=f.uid AND gender_identity='masculino'),'Preference not editable';
+ UPDATE public.profiles SET gender_identity=NULL,language_preference='neutra' WHERE id=f.uid;
+ ASSERT EXISTS(SELECT 1 FROM public.profiles WHERE id=f.uid AND gender_identity IS NULL),'Cannot withdraw optional identity';
+ BEGIN UPDATE public.profiles SET language_preference='invalid' WHERE id=f.uid; RAISE EXCEPTION 'Invalid enum accepted'; EXCEPTION WHEN check_violation THEN NULL; END;
+ PERFORM set_config('request.jwt.claims',jsonb_build_object('sub',f.other_uid,'role','authenticated')::text,true);
+ ASSERT NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=f.uid),'Identity leaked to another user';
+ UPDATE public.profiles SET gender_identity='feminino' WHERE id=f.uid;GET DIAGNOSTICS n=ROW_COUNT;ASSERT n=0,'Other user changed identity';
+END $$;
+RESET ROLE;
+SELECT 'PASS: optional identity saved, editable and removable; valid preferences enforced; other accounts cannot read or modify. All fixtures rolled back.' result;
+ROLLBACK;
