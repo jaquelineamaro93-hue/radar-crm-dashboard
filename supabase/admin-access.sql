@@ -12,7 +12,8 @@ AS $function$
     WHERE id = auth.uid()
       AND lower(email) IN (
         'jaqueline.amaro93@gmail.com',
-        'saraalvescorporativo@gmail.com'
+        'saraalvescorporativo@gmail.com',
+        'joicefelixcarv@gmail.com'
       )
       AND email_confirmed_at IS NOT NULL
       AND (banned_until IS NULL OR banned_until < now())
