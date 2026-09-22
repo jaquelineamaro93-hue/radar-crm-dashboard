@@ -45,3 +45,15 @@ jobs:
             data=json.load(e);print('AI HTTP',e.code,'error',data.get('error'))
           except Exception as e: print('AI',type(e).__name__)
           PY
+      - name: Verify published contact editor
+        run: |
+          python - <<'PY'
+          import urllib.request,time,pathlib
+          version=str(int(time.time()))
+          html=urllib.request.urlopen('https://conexaocrm.com/?verify='+version,timeout=30).read().decode()
+          assert 'CXTalentLinks.open()' in html, 'Missing contact editor entry'
+          assert '/assets/talent-links.js?v=20260922-1' in html, 'Missing editor script'
+          script=urllib.request.urlopen('https://conexaocrm.com/assets/talent-links.js?verify='+version,timeout=30).read()
+          assert script==pathlib.Path('assets/talent-links.js').read_bytes(), 'Published editor differs from tested version'
+          print('Published page and contact editor verified')
+          PY
