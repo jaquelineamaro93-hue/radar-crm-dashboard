@@ -1,0 +1,39 @@
+name: Diagnose public directory
+on:
+  push:
+    branches: ['codex/otw-contact-recovery']
+permissions:
+  contents: read
+jobs:
+  public-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check public endpoints without user data
+        run: |
+          python - <<'PY'
+          import urllib.request,urllib.error,json,csv,io
+          base='https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/'
+          for resource in ['talents','freelancers']:
+            try:
+              with urllib.request.urlopen(base+'crm-portal?resource='+resource,timeout=40) as r:
+                data=json.load(r)
+                print(resource,'HTTP',r.status,'items',len(data.get('items',[])))
+            except urllib.error.HTTPError as e:
+              data=json.load(e)
+              print(resource,'HTTP',e.code,'code',data.get('code'),'error',data.get('error'))
+            except Exception as e: print(resource,type(e).__name__)
+          sheet='https://docs.google.com/spreadsheets/d/e/2PACX-1vRtuTLaOZzk-uRDdRchwdNmypGJ8eO2K7qdckkL7Sh0VohIa8OHWMDbKuDDHQMsoLYOhMfIMlplKoop/pub?gid=1463680290&single=true&output=csv'
+          try:
+            with urllib.request.urlopen(sheet,timeout=40) as r:
+              rows=list(csv.reader(io.StringIO(r.read().decode('utf-8-sig'))))
+              print('sheet','HTTP',r.status,'rows',len(rows)-1,'headers_valid',bool(rows and 'Nome' in rows[0]))
+          except Exception as e: print('sheet',type(e).__name__)
+          request=urllib.request.Request(base+'openai-assistant',method='POST',headers={'Content-Type':'application/json'},data=json.dumps({'kind':'candidates','prompt':'Profissional de CRM com experiência em Salesforce Marketing Cloud.'}).encode())
+          try:
+            with urllib.request.urlopen(request,timeout=40) as r:
+              data=json.load(r);print('AI HTTP',r.status,'matches',len(data.get('matches',[])))
+          except urllib.error.HTTPError as e:
+            data=json.load(e);print('AI HTTP',e.code,'error',data.get('error'))
+          except Exception as e: print('AI',type(e).__name__)
+          PY

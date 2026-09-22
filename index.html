@@ -1687,6 +1687,7 @@ crmShowSurveyReminder();
           <a class="join-btn" href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener">Preencher o formulário</a>
         </details>
 
+        <div class="cx-work" style="margin:16px 0"><button type="button" class="crm-button" onclick="CXTalentLinks.open()">Meus links no Open to Work</button><p class="crm-muted">Já está na lista? Entre para corrigir os contatos do seu próprio cadastro.</p></div>
         <div class="search-bar">
           <input type="text" class="search-input" id="searchText" placeholder="Buscar por nome, ferramenta, empresa ou área (ex: HubSpot, Salesforce, São Paulo)...">
           <div class="filter-bar" style="position:static;">
@@ -3934,7 +3935,7 @@ function renderSearch(){
  const q=(crmById('searchText').value||'').toLowerCase().trim();const sen=crmById('sSeniority').value,cond=crmById('sCondicao').value,cid=crmById('sCidade').value,estado=crmById('sEstado').value,muda=crmById('sMuda').value,idioma=crmById('sIdioma').value,nivel=crmById('sNivel').value;
  const results=PEOPLE.filter(p=>(!sen||p.senioridade===sen)&&(!cond||p.condicao===cond)&&(!cid||p.cidadeNorm===cid)&&(!estado||p.estadoNorm===estado)&&(!muda||p.muda===muda)&&((!idioma&&!nivel)||extractIdiomaNivelPairs(p.idioma).some(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel)))&&(!q||[p.nome,p.area,p.ferramentas,p.empresa,p.local].join(' ').toLowerCase().includes(q)));
  crmById('searchCount').textContent=results.length+' profissionais';
- crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(p=>'<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+crmPublicContacts(p)+'</article>').join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
+ crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(p=>'<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+crmPublicContacts(p)+'<button type="button" class="p-btn" data-otw-source="'+escapeHtml(p.id)+'">Corrigir meus links</button></article>').join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
 
 function escapeHtml(s){
@@ -7562,6 +7563,7 @@ let crmActiveRoute='inicio',crmWasSignedIn=false,crmAuthEpoch=0,crmValidatedUser
 function crmSignedIn(){return !!CURRENT_USER&&CURRENT_USER.id===crmValidatedUserId;}
 function crmToggleMenu(open){const next=typeof open==='boolean'?open:!document.body.classList.contains('crm-menu-open');document.body.classList.toggle('crm-menu-open',next);crmById('crmMenuToggle').setAttribute('aria-expanded',String(next));}
 function crmClearPrivateData(){
+ window.CXTalentLinks?.clear();
  window.CXConnections?.clear();
  window.CXWorkspace?.clear();
  crmAdminVerified=false;isAdminLoggedIn=false;crmById('crmAdminNav')?.setAttribute('hidden','');crmById('crmModerationList')?.replaceChildren();
@@ -7832,6 +7834,7 @@ async function crmLoadModeration(){
  list.replaceChildren();status.textContent='Carregando solicitações…';
  if(!crmSignedIn())return;await crmRefreshAdmin();if(!crmAdminVerified){status.textContent='Acesso restrito à administradora.';return;}
  await window.CXConnections?.moderation();
+ await window.CXTalentLinks?.moderation();
  const epoch=crmAuthEpoch,filter=crmById('crmModerationFilter').value,state=crmById('crmModerationState').value;
  let count=0;const errors=[];
  for(const [table,label] of Object.entries(crmModerationTables)){
@@ -7922,5 +7925,6 @@ async function crmSubmitReviewForm(event){
 <script src="/assets/google-login.js?v=20260921-4"></script>
 <script src="/assets/workspace.js?v=20260921-7"></script>
 <script src="/assets/connections.js?v=20260921-7"></script>
+<script src="/assets/talent-links.js?v=20260922-1"></script>
 </body>
 </html>
