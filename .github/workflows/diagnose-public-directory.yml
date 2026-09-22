@@ -28,6 +28,8 @@ jobs:
             with urllib.request.urlopen(sheet,timeout=40) as r:
               rows=list(csv.reader(io.StringIO(r.read().decode('utf-8-sig'))))
               print('sheet','HTTP',r.status,'rows',len(rows)-1,'headers_valid',bool(rows and 'Nome' in rows[0]))
+              for i,row in enumerate(rows[:20]):
+                if any(c.strip().lower() in ['nome','nome completo'] for c in row): print('HEADER_ROW',i,'COLUMNS',row)
           except Exception as e: print('sheet',type(e).__name__)
           request=urllib.request.Request(base+'openai-assistant',method='POST',headers={'Content-Type':'application/json'},data=json.dumps({'kind':'candidates','prompt':'Profissional de CRM com experiência em Salesforce Marketing Cloud.'}).encode())
           try:
