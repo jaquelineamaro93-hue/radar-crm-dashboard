@@ -10,6 +10,7 @@ export async function handleRequest(req:Request){
   if(resource==='freelancers')return respond({authenticated:!!user,items:(await freelancers()).map((p:any)=>user?p:{id:p.id,nome:p.nome,categoria:text(p.categoria),bio:text(p.bio),portfolio:p.portfolio,linkedin:p.linkedin})});
   const rows=await database('diretorio_membros','select=id,nome,area,senioridade,ferramentas,linkedin,foto_url,cargo,empresa,bio,instagram,website&order=id&limit=500');
   return respond({authenticated:true,items:rows.map((p:any)=>({...p,linkedin:safeUrl(p.linkedin),foto_url:safeUrl(p.foto_url),instagram:safeUrl(p.instagram),website:safeUrl(p.website)}))});
- }catch{return respond({error:'Não foi possível carregar este recurso. Tente novamente.'},503);}
+ }catch(e){const message=e instanceof Error?e.message:'';const code=/^(DIRECTORY_STORAGE_HTTP_|SHEET_HTTP_)\d{3}$/.test(message)?message:message==='Cabeçalho inesperado'?'SHEET_COLUMNS':message==='Planilha vazia'?'SHEET_EMPTY':e instanceof DOMException&&e.name==='TimeoutError'?'UPSTREAM_TIMEOUT':'DIRECTORY_UNAVAILABLE';return respond({error:'Não foi possível carregar este recurso. Tente novamente.',code},503);}
 }
 Deno.serve(handleRequest);
+

@@ -11,9 +11,17 @@ export function parseCSV(input:string):string[][]{
  if(quoted)throw Error('CSV inválido');if(cell||row.length){row.push(cell);if(row.some(Boolean))rows.push(row);}return rows;
 }
 export function mapTalentCSV(input:string){
- const rows=parseCSV(input.replace(/^\uFEFF/,'')),headers=rows.shift()?.map(s=>s.trim())||[];
- if(!headers.includes('Nome')||!headers.includes('Linkedin'))throw Error('Cabeçalho inesperado');
- const get=(r:string[],h:string)=>r[headers.indexOf(h)]?.trim()||'';
+ const normalizeHeader=(value:string)=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');
+ const rows=parseCSV(input.replace(/^\uFEFF/,''));
+ // Published sheets may include a title or note before the column names.
+ const headerIndex=rows.slice(0,20).findIndex(row=>{
+  const names=row.map(normalizeHeader);
+  return names.includes('nome')&&names.includes('linkedin');
+ });
+ if(headerIndex<0)throw Error('Cabeçalho inesperado');
+ const headers=rows[headerIndex].map(normalizeHeader);
+ rows.splice(0,headerIndex+1);
+ const get=(r:string[],h:string)=>r[headers.indexOf(normalizeHeader(h))]?.trim()||'';
  return rows.filter(r=>get(r,'Nome')).map(r=>({
   id:'csv-'+encodeURIComponent(get(r,'Nome')+'|'+get(r,'Linkedin')),
   nome:get(r,'Nome'),senioridade:get(r,'Senioridade'),exp:get(r,'Tempo de Experiência'),
@@ -27,6 +35,7 @@ let cached:ReturnType<typeof mapTalentCSV>|null=null,expires=0,inflight:Promise<
 export async function sheetTalents(){
  if(cached&&Date.now()<expires)return cached;
  if(inflight)return inflight;
- inflight=(async()=>{const response=await fetch(TALENTS_CSV,{signal:AbortSignal.timeout(25000)});if(!response.ok)throw Error('Planilha indisponível');const result=mapTalentCSV(await response.text());if(!result.length)throw Error('Planilha vazia');cached=result;expires=Date.now()+300000;return result;})();
+ inflight=(async()=>{const response=await fetch(TALENTS_CSV,{signal:AbortSignal.timeout(25000)});if(!response.ok)throw Error('SHEET_HTTP_'+response.status);const result=mapTalentCSV(await response.text());if(!result.length)throw Error('Planilha vazia');cached=result;expires=Date.now()+300000;return result;})();
  try{return await inflight;}finally{inflight=null;}
 }
+

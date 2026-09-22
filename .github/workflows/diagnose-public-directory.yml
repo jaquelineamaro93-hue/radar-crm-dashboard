@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test published sheet parsing
+        run: node --experimental-strip-types --test tests/talents-csv.test.ts
       - name: Check public endpoints without user data
         run: |
           python - <<'PY'
