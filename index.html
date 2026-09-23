@@ -7771,7 +7771,7 @@ function crmRenderPublicMatch(data){const matches=data.matches||[];crmById('publ
 <script id="crm-moderation-v1">
 /* Centralized submission verification and owner-only moderation. */
 let crmAdminVerified=false,crmSubmitBusy=false;
-const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos',plataformas_sugeridas:'Plataformas',freelancers_sugeridos:'Freelancers',freelancers_edicoes:'Pedidos de edição',agencias_sugeridas:'Agências',conteudos_comunidade:'Conteúdos',crm_submission_requests:'Solicitações de publicação'};
+const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos',plataformas_sugeridas:'Plataformas',freelancers_sugeridos:'Freelancers',freelancers_edicoes:'Pedidos de edição',agencias_sugeridas:'Agências',conteudos_comunidade:'Conteúdos',crm_submission_requests:'Solicitações de publicação',crm_partner_communities:'Comunidades parceiras',crm_freelancer_claims:'Vínculos de freelancers'};
 async function crmRefreshAdmin(){
  const epoch=crmAuthEpoch;
  crmAdminVerified=false;isAdminLoggedIn=false;
@@ -7839,7 +7839,7 @@ async function crmLoadModeration(){
  let count=0;const errors=[];
  for(const [table,label] of Object.entries(crmModerationTables)){
   if(filter&&filter!==table)continue;
-  const {data,error}=await authSb.from(table).select('*').eq('moderation_status',state).order('created_at',{ascending:false}).limit(50);
+  const stateField=(table==='crm_partner_communities'||table==='crm_freelancer_claims')?'status':'moderation_status'; const {data,error}=await authSb.from(table).select('*').eq(stateField,state).order('created_at',{ascending:false}).limit(50);
   if(epoch!==crmAuthEpoch||!crmAdminVerified)return;
   if(error){errors.push(label);continue;}
   for(const row of data||[]){
@@ -7860,7 +7860,7 @@ async function crmLoadModeration(){
     b.onclick=async()=>{
      if(!confirm(approve?'Aprovar este item e publicar a alteração?':'Rejeitar este pedido?'))return;
      card.querySelectorAll('button').forEach(x=>x.disabled=true);
-     const {error}=await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
+     const {error}=(table==='crm_partner_communities'||table==='crm_freelancer_claims')?await authSb.from(table).update({status:approve?'approved':'rejected'}).eq('id',row.id):await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
      if(epoch!==crmAuthEpoch)return;
      if(error){status.textContent=error.message;card.querySelectorAll('button').forEach(x=>x.disabled=false);return;}
      await crmLoadModeration();evToastMsg(approve?'Aprovado e publicado.':'Pedido rejeitado.','');
@@ -7874,8 +7874,8 @@ async function crmLoadModeration(){
 document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
  page.innerHTML='<h1>Administração · Aprovações</h1><p>Revise as sugestões e os pedidos da comunidade. Só a sua aprovação publica o conteúdo ou altera um cadastro.</p><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button class="crm-button" id="crmModerationRefresh">Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div>';
- crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração · Aprovações'];
- const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.textContent='Administração · Aprovações';b.onclick=crmOpenAdmin;crmById('crmNavSlot').append(b);
+ crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
+ const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.textContent='Administração';b.onclick=crmOpenAdmin;crmById('crmNavSlot').append(b);
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
  crmRefreshAdmin().then(()=>{if(location.hash==='#admin'&&crmAdminVerified)crmOpenAdmin();});
 });
