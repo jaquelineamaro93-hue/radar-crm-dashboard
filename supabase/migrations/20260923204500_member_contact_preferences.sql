@@ -94,7 +94,7 @@ begin
          set user_id = excluded.user_id,
              nome = excluded.nome,
              area = excluded.area,
-             senioridade = excluded.seniority,
+             senioridade = excluded.senioridade,
              ferramentas = excluded.ferramentas,
              linkedin = excluded.linkedin,
              foto_url = coalesce(excluded.foto_url, public.diretorio_membros.foto_url),
