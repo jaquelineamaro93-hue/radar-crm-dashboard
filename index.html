@@ -7930,7 +7930,7 @@ async function crmSubmitReviewForm(event){
 /* Admin Analytics — Conexão CRM | PostHog snapshot + Supabase live */
 (function(){
 const PH_SNAPSHOT={updated:"23/09/2026",pageviews:2672,users:818,identified:38,sessions:1093,pages:[
-["Início / legado",1304,596],["Início",255,143],["Quem somos",144,110],["Membros",142,39],["Busca",120,76],["Vagas",83,55],["Pesquisa & Censo",66,40],["Cursos",50,33],["Freelancers",45,30],["Comunidade",45,22]
+["Início",1559,739],["Quem somos",144,110],["Membros",142,39],["Busca",120,76],["Vagas",83,55],["Pesquisa & Censo",66,40],["Cursos",50,33],["Freelancers",45,30],["Comunidade",45,22]
 ]};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 function analyticsCss(){if(document.getElementById("crmAdminAnalyticsCss"))return;const st=document.createElement("style");st.id="crmAdminAnalyticsCss";st.textContent=`
@@ -7950,7 +7950,7 @@ function renderAnalytics(){
  const root=document.getElementById("crmAdminAnalytics");if(!root)return;
  const max=Math.max(...PH_SNAPSHOT.pages.map(x=>x[1]));
  root.innerHTML='<div class="crm-analytics-grid">'+card("Visitantes únicos",PH_SNAPSHOT.users,"últimos 30 dias")+card("Pageviews",PH_SNAPSHOT.pageviews,"últimos 30 dias")+card("Sessões",PH_SNAPSHOT.sessions,"últimos 30 dias")+card("Usuários identificados",PH_SNAPSHOT.identified,"login reconhecido no PostHog")+'</div>'+
- '<div class="crm-analytics-two"><div class="crm-analytics-panel"><h3>Páginas mais acessadas</h3>'+PH_SNAPSHOT.pages.map((p,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(p[0])+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,p[1]/max*100)+'%"></div></div><b>'+p[1]+'</b></div>').join("")+'<p class="crm-analytics-note">A primeira linha agrupa a home que ainda possui histórico com o título antigo “Radar CRM”. Novos eventos usam as rotas atuais do Conexão CRM.</p></div>'+
+ '<div class="crm-analytics-two"><div class="crm-analytics-panel"><h3>Páginas mais acessadas</h3>'+PH_SNAPSHOT.pages.map((p,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(p[0])+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,p[1]/max*100)+'%"></div></div><b>'+p[1]+'</b></div>').join("")+'<p class="crm-analytics-note">Acessos da mesma URL são consolidados por área do Conexão CRM, mesmo quando existem títulos históricos diferentes no PostHog.</p></div>'+
  '<div class="crm-analytics-panel"><h3>Comunidade · Supabase</h3><div id="crmAnalyticsSupabase" class="crm-analytics-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"></div><p class="crm-analytics-note">Dados de cadastro e ações carregados diretamente do Supabase e visíveis somente para administradores.</p></div></div>'+
  '<p class="crm-analytics-note">Fonte de navegação: PostHog · snapshot atualizado em '+PH_SNAPSHOT.updated+'. Fonte de comunidade: Supabase em tempo real. O Top 5 nominal será habilitado quando houver identificação suficiente dos membros; administradores e tráfego automatizado não devem entrar no ranking.</p>';
  loadSupabase();
