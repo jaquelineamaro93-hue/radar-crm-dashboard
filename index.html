@@ -1005,7 +1005,33 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 @media(max-width:700px){.crm-review-actions{flex-direction:column;align-items:stretch}.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 <link rel="stylesheet" href="/assets/workspace.css?v=20260921-3">
-</head>
+<style id="crm-profile-directory-v3">
+.crm-profile-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.crm-profile-top-actions{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}.crm-profile-top-actions .crm-button{min-height:44px}
+.crm-members-heading-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}.crm-members-heading-row>.crm-button{min-height:44px}
+#comPanelDiretorio>div:first-of-type{margin-top:6px}
+#comDiretorioGrid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important;gap:18px!important}
+.crm-member-card-v2{align-items:center;text-align:center;min-height:390px;padding:28px 24px;background:linear-gradient(180deg,#181716 0%,#151412 100%);border-color:#3d3833;box-shadow:0 12px 34px rgba(0,0,0,.12)}
+.crm-member-card-v2:hover{border-color:#f97316;transform:translateY(-2px)}
+.crm-member-avatar-v2{width:96px;height:96px;font-size:28px;background:#2a1d15;border:1px solid #5a3520;color:#fb923c;box-shadow:inset 0 0 0 5px #181716}
+.crm-member-card-head{display:flex;flex-direction:column;align-items:center;gap:6px}.crm-member-card-v2 h3{font-size:20px}.crm-member-card-v2 .crm-member-role{color:#cbd5e1;max-width:310px}
+.crm-member-level{font-size:11px;text-transform:uppercase;letter-spacing:.06em;border:1px solid #5a3520;background:#2a1d15;color:#fdba74;padding:4px 9px;border-radius:999px}
+.crm-member-tools{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.crm-member-tools span{font-size:11px;background:#24211e;color:#e5e7eb;border:1px solid #48433e;border-radius:999px;padding:5px 9px}
+.crm-member-card-v2 .crm-member-bio{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;color:#b8bec7;line-height:1.6;min-height:88px}.crm-member-bio-empty{opacity:.6}
+.crm-member-card-v2 .crm-member-links{justify-content:center;width:100%;border-top:1px solid #35322e}.crm-member-card-v2 .crm-member-links a{font-weight:700;text-decoration:none;color:#fb923c}
+.crm-directory-empty{grid-column:1/-1;padding:48px;text-align:center;border:1px dashed #48433e;border-radius:14px;color:#d1d5db}.crm-directory-empty span{display:block;color:#9ca3af;margin-top:6px}
+.crm-profile-overlay{z-index:10050;background:rgba(0,0,0,.82);backdrop-filter:blur(8px)}.crm-profile-modal{max-width:720px!important;background:#181716!important;border:1px solid #48433e!important;color:#f8fafc;padding:0!important;overflow:hidden}
+.crm-profile-modal-head{display:flex;justify-content:space-between;gap:20px;padding:28px 30px 22px;border-bottom:1px solid #35322e}.crm-profile-modal-head h2{font-size:28px;line-height:1.2;margin:5px 0 8px}.crm-profile-modal-head p:not(.crm-eyebrow){color:#b8bec7;font-size:14px;line-height:1.55;margin:0}
+.crm-profile-close{background:none;border:0;color:#a1a1aa;cursor:pointer;align-self:flex-start}.crm-profile-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:18px 30px 0}.crm-profile-progress span{height:4px;border-radius:9px;background:#3f3f46}.crm-profile-progress span.active{background:#f97316}
+.crm-profile-modal section{padding:26px 30px 8px}.crm-profile-modal section[hidden]{display:none!important}.crm-profile-step-title{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}.crm-profile-step-title>span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f97316;color:#181716;font-weight:900}.crm-profile-step-title h3{font-size:19px;margin:0 0 4px}.crm-profile-step-title p{font-size:13px;color:#aeb5bf;margin:0}
+.crm-profile-modal .ev-ilabel{margin:16px 0 7px;color:#e5e7eb}.crm-profile-modal .ev-ifield{background:#101010;border-color:#4b4540;color:#f8fafc;min-height:46px}.crm-profile-modal textarea.ev-ifield{min-height:100px}
+.crm-profile-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.crm-profile-avatar-row{display:flex;align-items:center;gap:16px;padding:14px;border:1px solid #35322e;border-radius:12px;background:#141311}.crm-profile-avatar-row>img,.crm-profile-avatar-placeholder{width:64px;height:64px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:#2a1d15;color:#fb923c;font-size:24px;font-weight:800;flex-shrink:0}.crm-profile-avatar-row small{display:block;color:#8f949b;margin-top:6px}
+.crm-profile-chips{display:flex;flex-wrap:wrap;gap:8px}.crm-profile-chips label{cursor:pointer}.crm-profile-chips input{position:absolute;opacity:0;pointer-events:none}.crm-profile-chips span{display:block;padding:8px 11px;border:1px solid #4b4540;border-radius:999px;background:#111;color:#d4d4d8;font-size:12px}.crm-profile-chips input:checked+span{border-color:#f97316;background:#2a1d15;color:#fdba74}
+.crm-directory-visibility{display:flex;gap:14px;padding:18px;border:1px solid #5a3520;background:#21170f;border-radius:14px;cursor:pointer}.crm-directory-visibility input{width:20px;height:20px;accent-color:#f97316;flex-shrink:0}.crm-directory-visibility strong{display:block;color:#fff;margin-bottom:5px}.crm-directory-visibility small{display:block;color:#c5b9ae;line-height:1.55}
+.crm-profile-preview{margin-top:18px;padding:20px;border:1px solid #35322e;border-radius:14px;background:#111}.crm-profile-preview h3{font-size:18px;margin:7px 0 5px}.crm-profile-preview p{color:#d1d5db;margin:0 0 8px}.crm-profile-preview small{color:#8f949b;line-height:1.5}
+.crm-profile-status{min-height:22px;margin:8px 30px 0;color:#aeb5bf;font-size:13px}.crm-profile-footer{display:flex;justify-content:flex-end;gap:10px;padding:18px 30px 28px}.crm-profile-footer .crm-button{min-height:44px}
+@media(max-width:700px){.crm-profile-two-cols{grid-template-columns:1fr}.crm-profile-modal-head,.crm-profile-modal section,.crm-profile-footer{padding-left:20px;padding-right:20px}.crm-profile-progress{padding-left:20px;padding-right:20px}.crm-profile-status{margin-left:20px;margin-right:20px}.crm-profile-top-actions{width:100%;margin-left:0}.crm-profile-top-actions .crm-button{flex:1}.crm-members-heading-row{align-items:flex-start}#comDiretorioGrid{grid-template-columns:1fr!important}}
+</style></head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -1415,20 +1441,25 @@ crmShowSurveyReminder();
     <div style="max-width:900px;margin:0 auto;padding:24px 0;">
       <!-- Header do membro -->
       <div id="membroHeader" style="border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px;">
-        <div style="display:flex;align-items:center;gap:16px;">
-          <div id="membroAvatar" style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;"></div>
-          <div>
-            <div style="font-size:14px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;">PAINEL DO MEMBRO</div>
-            <div id="membroNome" class="fd" style="font-size:20px;font-weight:700;color:var(--text);margin:2px 0;"></div>
-            <div id="membroHeadline" style="font-size:14px;color:var(--muted);"></div>
+        <div class="crm-profile-hero">
+          <div style="display:flex;align-items:center;gap:16px;min-width:0;">
+            <div id="membroAvatar" style="width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;"></div>
+            <div style="min-width:0;">
+              <div style="font-size:12px;font-weight:700;color:#fb923c;text-transform:uppercase;letter-spacing:.08em;">PAINEL DO MEMBRO</div>
+              <div id="membroNome" class="fd" style="font-size:24px;font-weight:700;color:var(--text);margin:3px 0;"></div>
+              <div id="membroHeadline" style="font-size:14px;color:var(--muted);overflow-wrap:anywhere;"></div>
+            </div>
           </div>
-          <button onclick="openProfileModal()" style="margin-left:auto;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit;color:var(--muted);">Editar perfil</button>
+          <div class="crm-profile-top-actions">
+            <button class="crm-button" onclick="openProfileModal()">EDITAR PERFIL</button>
+            <button class="crm-button crm-outline" onclick="crmNavigate('vagas-salvas')">VAGAS SALVAS &amp; MATCH IA</button>
+          </div>
         </div>
       </div>
 
       <div id="membroDetalhes" aria-live="polite"></div>
       </div>
-  <div class="crm-panel-actions"><button class="crm-button" onclick="openProfileModal()">EDITAR MEU PERFIL </button><button class="crm-button crm-outline" onclick="crmNavigate('vagas-salvas')">VAGAS SALVAS &amp; MATCH IA </button></div></div>
+  </div>
 
   <div class="tab-page active" id="pageDashboard">
 
@@ -2617,7 +2648,7 @@ crmShowSurveyReminder();
           <button onclick="handleLogout()" style="background:none;border:1px solid #fca5a5;border-radius:8px;padding:8px;font-size:14px;cursor:pointer;font-family:inherit;color:#ef4444;width:100%;">Sair da conta</button>
         </div>
       </div>
-    </div></section></div><div class="tab-page" id="subpage-membros"><header class="crm-members-heading"><h1>Membros da comunidade</h1><p class="crm-muted">Encontre pessoas e apresente sua trajetória à comunidade.</p></header><nav class="crm-members-tabs" aria-label="Membros da comunidade"><button type="button" id="comSubTabDiretorio" class="search-tab-btn active" aria-pressed="true" onclick="crmOpenMemberTab('diretorio')">Diretório de membros</button><button type="button" id="comSubTabCadastro" class="search-tab-btn" aria-pressed="false" onclick="crmOpenMemberTab('cadastro')">Cadastrar meu perfil</button></nav><section id="comPanelCadastro" style="display:none;">
+    </div></section></div><div class="tab-page" id="subpage-membros"><header class="crm-members-heading crm-members-heading-row"><div><p class="crm-eyebrow">COMUNIDADE / NETWORKING</p><h1>Membros da comunidade</h1><p class="crm-muted">Descubra quem faz parte da Conexão CRM e encontre pessoas por atuação, senioridade e ferramentas.</p></div><button type="button" class="crm-button" onclick="openProfileModal()">EDITAR MEU PERFIL</button></header><section id="comPanelCadastro" style="display:none;">
       <div class="section-head"><span class="section-num">03</span><h2>Cadastrar meu perfil no diretório</h2></div>
       <p class="section-desc">Apareça no diretório da comunidade para networking, oportunidades e visibilidade no ecossistema de CRM brasileiro.</p>
 
@@ -2670,9 +2701,7 @@ crmShowSurveyReminder();
 
       <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="search-input" id="comDirSearch" placeholder="Buscar por nome, ferramenta, área..." style="max-width:360px;" oninput="renderComDiretorio()">
-        <button class="ai-match-btn secondary" onclick="crmOpenMemberTab('cadastro')" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; font-size:14px; padding:10px 16px; text-decoration:none;">
-           Cadastrar meu perfil
-        </button>
+        <button class="crm-button crm-outline" onclick="openProfileModal()" style="white-space:nowrap;">Editar meu perfil</button>
       </div>
 
       <div id="comDiretorioGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:16px;">
@@ -6041,13 +6070,11 @@ function renderVagas(){
 // ============ COMUNIDADE, SUB-ABAS ============
 function crmOpenMemberTab(tab){
  if(!crmSignedIn()){crmPendingRoute='membros';crmJoin('Faça login gratuito para acessar os membros da comunidade.');return;}
+ if(tab==='cadastro'){openProfileModal();return;}
  if(crmActiveRoute!=='membros')crmNavigate('membros');
- const selected=tab==='cadastro'?'cadastro':'diretorio';
- for(const [key,id] of Object.entries({diretorio:'comPanelDiretorio',cadastro:'comPanelCadastro'})){
-  const active=key===selected;crmById(id).style.display=active?'block':'none';
-  const button=crmById(key==='diretorio'?'comSubTabDiretorio':'comSubTabCadastro');button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
- }
- if(selected==='diretorio')renderComDiretorio();
+ const panel=crmById('comPanelDiretorio');if(panel)panel.style.display='block';
+ const legacy=crmById('comPanelCadastro');if(legacy)legacy.style.display='none';
+ renderComDiretorio();
 }
 function switchComunidadeTab(tab){
  if(tab==='diretorio'||tab==='cadastro'){crmOpenMemberTab(tab);return;}
@@ -6063,11 +6090,20 @@ async function renderComDiretorio(){
 }
 function renderComDiretorioCards(all,q){
  const container=crmById('comDiretorioGrid');
- const list=all.filter(m=>!q||[m.nome,m.area,m.ferramentas,m.cargo,m.empresa,m.bio].join(' ').toLowerCase().includes(q));
+ const list=all.filter(m=>!q||[m.nome,m.area,m.ferramentas,m.cargo,m.empresa,m.bio,m.senioridade].join(' ').toLowerCase().includes(q));
  container.innerHTML=list.length?list.map(m=>{
- const photo=crmHttpUrl(m.foto_url),initials=(m.nome||'M').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('');
- return '<article class="crm-member-card"><div class="crm-member-avatar"><span>'+escapeHtml(initials)+'</span>'+(photo?'<img src="'+escapeHtml(photo)+'" alt="Foto de '+escapeHtml(m.nome)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</div><h3>'+escapeHtml(m.nome)+'</h3><p class="crm-member-role">'+escapeHtml([m.cargo||m.area,m.empresa].filter(Boolean).join(' · '))+'</p>'+(m.ferramentas?'<span class="crm-member-specialty">'+escapeHtml(m.ferramentas)+'</span>':'')+'<p class="crm-member-bio">'+escapeHtml(m.bio||'')+'</p><div class="crm-member-links">'+[['LinkedIn',m.linkedin],['Instagram',m.instagram],['Website',m.website]].map(([label,url])=>{const safe=crmHttpUrl(url);return safe?'<a href="'+escapeHtml(safe)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>':'';}).join('')+'</div></article>';
- }).join(''):'<p class="empty-state">Nenhum membro encontrado.</p>';
+  const photo=crmHttpUrl(m.foto_url),initials=(m.nome||'M').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+  const tools=String(m.ferramentas||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,4);
+  const bio=String(m.bio||'').trim();
+  return '<article class="crm-member-card crm-member-card-v2">'+
+   '<div class="crm-member-avatar crm-member-avatar-v2"><span>'+escapeHtml(initials)+'</span>'+(photo?'<img src="'+escapeHtml(photo)+'" alt="Foto de '+escapeHtml(m.nome)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</div>'+
+   '<div class="crm-member-card-head"><h3>'+escapeHtml(m.nome)+'</h3>'+
+   '<p class="crm-member-role">'+escapeHtml([m.cargo||m.area,m.empresa].filter(Boolean).join(' · '))+'</p>'+
+   (m.senioridade?'<span class="crm-member-level">'+escapeHtml(m.senioridade)+'</span>':'')+'</div>'+
+   (tools.length?'<div class="crm-member-tools">'+tools.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+'</div>':'')+
+   (bio?'<p class="crm-member-bio">'+escapeHtml(bio)+'</p>':'<p class="crm-member-bio crm-member-bio-empty">Perfil profissional da comunidade Conexão CRM.</p>')+
+   '<div class="crm-member-links">'+[['LinkedIn',m.linkedin],['Instagram',m.instagram],['Website',m.website]].map(([label,url])=>{const safe=crmHttpUrl(url);return safe?'<a href="'+escapeHtml(safe)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>':'';}).join('')+'</div></article>';
+ }).join(''):'<div class="crm-directory-empty"><strong>Nenhum membro encontrado.</strong><span>Tente outro nome, ferramenta ou área.</span></div>';
 }
 
 async function submitComCadastro(){
@@ -7122,10 +7158,12 @@ async function authInit(){
    if(!session?.access_token)throw Error();const {data,error}=await authSb.auth.getUser(session.access_token);if(error||!data?.user||data.user.is_anonymous)throw Error();if(epoch!==crmAuthEpoch)return;
    if(crmValidatedUserId!==data.user.id){crmClearPrivateData();crmValidatedUserId=data.user.id;}CURRENT_USER=data.user;const id=data.user.id;
    const profile=await authLoadProfile(id);if(crmValidatedUserId!==id)return;CURRENT_PROFILE=profile;
+   const needsOnboarding=!profile||!profile.onboarding_completed||!crmProfileComplete(profile);
    currentUserEmail=data.user.email;currentUserRole='member';isAdminLoggedIn=false;await crmRefreshAdmin();
    if(crmValidatedUserId!==id)return;currentUserRole=crmAdminVerified?'admin':'member';
    try{window.posthog?.identify(data.user.id,{crm_logged_in:true});}catch{}
    authRenderUI();crmById('loggedUserHeadline').textContent=data.user.email||'';crmSyncAuth();
+   if(needsOnboarding)setTimeout(()=>{if(CURRENT_USER?.id===id&&!document.getElementById('profileModalOverlay')){crmNavigate('membro');openProfileModal({onboarding:true});}},300);
    if(location.hash.includes('access_token'))history.replaceState(null,'',location.pathname+'#dashboard');
   }catch{if(epoch!==crmAuthEpoch)return;crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
  };
@@ -7138,8 +7176,37 @@ async function authInit(){
 
 
 function crmPersonalGreeting(name){const mode=CURRENT_PROFILE?.language_preference;return (mode==='feminina'?'Bem-vinda, ':mode==='masculina'?'Bem-vindo, ':'Olá, ')+name;}
-function openProfileModal(){
+let CRM_PROFILE_ONBOARDING=false;
+let CRM_PROFILE_STEP=1;
+function crmProfileComplete(p){
+ return !!(p&&String(p.full_name||'').trim()&&String(p.headline||'').trim()&&String(p.seniority||'').trim()&&Array.isArray(p.tools)&&p.tools.length);
+}
+function crmProfileStep(step){
+ CRM_PROFILE_STEP=Math.max(1,Math.min(3,step));
+ document.querySelectorAll('[data-pf-step]').forEach(el=>el.hidden=Number(el.dataset.pfStep)!==CRM_PROFILE_STEP);
+ document.querySelectorAll('[data-pf-dot]').forEach(el=>el.classList.toggle('active',Number(el.dataset.pfDot)<=CRM_PROFILE_STEP));
+ const back=document.getElementById('pf_back'),next=document.getElementById('pf_next'),save=document.getElementById('pf_save');
+ if(back)back.hidden=CRM_PROFILE_STEP===1;
+ if(next)next.hidden=CRM_PROFILE_STEP===3;
+ if(save)save.hidden=CRM_PROFILE_STEP!==3;
+}
+function crmProfileNext(){
+ const status=document.getElementById('pf_status');if(status){status.textContent='';status.style.color='var(--muted)';}
+ if(CRM_PROFILE_STEP===1){
+  if(!(document.getElementById('pf_nome')?.value||'').trim()){if(status)status.textContent='Preencha seu nome para continuar.';return;}
+ }
+ if(CRM_PROFILE_STEP===2){
+  const tools=document.querySelectorAll('#pf_tools_wrap input:checked');
+  if(!(document.getElementById('pf_headline')?.value||'').trim()||!document.getElementById('pf_seniority')?.value||!tools.length){
+   if(status)status.textContent='Preencha cargo/objetivo, senioridade e pelo menos uma ferramenta.';return;
+  }
+ }
+ crmProfileStep(CRM_PROFILE_STEP+1);
+}
+function openProfileModal(options={}){
   if(!CURRENT_USER) return;
+  CRM_PROFILE_ONBOARDING=!!options.onboarding;
+  CRM_PROFILE_STEP=1;
   const p = CURRENT_PROFILE || {};
   const nome = p.full_name || CURRENT_USER.user_metadata?.full_name || '';
   const foto = escapeHtml(crmSafeUrl(CURRENT_USER.user_metadata?.avatar_url || ''));
@@ -7147,98 +7214,101 @@ function openProfileModal(){
   const NIVEIS = ['Estágio','Júnior','Pleno','Sênior','Especialista','Coordenação','Gestão','Liderança'];
   const MODELOS = ['Remoto','Híbrido','Presencial'];
   const userTools = Array.isArray(p.tools) ? p.tools : [];
+  const visible=p.directory_visible!==false;
 
-  const existing = document.getElementById('profileModalOverlay');
-  if(existing) existing.remove();
-
+  document.getElementById('profileModalOverlay')?.remove();
+  const title=CRM_PROFILE_ONBOARDING?'Vamos montar seu perfil':'Editar meu perfil';
+  const subtitle=CRM_PROFILE_ONBOARDING?'Leva cerca de 2 minutos. Essas informações deixam seu espaço mais útil e alimentam o Match IA.':'Atualize suas informações sempre que precisar.';
+  const closeButton=CRM_PROFILE_ONBOARDING?'':`<button class="crm-profile-close" type="button" onclick="document.getElementById('profileModalOverlay').remove()" aria-label="Fechar">Fechar</button>`;
   const html = `
-    <div class="ev-modal-overlay" id="profileModalOverlay" role="dialog" aria-modal="true" style="display:flex;overflow-y:auto;">
-      <div class="ev-mbox" style="max-width:520px;width:100%;margin:auto;padding:24px;">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
-          ${foto ? `<img src="${foto}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;" referrerpolicy="no-referrer">` : `<div style="width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;">${nome.charAt(0)}</div>`}
+    <div class="ev-modal-overlay crm-profile-overlay" id="profileModalOverlay" role="dialog" aria-modal="true" style="display:flex;overflow-y:auto;">
+      <div class="ev-mbox crm-profile-modal">
+        <div class="crm-profile-modal-head">
           <div>
-            <div class="fd" style="font-size:16px;font-weight:700;color:var(--text);">${escapeHtml(crmPersonalGreeting(nome.split(' ')[0]))}</div>
-            <div style="font-size:12px;color:var(--muted);">Complete seu perfil para ver o Match Score nas vagas</div>
+            <p class="crm-eyebrow">${CRM_PROFILE_ONBOARDING?'PRIMEIRO ACESSO / 3 ETAPAS':'MEU PERFIL / CONEXÃO CRM'}</p>
+            <h2>${title}</h2><p>${subtitle}</p>
+          </div>${closeButton}
+        </div>
+        ${CRM_PROFILE_ONBOARDING?'<div class="crm-profile-progress"><span class="active" data-pf-dot="1"></span><span data-pf-dot="2"></span><span data-pf-dot="3"></span></div>':''}
+
+        <section data-pf-step="1">
+          <div class="crm-profile-step-title"><span>01</span><div><h3>Como a comunidade vai te conhecer</h3><p>Comece pelo básico. Identidade de gênero continua opcional.</p></div></div>
+          <div class="crm-profile-avatar-row">
+            ${foto ? `<img src="${foto}" referrerpolicy="no-referrer">` : `<div class="crm-profile-avatar-placeholder">${escapeHtml(nome.charAt(0)||'M')}</div>`}
+            <div><label class="ev-ilabel" for="pf_photo">Foto do perfil</label><input id="pf_photo" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG ou WebP, até 5 MB.</small></div>
           </div>
-        </div>
+          <label class="ev-ilabel">Nome completo *</label>
+          <input id="pf_nome" class="ev-ifield" type="text" placeholder="Nome Sobrenome" value="${escapeHtml(nome)}">
+          <div class="crm-profile-two-cols">
+            <div><label class="ev-ilabel" for="pf_gender">Como você se identifica? <span>(opcional)</span></label>
+              <select id="pf_gender" class="ev-ifield">${[['','Prefiro não informar'],['feminino','Feminino'],['masculino','Masculino'],['nao_binario','Não binário'],['outra_identidade','Outra identidade']].map(([v,l])=>`<option value="${v}" ${(p.gender_identity||'')===v?'selected':''}>${l}</option>`).join('')}</select></div>
+            <div><label class="ev-ilabel" for="pf_language">Como prefere que a gente se refira a você?</label>
+              <select id="pf_language" class="ev-ifield">${[['neutra','Sem marcação de gênero'],['feminina','No feminino'],['masculina','No masculino']].map(([v,l])=>`<option value="${v}" ${(p.language_preference||'neutra')===v?'selected':''}>${l}</option>`).join('')}</select></div>
+          </div>
+        </section>
 
-        <label class="ev-ilabel">Seu nome completo</label>
-        <input id="pf_nome" class="ev-ifield" type="text" placeholder="Nome Sobrenome" value="${escapeHtml(nome)}" style="margin-bottom:12px;">
+        <section data-pf-step="2" ${CRM_PROFILE_ONBOARDING?'hidden':''}>
+          <div class="crm-profile-step-title"><span>02</span><div><h3>Seu momento profissional</h3><p>Isso melhora o diretório e deixa o Match IA mais relevante.</p></div></div>
+          <label class="ev-ilabel">Cargo atual ou objetivo *</label>
+          <input id="pf_headline" class="ev-ifield" type="text" placeholder="Ex: Analista de CRM | Salesforce & RD Station" value="${escapeHtml(p.headline||'')}">
+          <label class="ev-ilabel">Senioridade *</label>
+          <select id="pf_seniority" class="ev-ifield"><option value="">Selecione</option>${NIVEIS.map(n=>`<option value="${n}" ${p.seniority===n?'selected':''}>${n}</option>`).join('')}</select>
+          <label class="ev-ilabel">Ferramentas que domina *</label>
+          <div class="crm-profile-chips" id="pf_tools_wrap">${TOOLS_LIST.map(t=>`<label><input type="checkbox" value="${t}" ${userTools.includes(t)?'checked':''}><span>${t}</span></label>`).join('')}</div>
+          <label class="ev-ilabel">Modelo de trabalho</label>
+          <div class="crm-profile-chips">${MODELOS.map(m=>`<label><input type="checkbox" value="${m}" id="pf_model_${m}" ${(Array.isArray(p.work_model)&&p.work_model.includes(m))?'checked':''}><span>${m}</span></label>`).join('')}</div>
+          <label class="ev-ilabel">LinkedIn</label>
+          <input id="pf_linkedin" class="ev-ifield" type="url" placeholder="https://linkedin.com/in/seuperfil" value="${escapeHtml(p.linkedin_url||'')}">
+          <label class="ev-ilabel">Bio / resumo profissional</label>
+          <textarea id="pf_summary" class="ev-ifield" placeholder="Conte em poucas linhas sua experiência, especialidades e interesses profissionais." maxlength="500">${escapeHtml(p.summary||'')}${"</textarea>"}
+        </section>
 
-        <label class="ev-ilabel" for="pf_gender">Como você se identifica? <span>(opcional)</span></label>
-        <select id="pf_gender" class="ev-ifield" style="margin-bottom:12px;">
-          ${[['','Prefiro não informar'],['feminino','Feminino'],['masculino','Masculino'],['nao_binario','Não binário'],['outra_identidade','Outra identidade']].map(([v,l])=>`<option value="${v}" ${(p.gender_identity||'')===v?'selected':''}>${l}</option>`).join('')}
-        </select>
-        <label class="ev-ilabel" for="pf_language">Como prefere que a gente se refira a você?</label>
-        <select id="pf_language" class="ev-ifield" style="margin-bottom:8px;">
-          ${[['neutra','Sem marcação de gênero'],['feminina','No feminino'],['masculina','No masculino']].map(([v,l])=>`<option value="${v}" ${(p.language_preference||'neutra')===v?'selected':''}>${l}</option>`).join('')}
-        </select>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Essas informações são privadas e ajudam a personalizar a linguagem do seu espaço. Você pode alterá-las ou deixar de informar quando quiser.</p>
-        <label class="ev-ilabel" for="pf_photo">Foto do perfil</label>
-        <input id="pf_photo" type="file" accept="image/jpeg,image/png,image/webp" style="display:block;max-width:100%;margin-bottom:8px;">
-        <p style="font-size:12px;color:var(--muted);">JPG, PNG ou WebP, até 5 MB. A foto será salva ao clicar em Salvar perfil.</p>
-        <label class="ev-ilabel">Headline (cargo atual ou objetivo)</label>
-        <input id="pf_headline" class="ev-ifield" type="text" placeholder="Ex: Analista de CRM | Salesforce & RD Station" value="${escapeHtml(p.headline||'')}" style="margin-bottom:12px;">
+        <section data-pf-step="3" ${CRM_PROFILE_ONBOARDING?'hidden':''}>
+          <div class="crm-profile-step-title"><span>03</span><div><h3>Networking e visibilidade</h3><p>Você controla se seu perfil aparece para outros membros conectados.</p></div></div>
+          <label class="crm-directory-visibility">
+            <input id="pf_directory_visible" type="checkbox" ${visible?'checked':''}>
+            <span><strong>Mostrar meu perfil no Diretório de Membros</strong><small>Nome, cargo, senioridade, ferramentas, bio e links profissionais poderão aparecer para membros logados. Você pode desligar isso quando quiser.</small></span>
+          </label>
+          <div class="crm-profile-preview">
+            <span class="crm-eyebrow">PRÉVIA</span><h3>${escapeHtml(nome||'Seu nome')}</h3>
+            <p>${escapeHtml(p.headline||'Seu cargo ou objetivo')}</p>
+            <small>Seu perfil entra automaticamente no diretório quando estiver completo e esta opção estiver ativada.</small>
+          </div>
+        </section>
 
-        <label class="ev-ilabel">Senioridade</label>
-        <select id="pf_seniority" class="ev-ifield" style="margin-bottom:12px;">
-          <option value="">Selecione</option>
-          ${NIVEIS.map(n=>`<option value="${n}" ${p.seniority===n?'selected':''}>${n}</option>`).join('')}
-        </select>
-
-        <label class="ev-ilabel">Ferramentas que domina</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;" id="pf_tools_wrap">
-          ${TOOLS_LIST.map(t=>`<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;"><input type="checkbox" value="${t}" ${userTools.includes(t)?'checked':''}> ${t}</label>`).join('')}
-        </div>
-
-        <label class="ev-ilabel">Modelo de trabalho</label>
-        <div style="display:flex;gap:12px;margin-bottom:14px;">
-          ${MODELOS.map(m=>`<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;"><input type="checkbox" value="${m}" id="pf_model_${m}" ${(Array.isArray(p.work_model)&&p.work_model.includes(m))?'checked':''}> ${m}</label>`).join('')}
-        </div>
-
-        <label class="ev-ilabel">LinkedIn</label>
-        <input id="pf_linkedin" class="ev-ifield" type="url" placeholder="https://linkedin.com/in/seuperfil" value="${escapeHtml(p.linkedin_url||'')}" style="margin-bottom:16px;">
-
-        <label class="ev-ilabel">Bio / Resumo profissional <span style="font-weight:400;font-size:11px;">(opcional, ajuda no match)</span></label>
-        <textarea id="pf_summary" class="ev-ifield" placeholder="Ex: 8 anos em CRM e CX, especialista em Salesforce Marketing Cloud e estratégia omnichannel..." maxlength="500" style="resize:vertical;min-height:80px;margin-bottom:16px;">${escapeHtml(p.summary||'')}${"</textarea>"}
-
-        <div id="pf_status" style="font-size:12px;margin-bottom:8px;"></div>
-
-        <div style="display:flex;gap:10px;">
-          <button class="ev-modal-btn-cancel" onclick="document.getElementById('profileModalOverlay').remove()" style="flex:1;">Fechar</button>
-          <button class="ev-modal-btn-save" onclick="saveProfile()" style="flex:1;">Salvar perfil</button>
-        </div>
-
-        <div style="margin-top:14px;text-align:center;">
-          <button onclick="handleLogout()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);font-family:inherit;">Sair da conta</button>
+        <p id="pf_status" class="crm-profile-status" role="status"></p>
+        <div class="crm-profile-footer">
+          ${CRM_PROFILE_ONBOARDING?'<button id="pf_back" class="crm-button crm-outline" type="button" onclick="crmProfileStep(CRM_PROFILE_STEP-1)" hidden>Voltar</button><button id="pf_next" class="crm-button" type="button" onclick="crmProfileNext()">Continuar</button><button id="pf_save" class="crm-button" type="button" onclick="saveProfile()" hidden>Concluir meu perfil</button>':'<button class="crm-button crm-outline" type="button" onclick="document.getElementById(\'profileModalOverlay\').remove()">Cancelar</button><button class="crm-button" type="button" onclick="saveProfile()">Salvar alterações</button>'}
         </div>
       </div>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
-  document.getElementById('profileModalOverlay').addEventListener('click', e=>{
-    if(e.target.id==='profileModalOverlay') e.target.remove();
-  });
+  if(!CRM_PROFILE_ONBOARDING)document.getElementById('profileModalOverlay').addEventListener('click',e=>{if(e.target.id==='profileModalOverlay')e.target.remove();});
 }
-
 async function saveProfile(){
   if(!CURRENT_USER || !authSb) return;
   const statusEl = document.getElementById('pf_status');
   const tools = Array.from(document.querySelectorAll('#pf_tools_wrap input:checked')).map(cb=>cb.value);
   const workModel = Array.from(document.querySelectorAll('[id^="pf_model_"]:checked')).map(cb=>cb.value);
+  const fullName=(document.getElementById('pf_nome')?.value||'').trim();
+  const headline=(document.getElementById('pf_headline')?.value||'').trim();
+  const seniority=document.getElementById('pf_seniority')?.value||'';
+  if(!fullName||!headline||!seniority||!tools.length){
+    statusEl.style.color='#fca5a5';statusEl.textContent='Preencha nome, cargo/objetivo, senioridade e pelo menos uma ferramenta.';
+    if(CRM_PROFILE_ONBOARDING){CRM_PROFILE_STEP=!fullName?1:2;crmProfileStep(CRM_PROFILE_STEP);}return;
+  }
   const payload = {
-    id: CURRENT_USER.id,
-    full_name: (document.getElementById('pf_nome').value||'').trim(),
-    headline: (document.getElementById('pf_headline').value||'').trim(),
-    seniority: document.getElementById('pf_seniority').value,
-    gender_identity: document.getElementById('pf_gender').value || null,
-    language_preference: document.getElementById('pf_language').value,
-    tools,
-    work_model: workModel,
-    linkedin_url: (document.getElementById('pf_linkedin').value||'').trim(),
+    id: CURRENT_USER.id, full_name:fullName, headline, seniority,
+    gender_identity: document.getElementById('pf_gender')?.value || null,
+    language_preference: document.getElementById('pf_language')?.value || 'neutra',
+    tools, work_model: workModel,
+    linkedin_url: (document.getElementById('pf_linkedin')?.value||'').trim(),
     summary: (document.getElementById('pf_summary')?.value||'').trim(),
+    directory_visible: !!document.getElementById('pf_directory_visible')?.checked,
+    onboarding_completed: true,
     updated_at: new Date().toISOString(),
   };
-  statusEl.style.color='var(--muted)'; statusEl.textContent='Salvando...';
+  statusEl.style.color='var(--muted)';statusEl.textContent='Salvando seu perfil...';
   try{
     crmValidateSubmission(payload);
     const photo=document.getElementById('pf_photo')?.files?.[0];
@@ -7252,15 +7322,13 @@ async function saveProfile(){
     const { error } = await authSb.from('profiles').upsert(payload, { onConflict: 'id' });
     if(error) throw error;
     CURRENT_PROFILE = { ...CURRENT_PROFILE, ...payload };
-    statusEl.style.color='green'; statusEl.textContent='Perfil salvo!';
-    activateLoggedArea(payload);
-    authRenderUI();
-    crmRenderSavedProfile();
-    setTimeout(()=>{ const o=document.getElementById('profileModalOverlay'); if(o) o.remove(); }, 800);
-    if(typeof evToastMsg==='function') evToastMsg('Perfil atualizado!', '');
-  }catch(e) {
-    console.error(e);
-    statusEl.style.color='red'; statusEl.textContent=e.message==='PHOTO_INVALID'?'Escolha uma foto JPG, PNG ou WebP de até 5 MB.':crmSubmissionError(e);
+    statusEl.style.color='#86efac';statusEl.textContent=payload.directory_visible?'Perfil salvo e sincronizado com o Diretório de Membros.':'Perfil salvo. Seu perfil está oculto no Diretório de Membros.';
+    activateLoggedArea(payload);authRenderUI();crmRenderSavedProfile();
+    if(crmActiveRoute==='membros')setTimeout(()=>renderComDiretorio(),250);
+    setTimeout(()=>document.getElementById('profileModalOverlay')?.remove(),900);
+    if(typeof evToastMsg==='function')evToastMsg('Perfil atualizado!', '');
+  }catch(e){
+    console.error(e);statusEl.style.color='#fca5a5';statusEl.textContent=e.message==='PHOTO_INVALID'?'Escolha uma foto JPG, PNG ou WebP de até 5 MB.':crmSubmissionError(e);
   }
 }
 
