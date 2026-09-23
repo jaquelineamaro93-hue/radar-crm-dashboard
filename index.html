@@ -7177,7 +7177,7 @@ async function authInit(){
    if(!session?.access_token)throw Error();const {data,error}=await authSb.auth.getUser(session.access_token);if(error||!data?.user||data.user.is_anonymous)throw Error();if(epoch!==crmAuthEpoch)return;
    if(crmValidatedUserId!==data.user.id){crmClearPrivateData();crmValidatedUserId=data.user.id;}CURRENT_USER=data.user;const id=data.user.id;
    const profile=await authLoadProfile(id);if(crmValidatedUserId!==id)return;CURRENT_PROFILE=profile;
-   const needsOnboarding=!profile||!profile.onboarding_completed||!crmProfileComplete(profile);
+   const needsOnboarding=!profile||profile.guided_onboarding_completed!==true||!crmProfileComplete(profile);
    currentUserEmail=data.user.email;currentUserRole='member';isAdminLoggedIn=false;await crmRefreshAdmin();
    if(crmValidatedUserId!==id)return;currentUserRole=crmAdminVerified?'admin':'member';
    try{window.posthog?.identify(data.user.id,{crm_logged_in:true});}catch{}
@@ -7236,8 +7236,9 @@ function openProfileModal(options={}){
   const visible=p.directory_visible!==false;
 
   document.getElementById('profileModalOverlay')?.remove();
-  const title=CRM_PROFILE_ONBOARDING?'Vamos montar seu perfil':'Editar meu perfil';
-  const subtitle=CRM_PROFILE_ONBOARDING?'Leva cerca de 2 minutos. Essas informações deixam seu espaço mais útil e alimentam o Match IA.':'Atualize suas informações sempre que precisar.';
+  const reviewingExisting=CRM_PROFILE_ONBOARDING&&!!p.id;
+  const title=CRM_PROFILE_ONBOARDING?(reviewingExisting?'Vamos revisar seu perfil':'Vamos montar seu perfil'):'Editar meu perfil';
+  const subtitle=CRM_PROFILE_ONBOARDING?(reviewingExisting?'É uma revisão rápida para confirmar seus dados, canais de contato e preferências. Depois disso, o onboarding só volta a aparecer no primeiro acesso de novos membros.':'Leva cerca de 2 minutos. Essas informações deixam seu espaço mais útil e alimentam o Match IA.'):'Atualize suas informações sempre que precisar.';
   const closeButton=CRM_PROFILE_ONBOARDING?'':`<button class="crm-profile-close" type="button" onclick="document.getElementById('profileModalOverlay').remove()" aria-label="Fechar">Fechar</button>`;
   const html = `
     <div class="ev-modal-overlay crm-profile-overlay" id="profileModalOverlay" role="dialog" aria-modal="true" style="display:flex;overflow-y:auto;">
@@ -7346,6 +7347,7 @@ async function saveProfile(){
     receive_community_updates: !!document.getElementById('pf_receive_updates')?.checked,
     directory_visible: !!document.getElementById('pf_directory_visible')?.checked,
     onboarding_completed: true,
+    guided_onboarding_completed: true,
     updated_at: new Date().toISOString(),
   };
   if(payload.contact_channels.includes('whatsapp')&&!payload.whatsapp){
