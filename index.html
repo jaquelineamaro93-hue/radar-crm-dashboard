@@ -7974,11 +7974,11 @@ document.addEventListener("DOMContentLoaded",()=>setTimeout(setup,0));new Mutati
 (function(){
 const KEY='crm_newsletter_prompt_v1';
 async function newsletterPrompt(){
- if(!window.CURRENT_USER||!window.authSb||localStorage.getItem(KEY))return;
+ if(!CURRENT_USER)return; if(!authSb&&!authInitSB())return; if(localStorage.getItem(KEY)==='subscribed')return;
  try{const {data}=await authSb.from('crm_newsletter_subscriptions').select('status').eq('user_id',CURRENT_USER.id).maybeSingle();if(data?.status==='subscribed'){localStorage.setItem(KEY,'subscribed');return;}}catch(e){}
  setTimeout(()=>{if(document.getElementById('crmNewsletterPrompt'))return;const d=document.createElement('dialog');d.id='crmNewsletterPrompt';d.innerHTML='<div style="max-width:430px;padding:8px"><button type="button" data-nl-close style="float:right">×</button><p style="color:#f97316;font-weight:800">CONEXÃO CRM.</p><h2>Quer receber as novidades da comunidade?</h2><p>Receba conteúdos, pesquisas, eventos e oportunidades do universo de CRM por e-mail.</p><button type="button" data-nl-yes class="cx-primary">Quero receber a newsletter</button> <button type="button" data-nl-later>Agora não</button><p data-nl-status role="status"></p></div>';document.body.appendChild(d);d.showModal();const close=()=>{localStorage.setItem(KEY,'dismissed');d.close();d.remove()};d.querySelector('[data-nl-close]').onclick=close;d.querySelector('[data-nl-later]').onclick=close;d.querySelector('[data-nl-yes]').onclick=async e=>{e.currentTarget.disabled=true;const st=d.querySelector('[data-nl-status]');st.textContent='Inscrevendo…';const email=CURRENT_USER.email||'';const {error}=await authSb.from('crm_newsletter_subscriptions').upsert({user_id:CURRENT_USER.id,email,status:'subscribed',source:'post_login_prompt'},{onConflict:'user_id'});if(error){st.textContent='Não foi possível concluir agora.';e.currentTarget.disabled=false;return}localStorage.setItem(KEY,'subscribed');st.textContent='Inscrição realizada!';setTimeout(()=>{d.close();d.remove()},900)}} ,1800);
 }
-window.addEventListener('crm:auth-ready',newsletterPrompt);document.addEventListener('DOMContentLoaded',()=>setTimeout(newsletterPrompt,2500));
+window.addEventListener('crm:auth-ready',newsletterPrompt);document.addEventListener('DOMContentLoaded',()=>{setTimeout(newsletterPrompt,2500);setTimeout(newsletterPrompt,6000)});
 })();
 </script>
 </body>
