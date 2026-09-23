@@ -1030,7 +1030,9 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .crm-directory-visibility{display:flex;gap:14px;padding:18px;border:1px solid #5a3520;background:#21170f;border-radius:14px;cursor:pointer}.crm-directory-visibility input{width:20px;height:20px;accent-color:#f97316;flex-shrink:0}.crm-directory-visibility strong{display:block;color:#fff;margin-bottom:5px}.crm-directory-visibility small{display:block;color:#c5b9ae;line-height:1.55}
 .crm-profile-preview{margin-top:18px;padding:20px;border:1px solid #35322e;border-radius:14px;background:#111}.crm-profile-preview h3{font-size:18px;margin:7px 0 5px}.crm-profile-preview p{color:#d1d5db;margin:0 0 8px}.crm-profile-preview small{color:#8f949b;line-height:1.5}
 .crm-profile-status{min-height:22px;margin:8px 30px 0;color:#aeb5bf;font-size:13px}.crm-profile-footer{display:flex;justify-content:flex-end;gap:10px;padding:18px 30px 28px}.crm-profile-footer .crm-button{min-height:44px}
-@media(max-width:700px){.crm-profile-two-cols{grid-template-columns:1fr}.crm-profile-modal-head,.crm-profile-modal section,.crm-profile-footer{padding-left:20px;padding-right:20px}.crm-profile-progress{padding-left:20px;padding-right:20px}.crm-profile-status{margin-left:20px;margin-right:20px}.crm-profile-top-actions{width:100%;margin-left:0}.crm-profile-top-actions .crm-button{flex:1}.crm-members-heading-row{align-items:flex-start}#comDiretorioGrid{grid-template-columns:1fr!important}}
+.crm-profile-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}.crm-profile-field-help{display:block;color:#8f949b;font-size:11px;line-height:1.45;margin-top:6px}.crm-news-optin{margin:14px 0}
+.crm-member-bio-wrap{width:100%}.crm-member-card-v2 .crm-member-bio{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;min-height:auto;margin-bottom:0}.crm-member-card-v2 .crm-member-bio.expanded{display:block;-webkit-line-clamp:unset;overflow:visible}.crm-member-readmore{margin:7px auto 0;background:none;border:0;color:#fb923c;font-size:12px;font-weight:700;padding:4px 8px;cursor:pointer}.crm-member-readmore:hover{text-decoration:underline}.crm-member-links{align-items:center}.crm-member-links a.crm-member-contact-primary{background:#f97316;color:#181716!important;border-radius:7px;padding:8px 11px;text-decoration:none}.crm-member-links:empty{display:none}
+@media(max-width:700px){.crm-profile-two-cols,.crm-profile-contact-grid{grid-template-columns:1fr}.crm-profile-modal-head,.crm-profile-modal section,.crm-profile-footer{padding-left:20px;padding-right:20px}.crm-profile-progress{padding-left:20px;padding-right:20px}.crm-profile-status{margin-left:20px;margin-right:20px}.crm-profile-top-actions{width:100%;margin-left:0}.crm-profile-top-actions .crm-button{flex:1}.crm-members-heading-row{align-items:flex-start}#comDiretorioGrid{grid-template-columns:1fr!important}}
 </style></head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -6088,21 +6090,36 @@ async function renderComDiretorio(){
  catch(e){if(epoch===crmAuthEpoch&&request===crmMemberRequest){grid.innerHTML='<p class="empty-state">Não foi possível carregar os membros. <button class="crm-text-button" onclick="renderComDiretorio()">Tentar novamente</button></p>';}}
  finally{if(epoch===crmAuthEpoch&&request===crmMemberRequest)grid.removeAttribute('aria-busy');}
 }
+function crmToggleMemberBio(button){
+ const card=button.closest('.crm-member-card-v2'),bio=card?.querySelector('.crm-member-bio');if(!bio)return;
+ const expanded=bio.classList.toggle('expanded');button.textContent=expanded?'Ler menos':'Ler mais';button.setAttribute('aria-expanded',String(expanded));
+}
+function crmMemberContactLinks(m){
+ const links=[];
+ const wa=String(m.whatsapp||'').replace(/\D/g,'');
+ const linkedin=crmHttpUrl(m.linkedin);
+ const email=String(m.email||'').trim();
+ if(wa)links.push({key:'whatsapp',label:'WhatsApp',href:'https://wa.me/'+wa});
+ if(linkedin)links.push({key:'linkedin',label:'LinkedIn',href:linkedin});
+ if(email&&m.preferred_contact_channel==='email')links.push({key:'email',label:'E-mail',href:'mailto:'+encodeURIComponent(email)});
+ links.sort((a,b)=>(a.key===m.preferred_contact_channel?-1:0)-(b.key===m.preferred_contact_channel?-1:0));
+ return links.map(x=>'<a class="'+(x.key===m.preferred_contact_channel?'crm-member-contact-primary':'')+'" href="'+escapeHtml(x.href)+'" '+(x.key==='email'?'':'target="_blank" rel="noopener noreferrer"')+'>'+escapeHtml(x.label)+(x.key===m.preferred_contact_channel?' · preferido':'')+'</a>').join('');
+}
 function renderComDiretorioCards(all,q){
  const container=crmById('comDiretorioGrid');
  const list=all.filter(m=>!q||[m.nome,m.area,m.ferramentas,m.cargo,m.empresa,m.bio,m.senioridade].join(' ').toLowerCase().includes(q));
- container.innerHTML=list.length?list.map(m=>{
+ container.innerHTML=list.length?list.map((m,index)=>{
   const photo=crmHttpUrl(m.foto_url),initials=(m.nome||'M').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
   const tools=String(m.ferramentas||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,4);
-  const bio=String(m.bio||'').trim();
+  const bio=String(m.bio||'').trim(),longBio=bio.length>210;
   return '<article class="crm-member-card crm-member-card-v2">'+
    '<div class="crm-member-avatar crm-member-avatar-v2"><span>'+escapeHtml(initials)+'</span>'+(photo?'<img src="'+escapeHtml(photo)+'" alt="Foto de '+escapeHtml(m.nome)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</div>'+
    '<div class="crm-member-card-head"><h3>'+escapeHtml(m.nome)+'</h3>'+
    '<p class="crm-member-role">'+escapeHtml([m.cargo||m.area,m.empresa].filter(Boolean).join(' · '))+'</p>'+
    (m.senioridade?'<span class="crm-member-level">'+escapeHtml(m.senioridade)+'</span>':'')+'</div>'+
    (tools.length?'<div class="crm-member-tools">'+tools.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+'</div>':'')+
-   (bio?'<p class="crm-member-bio">'+escapeHtml(bio)+'</p>':'<p class="crm-member-bio crm-member-bio-empty">Perfil profissional da comunidade Conexão CRM.</p>')+
-   '<div class="crm-member-links">'+[['LinkedIn',m.linkedin],['Instagram',m.instagram],['Website',m.website]].map(([label,url])=>{const safe=crmHttpUrl(url);return safe?'<a href="'+escapeHtml(safe)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>':'';}).join('')+'</div></article>';
+   (bio?'<div class="crm-member-bio-wrap"><p class="crm-member-bio" id="member-bio-'+index+'">'+escapeHtml(bio)+'</p>'+(longBio?'<button type="button" class="crm-member-readmore" aria-expanded="false" aria-controls="member-bio-'+index+'" onclick="crmToggleMemberBio(this)">Ler mais</button>':'')+'</div>':'<p class="crm-member-bio crm-member-bio-empty">Perfil profissional da comunidade Conexão CRM.</p>')+
+   '<div class="crm-member-links">'+crmMemberContactLinks(m)+'</div></article>';
  }).join(''):'<div class="crm-directory-empty"><strong>Nenhum membro encontrado.</strong><span>Tente outro nome, ferramenta ou área.</span></div>';
 }
 
@@ -7265,6 +7282,27 @@ function openProfileModal(options={}){
 
         <section data-pf-step="3" ${CRM_PROFILE_ONBOARDING?'hidden':''}>
           <div class="crm-profile-step-title"><span>03</span><div><h3>Networking e visibilidade</h3><p>Você controla se seu perfil aparece para outros membros conectados.</p></div></div>
+          <div class="crm-profile-contact-grid">
+            <div>
+              <label class="ev-ilabel" for="pf_whatsapp">WhatsApp</label>
+              <input id="pf_whatsapp" class="ev-ifield" type="tel" inputmode="tel" placeholder="Ex.: 11999998888" value="${escapeHtml(p.whatsapp||'')}">
+              <small class="crm-profile-field-help">Usado somente no Diretório se você mantiver seu perfil visível.</small>
+            </div>
+            <div>
+              <label class="ev-ilabel" for="pf_preferred_contact">Como prefere ser contatada(o)?</label>
+              <select id="pf_preferred_contact" class="ev-ifield">
+                <option value="">Selecione</option>
+                <option value="whatsapp" ${p.preferred_contact_channel==='whatsapp'?'selected':''}>WhatsApp</option>
+                <option value="linkedin" ${p.preferred_contact_channel==='linkedin'?'selected':''}>LinkedIn</option>
+                <option value="email" ${p.preferred_contact_channel==='email'?'selected':''}>E-mail</option>
+              </select>
+              <small class="crm-profile-field-help">Esse canal aparecerá em destaque no seu card.</small>
+            </div>
+          </div>
+          <label class="crm-directory-visibility crm-news-optin">
+            <input id="pf_receive_updates" type="checkbox" ${p.receive_community_updates?'checked':''}>
+            <span><strong>Quero receber novidades da Conexão CRM</strong><small>Conteúdos, notícias, eventos e novidades sobre CRM e a comunidade. Você pode mudar esta preferência depois.</small></span>
+          </label>
           <label class="crm-directory-visibility">
             <input id="pf_directory_visible" type="checkbox" ${visible?'checked':''}>
             <span><strong>Mostrar meu perfil no Diretório de Membros</strong><small>Nome, cargo, senioridade, ferramentas, bio e links profissionais poderão aparecer para membros logados. Você pode desligar isso quando quiser.</small></span>
@@ -7304,10 +7342,24 @@ async function saveProfile(){
     tools, work_model: workModel,
     linkedin_url: (document.getElementById('pf_linkedin')?.value||'').trim(),
     summary: (document.getElementById('pf_summary')?.value||'').trim(),
+    whatsapp: (document.getElementById('pf_whatsapp')?.value||'').trim(),
+    preferred_contact_channel: document.getElementById('pf_preferred_contact')?.value || null,
+    receive_community_updates: !!document.getElementById('pf_receive_updates')?.checked,
     directory_visible: !!document.getElementById('pf_directory_visible')?.checked,
     onboarding_completed: true,
     updated_at: new Date().toISOString(),
   };
+  if(payload.preferred_contact_channel==='whatsapp'&&!payload.whatsapp){
+    statusEl.style.color='#fca5a5';statusEl.textContent='Você escolheu WhatsApp como contato preferido. Preencha seu número.';return;
+  }
+  if(payload.preferred_contact_channel==='linkedin'&&!payload.linkedin_url){
+    statusEl.style.color='#fca5a5';statusEl.textContent='Você escolheu LinkedIn como contato preferido. Preencha seu LinkedIn.';return;
+  }
+  if(payload.whatsapp){
+    let digits=payload.whatsapp.replace(/\D/g,'');if(digits.startsWith('00'))digits=digits.slice(2);if(digits.length===10||digits.length===11)digits='55'+digits;
+    if(!/^[1-9]\d{9,14}$/.test(digits)){statusEl.style.color='#fca5a5';statusEl.textContent='Confira o número de WhatsApp informado.';return;}
+    payload.whatsapp=digits;
+  }
   statusEl.style.color='var(--muted)';statusEl.textContent='Salvando seu perfil...';
   try{
     crmValidateSubmission(payload);
@@ -7337,7 +7389,7 @@ async function crmRenderSavedProfile(){
   if(!user)return;
   const details=document.getElementById('membroDetalhes');
   if(details){
-    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
+    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['WhatsApp',p.whatsapp?('+'+p.whatsapp):'Não informado'],['Contato preferido',({whatsapp:'WhatsApp',linkedin:'LinkedIn',email:'E-mail'})[p.preferred_contact_channel]||'Não informado'],['Novidades da comunidade',p.receive_community_updates?'Quero receber':'Não quero receber'],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
     details.innerHTML='<div class="crm-profile-details">'+fields.map(([label,value])=>'<section><h3>'+label+'</h3><p>'+escapeHtml(value||'Não informado')+'</p></section>').join('')+(crmSafeUrl(p.linkedin_url)?'<a href="'+escapeHtml(crmSafeUrl(p.linkedin_url))+'" target="_blank" rel="noopener noreferrer">Ver LinkedIn</a>':'')+'<p>'+(isAdminLoggedIn?'Administradora':'Membro')+'</p></div>';
   }
   let photo=crmSafeUrl(user.user_metadata?.avatar_url||'');
