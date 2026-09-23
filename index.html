@@ -1031,7 +1031,7 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .crm-profile-preview{margin-top:18px;padding:20px;border:1px solid #35322e;border-radius:14px;background:#111}.crm-profile-preview h3{font-size:18px;margin:7px 0 5px}.crm-profile-preview p{color:#d1d5db;margin:0 0 8px}.crm-profile-preview small{color:#8f949b;line-height:1.5}
 .crm-profile-status{min-height:22px;margin:8px 30px 0;color:#aeb5bf;font-size:13px}.crm-profile-footer{display:flex;justify-content:flex-end;gap:10px;padding:18px 30px 28px}.crm-profile-footer .crm-button{min-height:44px}
 .crm-profile-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}.crm-profile-field-help{display:block;color:#8f949b;font-size:11px;line-height:1.45;margin-top:6px}.crm-news-optin{margin:14px 0}
-.crm-member-bio-wrap{width:100%}.crm-member-card-v2 .crm-member-bio{line-height:1.6;min-height:auto;margin-bottom:0}.crm-member-bio-details{margin-top:0}.crm-member-bio-details summary{list-style:none;cursor:pointer;padding:0}.crm-member-bio-details summary::-webkit-details-marker{display:none}.crm-member-bio-preview{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;color:#b8bec7}.crm-member-readmore-label{display:inline-block;color:#fb923c;font-size:12px;font-weight:700;margin-top:7px;padding:4px 8px}.crm-member-readmore-label::before{content:'Ler mais'}.crm-member-bio-details[open] .crm-member-readmore-label::before{content:'Ler menos'}.crm-member-bio-details[open] .crm-member-bio-preview{display:none!important}.crm-member-bio-details .crm-member-bio-full{display:none;margin-top:8px;color:#b8bec7;text-align:left}.crm-member-bio-details[open] .crm-member-bio-full{display:block}.crm-member-links{align-items:center}.crm-member-links a.crm-member-contact-primary{background:#f97316;color:#181716!important;border-radius:7px;padding:8px 11px;text-decoration:none}.crm-member-links:empty{display:none}
+.crm-member-bio-wrap{width:100%}.crm-member-card-v2 .crm-member-bio{line-height:1.6;min-height:auto;margin-bottom:0}.crm-member-bio-details{margin-top:0}.crm-member-bio-details summary{list-style:none;cursor:pointer;padding:0}.crm-member-bio-details summary::-webkit-details-marker{display:none}.crm-member-bio-preview{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;color:#b8bec7}.crm-member-readmore-label{display:inline-block;color:#fb923c;font-size:12px;font-weight:700;margin-top:7px;padding:4px 8px}.crm-member-readmore-label::before{content:'Ler mais'}.crm-member-bio-details[open] .crm-member-readmore-label::before{content:'Ler menos'}.crm-member-bio-details[open] .crm-member-bio-preview{display:none!important}.crm-member-bio-details .crm-member-bio-full{display:none;margin-top:8px;color:#b8bec7;text-align:left}.crm-member-bio-details[open] .crm-member-bio-full{display:block}.crm-member-links{align-items:center}.crm-member-links:empty{display:none}
 @media(max-width:700px){.crm-profile-overlay{padding:0!important}.crm-profile-modal{max-height:100dvh!important;border-radius:0!important}.crm-profile-two-cols,.crm-profile-contact-grid{grid-template-columns:1fr}.crm-profile-modal-head,.crm-profile-modal section,.crm-profile-footer{padding-left:20px;padding-right:20px}.crm-profile-progress{padding-left:20px;padding-right:20px}.crm-profile-status{margin-left:20px;margin-right:20px}.crm-profile-top-actions{width:100%;margin-left:0}.crm-profile-top-actions .crm-button{flex:1}.crm-members-heading-row{align-items:flex-start}#comDiretorioGrid{grid-template-columns:1fr!important}}
 </style></head>
 <body>
@@ -6091,16 +6091,17 @@ async function renderComDiretorio(){
  finally{if(epoch===crmAuthEpoch&&request===crmMemberRequest)grid.removeAttribute('aria-busy');}
 }
 function crmMemberContactLinks(m){
+ const allowed=Array.isArray(m.contact_channels)?m.contact_channels:[];
  const links=[];
  const wa=String(m.whatsapp||'').replace(/\D/g,'');
  const linkedin=crmHttpUrl(m.linkedin);
  const email=String(m.email||'').trim();
- if(wa)links.push({key:'whatsapp',label:'WhatsApp',href:'https://wa.me/'+wa});
- if(linkedin)links.push({key:'linkedin',label:'LinkedIn',href:linkedin});
- if(email&&m.preferred_contact_channel==='email')links.push({key:'email',label:'E-mail',href:'mailto:'+encodeURIComponent(email)});
- links.sort((a,b)=>(a.key===m.preferred_contact_channel?-1:0)-(b.key===m.preferred_contact_channel?-1:0));
- return links.map(x=>'<a class="'+(x.key===m.preferred_contact_channel?'crm-member-contact-primary':'')+'" href="'+escapeHtml(x.href)+'" '+(x.key==='email'?'':'target="_blank" rel="noopener noreferrer"')+'>'+escapeHtml(x.label)+(x.key===m.preferred_contact_channel?' · preferido':'')+'</a>').join('');
+ if(allowed.includes('whatsapp')&&wa)links.push({label:'WhatsApp',href:'https://wa.me/'+wa,email:false});
+ if(allowed.includes('linkedin')&&linkedin)links.push({label:'LinkedIn',href:linkedin,email:false});
+ if(allowed.includes('email')&&email)links.push({label:'E-mail',href:'mailto:'+encodeURIComponent(email),email:true});
+ return links.map(x=>'<a href="'+escapeHtml(x.href)+'" '+(x.email?'':'target="_blank" rel="noopener noreferrer"')+'>'+escapeHtml(x.label)+'</a>').join('');
 }
+
 function renderComDiretorioCards(all,q){
  const container=crmById('comDiretorioGrid');
  const list=all.filter(m=>!q||[m.nome,m.area,m.ferramentas,m.cargo,m.empresa,m.bio,m.senioridade].join(' ').toLowerCase().includes(q));
@@ -7290,14 +7291,11 @@ function openProfileModal(options={}){
               <small class="crm-profile-field-help">Usado somente no Diretório se você mantiver seu perfil visível.</small>
             </div>
             <div>
-              <label class="ev-ilabel" for="pf_preferred_contact">Como prefere ser contatada(o)?</label>
-              <select id="pf_preferred_contact" class="ev-ifield">
-                <option value="">Selecione</option>
-                <option value="whatsapp" ${p.preferred_contact_channel==='whatsapp'?'selected':''}>WhatsApp</option>
-                <option value="linkedin" ${p.preferred_contact_channel==='linkedin'?'selected':''}>LinkedIn</option>
-                <option value="email" ${p.preferred_contact_channel==='email'?'selected':''}>E-mail</option>
-              </select>
-              <small class="crm-profile-field-help">Esse canal aparecerá em destaque no seu card.</small>
+              <label class="ev-ilabel">Onde podem falar com você?</label>
+              <div class="crm-profile-chips crm-contact-channels" id="pf_contact_channels">
+                ${[['whatsapp','WhatsApp'],['linkedin','LinkedIn'],['email','E-mail']].map(([v,l])=>`<label><input type="checkbox" value="${v}" ${(Array.isArray(p.contact_channels)&&p.contact_channels.includes(v))?'checked':''}><span>${l}</span></label>`).join('')}
+              </div>
+              <small class="crm-profile-field-help">Você pode selecionar um, dois ou todos os canais.</small>
             </div>
           </div>
           <label class="crm-directory-visibility crm-news-optin">
@@ -7344,17 +7342,17 @@ async function saveProfile(){
     linkedin_url: (document.getElementById('pf_linkedin')?.value||'').trim(),
     summary: (document.getElementById('pf_summary')?.value||'').trim(),
     whatsapp: (document.getElementById('pf_whatsapp')?.value||'').trim(),
-    preferred_contact_channel: document.getElementById('pf_preferred_contact')?.value || null,
+    contact_channels: Array.from(document.querySelectorAll('#pf_contact_channels input:checked')).map(cb=>cb.value),
     receive_community_updates: !!document.getElementById('pf_receive_updates')?.checked,
     directory_visible: !!document.getElementById('pf_directory_visible')?.checked,
     onboarding_completed: true,
     updated_at: new Date().toISOString(),
   };
-  if(payload.preferred_contact_channel==='whatsapp'&&!payload.whatsapp){
-    statusEl.style.color='#fca5a5';statusEl.textContent='Você escolheu WhatsApp como contato preferido. Preencha seu número.';return;
+  if(payload.contact_channels.includes('whatsapp')&&!payload.whatsapp){
+    statusEl.style.color='#fca5a5';statusEl.textContent='Você liberou contato por WhatsApp. Preencha seu número.';return;
   }
-  if(payload.preferred_contact_channel==='linkedin'&&!payload.linkedin_url){
-    statusEl.style.color='#fca5a5';statusEl.textContent='Você escolheu LinkedIn como contato preferido. Preencha seu LinkedIn.';return;
+  if(payload.contact_channels.includes('linkedin')&&!payload.linkedin_url){
+    statusEl.style.color='#fca5a5';statusEl.textContent='Você liberou contato por LinkedIn. Preencha seu LinkedIn.';return;
   }
   if(payload.whatsapp){
     let digits=payload.whatsapp.replace(/\D/g,'');if(digits.startsWith('00'))digits=digits.slice(2);if(digits.length===10||digits.length===11)digits='55'+digits;
@@ -7390,7 +7388,7 @@ async function crmRenderSavedProfile(){
   if(!user)return;
   const details=document.getElementById('membroDetalhes');
   if(details){
-    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['WhatsApp',p.whatsapp?('+'+p.whatsapp):'Não informado'],['Contato preferido',({whatsapp:'WhatsApp',linkedin:'LinkedIn',email:'E-mail'})[p.preferred_contact_channel]||'Não informado'],['Novidades da comunidade',p.receive_community_updates?'Quero receber':'Não quero receber'],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
+    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['WhatsApp',p.whatsapp?('+'+p.whatsapp):'Não informado'],['Canais de contato',Array.isArray(p.contact_channels)&&p.contact_channels.length?p.contact_channels.map(x=>({whatsapp:'WhatsApp',linkedin:'LinkedIn',email:'E-mail'})[x]||x).join(', '):'Não informado'],['Novidades da comunidade',p.receive_community_updates?'Quero receber':'Não quero receber'],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
     details.innerHTML='<div class="crm-profile-details">'+fields.map(([label,value])=>'<section><h3>'+label+'</h3><p>'+escapeHtml(value||'Não informado')+'</p></section>').join('')+(crmSafeUrl(p.linkedin_url)?'<a href="'+escapeHtml(crmSafeUrl(p.linkedin_url))+'" target="_blank" rel="noopener noreferrer">Ver LinkedIn</a>':'')+'<p>'+(isAdminLoggedIn?'Administradora':'Membro')+'</p></div>';
   }
   let photo=crmSafeUrl(user.user_metadata?.avatar_url||'');
