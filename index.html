@@ -7771,7 +7771,7 @@ function crmRenderPublicMatch(data){const matches=data.matches||[];crmById('publ
 <script id="crm-moderation-v1">
 /* Centralized submission verification and owner-only moderation. */
 let crmAdminVerified=false,crmSubmitBusy=false;
-const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos',plataformas_sugeridas:'Plataformas',freelancers_sugeridos:'Freelancers',freelancers_edicoes:'Pedidos de edição',agencias_sugeridas:'Agências',conteudos_comunidade:'Conteúdos',crm_submission_requests:'Solicitações de publicação',crm_partner_communities:'Comunidades parceiras',crm_freelancer_claims:'Vínculos de freelancers'};
+const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos',plataformas_sugeridas:'Plataformas',freelancers_sugeridos:'Freelancers',freelancers_edicoes:'Pedidos de edição',agencias_sugeridas:'Agências',conteudos_comunidade:'Conteúdos',crm_submission_requests:'Solicitações de publicação',crm_partner_communities:'Comunidades parceiras',crm_freelancer_claims:'Vínculos de freelancers',crm_talent_claims:'Vínculos do Open to Work'};
 async function crmRefreshAdmin(){
  const epoch=crmAuthEpoch;
  crmAdminVerified=false;isAdminLoggedIn=false;
@@ -7839,7 +7839,7 @@ async function crmLoadModeration(){
  let count=0;const errors=[];
  for(const [table,label] of Object.entries(crmModerationTables)){
   if(filter&&filter!==table)continue;
-  const stateField=(table==='crm_partner_communities'||table==='crm_freelancer_claims')?'status':'moderation_status'; const {data,error}=await authSb.from(table).select('*').eq(stateField,state).order('created_at',{ascending:false}).limit(50);
+  const stateField=(['crm_partner_communities','crm_freelancer_claims','crm_talent_claims'].includes(table))?'status':'moderation_status'; const {data,error}=await authSb.from(table).select('*').eq(stateField,state).order('created_at',{ascending:false}).limit(50);
   if(epoch!==crmAuthEpoch||!crmAdminVerified)return;
   if(error){errors.push(label);continue;}
   for(const row of data||[]){
@@ -7860,7 +7860,7 @@ async function crmLoadModeration(){
     b.onclick=async()=>{
      if(!confirm(approve?'Aprovar este item e publicar a alteração?':'Rejeitar este pedido?'))return;
      card.querySelectorAll('button').forEach(x=>x.disabled=true);
-     const {error}=(table==='crm_partner_communities'||table==='crm_freelancer_claims')?await authSb.from(table).update({status:approve?'approved':'rejected'}).eq('id',row.id):await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
+     const {error}=(['crm_partner_communities','crm_freelancer_claims','crm_talent_claims'].includes(table))?await authSb.from(table).update({status:approve?'approved':'rejected'}).eq('id',row.id):await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
      if(epoch!==crmAuthEpoch)return;
      if(error){status.textContent=error.message;card.querySelectorAll('button').forEach(x=>x.disabled=false);return;}
      await crmLoadModeration();evToastMsg(approve?'Aprovado e publicado.':'Pedido rejeitado.','');
@@ -7943,8 +7943,8 @@ function card(label,value,sub){return '<div class="crm-analytics-card"><span>'+e
 async function loadSupabase(){
  const out=document.getElementById("crmAnalyticsSupabase"); if(!out||!window.authSb)return;
  const {data,error}=await authSb.rpc("crm_admin_analytics_summary");
- if(error){out.innerHTML='<p class="crm-analytics-note">Não foi possível carregar os dados de membros agora.</p>';return}
- out.innerHTML=card("Usuários cadastrados",data.registered_users,"Supabase Auth")+card("Perfis preenchidos",data.profiles,"Perfis da comunidade")+card("Novos usuários · 30 dias",data.new_users_30d,"Cadastros recentes")+card("Novos usuários · 7 dias",data.new_users_7d,"Cadastros recentes")+card("Vagas salvas",data.saved_jobs,"Ações dos membros")+card("Envios para moderação",data.submissions,"Total")+card("Pendentes",data.pending_submissions,"Aguardando aprovação");
+ if(error){out.innerHTML='<p class="crm-analytics-note"><strong>Supabase indisponível:</strong> '+esc(error.message||'Não foi possível carregar os dados de membros agora.')+'</p>';return}
+ out.innerHTML=card("Usuários cadastrados",data.registered_users,"Supabase Auth")+card("Ativos · 30 dias",data.active_users_30d,"fizeram login")+card("Ativos · 7 dias",data.active_users_7d,"fizeram login")+card("Recorrentes · 30 dias",data.returning_users_30d,"voltaram após o cadastro")+card("Novos · 30 dias",data.new_users_30d,"cadastros")+card("Novos · 7 dias",data.new_users_7d,"cadastros")+card("Perfis preenchidos",data.profiles,"comunidade")+card("Vagas salvas",data.saved_jobs,"por "+data.users_with_saved_jobs+" membros")+card("Vínculos OTW aprovados",data.approved_talent_claims,"perfis gerenciáveis")+card("Pendências OTW",data.pending_talent_claims,"aguardando análise")+card("Comunidades aprovadas",data.approved_partner_communities,"parceiras")+card("Pendências gerais",Number(data.pending_submissions||0)+Number(data.pending_talent_claims||0)+Number(data.pending_partner_communities||0),"para revisar");
 }
 function renderAnalytics(){
  const root=document.getElementById("crmAdminAnalytics");if(!root)return;
