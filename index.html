@@ -3913,7 +3913,7 @@ function renderSearch(){
  crmById('searchCount').textContent=results.length+' profissionais';
  crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
    const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
-   const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!==\'Não especificado\'?\' · \'+x.level:\'\')).join(\' | \'))+'</p>':'';
+   const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!=='Não especificado'?' · '+x.level:'')).join(' | '))+'</p>':'';
    return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+'<button type="button" class="p-btn" data-otw-source="'+escapeHtml(p.id)+'">Corrigir meus links</button></article>';
  }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
