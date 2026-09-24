@@ -3860,6 +3860,84 @@ function countDiacritics(s){
   const marks = s.normalize('NFD').match(/[\u0300-\u036f]/g);
   return marks ? marks.length : 0;
 }
+
+const BR_STATE_TOKENS = new Set([
+  'sp','rj','mg','rs','pr','sc','ba','pe','ce','go','df','es','pa','am','mt','ms','pb','rn','al','se','pi','ma','ro','ac','ap','rr','to',
+  'sao paulo','rio de janeiro','minas gerais','rio grande do sul','parana','santa catarina','bahia','pernambuco','ceara','goias',
+  'distrito federal','espirito santo','para','amazonas','mato grosso','mato grosso do sul','paraiba','rio grande do norte',
+  'alagoas','sergipe','piaui','maranhao','rondonia','acre','amapa','roraima','tocantins'
+]);
+const STATE_ABBR_MAP = {
+  'sp':'SP','sao paulo':'SP','rj':'RJ','rio de janeiro':'RJ','mg':'MG','minas gerais':'MG',
+  'rs':'RS','rio grande do sul':'RS','pr':'PR','parana':'PR','sc':'SC','santa catarina':'SC',
+  'ba':'BA','bahia':'BA','pe':'PE','pernambuco':'PE','ce':'CE','ceara':'CE','go':'GO','goias':'GO',
+  'df':'DF','distrito federal':'DF','es':'ES','espirito santo':'ES','pa':'PA','para':'PA',
+  'am':'AM','amazonas':'AM','mt':'MT','mato grosso':'MT','ms':'MS','mato grosso do sul':'MS',
+  'pb':'PB','paraiba':'PB','rn':'RN','rio grande do norte':'RN','al':'AL','alagoas':'AL',
+  'se':'SE','sergipe':'SE','pi':'PI','piaui':'PI','ma':'MA','maranhao':'MA','ro':'RO','rondonia':'RO',
+  'ac':'AC','acre':'AC','ap':'AP','amapa':'AP','rr':'RR','roraima':'RR','to':'TO','tocantins':'TO',
+};
+const COUNTRY_TOKENS = new Set([
+  'italia','portugal','espanha','estados unidos','eua','canada','reino unido','alemanha','franca','irlanda','holanda',
+  'mexico','argentina','chile','colombia','suica','emirados arabes unidos','australia','japao','brasil'
+]);
+function titleCaseCity(value){
+  const small = new Set(['de','da','do','dos','das','e']);
+  return String(value||'').split(' ').map((w,i)=>{
+    const wl=w.toLowerCase();
+    if(i>0&&small.has(wl))return wl;
+    return w.length?w[0].toUpperCase()+w.slice(1).toLowerCase():w;
+  }).join(' ');
+}
+function extractCidadeEstado(raw){
+  if(!raw)return {cidade:null,estado:null};
+  let cleaned=String(raw).trim().replace(/\s+(SP|RJ|MG|RS|PR|SC|BA|PE|CE|GO|DF|ES|PA|AM|MT|MS|PB|RN|AL|SE|PI|MA|RO|AC|AP|RR|TO)$/i,(m,g)=>'§'+g);
+  const stateSuffixMatch=cleaned.match(/§(\w+)$/);
+  cleaned=cleaned.replace(/§\w+$/,'').trim();
+  const parts=cleaned.split(/[-\/,]/).map(p=>p.trim()).filter(Boolean);
+  if(!parts.length&&!stateSuffixMatch)return {cidade:null,estado:null};
+  const norm=x=>normalizeAccents(String(x).toLowerCase()).trim();
+  let estado=stateSuffixMatch?(STATE_ABBR_MAP[norm(stateSuffixMatch[1])]||null):null;
+  const nonState=[];
+  parts.forEach(p=>{
+    const n=norm(p);
+    if(BR_STATE_TOKENS.has(n)){if(!estado)estado=STATE_ABBR_MAP[n]||null;return;}
+    if(COUNTRY_TOKENS.has(n))return;
+    nonState.push(p);
+  });
+  const cityPart=nonState.length?nonState[nonState.length-1]:(parts[0]||null);
+  return {
+    cidade:cityPart?titleCaseCity(cityPart.replace(/\s+/g,' ').trim()):null,
+    estado
+  };
+}
+function normalizeCityName(raw){
+  return extractCidadeEstado(raw).cidade;
+}
+function canonicalizeCityAccents(){
+  const groups={};
+  PEOPLE.forEach(p=>{
+    if(!p.cidadeNorm)return;
+    const key=normalizeAccents(p.cidadeNorm.toLowerCase());
+    if(!groups[key])groups[key]={};
+    groups[key][p.cidadeNorm]=(groups[key][p.cidadeNorm]||0)+1;
+  });
+  const canonicalMap={};
+  Object.keys(groups).forEach(key=>{
+    const variants=Object.keys(groups[key]);
+    variants.sort((a,b)=>{
+      const diaDiff=countDiacritics(b)-countDiacritics(a);
+      if(diaDiff!==0)return diaDiff;
+      return groups[key][b]-groups[key][a];
+    });
+    canonicalMap[key]=variants[0];
+  });
+  PEOPLE.forEach(p=>{
+    if(!p.cidadeNorm)return;
+    const key=normalizeAccents(p.cidadeNorm.toLowerCase());
+    p.cidadeNorm=canonicalMap[key]||p.cidadeNorm;
+  });
+}
 function crmEscapeRegex(value){return String(value).replace(/[.*+?^$()|[\]\\]/g,'\\$&');}
 function crmLanguageHits(raw){
   const norm=normalizeAccents(String(raw||'').toLowerCase()).replace(/\s+/g,' ').trim();
