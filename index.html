@@ -7298,6 +7298,8 @@ function openProfileModal(options={}){
           <div class="crm-profile-step-title"><span>02</span><div><h3>Seu momento profissional</h3><p>Isso melhora o diretório e deixa o Match IA mais relevante.</p></div></div>
           <label class="ev-ilabel">Cargo atual ou objetivo *</label>
           <input id="pf_headline" class="ev-ifield" type="text" placeholder="Ex: Analista de CRM | Salesforce & RD Station" value="${escapeHtml(p.headline||'')}">
+          <label class="ev-ilabel">Empresa atual / Onde trabalha</label>
+          <input id="pf_company" class="ev-ifield" type="text" placeholder="Ex: Nubank, Mercado Livre, Agência X" value="${escapeHtml(p.current_company||'')}">
           <label class="ev-ilabel">Senioridade *</label>
           <select id="pf_seniority" class="ev-ifield"><option value="">Selecione</option>${NIVEIS.map(n=>`<option value="${n}" ${p.seniority===n?'selected':''}>${n}</option>`).join('')}</select>
           <label class="ev-ilabel">Ferramentas que domina *</label>
@@ -7364,6 +7366,7 @@ async function saveProfile(){
   }
   const payload = {
     id: CURRENT_USER.id, full_name:fullName, headline, seniority,
+    current_company: (document.getElementById('pf_company')?.value||'').trim(),
     gender_identity: document.getElementById('pf_gender')?.value || null,
     language_preference: document.getElementById('pf_language')?.value || 'neutra',
     tools, work_model: workModel,
@@ -7417,7 +7420,7 @@ async function crmRenderSavedProfile(){
   if(!user)return;
   const details=document.getElementById('membroDetalhes');
   if(details){
-    const fields=[['Cargo',p.headline],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['WhatsApp',p.whatsapp?('+'+p.whatsapp):'Não informado'],['Canais de contato',Array.isArray(p.contact_channels)&&p.contact_channels.length?p.contact_channels.map(x=>({whatsapp:'WhatsApp',linkedin:'LinkedIn',email:'E-mail'})[x]||x).join(', '):'Não informado'],['Novidades da comunidade',p.receive_community_updates?'Quero receber':'Não quero receber'],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
+    const fields=[['Cargo',p.headline],['Empresa atual',p.current_company],['Senioridade',p.seniority],['Ferramentas',Array.isArray(p.tools)?p.tools.join(', '):''],['Modelo de trabalho',Array.isArray(p.work_model)?p.work_model.join(', '):''],['Sobre mim',p.summary||p.bio],['WhatsApp',p.whatsapp?('+'+p.whatsapp):'Não informado'],['Canais de contato',Array.isArray(p.contact_channels)&&p.contact_channels.length?p.contact_channels.map(x=>({whatsapp:'WhatsApp',linkedin:'LinkedIn',email:'E-mail'})[x]||x).join(', '):'Não informado'],['Novidades da comunidade',p.receive_community_updates?'Quero receber':'Não quero receber'],['Como me identifico',({feminino:'Feminino',masculino:'Masculino',nao_binario:'Não binário',outra_identidade:'Outra identidade'})[p.gender_identity]||'Prefiro não informar'],['Preferência de linguagem',({feminina:'No feminino',masculina:'No masculino',neutra:'Sem marcação de gênero'})[p.language_preference]||'Sem marcação de gênero']];
     details.innerHTML='<div class="crm-profile-details">'+fields.map(([label,value])=>'<section><h3>'+label+'</h3><p>'+escapeHtml(value||'Não informado')+'</p></section>').join('')+(crmSafeUrl(p.linkedin_url)?'<a href="'+escapeHtml(crmSafeUrl(p.linkedin_url))+'" target="_blank" rel="noopener noreferrer">Ver LinkedIn</a>':'')+'<p>'+(isAdminLoggedIn?'Administradora':'Membro')+'</p></div>';
   }
   let photo=crmSafeUrl(user.user_metadata?.avatar_url||'');
