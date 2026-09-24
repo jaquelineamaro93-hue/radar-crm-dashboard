@@ -1024,7 +1024,7 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .crm-member-tools{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.crm-member-tools span{font-size:11px;background:#24211e;color:#e5e7eb;border:1px solid #48433e;border-radius:999px;padding:5px 9px}
 .crm-member-card-v2 .crm-member-bio{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;color:#b8bec7;line-height:1.6;min-height:88px}.crm-member-bio-empty{opacity:.6}
 .crm-member-card-v2 .crm-member-links{justify-content:center;width:100%;border-top:1px solid #35322e}.crm-member-card-v2 .crm-member-links a{font-weight:700;text-decoration:none;color:#fb923c}
-.crm-directory-empty{grid-column:1/-1;padding:48px;text-align:center;border:1px dashed #48433e;border-radius:14px;color:#d1d5db}.crm-directory-empty span{display:block;color:#9ca3af;margin-top:6px}
+.crm-directory-empty{grid-column:1/-1;padding:48px;text-align:center;border:1px dashed #48433e;border-radius:14px;color:#d1d5db}.crm-search-language-match{margin:8px 0;padding:7px 9px;border:1px solid #5a3520;border-radius:7px;background:#21170f;color:#fdba74!important;font-size:12px!important;font-weight:700}.crm-directory-empty span{display:block;color:#9ca3af;margin-top:6px}
 .crm-profile-overlay{z-index:10050;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:flex-start!important;padding:20px 12px!important;overflow-y:auto!important}.crm-profile-modal{max-width:720px!important;width:min(720px,100%)!important;background:#181716!important;border:1px solid #48433e!important;color:#f8fafc;padding:0!important;max-height:calc(100dvh - 40px)!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
 .crm-profile-modal-head{display:flex;justify-content:space-between;gap:20px;padding:28px 30px 22px;border-bottom:1px solid #35322e}.crm-profile-modal-head h2{font-size:28px;line-height:1.2;margin:5px 0 8px}.crm-profile-modal-head p:not(.crm-eyebrow){color:#b8bec7;font-size:14px;line-height:1.55;margin:0}
 .crm-profile-close{background:none;border:0;color:#a1a1aa;cursor:pointer;align-self:flex-start}.crm-profile-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:18px 30px 0}.crm-profile-progress span{height:4px;border-radius:9px;background:#3f3f46}.crm-profile-progress span.active{background:#f97316}
@@ -3804,18 +3804,32 @@ function populateSearchFilters(){
   });
   fill('sIdioma', [...idiomasSet].sort((a,b)=>a.localeCompare(b,'pt-BR')));
   fill('sNivel', NIVEL_ORDER.filter(n=>niveisSet.has(n)));
+  crmRefreshLanguageLevels();
+}
+function crmRefreshLanguageLevels(){
+  const idiomaSel=crmById('sIdioma'),nivelSel=crmById('sNivel');if(!idiomaSel||!nivelSel)return;
+  const current=nivelSel.value,levels=new Set();
+  PEOPLE.forEach(p=>extractIdiomaNivelPairs(p.idioma).forEach(pr=>{if(!idiomaSel.value||pr.lang===idiomaSel.value)levels.add(pr.level);}));
+  const order=['Básico','Intermediário','Avançado','Fluente','Nativo','Não especificado'];
+  nivelSel.innerHTML='<option value="">Todos</option>';
+  order.filter(x=>levels.has(x)).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;nivelSel.appendChild(o);});
+  nivelSel.value=[...nivelSel.options].some(o=>o.value===current)?current:'';
 }
 
-const LANG_KEYWORDS_MAP = {
-  'ingles':'Inglês','english':'Inglês',
-  'espanhol':'Espanhol','spanish':'Espanhol','castelhano':'Espanhol','espanol':'Espanhol','espanho':'Espanhol',
-  'frances':'Francês','french':'Francês',
-  'alemao':'Alemão','german':'Alemão',
-  'italiano':'Italiano','mandarim':'Mandarim','chines':'Mandarim','chinese':'Mandarim',
-  'japones':'Japonês','japanese':'Japonês','coreano':'Coreano','korean':'Coreano',
-  'holandes':'Holandês','dutch':'Holandês','russo':'Russo','russian':'Russo',
-  'arabe':'Árabe','arabic':'Árabe','portugues':'Português','portuguese':'Português',
-};
+const LANG_DEFINITIONS = [
+  {label:'Inglês', keys:['ingles','english']},
+  {label:'Espanhol', keys:['espanhol','espanola','espanol','spanish','castelhano']},
+  {label:'Francês', keys:['frances','french']},
+  {label:'Alemão', keys:['alemao','german']},
+  {label:'Italiano', keys:['italiano','italian']},
+  {label:'Mandarim', keys:['mandarim','chines','chinese']},
+  {label:'Japonês', keys:['japones','japanese']},
+  {label:'Coreano', keys:['coreano','korean']},
+  {label:'Holandês', keys:['holandes','dutch']},
+  {label:'Russo', keys:['russo','russian']},
+  {label:'Árabe', keys:['arabe','arabic']},
+  {label:'Português', keys:['portugues','portuguese']},
+];
 const LEVEL_PATTERNS = [
   [/proficiencia profissional/, 'Fluente'],
   [/nativ/, 'Nativo'],
@@ -3846,121 +3860,46 @@ function countDiacritics(s){
   const marks = s.normalize('NFD').match(/[\u0300-\u036f]/g);
   return marks ? marks.length : 0;
 }
-function canonicalizeCityAccents(){
-  const groups = {};
-  PEOPLE.forEach(p=>{
-    if(!p.cidadeNorm) return;
-    const key = normalizeAccents(p.cidadeNorm.toLowerCase());
-    if(!groups[key]) groups[key] = {};
-    groups[key][p.cidadeNorm] = (groups[key][p.cidadeNorm]||0) + 1;
-  });
-  const canonicalMap = {};
-  Object.keys(groups).forEach(key=>{
-    const variants = Object.keys(groups[key]);
-    variants.sort((a,b)=>{
-      const diaDiff = countDiacritics(b) - countDiacritics(a);
-      if(diaDiff !== 0) return diaDiff;
-      return groups[key][b] - groups[key][a];
+function crmEscapeRegex(value){return String(value).replace(/[.*+?^$()|[\]\\]/g,'\\$&');}
+function crmLanguageHits(raw){
+  const norm=normalizeAccents(String(raw||'').toLowerCase()).replace(/\s+/g,' ').trim();
+  if(!norm||/^(nao|n\/a|-|nao falo|nenhum|nenhuma|apenas portugues)[.!\s]*$/.test(norm))return [];
+  const hits=[];
+  LANG_DEFINITIONS.forEach(def=>{
+    def.keys.forEach(key=>{
+      const re=new RegExp('(^|[^a-z])('+crmEscapeRegex(key)+')(?=$|[^a-z])','g');
+      let m;
+      while((m=re.exec(norm))){
+        const pos=m.index+(m[1]?m[1].length:0);
+        hits.push({label:def.label,pos,end:pos+m[2].length});
+        if(re.lastIndex===m.index)re.lastIndex++;
+      }
     });
-    canonicalMap[key] = variants[0];
   });
-  PEOPLE.forEach(p=>{
-    if(!p.cidadeNorm) return;
-    const key = normalizeAccents(p.cidadeNorm.toLowerCase());
-    p.cidadeNorm = canonicalMap[key];
-  });
-}
-
-const BR_STATE_TOKENS = new Set([
-  'sp','rj','mg','rs','pr','sc','ba','pe','ce','go','df','es','pa','am','mt','ms','pb','rn','al','se','pi','ma','ro','ac','ap','rr','to',
-  'sao paulo','rio de janeiro','minas gerais','rio grande do sul','parana','santa catarina','bahia','pernambuco','ceara','goias',
-  'distrito federal','espirito santo','para','amazonas','mato grosso','mato grosso do sul','paraiba','rio grande do norte',
-  'alagoas','sergipe','piaui','maranhao','rondonia','acre','amapa','roraima','tocantins'
-]);
-const STATE_ABBR_MAP = {
-  'sp':'SP','sao paulo':'SP','rj':'RJ','rio de janeiro':'RJ','mg':'MG','minas gerais':'MG',
-  'rs':'RS','rio grande do sul':'RS','pr':'PR','parana':'PR','sc':'SC','santa catarina':'SC',
-  'ba':'BA','bahia':'BA','pe':'PE','pernambuco':'PE','ce':'CE','ceara':'CE','go':'GO','goias':'GO',
-  'df':'DF','distrito federal':'DF','es':'ES','espirito santo':'ES','pa':'PA','para':'PA',
-  'am':'AM','amazonas':'AM','mt':'MT','mato grosso':'MT','ms':'MS','mato grosso do sul':'MS',
-  'pb':'PB','paraiba':'PB','rn':'RN','rio grande do norte':'RN','al':'AL','alagoas':'AL',
-  'se':'SE','sergipe':'SE','pi':'PI','piaui':'PI','ma':'MA','maranhao':'MA','ro':'RO','rondonia':'RO',
-  'ac':'AC','acre':'AC','ap':'AP','amapa':'AP','rr':'RR','roraima':'RR','to':'TO','tocantins':'TO',
-};
-const COUNTRY_TOKENS = new Set([
-  'italia','portugal','espanha','estados unidos','eua','canada','reino unido','alemanha','franca','irlanda','holanda',
-  'mexico','argentina','chile','colombia','suica','emirados arabes unidos','australia','japao','brasil'
-]);
-function titleCaseCity(s){
-  const small = new Set(['de','da','do','dos','das','e']);
-  return s.split(' ').map((w,i)=>{
-    const wl = w.toLowerCase();
-    if(i>0 && small.has(wl)) return wl;
-    return w.length ? w[0].toUpperCase()+w.slice(1).toLowerCase() : w;
-  }).join(' ');
-}
-function extractCidadeEstado(raw){
-  if(!raw) return {cidade:null, estado:null};
-  let cleaned = raw.trim().replace(/\s+(SP|RJ|MG|RS|PR|SC|BA|PE|CE|GO|DF|ES|PA|AM|MT|MS|PB|RN|AL|SE|PI|MA|RO|AC|AP|RR|TO)$/i, (m,g)=>'§'+g);
-  const stateSuffixMatch = cleaned.match(/§(\w+)$/);
-  cleaned = cleaned.replace(/§\w+$/, '').trim();
-  const parts = cleaned.split(/[-\/,]/).map(p=>p.trim()).filter(Boolean);
-  if(!parts.length && !stateSuffixMatch) return {cidade:null, estado:null};
-  const norm = s => normalizeAccents(s.toLowerCase()).trim();
-  let estado = stateSuffixMatch ? (STATE_ABBR_MAP[norm(stateSuffixMatch[1])] || null) : null;
-  const nonState = [];
-  parts.forEach(p=>{
-    const n = norm(p);
-    if(BR_STATE_TOKENS.has(n)){ if(!estado) estado = STATE_ABBR_MAP[n] || null; return; }
-    if(COUNTRY_TOKENS.has(n)) return;
-    nonState.push(p);
-  });
-  const cityPart = nonState.length ? nonState[nonState.length-1] : (parts[0] || null);
-  return {
-    cidade: cityPart ? titleCaseCity(cityPart.replace(/\s+/g,' ').trim()) : null,
-    estado: estado,
-  };
-}
-function normalizeCityName(raw){
-  return extractCidadeEstado(raw).cidade;
+  hits.sort((a,b)=>a.pos-b.pos||b.end-a.end);
+  const uniq=[];
+  hits.forEach(h=>{if(!uniq.some(u=>u.label===h.label&&Math.abs(u.pos-h.pos)<2))uniq.push(h);});
+  return uniq;
 }
 function extractIdiomaNivelPairs(raw){
-  if(!raw) return [];
-  const norm = normalizeAccents(raw.toLowerCase());
-  const trimmed = norm.trim();
-  if(['nao','n/a','-','nao falo','nao.','nao '].includes(trimmed)) return [];
-
-  let langHits = [];
-  Object.keys(LANG_KEYWORDS_MAP).forEach(k=>{
-    let idx = norm.indexOf(k);
-    while(idx !== -1){
-      langHits.push({label: LANG_KEYWORDS_MAP[k], pos: idx, end: idx+k.length});
-      idx = norm.indexOf(k, idx+1);
-    }
-  });
-  if(langHits.length===0) return [];
-  langHits.sort((a,b)=>a.pos-b.pos);
-  // remove overlapping duplicate hits (ex: "portugues" nao deve duplicar dentro de outra palavra)
-  const filtered = [];
-  langHits.forEach(h=>{
-    if(!filtered.some(f=>f.label===h.label && Math.abs(f.pos-h.pos)<3)) filtered.push(h);
-  });
-
-  const pairs = [];
-  for(let i=0;i<filtered.length;i++){
-    const start = filtered[i].end;
-    const end = (i+1<filtered.length) ? filtered[i+1].pos : norm.length;
-    const isLast = (i+1>=filtered.length);
-    const windowEnd = isLast ? Math.min(norm.length, end+18) : end;
-    const window = norm.slice(Math.max(0,start-1), windowEnd);
-    let level = 'Não especificado';
-    for(const [pat, lv] of LEVEL_PATTERNS){
-      if(pat.test(window)){ level = lv; break; }
-    }
-    pairs.push({lang: filtered[i].label, level});
+  if(!raw)return [];
+  const norm=normalizeAccents(String(raw).toLowerCase()).replace(/\s+/g,' ').trim();
+  const hits=crmLanguageHits(norm);
+  if(!hits.length)return [];
+  const pairs=[];
+  for(let i=0;i<hits.length;i++){
+    const hit=hits[i];
+    const prevBoundary=Math.max(norm.lastIndexOf(',',hit.pos),norm.lastIndexOf(';',hit.pos),norm.lastIndexOf('/',hit.pos),norm.lastIndexOf('|',hit.pos));
+    const separators=[norm.indexOf(',',hit.end),norm.indexOf(';',hit.end),norm.indexOf('/',hit.end),norm.indexOf('|',hit.end)].filter(x=>x>=0);
+    const nextLang=i+1<hits.length?hits[i+1].pos:norm.length;
+    const nextBoundary=separators.length?Math.min(...separators,nextLang):nextLang;
+    const clause=norm.slice(Math.max(0,prevBoundary+1),Math.min(norm.length,nextBoundary));
+    let level='Não especificado';
+    for(const [pat,lv] of LEVEL_PATTERNS){if(pat.test(clause)){level=lv;break;}}
+    pairs.push({lang:hit.label,level});
   }
-  const uniq = [];
-  pairs.forEach(p=>{ if(!uniq.some(u=>u.lang===p.lang && u.level===p.level)) uniq.push(p); });
+  const uniq=[];
+  pairs.forEach(p=>{if(!uniq.some(u=>u.lang===p.lang&&u.level===p.level))uniq.push(p);});
   return uniq;
 }
 function extractIdiomas(s){
@@ -3968,12 +3907,16 @@ function extractIdiomas(s){
 }
 
 function renderSearch(){
- const q=(crmById('searchText').value||'').toLowerCase().trim();const sen=crmById('sSeniority').value,cond=crmById('sCondicao').value,cid=crmById('sCidade').value,estado=crmById('sEstado').value,muda=crmById('sMuda').value,idioma=crmById('sIdioma').value,nivel=crmById('sNivel').value;
- const results=PEOPLE.filter(p=>(!sen||p.senioridade===sen)&&(!cond||p.condicao===cond)&&(!cid||p.cidadeNorm===cid)&&(!estado||p.estadoNorm===estado)&&(!muda||p.muda===muda)&&((!idioma&&!nivel)||extractIdiomaNivelPairs(p.idioma).some(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel)))&&(!q||[p.nome,p.area,p.ferramentas,p.empresa,p.local].join(' ').toLowerCase().includes(q)));
+ const q=(crmById('searchText').value||'').toLowerCase().trim(),sen=crmById('sSeniority').value,cond=crmById('sCondicao').value,cid=crmById('sCidade').value,estado=crmById('sEstado').value,muda=crmById('sMuda').value,idioma=crmById('sIdioma').value,nivel=crmById('sNivel').value;
+ const rows=PEOPLE.map(p=>({p,langs:extractIdiomaNivelPairs(p.idioma)}));
+ const results=rows.filter(({p,langs})=>(!sen||p.senioridade===sen)&&(!cond||p.condicao===cond)&&(!cid||p.cidadeNorm===cid)&&(!estado||p.estadoNorm===estado)&&(!muda||p.muda===muda)&&((!idioma&&!nivel)||langs.some(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel)))&&(!q||[p.nome,p.area,p.ferramentas,p.empresa,p.local].join(' ').toLowerCase().includes(q)));
  crmById('searchCount').textContent=results.length+' profissionais';
- crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(p=>'<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+crmPublicContacts(p)+'<button type="button" class="p-btn" data-otw-source="'+escapeHtml(p.id)+'">Corrigir meus links</button></article>').join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
+ crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
+   const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
+   const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!==\'Não especificado\'?\' · \'+x.level:\'\')).join(\' | \'))+'</p>':'';
+   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+'<button type="button" class="p-btn" data-otw-source="'+escapeHtml(p.id)+'">Corrigir meus links</button></article>';
+ }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
-
 function escapeHtml(s){
   if(!s) return '';
   return s.toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -4005,8 +3948,9 @@ function checkRateLimit(key, maxPerMinute){
 }
 
 ['searchText','sSeniority','sCondicao','sCidade','sEstado','sDiversidade','sMuda','sIdioma','sNivel'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', renderSearch);
-  document.getElementById(id).addEventListener('change', renderSearch);
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{if(id==='sIdioma')crmRefreshLanguageLevels();renderSearch();});
+  el.addEventListener('change',()=>{if(id==='sIdioma')crmRefreshLanguageLevels();renderSearch();});
 });
 document.getElementById('btnResetSearch').addEventListener('click', ()=>{
   document.getElementById('searchText').value = '';
