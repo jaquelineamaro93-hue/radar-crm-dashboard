@@ -52,4 +52,4 @@ if(location.hash.startsWith('#workspace-'))crmHandleHash();}
 window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route=>route.startsWith('workspace-')&&!!routes[route.slice(10)]};init();
 })();
 
-;(()=>{if(document.querySelector('script[data-cx-admin-dashboard]'))return;const s=document.createElement('script');s.src='/assets/admin-dashboard.js?v=20260925-1430';s.dataset.cxAdminDashboard='1';document.head.appendChild(s)})();
+;(()=>{if(document.querySelector('script[data-cx-admin-dashboard]'))return;const s=document.createElement('script');s.src='/assets/admin-dashboard.js?v=20260925-1440';s.dataset.cxAdminDashboard='1';document.head.appendChild(s)})();
