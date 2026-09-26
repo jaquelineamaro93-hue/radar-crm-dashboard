@@ -529,7 +529,7 @@
   .ev-name{font-family:'Space Grotesk',sans-serif;color:var(--text);font-size:14.5px;font-weight:600;line-height:1.35;}
   .ev-desc{font-size:12.5px;line-height:1.55;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
-  .ev-pres-row{display:flex;gap:3px;flex-wrap:nowrap;align-items:center;margin-left:auto}.ev-pres-row .ev-btn-pres{white-space:nowrap;padding:4px 6px;font-size:9px;min-width:0;background:transparent;border-color:rgba(255,255,255,.12)}.ev-pres-row .ev-btn-pres.on{background:rgba(255,120,23,.14)}
+  .ev-pres-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%;margin:2px 0 0;align-items:center}.ev-pres-row .ev-btn-pres{width:100%;white-space:nowrap;padding:5px 4px;font-size:9px;min-width:0;background:transparent;border-color:rgba(255,255,255,.12);overflow:hidden;text-overflow:ellipsis}.ev-pres-row .ev-btn-pres.on{background:rgba(255,120,23,.14)}.ev-card>div:first-child{display:block!important}.ev-card>div:first-child>div:first-child{margin-bottom:7px}
   .ev-btn-pres{font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;border:1px solid;cursor:pointer;background:transparent;font-family:inherit;white-space:nowrap;}
   .ev-btn-g{color:var(--mint);border-color:rgba(10,48,61,.3);background:rgba(10,48,61,.07);}
   .ev-btn-g.on{color:#fffff3;border-color:var(--mint);background:var(--mint);}
@@ -1473,7 +1473,6 @@ crmShowSurveyReminder();
 
   </div><nav id="crmNavSlot" aria-label="Áreas do portal"><div class="tab-nav crm-nav-items crm-nav-clean">
 <button class="tab-btn crm-nav-home" id="navMembro" onclick="crmNavigate('membro')"><span class="crm-nav-glyph">⌂</span>Visão Geral</button>
-<button class="tab-btn crm-nav-profile" type="button" onclick="openProfileModal()"><span class="crm-nav-glyph">○</span>Meu Perfil</button>
 <span class="crm-nav-section">Trabalho</span>
 <button class="tab-btn" id="navSaved" onclick="crmNavigate('vagas-salvas')"><span class="crm-nav-glyph">▱</span>Vagas Salvas</button>
 <button class="tab-btn" id="navVagas" onclick="crmNavigate('vagas')"><span class="crm-nav-glyph">▣</span>Vagas de CRM</button>
@@ -4811,11 +4810,25 @@ function evSubRT(){
   }).subscribe();
 }
 
-function evHandleP(id,s){
+async function evHandleP(id,s){
   if(!evUName){ evPending={id,s}; evOpenNmModal(); return; }
-  if(s==="nao"){ evDelP(id,evUName); evToastMsg("Presença removida",__ICON_4__); }
-  else{ evUpsertP(id,evUName,s,evULI,evUSite); evToastMsg(s==="vou"?"Marcado \"Vou\"!":"Marcado \"Talvez\"", s==="vou"?__ICON_1__:__ICON_5__); }
+  const event=evAllEvents.find(e=>String(e.id)===String(id));
+  if(s==="nao"){
+    await evDelP(id,evUName);
+    if(CURRENT_USER) await authSb.from('crm_member_events').delete().eq('user_id',CURRENT_USER.id).eq('event_id',String(id));
+    evToastMsg("Presença removida",__ICON_4__);
+  }else{
+    await evUpsertP(id,evUName,s,evULI,evUSite);
+    if(s==="vou" && CURRENT_USER && event){
+      const {error}=await authSb.from('crm_member_events').upsert({user_id:CURRENT_USER.id,event_id:String(event.id),attendance_status:'confirmed',event_name:event.nome,event_url:crmSafeUrl(event.url||event.link||''),event_date:event.data||''},{onConflict:'user_id,event_id'});
+      if(error){console.error("MY EVENTS UPSERT ERROR:",error);evToastMsg("Presença marcada, mas não foi possível atualizar Meus Eventos.",__ICON_3__);}
+    }else if(s==="talvez" && CURRENT_USER){
+      await authSb.from('crm_member_events').delete().eq('user_id',CURRENT_USER.id).eq('event_id',String(id));
+    }
+    evToastMsg(s==="vou"?"Marcado \"Vou\"!":"Marcado \"Talvez\"", s==="vou"?__ICON_1__:__ICON_5__);
+  }
   evSyncBtns(id);
+  if(document.getElementById('pageMyEvents')?.classList.contains('active')) crmLoadMyEvents();
 }
 function evMyS(id){ if(!evUName || !evPresence[id]) return null; return (evPresence[id].find(p=>p.name===evUName)||{}).status || null; }
 
