@@ -8577,12 +8577,12 @@ function setup(){
  const first=tr.filter(x=>x.source==="/").sort((a,b)=>b.users-a.users).slice(0,9),paths=new Set(first.map(x=>x.target));
  const second=pa.filter(x=>paths.has(x.path)).sort((a,b)=>b.users-a.users).slice(0,16);
  if(!first.length)return '<div class="crm-journey-empty">Ainda não há volume suficiente para desenhar os caminhos de navegação.</div>';
- const W=980,H=Math.max(720,first.length*74),xs=[28,350,675],nodeW=16,palette=["#A8D8FF","#F5B8D2","#C9B6FF","#B8E0D2","#FFD6A5","#BDE0FE","#E8C2FF","#FFC8DD","#CDEAC0"];
+ const hasActions=second.length>0,W=hasActions?900:620,H=Math.max(720,first.length*74),xs=hasActions?[24,310,615]:[24,330],nodeW=16,palette=["#A8D8FF","#F5B8D2","#C9B6FF","#B8E0D2","#FFD6A5","#BDE0FE","#E8C2FF","#FFC8DD","#CDEAC0"];
  const clean=v=>v==="/"?"Início":String(v||"").replace(/^\//,"").replace(/-/g," ");
  const col1=[{id:"/",label:"Início",value:first.reduce((a,b)=>a+b.users,0),color:"#f97316"}],col2=first.map((z,i)=>({id:z.target,label:clean(z.target),value:z.users,color:palette[i%palette.length]}));
  const actionMap={};second.forEach(z=>{actionMap[z.action]=(actionMap[z.action]||0)+z.users});const col3=Object.entries(actionMap).sort((a,b)=>b[1]-a[1]).slice(0,9).map(([id,value],i)=>({id,label:id,value,color:palette[(i+2)%palette.length]}));
  const layout=(arr,xx)=>{const gap=28,total=arr.reduce((a,b)=>a+b.value,0)||1,usable=H-90-gap*(arr.length-1),scale=Math.min(2.05,usable/total);let y=62;return arr.map(o=>{const h=Math.max(24,o.value*scale),z={...o,x:xx,y,h,cy:y+h/2};y+=h+gap;return z})};
- const n1=layout(col1,xs[0]),n2=layout(col2,xs[1]),n3=layout(col3,xs[2]),m2=Object.fromEntries(n2.map(z=>[z.id,z])),m3=Object.fromEntries(n3.map(z=>[z.id,z]));
+ const n1=layout(col1,xs[0]),n2=layout(col2,xs[1]),n3=hasActions?layout(col3,xs[2]):[],m2=Object.fromEntries(n2.map(z=>[z.id,z])),m3=Object.fromEntries(n3.map(z=>[z.id,z]));
  const links=[];first.forEach(z=>{const a=n1[0],b=m2[z.target];if(b)links.push({a,b,v:z.users,color:b.color})});second.forEach(z=>{const a=m2[z.path],b=m3[z.action];if(a&&b)links.push({a,b,v:z.users,color:a.color})});
  const max=Math.max(...links.map(z=>z.v),1),path=z=>{const x1=z.a.x+nodeW,x2=z.b.x,y1=z.a.cy,y2=z.b.cy,curve=(x2-x1)*.48;return 'M'+x1+','+y1+' C'+(x1+curve)+','+y1+' '+(x2-curve)+','+y2+' '+x2+','+y2};
  const nodes=[...n1,...n2,...n3];
