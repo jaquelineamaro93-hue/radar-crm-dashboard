@@ -8498,15 +8498,35 @@ async function renderAnalytics(){
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">02 · Onde está o interesse</span><h3>Conteúdo e intenção</h3></div></div><div class="crm-analytics-two">'+
    '<div class="crm-analytics-panel"><h3>Páginas mais acessadas</h3>'+PH_SNAPSHOT.pages.slice(0,7).map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(x[0])+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,Number(x[1]||0)/max*100)+'%"></div></div><b>'+x[1]+'</b></div>').join("")+'<p class="crm-analytics-note">Snapshot diário das páginas mais acessadas. Este bloco não muda com o período personalizado.</p></div>'+
    '<div class="crm-analytics-panel"><h3>Ações de maior intenção</h3>'+PH_INTENT_ACTIONS.map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+x[0]+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,Number(x[1]||0)/Math.max(1,PH_INTENT_ACTIONS[0]?.[1]||1)*100)+'%"></div></div><b>'+x[1]+'</b></div>').join("")+'<p class="crm-analytics-note">Snapshot diário das ações de maior intenção. Este bloco não muda com o período personalizado.</p></div></div></div>'+
-   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">03 · A comunidade vira base própria?</span><h3>Conversão em relacionamento</h3></div></div><div class="crm-analytics-panel"><div id="crmAnalyticsSupabase"></div></div></div>'+
-   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">04 · A audiência volta?</span><h3>Retenção e perfil de acesso</h3></div></div><div class="crm-retention-layout">'+
+   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">03 · Como as vagas performam?</span><h3>Interesse e intenção nas vagas</h3></div></div><div id="crmAnalyticsJobs"></div></div>'+
+   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">04 · A comunidade vira base própria?</span><h3>Conversão em relacionamento</h3></div></div><div class="crm-analytics-panel"><div id="crmAnalyticsSupabase"></div></div></div>'+
+   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">05 · A audiência volta?</span><h3>Retenção e perfil de acesso</h3></div></div><div class="crm-retention-layout">'+
    '<div class="crm-analytics-panel"><h3>Horas ativas · usuários únicos</h3><p class="crm-analytics-note">Últimos 30 dias · horário de São Paulo. Quanto mais forte a célula, mais usuários únicos ativos.</p><div class="crm-heat-wrap">'+activeHoursHtml()+'</div><p class="crm-analytics-note">Fonte: PostHog · atualização diária.</p></div>'+
    '<div class="crm-analytics-two crm-retention-lower"><div class="crm-analytics-panel"><h3>Retenção semanal</h3><p class="crm-analytics-note">Coortes de novos visitantes que retornaram na semana seguinte.</p>'+PH_RETENTION.map(x=>'<div class="crm-bar"><span>'+esc(analyticsRetentionLabel(x[0]))+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(1,Number(x[1])||0)+'%"></div></div><b>'+Number(x[1]||0).toFixed(1).replace(".",",")+'%</b></div>').join("")+'<p class="crm-analytics-note">A retenção deve ser lida por coorte. Este bloco usa o snapshot diário mais recente.</p></div>'+
    '<div class="crm-analytics-panel"><h3>Dispositivo</h3><div class="crm-analytics-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0">'+card("Desktop",fmt(PH_DEVICES.desktop?.count||0),String(PH_DEVICES.desktop?.share||0).replace(".",",")+"%","Acessos classificados como desktop.")+card("Mobile",fmt(PH_DEVICES.mobile?.count||0),String(PH_DEVICES.mobile?.share||0).replace(".",",")+"%","Acessos classificados como mobile.")+'</div><p class="crm-analytics-note">Ajuda a orientar experiência, formatos de conteúdo e entregas para parceiros.</p></div></div></div></div>'+
    '<p class="crm-analytics-note">Fonte: PostHog Web Analytics e retenção nativa · atualizado em '+PH_SNAPSHOT.updated+'. Dados de membros: Supabase em tempo real.</p>';
   loadSupabase();
+  loadJobAnalytics(meta.jobDays||30);
  }
 
+ async function loadJobAnalytics(days){
+  const host=document.getElementById("crmAnalyticsJobs");if(!host)return;
+  host.innerHTML='<p class="crm-analytics-note">Carregando comportamento das vagas…</p>';
+  try{
+   const {data,error}=await authSb.functions.invoke("crm-admin-journey",{body:{days}});
+   if(error)throw error;if(data?.error)throw Error(data.error);
+   const jobs=Array.isArray(data.jobs)?data.jobs:[],fmtN=n=>Number(n||0).toLocaleString("pt-BR"),pct=n=>Number(n||0).toFixed(1).replace(".",",")+"%";
+   host.innerHTML='<div class="crm-analytics-grid">'+
+    card("Vagas visualizadas",fmtN(data.jobs_viewed),"vagas distintas","Quantidade de vagas com visualização qualificada.")+
+    card("Pessoas interessadas",fmtN(data.viewers),"usuários únicos","Pessoas que visualizaram ao menos uma vaga.")+
+    card("Cliques em Candidatar",fmtN(data.applies),"cliques","Ações de candidatura registradas nos cards.")+
+    card("View → candidatura",pct(data.conversion),"conversão observada","Usuários que visualizaram e chegaram ao clique de candidatura.")+
+   '</div>'+
+   '<div class="crm-analytics-panel"><div class="crm-story-head"><div><h3>Vagas com maior interesse e intenção</h3><p class="crm-analytics-note">Views qualificadas, pessoas únicas e cliques em Candidatar.</p></div></div>'+
+   (jobs.length?'<div style="overflow:auto"><table class="crm-journey-table"><thead><tr><th>Vaga</th><th>Empresa</th><th>Views</th><th>Pessoas</th><th>Candidatar</th><th>Conversão</th></tr></thead><tbody>'+jobs.slice(0,10).map(j=>'<tr><td><strong>'+esc(j.title)+'</strong></td><td>'+esc(j.company||"—")+'</td><td>'+fmtN(j.views)+'</td><td>'+fmtN(j.viewers)+'</td><td>'+fmtN(j.applies)+'</td><td>'+pct(j.conversion)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="crm-journey-empty">A instrumentação detalhada começou em 26/09. Os KPIs aparecerão aqui conforme houver novas visualizações e candidaturas.</div>')+
+   '<p class="crm-analytics-note">A visualização exige ≥50% do card visível por 800 ms. Assim, tempo alto sozinho não é tratado como interesse.</p></div>';
+  }catch(e){host.innerHTML='<div class="crm-journey-empty">Não foi possível carregar os KPIs de vagas agora: '+esc(e?.message||"erro inesperado")+'</div>'}
+ }
  async function applyCustom(){
   const from=document.getElementById("crmAnalyticsFrom").value,to=document.getElementById("crmAnalyticsTo").value;
   if(!from||!to||from>to){customStatus.textContent="Escolha um intervalo válido.";return}
@@ -8527,10 +8547,10 @@ async function renderAnalytics(){
  select.onchange=()=>{
   const key=select.value;
   custom.classList.toggle("show",key==="custom");
-  if(key!=="custom")renderPeriod(PH_PERIODS[key],{label:PH_PERIODS[key]?.label||""});
+  if(key!=="custom")renderPeriod(PH_PERIODS[key],{label:PH_PERIODS[key]?.label||"",jobDays:Number(key.replace("d",""))||30});
  };
  document.getElementById("crmApplyCustomRange").onclick=applyCustom;
- renderPeriod(PH_PERIODS["30d"],{label:PH_PERIODS["30d"]?.label||"Últimos 30 dias"});
+ renderPeriod(PH_PERIODS["30d"],{label:PH_PERIODS["30d"]?.label||"Últimos 30 dias",jobDays:30});
 }
 function setup(){
  const page=document.getElementById("crmAdminPage");if(!page)return;
