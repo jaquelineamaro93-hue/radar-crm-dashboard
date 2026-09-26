@@ -8155,7 +8155,8 @@ let PH_PERIODS={
 let PH_SNAPSHOT={updated:"23/09/2026",pages:[["Início",1559],["Quem somos",144],["Membros",142],["Busca",120],["Vagas",83],["Pesquisa & Censo",66],["Cursos",50],["Freelancers",45],["Comunidade",45]]};
 let PH_INTENT_ACTIONS=[["Vagas de CRM",668],["Ver vaga",428],["Freelancers",355],["Cargos & salários",263],["Cursos",201],["CLT x PJ",157],["Conteúdos",90]];
 let PH_RETENTION=[["16/08",11.2],["23/08",5.4],["30/08",0.9]];
-let PH_DEVICES={desktop:{count:2041,share:58.3},mobile:{count:1461,share:41.7}};\nlet PH_NOTES={};
+let PH_DEVICES={desktop:{count:2041,share:58.3},mobile:{count:1461,share:41.7}};
+let PH_NOTES={};
 async function crmLoadDailyAnalyticsSnapshot(){
   try{
     if(!authSb&&!authInitSB())return;
@@ -8166,7 +8167,8 @@ async function crmLoadDailyAnalyticsSnapshot(){
     PH_SNAPSHOT.updated=data.snapshot_date?new Date(data.snapshot_date+"T12:00:00").toLocaleDateString("pt-BR"):(data.refreshed_at?new Date(data.refreshed_at).toLocaleDateString("pt-BR"):PH_SNAPSHOT.updated);
     if(Array.isArray(data.intent_actions))PH_INTENT_ACTIONS=data.intent_actions;
     if(Array.isArray(data.retention))PH_RETENTION=data.retention;
-    if(data.devices&&typeof data.devices==="object")PH_DEVICES=data.devices;\n    if(data.notes&&typeof data.notes==="object")PH_NOTES=data.notes;
+    if(data.devices&&typeof data.devices==="object")PH_DEVICES=data.devices;
+    if(data.notes&&typeof data.notes==="object")PH_NOTES=data.notes;
   }catch(e){console.warn("Analytics snapshot fallback:",e);}
 }
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
