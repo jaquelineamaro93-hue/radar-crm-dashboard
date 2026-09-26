@@ -3013,7 +3013,7 @@ crmShowSurveyReminder();
       <input id="ag_site" type="url" class="ev-ifield" placeholder="https://" maxlength="300" style="margin-bottom:12px;">
       <label class="ev-ilabel" for="ag_logo">Logo da agência/consultoria (opcional)</label>
       <input id="ag_logo" type="file" class="ev-ifield crm-logo-input" accept="image/jpeg,image/png,image/webp">
-      <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. O logo só aparece após a aprovação do cadastro.</small>
+      <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. Se a empresa já estiver na vitrine, use o mesmo nome: após aprovação o logo entra no card existente, sem duplicá-lo.</small>
       <label class="ev-ilabel" for="ag_autor">Seu nome (quem está sugerindo)</label>
       <input id="ag_autor" type="text" class="ev-ifield" placeholder="Ex: Jaqueline Amaro" maxlength="80" style="margin-bottom:20px;">
       <div style="display:flex;gap:10px;">
@@ -5881,8 +5881,11 @@ function loadAgencias(){
     if(agRes.error) throw agRes.error;
     if(avRes.error) throw avRes.error;
     const sugeridas = (agRes.data||[]).map(a=>({...a, isSuggested:true}));
-    const agencyNames=new Set();
-    AGENCIAS = [...AGENCIAS_SEED.map(a=>({...a, isSuggested:false})), ...sugeridas].filter(a=>{const key=(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();if(!key||agencyNames.has(key))return false;agencyNames.add(key);return true;});
+    const normAgency=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+    const suggestedAgencyByName=new Map(sugeridas.map(a=>[normAgency(a.nome),a]));
+    const seedAgencyNames=new Set(AGENCIAS_SEED.map(a=>normAgency(a.nome)));
+    const seedsWithApprovedLogos=AGENCIAS_SEED.map(a=>{const approved=suggestedAgencyByName.get(normAgency(a.nome));return {...a,logo_path:approved?.logo_path||a.logo_path||null,isSuggested:false};});
+    AGENCIAS=[...seedsWithApprovedLogos,...sugeridas.filter(a=>!seedAgencyNames.has(normAgency(a.nome)))];
     window.AG_REVIEWS=avRes.data||[];
     AVALIACOES = {};
     (avRes.data||[]).forEach(v=>{
@@ -6826,8 +6829,10 @@ async function loadPlataformas(){
     // Evita duplicar se alguém sugerir um nome que já está na lista inicial (comparação sem acentuação/maiúsculas).
     const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
     const seedNames = new Set(PF_TOOLS_SEED.map(t=>norm(t.name)));
+    const suggestedByName = new Map(sugeridas.map(t=>[norm(t.name),t]));
+    const seedWithApprovedLogos = PF_TOOLS_SEED.map(t=>{const approved=suggestedByName.get(norm(t.name));return {...t,logo_path:approved?.logo_path||t.logo_path||null,isSuggested:false};});
     const novasSugeridas = sugeridas.filter(t=>!seedNames.has(norm(t.name)));
-    if(!pfRes.error)PF_TOOLS = [...PF_TOOLS_SEED.map(t=>({...t, isSuggested:false})), ...novasSugeridas];
+    if(!pfRes.error)PF_TOOLS = [...seedWithApprovedLogos, ...novasSugeridas];
 
     if(!avRes.error){PF_REVIEWS_READY=true;PF_AVALIACOES = {};
     (avRes.data||[]).forEach(a=>{
@@ -6963,7 +6968,7 @@ function pfOpenSuggestModal(){
         <input id="pfSuggestLink" type="url" class="ev-ifield" placeholder="https://..." maxlength="200" style="margin-bottom:12px;">
         <label class="ev-ilabel" for="pfSuggestLogo">Logo da plataforma (opcional)</label>
         <input id="pfSuggestLogo" type="file" class="ev-ifield crm-logo-input" accept="image/jpeg,image/png,image/webp">
-        <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. O logo só aparece após a aprovação.</small>
+        <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. Se a plataforma já estiver na vitrine, use o mesmo nome: após aprovação o logo entra no card existente, sem duplicá-lo.</small>
         <label class="ev-ilabel">Sua avaliação (1 a 5) *</label>
         <div id="pfStarRating" style="display:flex;gap:6px;margin-bottom:16px;" data-rating="0">
           <button type="button" class="pf-star" data-value="1" onclick="pfSetRating(1)" aria-label="Nota 1 de 5" style="background:none;border:none;cursor:pointer;font-size:26px;line-height:1;color:#cbd5e1;padding:0;">1</button>
