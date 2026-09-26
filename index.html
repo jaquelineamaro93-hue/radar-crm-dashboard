@@ -38,10 +38,17 @@
       try { window.posthog?.capture(event, props || {}); } catch {}
     },
     pageView: function(section) {
-      if(this.lastSection===section)return;this.lastSection=section;
+      const now=Date.now(),previous=this.lastSection;
+      if(previous===section)return;
+      if(previous&&this.sectionStartedAt){
+        const seconds=Math.max(0,Math.round((now-this.sectionStartedAt)/1000));
+        this.track('section_engagement',{section:previous,next_section:section,duration_seconds:seconds});
+      }
+      this.lastSection=section;this.sectionStartedAt=now;
       try { window.posthog?.capture('$pageview', { $pathname: '/' + section, $current_url: location.origin + location.pathname + '#' + section, section: section }); } catch {}
     }
   };
+  window.addEventListener('pagehide',()=>{try{const t=window.posthogTracker;if(t?.lastSection&&t?.sectionStartedAt){t.track('section_engagement',{section:t.lastSection,next_section:'exit',duration_seconds:Math.max(0,Math.round((Date.now()-t.sectionStartedAt)/1000))});t.sectionStartedAt=Date.now();}}catch{}});
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -8159,6 +8166,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 async function crmSearchJobs(){
  const seq=++crmJobSearchSequence;
+ const searchProps={cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
+ window.posthogTracker?.track('search_performed',{area:'vagas',...searchProps});
+
  for(const n of ['cargo','empresa','nivel','plataforma'])crmById('filtro-'+n+'-hub').value=crmById('filtro-'+n).value;
  const b=crmById('btn-buscar');b.disabled=true;b.textContent='Buscando…';
  try{await aplicarFiltrosVagas();if(seq===crmJobSearchSequence)crmFilterModality();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
