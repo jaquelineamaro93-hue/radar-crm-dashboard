@@ -5002,7 +5002,11 @@ function evRenderBadges(){
 }
 function evSyncBtns(id){
   const st = evMyS(id);
-  document.querySelectorAll('[data-id="'+id+'"][data-s]').forEach(b=>b.classList.toggle("on", b.dataset.s===st));
+  document.querySelectorAll('[data-id="'+id+'"][data-s]').forEach(b=>{
+    const on=b.dataset.s===st;
+    b.classList.toggle("on",on);
+    b.setAttribute("aria-pressed",String(on));
+  });
 }
 function evUpdateC(){
   document.getElementById("evTotal").textContent = evAllEvents.length + " eventos";
