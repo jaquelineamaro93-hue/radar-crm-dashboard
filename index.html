@@ -976,7 +976,7 @@ header.crm-navbar{position:sticky;top:0;z-index:90;display:block;height:80px;min
 #crmSurveyReminder :is(a,button):focus-visible{outline:3px solid #f8fafc;outline-offset:3px}
 @media(max-width:640px){#crmSurveyReminder{bottom:12px;right:12px;width:calc(100vw - 24px);padding:16px}#crmSurveyReminder h2{font-size:1.15rem}#crmSurveyReminder p{font-size:.9375rem;margin:8px 0 12px}}
 </style>
-<style>#crmAdminNav[hidden]{display:none!important}#crmAdminNav{background:transparent;color:#ff8a3d;border:1px solid #ff8a3d;padding:12px;margin-top:16px;width:100%;border-radius:6px;cursor:pointer}</style>
+<style>#crmAdminNav[hidden]{display:none!important}#crmAdminNav{margin-bottom:4px}</style>
 <style>
 .crm-profile-details{display:grid;gap:18px;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
 .crm-profile-details h3{font-size:13px;color:var(--muted);margin:0 0 6px}.crm-profile-details p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -8093,7 +8093,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
  page.innerHTML='<h1>Administração · Aprovações</h1><p>Revise as sugestões e os pedidos da comunidade. Só a sua aprovação publica o conteúdo ou altera um cadastro.</p><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button class="crm-button" id="crmModerationRefresh">Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div>';
  crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
- const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.textContent='Administração';b.onclick=crmOpenAdmin;crmById('crmNavSlot').append(b);
+ const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;const home=crmById('navMembro');const nav=home?.parentElement;if(nav&&home)nav.insertBefore(b,home.nextSibling);else crmById('crmNavSlot').append(b);
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
  crmRefreshAdmin().then(()=>{if(location.hash==='#admin'&&crmAdminVerified)crmOpenAdmin();});
 });
