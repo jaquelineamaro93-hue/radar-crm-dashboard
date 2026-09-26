@@ -8574,7 +8574,7 @@ function setup(){
  function crmSankeyHtml(data){
  const tr=(data.transitions||[]).filter(x=>x.users>0&&x.source!=="/admin"&&x.target!=="/admin");
  const ignoredActions=["Fechar","Agora não","Continuar","Cancelar","Menu","Administração","Administracao","Analytics","Jornada","Membros","Aprovações","Aprovacoes","Newsletter"];
- const pa=(data.page_actions||[]).filter(x=>x.users>0&&x.path!=="/admin"&&!ignoredActions.includes(String(x.action||"").trim()));
+ const pa=(data.page_actions||[]).filter(x=>{const a=String(x.action||"").trim();return x.users>0&&x.path!=="/admin"&&!ignoredActions.includes(a)&&!/(administra|analytics|jornada|newsletter|aprova|^menu$)/i.test(a)});
  const first=tr.filter(x=>x.source==="/").sort((a,b)=>b.users-a.users).slice(0,9),paths=new Set(first.map(x=>x.target));
  const second=pa.filter(x=>paths.has(x.path)).sort((a,b)=>b.users-a.users).slice(0,16);
  if(!first.length)return '<div class="crm-journey-empty">Ainda não há volume suficiente para desenhar os caminhos de navegação.</div>';
