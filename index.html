@@ -8048,8 +8048,9 @@ async function crmOpenAdmin(){
  await crmLoadModeration();
 }
 async function crmLoadModeration(){
- const list=crmById('crmModerationList'),status=crmById('crmModerationStatus');
+ const list=crmById('crmModerationList'),status=crmById('crmModerationStatus'),refresh=crmById('crmModerationRefresh');
  list.replaceChildren();status.textContent='Carregando solicitações…';
+ if(refresh){refresh.disabled=true;refresh.textContent='↻ Atualizando…';}
  if(!crmSignedIn())return;await crmRefreshAdmin();if(!crmAdminVerified){status.textContent='Acesso restrito à administradora.';return;}
  await window.CXConnections?.moderation();
  await window.CXTalentLinks?.moderation();
@@ -8088,10 +8089,11 @@ async function crmLoadModeration(){
   }
  }
  status.textContent=errors.length?'Não foi possível carregar: '+errors.join(', ')+'. Tente atualizar.':count?count+' itens exibidos. Até 50 por categoria.':'Nenhum item nesta seleção.';
+ if(refresh){refresh.disabled=false;refresh.textContent='↻ Atualizar';}
 }
 document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
- page.innerHTML='<h1>Administração</h1><p>Gerencie aprovações e acompanhe o uso do Conexão CRM.</p><div class="crm-admin-tabs" id="crmAdminTabs" role="tablist" aria-label="Áreas da Administração"><button type="button" class="crm-admin-tab active" data-a="analytics" role="tab" aria-selected="true">▥ Analytics</button><button type="button" class="crm-admin-tab" data-a="members" role="tab" aria-selected="false">◎ Membros</button><button type="button" class="crm-admin-tab" data-a="approvals" role="tab" aria-selected="false">⌁ Aprovações</button><button type="button" class="crm-admin-tab" data-a="newsletter" role="tab" aria-selected="false">✉ Newsletter</button></div><section id="crmAdminAnalytics"></section><section id="crmAdminMembers" hidden></section><section id="crmAdminApprovals" hidden><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button class="crm-button" id="crmModerationRefresh">Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div></section><section id="crmAdminNewsletter" hidden></section>';
+ page.innerHTML='<h1>Administração</h1><p>Gerencie aprovações e acompanhe o uso do Conexão CRM.</p><div class="crm-admin-tabs" id="crmAdminTabs" role="tablist" aria-label="Áreas da Administração"><button type="button" class="crm-admin-tab active" data-a="analytics" role="tab" aria-selected="true">▥ Analytics</button><button type="button" class="crm-admin-tab" data-a="members" role="tab" aria-selected="false">◎ Membros</button><button type="button" class="crm-admin-tab" data-a="approvals" role="tab" aria-selected="false">⌁ Aprovações</button><button type="button" class="crm-admin-tab" data-a="newsletter" role="tab" aria-selected="false">✉ Newsletter</button></div><section id="crmAdminAnalytics"></section><section id="crmAdminMembers" hidden></section><section id="crmAdminApprovals" hidden><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button class="crm-button" id="crmModerationRefresh" type="button">↻ Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div></section><section id="crmAdminNewsletter" hidden></section>';
  crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
  const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;const home=crmById('navMembro');const nav=home?.parentElement;if(nav&&home)nav.insertBefore(b,home.nextSibling);else crmById('crmNavSlot').append(b);
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
@@ -8173,7 +8175,16 @@ async function crmLoadDailyAnalyticsSnapshot(){
 }
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 function analyticsCss(){if(document.getElementById("crmAdminAnalyticsCss"))return;const st=document.createElement("style");st.id="crmAdminAnalyticsCss";st.textContent=`
-.crm-admin-tabs{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 22px;padding:0 0 16px;border-bottom:1px solid var(--line)}
+.crm-admin-tabs{display:flex!important;visibility:visible!important;opacity:1!important;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 22px;padding:0 0 16px;border-bottom:1px solid var(--line)}
+#crmAdminTabs[hidden]{display:flex!important}
+#crmAdminApprovals .crm-actions{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+#crmAdminApprovals .crm-field{margin:0;min-width:0}
+#crmAdminApprovals .crm-field:first-child{width:min(260px,100%)}
+#crmAdminApprovals .crm-field:nth-child(2){width:min(170px,100%)}
+#crmAdminApprovals .crm-field select{height:40px;min-height:40px;padding:0 34px 0 12px;border-radius:8px;font-size:12px}
+#crmModerationRefresh{height:40px!important;min-height:40px!important;width:auto!important;min-width:0!important;padding:0 15px!important;margin:0!important;border:1px solid #51473f!important;border-radius:8px!important;background:#181614!important;color:#e7e1db!important;font-size:12px!important;font-weight:700!important;line-height:1!important;box-shadow:none!important}
+#crmModerationRefresh:hover,#crmModerationRefresh:focus-visible{border-color:#ff8a3d!important;color:#ff9b54!important;background:rgba(255,138,61,.08)!important}
+#crmModerationRefresh:disabled{opacity:.55;cursor:wait}
 .crm-admin-tab{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 13px;border:1px solid #3a3733!important;border-radius:8px!important;background:#151412!important;color:#bcb8b0!important;font-size:12px!important;font-weight:700!important;box-shadow:none!important}
 .crm-admin-tab:hover{border-color:#65584c!important;color:#fff!important;background:#1d1a17!important}
 .crm-admin-tab.active{border-color:#ff8a3d!important;background:rgba(255,138,61,.12)!important;color:#ff9b54!important}
@@ -8315,7 +8326,7 @@ function setup(){
   members.innerHTML='<h2>Membros</h2><p class="crm-analytics-note">Gerencie e consulte os membros cadastrados na comunidade.</p><div class="crm-admin-members-toolbar"><input class="crm-period crm-admin-members-search" id="crmMemberSearch" placeholder="Buscar por nome ou e-mail" value="'+esc(memberSearch)+'"><label>Resultados por página <select class="crm-period" id="crmMemberLimit"><option value="50">50</option><option value="100">100</option></select></label></div><p id="crmMembersStatus">Carregando membros…</p><div style="overflow:auto"><table class="crm-admin-members-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Último acesso</th><th>Login</th><th>Permissão</th><th>Status do perfil</th><th>Open to Work</th></tr></thead><tbody id="crmMembersBody"></tbody></table></div><div class="crm-admin-members-footer"><span id="crmMembersRange"></span><div class="crm-admin-members-pager"><button class="crm-button crm-outline" id="crmMembersPrev">‹</button><span id="crmMembersPage"></span><button class="crm-button crm-outline" id="crmMembersNext">›</button></div></div>';
   const lim=members.querySelector("#crmMemberLimit");lim.value=String(memberLimit);
   const [{data,error},{data:total,error:countError}]=await Promise.all([authSb.rpc("crm_admin_members",{p_limit:memberLimit,p_offset:memberPage*memberLimit,p_search:memberSearch||null}),authSb.rpc("crm_admin_members_count",{p_search:memberSearch||null})]);
-  if(error||countError){members.querySelector("#crmMembersStatus").textContent="Não foi possível carregar os membros.";return}
+  if(error||countError){members.querySelector("#crmMembersStatus").innerHTML='Não foi possível carregar os membros. <button type="button" class="crm-admin-tab" id="crmMembersRetry">Tentar novamente</button>';members.querySelector("#crmMembersRetry").onclick=renderMembers;return}
   const rows=Array.isArray(data)?data:[],n=Number(total||0),start=n?memberPage*memberLimit+1:0,end=Math.min((memberPage+1)*memberLimit,n);
   members.querySelector("#crmMembersStatus").textContent=n+" membros encontrados";
   members.querySelector("#crmMembersBody").innerHTML=rows.map(u=>'<tr><td><strong>'+esc(u.full_name||"Sem nome")+'</strong></td><td>'+esc(u.email||"")+'</td><td>'+esc(u.created_at?new Date(u.created_at).toLocaleDateString("pt-BR"):"—")+'</td><td>'+esc(u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString("pt-BR"):"Nunca")+'</td><td>'+esc(u.provider||"email")+'</td><td><span class="crm-admin-role">'+esc(u.portal_role||"Membro")+'</span></td><td>'+((u.onboarding_completed)?"Completo":"Pendente")+'</td><td>'+(u.open_to_work?"Sim":"Não")+'</td></tr>').join("");
@@ -8328,6 +8339,9 @@ function setup(){
  }
 
  function activateAdminTab(tab){
+  tabs.hidden=false;
+  tabs.style.removeProperty("display");
+  tabs.setAttribute("aria-hidden","false");
   tabs.querySelectorAll("[data-a]").forEach(b=>{
    const on=b.dataset.a===tab;
    b.classList.toggle("active",on);
