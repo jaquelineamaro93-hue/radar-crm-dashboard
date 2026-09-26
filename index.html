@@ -8234,6 +8234,15 @@ function analyticsShift(date,days){const d=new Date(date+"T12:00:00");d.setDate(
 function analyticsRangeDays(from,to){return Math.round((new Date(to+"T12:00:00")-new Date(from+"T12:00:00"))/86400000)+1}
 function analyticsPct(cur,prev){cur=Number(cur)||0;prev=Number(prev)||0;if(!prev)return null;return Math.round(((cur-prev)/prev)*100)}
 function analyticsDateLabel(date){return new Date(date+"T12:00:00").toLocaleDateString("pt-BR")}
+function analyticsRetentionLabel(value){
+ const raw=String(value||"");
+ const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+ if(!m)return raw;
+ const monthNames=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+ const month=Number(m[2]),day=Number(m[3]);
+ const week=Math.ceil(day/7);
+ return week+"ª semana de "+monthNames[month-1];
+}
 async function crmAnalyticsRange(from,to){
  if(!authSb&&!authInitSB())throw Error("Não foi possível iniciar a conexão com o Supabase.");
  const {data,error}=await authSb.functions.invoke("crm-admin-analytics-range",{body:{from,to}});
@@ -8278,7 +8287,7 @@ async function renderAnalytics(){
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">03 · A comunidade vira base própria?</span><h3>Conversão em relacionamento</h3></div></div><div class="crm-analytics-panel"><div id="crmAnalyticsSupabase"></div></div></div>'+
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">04 · A audiência volta?</span><h3>Retenção e perfil de acesso</h3></div></div><div class="crm-retention-layout">'+
    '<div class="crm-analytics-panel"><h3>Horas ativas · usuários únicos</h3><p class="crm-analytics-note">Últimos 30 dias · horário de São Paulo. Quanto mais forte a célula, mais usuários únicos ativos.</p><div class="crm-heat-wrap">'+activeHoursHtml()+'</div><p class="crm-analytics-note">Fonte: PostHog · atualização diária.</p></div>'+
-   '<div class="crm-analytics-two crm-retention-lower"><div class="crm-analytics-panel"><h3>Retenção semanal</h3><p class="crm-analytics-note">Coortes de novos visitantes que retornaram na semana seguinte.</p>'+PH_RETENTION.map(x=>'<div class="crm-bar"><span>'+esc(x[0])+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(1,Number(x[1])||0)+'%"></div></div><b>'+Number(x[1]||0).toFixed(1).replace(".",",")+'%</b></div>').join("")+'<p class="crm-analytics-note">A retenção deve ser lida por coorte. Este bloco usa o snapshot diário mais recente.</p></div>'+
+   '<div class="crm-analytics-two crm-retention-lower"><div class="crm-analytics-panel"><h3>Retenção semanal</h3><p class="crm-analytics-note">Coortes de novos visitantes que retornaram na semana seguinte.</p>'+PH_RETENTION.map(x=>'<div class="crm-bar"><span>'+esc(analyticsRetentionLabel(x[0]))+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(1,Number(x[1])||0)+'%"></div></div><b>'+Number(x[1]||0).toFixed(1).replace(".",",")+'%</b></div>').join("")+'<p class="crm-analytics-note">A retenção deve ser lida por coorte. Este bloco usa o snapshot diário mais recente.</p></div>'+
    '<div class="crm-analytics-panel"><h3>Dispositivo</h3><div class="crm-analytics-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0">'+card("Desktop",fmt(PH_DEVICES.desktop?.count||0),String(PH_DEVICES.desktop?.share||0).replace(".",",")+"%","Acessos classificados como desktop.")+card("Mobile",fmt(PH_DEVICES.mobile?.count||0),String(PH_DEVICES.mobile?.share||0).replace(".",",")+"%","Acessos classificados como mobile.")+'</div><p class="crm-analytics-note">Ajuda a orientar experiência, formatos de conteúdo e entregas para parceiros.</p></div></div></div></div>'+
    '<p class="crm-analytics-note">Fonte: PostHog Web Analytics e retenção nativa · atualizado em '+PH_SNAPSHOT.updated+'. Dados de membros: Supabase em tempo real.</p>';
   loadSupabase();
