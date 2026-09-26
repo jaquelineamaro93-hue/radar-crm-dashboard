@@ -8498,7 +8498,7 @@ async function renderAnalytics(){
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">02 · Onde está o interesse</span><h3>Conteúdo e intenção</h3></div></div><div class="crm-analytics-two">'+
    '<div class="crm-analytics-panel"><h3>Páginas mais acessadas</h3>'+PH_SNAPSHOT.pages.slice(0,7).map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(x[0])+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,Number(x[1]||0)/max*100)+'%"></div></div><b>'+x[1]+'</b></div>').join("")+'<p class="crm-analytics-note">Snapshot diário das páginas mais acessadas. Este bloco não muda com o período personalizado.</p></div>'+
    '<div class="crm-analytics-panel"><h3>Ações de maior intenção</h3>'+PH_INTENT_ACTIONS.map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+x[0]+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,Number(x[1]||0)/Math.max(1,PH_INTENT_ACTIONS[0]?.[1]||1)*100)+'%"></div></div><b>'+x[1]+'</b></div>').join("")+'<p class="crm-analytics-note">Snapshot diário das ações de maior intenção. Este bloco não muda com o período personalizado.</p></div></div></div>'+
-   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">03 · Como as vagas performam?</span><h3>Interesse e intenção nas vagas</h3></div></div><div id="crmAnalyticsJobs"></div></div>'+
+   '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">03 · Como as pessoas se comportam?</span><h3>Exploração, interesse e intenção</h3></div></div><div id="crmAnalyticsBehavior"></div></div>'+
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">04 · A comunidade vira base própria?</span><h3>Conversão em relacionamento</h3></div></div><div class="crm-analytics-panel"><div id="crmAnalyticsSupabase"></div></div></div>'+
    '<div class="crm-story-section"><div class="crm-story-head"><div><span class="crm-kicker">05 · A audiência volta?</span><h3>Retenção e perfil de acesso</h3></div></div><div class="crm-retention-layout">'+
    '<div class="crm-analytics-panel"><h3>Horas ativas · usuários únicos</h3><p class="crm-analytics-note">Últimos 30 dias · horário de São Paulo. Quanto mais forte a célula, mais usuários únicos ativos.</p><div class="crm-heat-wrap">'+activeHoursHtml()+'</div><p class="crm-analytics-note">Fonte: PostHog · atualização diária.</p></div>'+
@@ -8506,26 +8506,23 @@ async function renderAnalytics(){
    '<div class="crm-analytics-panel"><h3>Dispositivo</h3><div class="crm-analytics-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0">'+card("Desktop",fmt(PH_DEVICES.desktop?.count||0),String(PH_DEVICES.desktop?.share||0).replace(".",",")+"%","Acessos classificados como desktop.")+card("Mobile",fmt(PH_DEVICES.mobile?.count||0),String(PH_DEVICES.mobile?.share||0).replace(".",",")+"%","Acessos classificados como mobile.")+'</div><p class="crm-analytics-note">Ajuda a orientar experiência, formatos de conteúdo e entregas para parceiros.</p></div></div></div></div>'+
    '<p class="crm-analytics-note">Fonte: PostHog Web Analytics e retenção nativa · atualizado em '+PH_SNAPSHOT.updated+'. Dados de membros: Supabase em tempo real.</p>';
   loadSupabase();
-  loadJobAnalytics(meta.jobDays||30);
+  loadBehaviorAnalytics(meta.behaviorDays||30);
  }
 
- async function loadJobAnalytics(days){
-  const host=document.getElementById("crmAnalyticsJobs");if(!host)return;
-  host.innerHTML='<p class="crm-analytics-note">Carregando comportamento das vagas…</p>';
+ async function loadBehaviorAnalytics(days){
+  const host=document.getElementById("crmAnalyticsBehavior");if(!host)return;
+  host.innerHTML='<p class="crm-analytics-note">Carregando comportamento do portal…</p>';
   try{
-   const {data,error}=await authSb.functions.invoke("crm-admin-journey",{body:{days}});
-   if(error)throw error;if(data?.error)throw Error(data.error);
-   const jobs=Array.isArray(data.jobs)?data.jobs:[],fmtN=n=>Number(n||0).toLocaleString("pt-BR"),pct=n=>Number(n||0).toFixed(1).replace(".",",")+"%";
+   const {data,error}=await authSb.functions.invoke("crm-admin-journey",{body:{days}});if(error)throw error;if(data?.error)throw Error(data.error);
+   const s=data.stages||{},r=data.rates||{},fmtN=n=>Number(n||0).toLocaleString("pt-BR"),pct=n=>Number(n||0).toFixed(1).replace(".",",")+"%";
+   const actions=(data.actions||[]).filter(x=>!["Fechar","Agora não","Continuar","Cancelar"].includes(x.action)).slice(0,10);
    host.innerHTML='<div class="crm-analytics-grid">'+
-    card("Vagas visualizadas",fmtN(data.jobs_viewed),"vagas distintas","Quantidade de vagas com visualização qualificada.")+
-    card("Pessoas interessadas",fmtN(data.viewers),"usuários únicos","Pessoas que visualizaram ao menos uma vaga.")+
-    card("Cliques em Candidatar",fmtN(data.applies),"cliques","Ações de candidatura registradas nos cards.")+
-    card("View → candidatura",pct(data.conversion),"conversão observada","Usuários que visualizaram e chegaram ao clique de candidatura.")+
-   '</div>'+
-   '<div class="crm-analytics-panel"><div class="crm-story-head"><div><h3>Vagas com maior interesse e intenção</h3><p class="crm-analytics-note">Views qualificadas, pessoas únicas e cliques em Candidatar.</p></div></div>'+
-   (jobs.length?'<div style="overflow:auto"><table class="crm-journey-table"><thead><tr><th>Vaga</th><th>Empresa</th><th>Views</th><th>Pessoas</th><th>Candidatar</th><th>Conversão</th></tr></thead><tbody>'+jobs.slice(0,10).map(j=>'<tr><td><strong>'+esc(j.title)+'</strong></td><td>'+esc(j.company||"—")+'</td><td>'+fmtN(j.views)+'</td><td>'+fmtN(j.viewers)+'</td><td>'+fmtN(j.applies)+'</td><td>'+pct(j.conversion)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="crm-journey-empty">A instrumentação detalhada começou em 26/09. Os KPIs aparecerão aqui conforme houver novas visualizações e candidaturas.</div>')+
-   '<p class="crm-analytics-note">A visualização exige ≥50% do card visível por 800 ms. Assim, tempo alto sozinho não é tratado como interesse.</p></div>';
-  }catch(e){host.innerHTML='<div class="crm-journey-empty">Não foi possível carregar os KPIs de vagas agora: '+esc(e?.message||"erro inesperado")+'</div>'}
+    card("Exploração",pct(r.explore),fmtN(s.explore)+" pessoas","Percentual do alcance que navegou além da página de entrada.")+
+    card("Sinal de interesse",fmtN(s.interest),"usuários únicos","Pessoas que interagiram com conteúdos, soluções, profissionais, vagas, cursos, eventos ou ferramentas.")+
+    card("Alta intenção",fmtN(s.intent),"usuários únicos","Pessoas que chegaram a ações mais fortes, como contato, inscrição, cadastro, candidatura ou saída qualificada.")+
+    card("Recorrência",fmtN(s.returning),"pessoas em 2+ dias","Pessoas que voltaram ao portal em dias diferentes no período.")+
+   '</div><div class="crm-analytics-panel"><h3>Ações que mais demonstram interesse</h3>'+actions.map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(x.action)+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,x.users/Math.max(1,actions[0]?.users||1)*100)+'%"></div></div><b>'+fmtN(x.users)+' pessoas</b></div>').join("")+'<p class="crm-analytics-note">Este bloco olha o portal inteiro. Vagas são apenas uma das dimensões de comportamento.</p></div>';
+  }catch(e){host.innerHTML='<div class="crm-journey-empty">Não foi possível carregar os indicadores comportamentais: '+esc(e?.message||"erro inesperado")+'</div>'}
  }
  async function applyCustom(){
   const from=document.getElementById("crmAnalyticsFrom").value,to=document.getElementById("crmAnalyticsTo").value;
@@ -8547,10 +8544,10 @@ async function renderAnalytics(){
  select.onchange=()=>{
   const key=select.value;
   custom.classList.toggle("show",key==="custom");
-  if(key!=="custom")renderPeriod(PH_PERIODS[key],{label:PH_PERIODS[key]?.label||"",jobDays:Number(key.replace("d",""))||30});
+  if(key!=="custom")renderPeriod(PH_PERIODS[key],{label:PH_PERIODS[key]?.label||"",behaviorDays:Number(key.replace("d",""))||30});
  };
  document.getElementById("crmApplyCustomRange").onclick=applyCustom;
- renderPeriod(PH_PERIODS["30d"],{label:PH_PERIODS["30d"]?.label||"Últimos 30 dias",jobDays:30});
+ renderPeriod(PH_PERIODS["30d"],{label:PH_PERIODS["30d"]?.label||"Últimos 30 dias",behaviorDays:30});
 }
 function setup(){
  const page=document.getElementById("crmAdminPage");if(!page)return;
@@ -8568,28 +8565,23 @@ function setup(){
  let memberPage=0,memberLimit=50,memberSearch="";
  async function renderJourney(){
   const journey=document.getElementById("crmAdminJourney");if(!journey)return;
-  journey.innerHTML='<div class="crm-story-head"><div><span class="crm-kicker">Mapa da jornada</span><h2>Da descoberta à candidatura</h2><p class="crm-analytics-note">Leitura comportamental das vagas. Os eventos detalhados começaram a ser coletados em 26/09/2026.</p></div><select id="crmJourneyPeriod" class="crm-period"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="60">60 dias</option></select></div><div id="crmJourneyBody"><p class="crm-analytics-note">Carregando jornada…</p></div>';
+  journey.innerHTML='<div class="crm-story-head"><div><span class="crm-kicker">Mapa da jornada</span><h2>Como as pessoas percorrem o Conexão CRM</h2><p class="crm-analytics-note">Visão comportamental do portal inteiro: descoberta, exploração, interesse, intenção e relacionamento.</p></div><select id="crmJourneyPeriod" class="crm-period"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="60">60 dias</option></select></div><div id="crmJourneyBody"><p class="crm-analytics-note">Carregando jornada…</p></div>';
   const sel=journey.querySelector("#crmJourneyPeriod");
   async function load(){
    const body=journey.querySelector("#crmJourneyBody");body.innerHTML='<p class="crm-analytics-note">Carregando jornada…</p>';
    try{
-    const {data,error}=await authSb.functions.invoke("crm-admin-journey",{body:{days:Number(sel.value)}});
-    if(error)throw error;if(data?.error)throw Error(data.error);
-    const jobs=Array.isArray(data.jobs)?data.jobs:[],fmtN=n=>Number(n||0).toLocaleString("pt-BR"),pct=n=>Number(n||0).toFixed(1).replace(".",",")+"%";
-    body.innerHTML='<div class="crm-analytics-grid">'+
-      card("Vagas visualizadas",fmtN(data.jobs_viewed),"vagas distintas","Quantidade de vagas que tiveram visualização qualificada.")+
-      card("Pessoas interessadas",fmtN(data.viewers),"usuários únicos","Pessoas que visualizaram pelo menos uma vaga.")+
-      card("Cliques em Candidatar",fmtN(data.applies),"cliques","Ações de candidatura disparadas nos cards de vaga.")+
-      card("View → candidatura",pct(data.conversion),"usuários únicos","Percentual de pessoas que visualizaram vaga e também clicaram em Candidatar.")+
-    '</div>'+
-    '<div class="crm-analytics-panel"><div class="crm-story-head"><div><span class="crm-kicker">01 · Fluxo principal</span><h3>Mapa da jornada de vagas</h3></div></div>'+
-      '<div class="crm-journey-flow"><div class="crm-journey-step"><span class="crm-kicker">Descoberta</span><strong>'+fmtN(data.jobs_viewed)+'</strong><p>vagas diferentes chegaram à tela de alguém com visualização qualificada.</p></div>'+
-      '<div class="crm-journey-step"><span class="crm-kicker">Interesse</span><strong>'+fmtN(data.viewers)+'</strong><p>pessoas únicas visualizaram cards de vagas. Total de '+fmtN(data.views)+' visualizações.</p></div>'+
-      '<div class="crm-journey-step"><span class="crm-kicker">Intenção</span><strong>'+fmtN(data.applicants)+'</strong><p>pessoas únicas clicaram em Candidatar. Conversão observada: '+pct(data.conversion)+'.</p></div></div>'+
-      '<p class="crm-analytics-note">Uma visualização é registrada quando ≥50% do card permanece visível por pelo menos 800 ms. Isso evita tratar simples passagem pela tela como interesse.</p></div>'+
-    '<div class="crm-analytics-panel"><div class="crm-story-head"><div><span class="crm-kicker">02 · Conteúdo que move a jornada</span><h3>Vagas por interesse e intenção</h3></div></div>'+
-      (jobs.length?'<div style="overflow:auto"><table class="crm-journey-table"><thead><tr><th>Vaga</th><th>Empresa</th><th>Fonte</th><th>Views</th><th>Pessoas</th><th>Candidatar</th><th>Conversão</th></tr></thead><tbody>'+jobs.map(j=>'<tr><td><strong>'+esc(j.title)+'</strong></td><td>'+esc(j.company||"—")+'</td><td>'+esc(j.source||"—")+'</td><td>'+fmtN(j.views)+'</td><td>'+fmtN(j.viewers)+'</td><td>'+fmtN(j.applies)+'</td><td>'+pct(j.conversion)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="crm-journey-empty">A instrumentação começou hoje. Assim que houver visualizações/candidaturas novas, o ranking das vagas aparecerá aqui automaticamente.</div>')+
-      '<p class="crm-analytics-note">Fonte: PostHog · projeto radar-crm · eventos job_viewed e job_apply_click.</p></div>';
+    const {data,error}=await authSb.functions.invoke("crm-admin-journey",{body:{days:Number(sel.value)}});if(error)throw error;if(data?.error)throw Error(data.error);
+    const s=data.stages||{},r=data.rates||{},fmtN=n=>Number(n||0).toLocaleString("pt-BR"),pct=n=>Number(n||0).toFixed(1).replace(".",",")+"%";
+    const topPages=(data.pages||[]).filter(x=>!["/admin"].includes(x.path)).slice(0,8),topActions=(data.actions||[]).filter(x=>!["Fechar","Agora não","Continuar","Cancelar"].includes(x.action)).slice(0,10);
+    body.innerHTML='<div class="crm-journey-flow" style="grid-template-columns:repeat(5,minmax(0,1fr))">'+
+      '<div class="crm-journey-step"><span class="crm-kicker">01 · Descoberta</span><strong>'+fmtN(s.reach)+'</strong><p>pessoas alcançadas pelo portal.</p></div>'+
+      '<div class="crm-journey-step"><span class="crm-kicker">02 · Exploração</span><strong>'+fmtN(s.explore)+'</strong><p>foram além da entrada. '+pct(r.explore)+' do alcance.</p></div>'+
+      '<div class="crm-journey-step"><span class="crm-kicker">03 · Interesse</span><strong>'+fmtN(s.interest)+'</strong><p>interagiram com soluções e conteúdos. '+pct(r.interest)+' da exploração.</p></div>'+
+      '<div class="crm-journey-step"><span class="crm-kicker">04 · Intenção</span><strong>'+fmtN(s.intent)+'</strong><p>realizaram ações de maior intenção. '+pct(r.intent)+' do interesse.</p></div>'+
+      '<div class="crm-journey-step"><span class="crm-kicker">05 · Relacionamento</span><strong>'+fmtN(s.returning)+'</strong><p>voltaram em mais de um dia no período.</p></div></div>'+
+      '<div class="crm-analytics-two"><div class="crm-analytics-panel"><h3>Onde a jornada acontece</h3><p class="crm-analytics-note">Páginas com maior alcance por usuários únicos.</p>'+topPages.map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(x.path||"/")+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,x.users/Math.max(1,topPages[0]?.users||1)*100)+'%"></div></div><b>'+fmtN(x.users)+'</b></div>').join("")+'</div>'+
+      '<div class="crm-analytics-panel"><h3>O que move as pessoas</h3><p class="crm-analytics-note">Interações mais frequentes ao longo do portal.</p>'+topActions.map((x,i)=>'<div class="crm-bar"><span>'+(i+1)+'. '+esc(x.action)+'</span><div class="crm-bar-track"><div class="crm-bar-fill" style="width:'+Math.max(3,x.users/Math.max(1,topActions[0]?.users||1)*100)+'%"></div></div><b>'+fmtN(x.users)+'</b></div>').join("")+'</div></div>'+
+      '<div class="crm-analytics-panel"><h3>Leitura da jornada</h3><div class="crm-insight"><strong>'+pct(r.explore)+'</strong> das pessoas alcançadas exploraram uma página além da entrada.</div><div class="crm-insight"><strong>'+pct(r.intent)+'</strong> das pessoas com sinal de interesse chegaram a uma ação de maior intenção.</div><div class="crm-insight"><strong>'+fmtN(s.identified)+'</strong> pessoas foram identificadas pelo PostHog no período; isso permite ligar comportamento anônimo e relacionamento quando há login.</div><p class="crm-analytics-note">A jornada é uma leitura comportamental do portal inteiro. Vagas, cursos, profissionais, freelancers, conteúdos, ferramentas, eventos e comunidade são dimensões dentro dela — não o funil principal.</p></div>';
    }catch(e){body.innerHTML='<div class="crm-journey-empty">Não foi possível carregar a jornada agora: '+esc(e?.message||"erro inesperado")+'</div>'}
   }
   sel.onchange=load;await load();
