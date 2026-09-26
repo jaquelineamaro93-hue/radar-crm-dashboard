@@ -3645,6 +3645,7 @@ function obterEmpresa(vaga) {
 
 function mapearCampoVaga(vaga) {
   return {
+    id: vaga.id || vaga.job_id || vaga.url_hash || '',
     cargo: vaga.cargo || vaga.title || vaga.job_title || '',
     empresa: obterEmpresa(vaga),
     nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
@@ -3670,7 +3671,7 @@ function renderizarVagasHub(vagas) {
   container.innerHTML = vagas.map((vagaRaw, idx) => {
     const vaga = mapearCampoVaga(vagaRaw);
     return `
-    <div class="card" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
+    <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
       <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
       <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
 
@@ -3688,12 +3689,56 @@ function renderizarVagasHub(vagas) {
 
       <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
         <span style="color:var(--muted);">${formatarDataVagas(vaga.criado_em) ? 'Publicada: ' + formatarDataVagas(vaga.criado_em) : ''}</span>
-        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar </a>` : ''}
+        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar </a>` : ''}
       </div>
     </div>
   `;
   }).join('');
+  observarVagasVisiveisHub();
 }
+
+const crmJobViewedHub = new Set();
+let crmJobObserverHub = null;
+function crmJobPropsHub(card) {
+  return {
+    job_id: card?.dataset?.jobId || null,
+    title: card?.dataset?.jobTitle || '',
+    company: card?.dataset?.jobCompany || '',
+    source: card?.dataset?.jobSource || '',
+    job_url: card?.dataset?.jobUrl || '',
+    section: 'vagas'
+  };
+}
+function observarVagasVisiveisHub() {
+  if (!('IntersectionObserver' in window)) return;
+  if (crmJobObserverHub) crmJobObserverHub.disconnect();
+  crmJobObserverHub = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const card = entry.target;
+      const props = crmJobPropsHub(card);
+      const key = props.job_id || props.job_url || (props.title + '|' + props.company);
+      if (!key || crmJobViewedHub.has(key)) return;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+        clearTimeout(card._crmViewTimer);
+        card._crmViewTimer = setTimeout(() => {
+          if (crmJobViewedHub.has(key)) return;
+          crmJobViewedHub.add(key);
+          window.posthogTracker?.track('job_viewed', props);
+          crmJobObserverHub?.unobserve(card);
+        }, 800);
+      } else {
+        clearTimeout(card._crmViewTimer);
+      }
+    });
+  }, { threshold: [0.5] });
+  document.querySelectorAll('#vagasContainerHub .crm-job-card').forEach(card => crmJobObserverHub.observe(card));
+}
+document.addEventListener('click', event => {
+  const apply = event.target.closest('[data-job-apply="1"]');
+  if (!apply) return;
+  const card = apply.closest('.crm-job-card');
+  window.posthogTracker?.track('job_apply_click', crmJobPropsHub(card));
+});
 
 async function aplicarFiltrosVagas() {
   const container = document.getElementById('vagasContainerHub');
