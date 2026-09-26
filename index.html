@@ -8247,7 +8247,7 @@ async function renderAnalytics(){
   }else insight.push('<strong>Profundidade:</strong> '+pps.toFixed(1).replace(".",",")+' páginas por sessão.');
   if(d.duration!=null)insight.push('<strong>Qualidade da visita:</strong> tempo médio '+(d.duration>=0?'subiu ':'caiu ')+Math.abs(d.duration)+'%, chegando a '+dur(p.duration||0)+'.');
   else insight.push('<strong>Tempo de atenção:</strong> média de '+dur(p.duration||0)+' por sessão.');
-  if(Number.isFinite(Number(p.bounce)))insight.push('<strong>Rejeição:</strong> '+Number(p.bounce).toFixed(1).replace(".",",")+'% das sessões no recorte.');
+  if(p.bounce!=null&&Number.isFinite(Number(p.bounce)))insight.push('<strong>Rejeição:</strong> '+Number(p.bounce).toFixed(1).replace(".",",")+'% das sessões no recorte.');
   else insight.push('<strong>Sessões:</strong> '+fmt(p.sessions||0)+' sessões no período selecionado.');
 
   body.innerHTML=
