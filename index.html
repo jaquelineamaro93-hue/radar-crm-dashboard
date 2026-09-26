@@ -995,15 +995,21 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 .pf-card,.pro-card{background:#19191d!important;color:#f4f4f5!important;border:1px solid #3d3d45!important;border-radius:16px;min-width:0}
 .pf-card h3,.pro-card h3{color:#f4f4f5!important;margin:0;font-size:1.15rem}.pf-card p,.pro-card p{color:#cbd0d9;font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
 .pf-card .pf-tag{background:#25252b;color:#ddd;border-color:#555}.pf-card .pf-cat{color:#ffab70}.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}.pf-card{align-self:start;height:auto}.pf-card > .p-btn{flex:0 0 auto;min-height:44px}.result-grid{align-items:start}
-.crm-review-scroll{max-height:min(620px,65vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:8px}.pro-card{align-self:start;height:auto}.crm-catalog-status{grid-column:1/-1}.crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.crm-review-actions button{flex:1;min-width:130px}
+.crm-review-scroll{max-height:min(620px,65vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:8px}.pro-card{align-self:start;height:auto}.crm-catalog-status{grid-column:1/-1}.crm-review-box{width:100%;border-top:1px solid #41414a;padding-top:16px;margin-top:16px;box-sizing:border-box}.crm-review-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch}.crm-review-actions button{width:100%;min-width:0;min-height:40px!important;height:40px!important;padding:8px 10px!important;font-size:.875rem!important;line-height:1.1!important;white-space:nowrap;border-radius:8px!important}
 .crm-review-box button,.crm-review-box summary{font-family:inherit;font-size:1rem;font-weight:600;line-height:1.4;min-height:44px;cursor:pointer}.crm-review-box .crm-button{background:#ff963f!important;color:#151515!important;border:1px solid #ff963f!important;padding:12px 16px}
 .crm-review-box .crm-outline{background:#25252b!important;color:#ffb47c!important;border:1px solid #a87551!important}.crm-review-box button:disabled{opacity:.6;cursor:wait}
+.crm-brand-mark{position:relative;width:42px;height:42px;min-width:42px;border-radius:10px;display:grid;place-items:center;overflow:hidden;border:1px solid #4b4540;color:#fff;font-size:12px;font-weight:800;letter-spacing:.02em}
+.crm-brand-mark img{position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;object-fit:contain;padding:5px;background:#f7f7f5;border-radius:9px}
+.pf-card-head{display:flex;align-items:flex-start;gap:12px}.pf-card-head>div{min-width:0}.pro-head{align-items:center}
+.crm-logo-help{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin:-5px 0 12px}
+.crm-logo-input{margin-bottom:8px!important}
+@media(max-width:360px){.crm-review-actions{grid-template-columns:1fr}.crm-review-actions button{white-space:normal;height:auto!important;min-height:40px!important}}
 .crm-review-box details{margin-top:14px}.crm-review-box summary{padding:12px 0;color:#f4f4f5}.crm-review-form{display:grid;gap:14px;background:#232329;border:1px solid #4c4c55;border-radius:12px;padding:16px;margin:14px 0}
 .crm-review-form label{font-size:1rem;color:#f4f4f5}.crm-review-form textarea{box-sizing:border-box;width:100%;min-height:110px;resize:vertical;background:#18181c!important;color:#f5f5f5!important;border:1px solid #74747f;border-radius:8px;padding:12px;font:inherit;touch-action:manipulation}
 .crm-rating-row{display:flex;gap:8px;flex-wrap:wrap}.crm-rating-row button{width:46px;height:46px;background:#24242b;color:#ffd0aa;border:1px solid #9c765b;border-radius:8px;font-size:1rem}.crm-rating-row button[aria-pressed=true]{background:#6b391b!important;color:white;border:2px solid #ff9b54}
 .crm-review-status{margin:0;color:#ffceaa;white-space:pre-wrap;overflow-wrap:anywhere}.crm-review-hint{font-size:.875rem!important;color:#b9bfca!important}.crm-review-item{padding:12px 0;border-top:1px solid #46464e}.crm-review-item p{white-space:pre-wrap;margin:8px 0}
 body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
-@media(max-width:700px){.crm-review-actions{flex-direction:column;align-items:stretch}.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
+@media(max-width:700px){.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 <link rel="stylesheet" href="/assets/workspace.css?v=20260921-3">
 <style id="crm-profile-directory-v3">
@@ -3005,6 +3011,9 @@ crmShowSurveyReminder();
       <textarea id="ag_descricao" class="ev-ifield" rows="2" placeholder="O que a agência faz..." maxlength="300" style="margin-bottom:12px;resize:none;"></textarea>
       <label class="ev-ilabel" for="ag_site">Site</label>
       <input id="ag_site" type="url" class="ev-ifield" placeholder="https://" maxlength="300" style="margin-bottom:12px;">
+      <label class="ev-ilabel" for="ag_logo">Logo da agência/consultoria (opcional)</label>
+      <input id="ag_logo" type="file" class="ev-ifield crm-logo-input" accept="image/jpeg,image/png,image/webp">
+      <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. O logo só aparece após a aprovação do cadastro.</small>
       <label class="ev-ilabel" for="ag_autor">Seu nome (quem está sugerindo)</label>
       <input id="ag_autor" type="text" class="ev-ifield" placeholder="Ex: Jaqueline Amaro" maxlength="80" style="margin-bottom:20px;">
       <div style="display:flex;gap:10px;">
@@ -5784,6 +5793,40 @@ function populateAgenciaFilters(){
   });
 }
 
+const CRM_COMMUNITY_LOGO_BUCKET='community-logos';
+function crmCommunityLogoPath(path){
+ const value=String(path||'');
+ return /^[0-9a-f-]{36}\/(agency|platform)\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(value)?value:'';
+}
+function crmCommunityLogoUrl(path){
+ const safe=crmCommunityLogoPath(path);if(!safe)return '';
+ return 'https://rwkbpafpniwzvlkfngag.supabase.co/storage/v1/object/public/'+CRM_COMMUNITY_LOGO_BUCKET+'/'+safe.split('/').map(encodeURIComponent).join('/');
+}
+function crmBrandMark(path,name){
+ const logo=crmCommunityLogoUrl(path),initials=escapeHtml(initialsFor(name||'?')),bg=avatarColorFor(name||'?');
+ return '<span class="crm-brand-mark" style="background:'+bg+'"><span>'+initials+'</span>'+(logo?'<img src="'+escapeHtml(logo)+'" alt="Logo de '+escapeHtml(name||'empresa')+'" loading="lazy" onerror="this.remove()">':'')+'</span>';
+}
+async function crmUploadCommunityLogo(input,kind){
+ const file=input?.files?.[0];if(!file)return null;
+ if(!CURRENT_USER?.id)throw Error('Entre novamente para enviar o logo.');
+ if(file.size<=0||file.size>2*1024*1024)throw Error('O logo deve ter até 2 MB.');
+ const allowed={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+ const ext=allowed[file.type];if(!ext)throw Error('Envie o logo em JPG, PNG ou WebP.');
+ const bytes=new Uint8Array(await file.slice(0,12).arrayBuffer());
+ const detected=(bytes[0]===255&&bytes[1]===216&&bytes[2]===255)?'image/jpeg':
+   (bytes[0]===137&&String.fromCharCode(...bytes.slice(1,4))==='PNG')?'image/png':
+   (String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP')?'image/webp':'';
+ if(detected!==file.type)throw Error('O arquivo selecionado não parece ser uma imagem válida.');
+ const path=CURRENT_USER.id+'/'+kind+'/'+crypto.randomUUID()+'.'+ext;
+ const {error}=await authSb.storage.from(CRM_COMMUNITY_LOGO_BUCKET).upload(path,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+ if(error)throw Error('Não foi possível enviar o logo agora. Tente novamente.');
+ return path;
+}
+async function crmRemoveCommunityLogo(path){
+ if(!path||!authSb)return;
+ try{await authSb.storage.from(CRM_COMMUNITY_LOGO_BUCKET).remove([path]);}catch{}
+}
+
 async function submitAgencia(){
  if(!crmSubmissionGate())return;
   if(!await crmRequireSession('Entre para sugerir uma agência. As sugestões passam por revisão.'))return;
@@ -5803,17 +5846,21 @@ async function submitAgencia(){
   };
   const btn = document.getElementById('ag_submit');
   btn.disabled = true; btn.textContent = 'Enviando...';
+  let logoPath=null;
   try{
+    logoPath=await crmUploadCommunityLogo(document.getElementById('ag_logo'),'agency');
+    agencia.logo_path=logoPath;
     const {error} = await crmSecureInsert('agencias_sugeridas',agencia);
     if(error) throw error;
     closeAgenciaModal();
     evToastMsg('Agência enviada para aprovação.','');
     btn.disabled=false; btn.textContent='Enviar para aprovação';
     statusEl.className=''; statusEl.textContent='';
-    ['ag_nome','ag_descricao','ag_site','ag_autor'].forEach(id=>document.getElementById(id).value='');
+    ['ag_nome','ag_descricao','ag_site','ag_autor','ag_logo'].forEach(id=>document.getElementById(id).value='');
   }catch(e) {
+    if(logoPath)await crmRemoveCommunityLogo(logoPath);
     console.error(e);
-    statusEl.className='form-status err'; statusEl.textContent=crmSubmissionError(e);
+    statusEl.className='form-status err'; statusEl.textContent=e?.message||crmSubmissionError(e);
     btn.disabled=false; btn.textContent='Enviar para aprovação';
   }
 }
@@ -5916,7 +5963,7 @@ function starRowHtml(nome){
 
 function agenciaCardHtml(a){
  const reviews=(window.AG_REVIEWS||[]).filter(r=>r.agencia_nome===a.nome);
- return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar" style="background:'+avatarColorFor(a.nome)+'">'+escapeHtml(initialsFor(a.nome))+'</div><div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
+ return '<article class="pro-card"><div class="pro-head">'+crmBrandMark(a.logo_path,a.nome)+'<div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
 }
 function renderAgencias(){
   const q = (document.getElementById('agenciaSearchText').value||'').toLowerCase().trim();
@@ -6767,14 +6814,14 @@ async function loadPlataformas(){
     return;
   }
   return Promise.all([
-    crmReadCommunityRows(pfSb,'plataformas_sugeridas','id,nome,categoria,descricao,site,created_at',true).then(data=>({data})).catch(error=>({error})),
+    crmReadCommunityRows(pfSb,'plataformas_sugeridas','id,nome,categoria,descricao,site,logo_path,created_at',true).then(data=>({data})).catch(error=>({error})),
     crmReadCommunityRows(pfSb,'avaliacoes_plataformas','id,plataforma_nome,nota,comentario,avaliador,created_at').then(data=>({data})).catch(error=>({error})),
     loadRecomendacoes(pfSb),
   ]).then(([pfRes, avRes, recReady])=>{
     if(pfRes.error) console.warn('Sugestões indisponíveis',pfRes.error);
     if(avRes.error) console.warn('Avaliações indisponíveis',avRes.error);
     const sugeridas = (pfRes.data||[]).map(t=>({
-      name: t.nome, cat: t.categoria || 'CRM', desc:t.descricao||'', tags: [], site: t.site || t.url || '', isSuggested:true
+      name: t.nome, cat: t.categoria || 'CRM', desc:t.descricao||'', tags: [], site: t.site || t.url || '', logo_path:t.logo_path||null, isSuggested:true
     }));
     // Evita duplicar se alguém sugerir um nome que já está na lista inicial (comparação sem acentuação/maiúsculas).
     const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
@@ -6841,7 +6888,7 @@ function renderPfGrid(){
   }
   const gridEl = document.getElementById('pfGrid');
   if(!list.length){ gridEl.innerHTML = '<div class="empty-state">Nenhuma ferramenta nesta categoria. <button onclick="pfFilterBy(\'Todos\')">Ver todas as ferramentas</button></div>'; return; }
-  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head"><div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3></div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
+  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head">'+crmBrandMark(t.logo_path,t.name)+'<div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3></div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
 }
 
 // ============ PLATAFORMAS RECOMENDADAS - VOTAÇÃO E REVIEWS (Supabase) ============
@@ -6914,6 +6961,9 @@ function pfOpenSuggestModal(){
         <input id="pfSuggestCat" type="text" class="ev-ifield" placeholder="Ex: CRM, IA, Automação..." maxlength="60" style="margin-bottom:12px;">
         <label class="ev-ilabel" for="pfSuggestLink">Link do site (opcional)</label>
         <input id="pfSuggestLink" type="url" class="ev-ifield" placeholder="https://..." maxlength="200" style="margin-bottom:12px;">
+        <label class="ev-ilabel" for="pfSuggestLogo">Logo da plataforma (opcional)</label>
+        <input id="pfSuggestLogo" type="file" class="ev-ifield crm-logo-input" accept="image/jpeg,image/png,image/webp">
+        <small class="crm-logo-help">JPG, PNG ou WebP · até 2 MB. O logo só aparece após a aprovação.</small>
         <label class="ev-ilabel">Sua avaliação (1 a 5) *</label>
         <div id="pfStarRating" style="display:flex;gap:6px;margin-bottom:16px;" data-rating="0">
           <button type="button" class="pf-star" data-value="1" onclick="pfSetRating(1)" aria-label="Nota 1 de 5" style="background:none;border:none;cursor:pointer;font-size:26px;line-height:1;color:#cbd5e1;padding:0;">1</button>
@@ -6965,13 +7015,17 @@ async function pfSubmitSuggest(){
 
   const btn = document.getElementById('pfSuggestSubmitBtn');
   btn.disabled = true; btn.textContent = 'Enviando...';
+  let logoPath=null;
   try{
+    const session=await crmRequireSession('Entre para sugerir uma plataforma.');if(!session)throw Error('Entre novamente para continuar.');
+    logoPath=await crmUploadCommunityLogo(document.getElementById('pfSuggestLogo'),'platform');
     const {error: errTool} = await crmSecureInsert('plataformas_sugeridas',{
       nome: name,
       categoria: document.getElementById('pfSuggestCat').value.trim() || 'CRM',
       site: document.getElementById('pfSuggestLink').value.trim(),
       descricao: document.getElementById('pfSuggestReason').value.trim(),
       sugerido_por: (typeof evUName!=='undefined' && evUName) || '',
+      logo_path: logoPath,
       aprovado: false, // aguarda aprovação da Jaqueline antes de aparecer na vitrine
     });
     if(errTool) throw errTool;
@@ -6980,8 +7034,9 @@ async function pfSubmitSuggest(){
     evToastMsg('Sugestão de "'+name+'" enviada! Jaque do CRM vai revisar. Aprovadas aparecem na vitrine com oportunidades de parcerias em mídia e divulgação.', __ICON_0__);
     loadPlataformas();
   }catch(e) {
+    if(logoPath)await crmRemoveCommunityLogo(logoPath);
     console.error(e);
-    statusEl.className='form-status err'; statusEl.textContent=crmSubmissionError(e);
+    statusEl.className='form-status err'; statusEl.textContent=e?.message||crmSubmissionError(e);
     btn.disabled=false; btn.textContent='Sugerir';
   }
 }
