@@ -49,6 +49,7 @@
     }
   };
   window.addEventListener('pagehide',()=>{try{const t=window.posthogTracker;if(t?.lastSection&&t?.sectionStartedAt){t.track('section_engagement',{section:t.lastSection,next_section:'exit',duration_seconds:Math.max(0,Math.round((Date.now()-t.sectionStartedAt)/1000))});t.sectionStartedAt=Date.now();}}catch{}});
+  document.addEventListener('click',e=>{try{const el=e.target?.closest?.('a,button,[role="button"]');if(!el)return;const label=(el.innerText||el.getAttribute('aria-label')||el.title||'').trim().replace(/\s+/g,' ').slice(0,100);if(!label)return;window.posthogTracker?.track('journey_action',{section:window.posthogTracker?.lastSection||'inicio',action:label,destination:el.getAttribute('href')||''});}catch{}},true);
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
