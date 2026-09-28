@@ -7869,57 +7869,35 @@ async function loadMembroPanel(){
 }
 
 
-function crmMatchTokens(text){
- const stop=new Set(['para','com','uma','das','dos','que','por','como','mais','ser','ter','nos','nas','the','and','from','this','vaga','anos','experiencia','experiência','conhecimento','desejavel','desejável','requisito','requisitos']);
- return [...new Set(String(text||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').match(/[a-z0-9+#.]{3,}/g)||[])].filter(x=>!stop.has(x));
-}
-function crmRequirementClass(description,term){
- const d=String(description||''),i=d.toLowerCase().indexOf(term.toLowerCase());if(i<0)return 'identificado';
- const around=d.slice(Math.max(0,i-100),i+term.length+100).toLowerCase();
- if(/obrigat|requisit|necess[aá]ri|must|required/.test(around))return 'obrigatório';
- if(/desej|prefer|nice to have|diferencial/.test(around))return 'desejável';
- return 'identificado';
-}
 function runMembroMatch(){
- const matchEl=document.getElementById('membroVagasMatch');if(!matchEl)return;
- const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
- const confirmed=skills.filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name);
- const absent=skills.filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name);
- if(!p||(!confirmed.length&&!p.professional_summary)){matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Complete seu <button onclick="crmOpenMatchResume()" style="border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0">Currículo para Match</button> para receber recomendações explicáveis.</div>';return;}
- if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
- const seniority=(p.seniority||'').toLowerCase(),summary=(p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
- const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
- const scored=VAGAS.map(v=>{
-  const desc=String(v.description||''),text=((v.title||'')+' '+desc+' '+(v.location||'')+' '+(v.nivel||'')+' '+(v.modelo||'')+' '+(v.tipo_contrato||'')+' '+(v.crm_utilizado||'')).toLowerCase();
-  let score=0;const strengths=[],gaps=[],unknown=[];
-  const skillHits=confirmed.filter(s=>text.includes(s.toLowerCase()));
-  skillHits.forEach(s=>strengths.push(s+' · '+crmRequirementClass(desc,s)));
-  const explicitGaps=absent.filter(s=>text.includes(s.toLowerCase()));
-  explicitGaps.forEach(s=>gaps.push(s+' · declarado como não possui'));
-  if(confirmed.length)score+=(skillHits.length/confirmed.length)*40;
-  let seniorityOk=false;if(seniority){const kws=(srMap[seniority]||seniority).split(',');seniorityOk=kws.some(k=>text.includes(k.trim()));if(seniorityOk){score+=18;strengths.push('Senioridade compatível · '+p.seniority);}}
-  const roleHit=roles.find(x=>text.includes(x.toLowerCase()));if(roleHit){score+=14;strengths.push('Cargo/área de interesse · '+roleHit);}
-  const locHit=locations.find(x=>text.includes(x.toLowerCase()));if(locHit){score+=10;strengths.push('Localização · '+locHit);}
-  const modelHit=models.find(x=>text.includes(x.toLowerCase()));if(modelHit){score+=8;strengths.push('Modelo de trabalho · '+modelHit);}
-  const typeHit=types.find(x=>text.includes(x.toLowerCase()));if(typeHit){score+=5;strengths.push('Contratação · '+typeHit);}
-  const words=crmMatchTokens(summary),hits=words.filter(w=>text.includes(w));if(words.length){score+=(Math.min(hits.length,5)/5)*5;}
-  score=Math.max(0,score-explicitGaps.length*10);
-  const catalog=['sql','salesforce','power bi','tableau','hubspot','braze','rd station','marketing cloud','excel','python','ga4','google analytics','looker','databricks','bigquery','segment','clevertap','insider','dynamics','sap','oracle','ingles','inglês','espanhol'];
-  const declared=[...confirmed,...absent].map(x=>x.toLowerCase());
-  catalog.filter(term=>text.includes(term)&&!declared.some(d=>d.includes(term)||term.includes(d))).slice(0,5).forEach(term=>unknown.push(term+' · '+crmRequirementClass(desc,term)));
-  if(!strengths.length)strengths.push('Contexto profissional parcialmente compatível');
-  return {...v,matchScore:Math.min(Math.round(score),98),strengths,gaps,unknown};
- }).filter(v=>v.matchScore>=10).sort((a,b)=>b.matchScore-a.matchScore).slice(0,10);
- if(!scored.length){matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Nenhuma vaga compatível encontrada agora. Informações não preenchidas continuam como <strong>não informado</strong>, nunca como falta de competência.</div>';return;}
- matchEl.innerHTML=scored.map(v=>`<article style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><div style="font-size:14px;font-weight:750;color:var(--text)">${escapeHtml(v.title)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${escapeHtml(v.company||'')}${v.location?' · '+escapeHtml(v.location):''}</div></div><div style="background:#f97316;color:#111;border-radius:20px;padding:5px 11px;font-size:11px;font-weight:800;white-space:nowrap">${v.matchScore}% compatibilidade</div></div>
-  <div style="display:grid;gap:7px;margin-top:13px;font-size:11.5px;line-height:1.5">
-   <div><strong style="color:#22c55e">✓ O que fortalece seu Match</strong><div style="margin-top:3px;color:var(--text)">${v.strengths.map(x=>'• '+escapeHtml(x)).join('<br>')}</div></div>
-   ${v.gaps.length?'<div><strong style="color:#fb7185">✕ O que reduz seu Match</strong><div style="margin-top:3px;color:var(--text)">'+v.gaps.map(x=>'• '+escapeHtml(x)).join('<br>')+'</div></div>':''}
-   ${v.unknown.length?'<div style="padding:10px 12px;border:1px solid rgba(245,158,11,.28);border-radius:9px;background:rgba(245,158,11,.06)"><strong style="color:#f59e0b">△ Precisamos saber mais sobre você</strong><div style="margin-top:4px;color:var(--muted)">A vaga menciona estes requisitos, mas eles ainda não aparecem no seu Currículo para Match:</div><div style="margin-top:5px;color:var(--text)">'+v.unknown.map(x=>'• '+escapeHtml(x)).join('<br>')+'</div><button type="button" onclick="crmOpenMatchResume()" style="margin-top:7px;border:0;background:none;padding:0;color:#f97316;font:700 11px inherit;cursor:pointer">Atualizar meu currículo →</button></div>':''}
-  </div>
-  <div style="display:flex;gap:8px;align-items:center;margin-top:11px"><button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted)">Salvar</button><a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px">Ver vaga</a></div>
- </article>`).join('');
+  const matchEl=document.getElementById('membroVagasMatch');if(!matchEl)return;
+  const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
+  const confirmed=skills.filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name);
+  const absent=skills.filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name);
+  if(!p||(!confirmed.length&&!p.professional_summary)){
+    matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Complete seu <button onclick="crmOpenMatchResume()" style="border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0">Currículo para Match</button> para receber recomendações mais precisas.</div>';return;
+  }
+  if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
+  const seniority=(p.seniority||'').toLowerCase(),summary=(p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[];
+  const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
+  const scored=VAGAS.map(v=>{
+    const text=((v.title||'')+' '+(v.description||'')+' '+(v.location||'')).toLowerCase();let score=0;
+    const strengths=confirmed.filter(s=>text.includes(s.toLowerCase()));
+    const explicitGaps=absent.filter(s=>text.includes(s.toLowerCase()));
+    if(confirmed.length)score+=(strengths.length/confirmed.length)*45;
+    if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))score+=20;}
+    if(roles.length&&roles.some(x=>text.includes(x.toLowerCase())))score+=15;
+    if(locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
+    const words=summary.split(/\s+/).filter(w=>w.length>5),hits=words.filter(w=>text.includes(w));if(words.length)score+=(Math.min(hits.length,5)/5)*10;
+    score=Math.max(0,score-explicitGaps.length*8);
+    return {...v,matchScore:Math.min(Math.round(score),98),strengths,explicitGaps};
+  }).filter(v=>v.matchScore>=15).sort((a,b)=>b.matchScore-a.matchScore).slice(0,10);
+  if(!scored.length){matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Nenhuma vaga compatível encontrada agora. Isso não significa falta de qualificação; pode haver informações ainda não declaradas no currículo.</div>';return;}
+  matchEl.innerHTML=scored.map(v=>`<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:6px;">
+   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div style="font-size:13px;font-weight:700;color:var(--text)">${escapeHtml(v.title)}</div><div style="font-size:11px;color:var(--muted)">${escapeHtml(v.company||'')}${v.location?' · '+escapeHtml(v.location):''}</div></div><div style="background:var(--text);color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">${v.matchScore}% compatibilidade</div></div>
+   <div style="margin-top:9px;font-size:11px;line-height:1.55"><strong>Pontos que fortalecem:</strong> ${escapeHtml(v.strengths.join(', ')||'senioridade, área e contexto profissional')}<br><strong>Pontos para avaliar:</strong> ${v.explicitGaps.length?escapeHtml(v.explicitGaps.join(', '))+' foram marcados por você como não possui':'requisitos não declarados permanecem como “não informado” e não são tratados como ausência'}</div>
+   <div style="display:flex;gap:8px;align-items:center;margin-top:9px"><button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted)">Salvar</button><a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px">Ver vaga</a></div>
+  </div>`).join('');
 }
 
 
