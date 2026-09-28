@@ -8338,10 +8338,10 @@ async function crmOpenMatchResume(){
    <label class="ev-ilabel" style="margin-top:12px">Competências e ferramentas que possui<textarea class="ev-ifield" name="skills" rows="3" placeholder="Salesforce, SQL, Power BI, RD Station...">${escapeHtml(confirmed)}</textarea><small style="color:var(--muted)">Separe por vírgulas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-    <label class="ev-ilabel">Cargos de interesse<input class="ev-ifield" name="roles" value="${escapeHtml((pref.target_roles||[]).join(', '))}" placeholder="CRM Manager, Coordenador de CRM"></label>
-    <label class="ev-ilabel">Localidades de interesse<input class="ev-ifield" name="locations" value="${escapeHtml((pref.preferred_locations||[]).join(', '))}" placeholder="São Paulo, Remoto"></label>
-    <label class="ev-ilabel">Modelo de trabalho<input class="ev-ifield" name="models" value="${escapeHtml((pref.work_models||[]).join(', '))}" placeholder="Remoto, Híbrido"></label>
-    <label class="ev-ilabel">Tipo de contratação<input class="ev-ifield" name="types" value="${escapeHtml((pref.employment_types||[]).join(', '))}" placeholder="CLT, PJ"></label>
+    <label class="ev-ilabel">Cargos/áreas de interesse<select class="ev-ifield" name="roles" multiple size="5" style="min-height:118px">${['CRM','Customer Experience (CX)','Customer Success (CS)','Growth','Lifecycle Marketing','Customer Insights','Marketing Automation','Product Marketing','Data / Analytics','RevOps'].map(x=>'<option value="'+x+'" '+((pref.target_roles||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Selecione um ou mais. No celular, toque nos itens desejados.</small></label>
+    <label class="ev-ilabel">Localidades de interesse<input class="ev-ifield" name="locations" value="${escapeHtml((pref.preferred_locations||[]).join(', '))}" placeholder="Ex.: São Paulo, Campinas"></label>
+    <label class="ev-ilabel">Modelo de trabalho<select class="ev-ifield" name="models" multiple size="3">${['Remoto','Híbrido','Presencial'].map(x=>'<option value="'+x+'" '+((pref.work_models||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Pode selecionar mais de um.</small></label>
+    <label class="ev-ilabel">Tipo de contratação<select class="ev-ifield" name="types" multiple size="4">${['CLT','PJ','Temporário','Freelancer'].map(x=>'<option value="'+x+'" '+((pref.employment_types||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Pode selecionar mais de um.</small></label>
     <label class="ev-ilabel">Pretensão mínima (R$)<input class="ev-ifield" name="salary" type="number" min="0" step="100" value="${escapeHtml(pref.salary_min??'')}"></label>
     <label class="ev-ilabel">Disponibilidade<input class="ev-ifield" name="availability" maxlength="100" value="${escapeHtml(p.availability||'')}" placeholder="Imediata, 30 dias..."></label>
    </div>
@@ -8355,14 +8355,14 @@ async function crmOpenMatchResume(){
  try{
    const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
    if(draft&&typeof draft==='object'){
-     for(const [name,value] of Object.entries(draft)){const field=form.elements.namedItem(name);if(field&&value!=null)field.value=value;}
+     for(const [name,value] of Object.entries(draft)){const fields=form.querySelectorAll('[name="'+name+'"]');if(!fields.length)continue;const field=fields[0];if(field.tagName==='SELECT'&&field.multiple&&Array.isArray(value)){Array.from(field.options).forEach(o=>o.selected=value.includes(o.value));}else if(value!=null)field.value=value;}
      const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Rascunho recuperado automaticamente.';
    }
  }catch(e){console.warn('match draft restore',e);}
  let draftTimer=null;
  const saveDraft=()=>{
    clearTimeout(draftTimer);draftTimer=setTimeout(()=>{
-     try{const data={};new FormData(form).forEach((value,key)=>data[key]=value);localStorage.setItem(draftKey,JSON.stringify(data));}catch(e){console.warn('match draft save',e);}
+     try{const data={};new FormData(form).forEach((value,key)=>{if(data[key]!==undefined)data[key]=Array.isArray(data[key])?[...data[key],value]:[data[key],value];else data[key]=value;});localStorage.setItem(draftKey,JSON.stringify(data));}catch(e){console.warn('match draft save',e);}
    },180);
  };
  form.addEventListener('input',saveDraft);form.addEventListener('change',saveDraft);
@@ -8381,7 +8381,8 @@ async function crmSaveMatchResume(ev){
  try{
   const fd=new FormData(form),uid=CURRENT_USER.id;
   const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,professional_summary:String(fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
-  const prefs={user_id:uid,target_roles:crmCsvList(fd.get('roles')),preferred_locations:crmCsvList(fd.get('locations')),work_models:crmCsvList(fd.get('models')),employment_types:crmCsvList(fd.get('types')),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
+  const selected=name=>Array.from(form.querySelectorAll('[name="'+name+'"] option:checked')).map(o=>o.value).filter(Boolean);
+  const prefs={user_id:uid,target_roles:selected('roles'),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
   const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
   profile.completeness=crmMatchCompleteness(profile,yes,prefs);
   let res=await authSb.from('match_profiles').upsert(profile,{onConflict:'user_id'});if(res.error)throw res.error;
