@@ -7869,6 +7869,14 @@ async function loadMembroPanel(){
 }
 
 
+async function crmSetMatchSkill(skill,status){
+ if(!CURRENT_USER||!authSb)return;
+ const allowed=['confirmed','does_not_have'];if(!allowed.includes(status))return;
+ const clean=String(skill||'').trim();if(!clean)return;
+ const res=await authSb.from('match_skills').upsert({user_id:CURRENT_USER.id,skill_name:clean,evidence_status:status,updated_at:new Date().toISOString()},{onConflict:'user_id,skill_name'});
+ if(res.error){console.error('match skill update',res.error);alert('Não foi possível atualizar esta competência.');return;}
+ await crmLoadMatchResume();runMembroMatch();
+}
 function runMembroMatch(){
   const matchEl=document.getElementById('membroVagasMatch');if(!matchEl)return;
   const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
@@ -7906,10 +7914,13 @@ function runMembroMatch(){
    <div style="display:grid;gap:8px;margin-top:12px;font-size:11.5px;line-height:1.5">
     <div><strong style="color:#22c55e">✓ O que fortalece seu Match</strong><div style="margin-top:4px;color:var(--text)">${(v.strengthLabels.length?v.strengthLabels:['Contexto profissional parcialmente compatível']).map(x=>'• '+escapeHtml(x)).join('<br>')}</div></div>
     ${v.explicitGaps.length?'<div><strong style="color:#fb7185">✕ O que reduz seu Match</strong><div style="margin-top:4px;color:var(--text)">'+v.explicitGaps.map(x=>'• '+escapeHtml(x)+' · você informou que não possui').join('<br>')+'</div></div>':''}
-    ${v.unknown.length?'<div style="padding:10px 12px;border:1px solid rgba(245,158,11,.28);border-radius:9px;background:rgba(245,158,11,.06)"><strong style="color:#f59e0b">↗ O que pode aumentar seu Match</strong><div style="margin-top:4px;color:var(--muted)">A vaga menciona requisitos que ainda não estão confirmados no seu Currículo para Match:</div><div style="margin-top:5px;color:var(--text)">'+v.unknown.map(x=>'• '+escapeHtml(x)).join('<br>')+'</div><button type="button" onclick="crmOpenMatchResume()" style="margin-top:8px;border:0;background:none;padding:0;color:#f97316;font:700 11px inherit;cursor:pointer">Completar meu currículo →</button></div>':''}
+    ${v.unknown.length?'<div style="padding:10px 12px;border:1px solid rgba(245,158,11,.28);border-radius:9px;background:rgba(245,158,11,.06)"><strong style="color:#f59e0b">↗ O que pode aumentar seu Match</strong><div style="margin-top:4px;color:var(--muted)">A vaga menciona requisitos que ainda não estão confirmados no seu Currículo para Match:</div><div style="display:grid;gap:6px;margin-top:7px">'+v.unknown.map(x=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.03)"><span style="color:var(--text)">• '+escapeHtml(x)+'</span><span style="display:flex;gap:5px"><button type="button" class="crm-match-skill-action" data-skill="'+escapeHtml(x)+'" data-status="confirmed" style="border:1px solid rgba(34,197,94,.45);background:rgba(34,197,94,.1);color:#4ade80;border-radius:6px;padding:4px 7px;font:700 10px inherit;cursor:pointer">Tenho</button><button type="button" class="crm-match-skill-action" data-skill="'+escapeHtml(x)+'" data-status="does_not_have" style="border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;padding:4px 7px;font:600 10px inherit;cursor:pointer">Não tenho</button></span></div>').join('')+'</div><button type="button" onclick="crmOpenMatchResume()" style="margin-top:8px;border:0;background:none;padding:0;color:#f97316;font:700 11px inherit;cursor:pointer">Completar meu currículo →</button></div>':''}
    </div>
    <div style="display:flex;gap:8px;align-items:center;margin-top:9px"><button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted)">Salvar</button><a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px">Ver vaga</a></div>
   </div>`).join('');
+  matchEl.querySelectorAll('.crm-match-skill-action').forEach(btn=>{
+    btn.addEventListener('click',()=>crmSetMatchSkill(btn.dataset.skill,btn.dataset.status));
+  });
 }
 
 
