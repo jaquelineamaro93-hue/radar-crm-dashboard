@@ -7895,8 +7895,9 @@ function runMembroMatch(){
     if(confirmed.length)score+=(strengths.length/confirmed.length)*45;
     if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))score+=20;}
     if(roles.length&&roles.some(x=>text.includes(x.toLowerCase())))score+=15;
-    if(locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
     const jobModel=String(v.modelo||'').toLowerCase(),jobType=String(v.tipo_contrato||'').toLowerCase();
+    const prelimRemote=jobModel.includes('remoto')||/\bremot[oa]\b/.test(text);
+    if(!prelimRemote&&locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
     const modelHit=models.find(x=>jobModel.includes(x.toLowerCase())||text.includes(x.toLowerCase()));if(modelHit)score+=8;
     const typeHit=types.find(x=>jobType.includes(x.toLowerCase())||text.includes(x.toLowerCase()));if(typeHit)score+=5;
     const words=summary.split(/\s+/).filter(w=>w.length>5),hits=words.filter(w=>text.includes(w));if(words.length)score+=(Math.min(hits.length,5)/5)*10;
@@ -7905,7 +7906,12 @@ function runMembroMatch(){
     if(strengths.length)strengthLabels.push(...strengths.map(s=>'Competência · '+s));
     if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))strengthLabels.push('Senioridade · '+p.seniority);}
     const roleHit=roles.find(x=>text.includes(x.toLowerCase()));if(roleHit)strengthLabels.push('Cargo/área de interesse · '+roleHit);
-    const locationHit=locations.find(x=>text.includes(x.toLowerCase()));if(locationHit)strengthLabels.push('Localização · '+locationHit);
+    const isRemote=jobModel.includes('remoto')||/\bremot[oa]\b/.test(text);
+    const regionText=String(v.regiao||v.location||'').trim();
+    const remoteScope=(()=>{const hay=(regionText+' '+String(v.description||'')).toLowerCase();if(/\bbrasil\b|\bbrazil\b/.test(hay))return 'Brasil';if(/\blatam\b|américa latina|america latina/.test(hay))return 'LATAM';if(/worldwide|global|qualquer lugar|anywhere/.test(hay))return 'Global';return '';})();
+    const locationHit=isRemote?null:locations.find(x=>text.includes(x.toLowerCase()));
+    if(locationHit)strengthLabels.push('Localização · '+locationHit);
+    if(isRemote&&remoteScope)strengthLabels.push('Abrangência do remoto · '+remoteScope);
     if(modelHit)strengthLabels.push('Modelo de trabalho · '+modelHit);
     if(typeHit)strengthLabels.push('Contratação · '+typeHit);
     const declared=[...confirmed,...absent].map(x=>x.toLowerCase());
@@ -7913,7 +7919,8 @@ function runMembroMatch(){
     const unknown=requirementCatalog.filter(term=>text.includes(term.toLowerCase())&&!declared.some(d=>d.includes(term.toLowerCase())||term.toLowerCase().includes(d))).slice(0,5);
     const missing=[];
     if(!roleHit&&roles.length)missing.push('Cargo/área · a vaga não corresponde aos cargos/áreas que você selecionou');
-    if(!locationHit&&locations.length&&v.location)missing.push('Localização · '+String(v.location)+' não corresponde às localidades selecionadas');
+    if(!isRemote&&!locationHit&&locations.length&&v.location)missing.push('Localização · '+String(v.location)+' não corresponde às localidades selecionadas');
+    if(isRemote&&!remoteScope)missing.push('Abrangência do remoto · a fonte da vaga não informa se é Brasil, LATAM ou global; isso não reduz seu Match');
     if(!modelHit&&models.length&&(jobModel||/remoto|híbrido|hibrido|presencial/.test(text)))missing.push('Modelo de trabalho · não corresponde às suas preferências selecionadas');
     if(!typeHit&&types.length&&jobType)missing.push('Contratação · '+String(v.tipo_contrato)+' não corresponde aos tipos selecionados');
     if(explicitGaps.length)missing.push(...explicitGaps.map(x=>'Competência · '+x+' — você informou que não possui'));
