@@ -8357,10 +8357,10 @@ async function crmOpenMatchResume(){
    <label class="ev-ilabel" style="margin-top:12px">Competências e ferramentas que possui<textarea class="ev-ifield" name="skills" rows="3" placeholder="Salesforce, SQL, Power BI, RD Station...">${escapeHtml(confirmed)}</textarea><small style="color:var(--muted)">Separe por vírgulas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-    <label class="ev-ilabel">Cargos/áreas de interesse<select class="ev-ifield" name="roles" multiple size="5" style="min-height:118px">${['CRM','Customer Experience (CX)','Customer Success (CS)','Growth','Lifecycle Marketing','Customer Insights','Marketing Automation','Product Marketing','Data / Analytics','RevOps'].map(x=>'<option value="'+x+'" '+((pref.target_roles||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Selecione um ou mais. No celular, toque nos itens desejados.</small></label>
+    <div class="ev-ilabel">Cargos/áreas de interesse<div class="crm-match-chip-group" data-name="roles" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['CRM','Customer Experience (CX)','Customer Success (CS)','Growth','Lifecycle Marketing','Customer Insights','Marketing Automation','Product Marketing','Data / Analytics','RevOps'].map(x=>'<button type="button" class="crm-match-chip'+((pref.target_roles||[]).includes(x)?' is-selected':'')+'" data-value="'+escapeHtml(x)+'" aria-pressed="'+((pref.target_roles||[]).includes(x)?'true':'false')+'">'+escapeHtml(x)+'</button>').join('')}</div><small style="color:var(--muted)">Toque para marcar ou desmarcar. Você pode escolher vários.</small></div>
     <label class="ev-ilabel">Localidades de interesse<input class="ev-ifield" name="locations" value="${escapeHtml((pref.preferred_locations||[]).join(', '))}" placeholder="Ex.: São Paulo, Campinas"></label>
-    <label class="ev-ilabel">Modelo de trabalho<select class="ev-ifield" name="models" multiple size="3">${['Remoto','Híbrido','Presencial'].map(x=>'<option value="'+x+'" '+((pref.work_models||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Pode selecionar mais de um.</small></label>
-    <label class="ev-ilabel">Tipo de contratação<select class="ev-ifield" name="types" multiple size="4">${['CLT','PJ','Temporário','Freelancer'].map(x=>'<option value="'+x+'" '+((pref.employment_types||[]).includes(x)?'selected':'')+'>'+x+'</option>').join('')}</select><small style="color:var(--muted)">Pode selecionar mais de um.</small></label>
+    <div class="ev-ilabel">Modelo de trabalho<div class="crm-match-chip-group" data-name="models" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['Remoto','Híbrido','Presencial'].map(x=>'<button type="button" class="crm-match-chip'+((pref.work_models||[]).includes(x)?' is-selected':'')+'" data-value="'+x+'" aria-pressed="'+((pref.work_models||[]).includes(x)?'true':'false')+'">'+x+'</button>').join('')}</div><small style="color:var(--muted)">Pode selecionar mais de um.</small></div>
+    <div class="ev-ilabel">Tipo de contratação<div class="crm-match-chip-group" data-name="types" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['CLT','PJ','Temporário','Freelancer'].map(x=>'<button type="button" class="crm-match-chip'+((pref.employment_types||[]).includes(x)?' is-selected':'')+'" data-value="'+x+'" aria-pressed="'+((pref.employment_types||[]).includes(x)?'true':'false')+'">'+x+'</button>').join('')}</div><small style="color:var(--muted)">Pode selecionar mais de um.</small></div>
     <label class="ev-ilabel">Pretensão mínima (R$)<input class="ev-ifield" name="salary" type="number" min="0" step="100" value="${escapeHtml(pref.salary_min??'')}"></label>
     <label class="ev-ilabel">Disponibilidade<input class="ev-ifield" name="availability" maxlength="100" value="${escapeHtml(p.availability||'')}" placeholder="Imediata, 30 dias..."></label>
    </div>
@@ -8369,19 +8369,21 @@ async function crmOpenMatchResume(){
    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button type="button" data-close class="crm-button crm-outline">Cancelar</button><button type="submit" class="crm-button">Salvar currículo</button></div>
   </form></div>`;
  document.body.append(overlay);
+ if(!document.getElementById('crmMatchChipStyle')){const st=document.createElement('style');st.id='crmMatchChipStyle';st.textContent='.crm-match-chip{border:1px solid var(--line);background:var(--panel-2);color:var(--muted);border-radius:999px;padding:8px 11px;font:600 11px inherit;cursor:pointer}.crm-match-chip.is-selected{background:#f97316;color:#111;border-color:#fb923c}.crm-match-chip:focus-visible{outline:2px solid #fb923c;outline-offset:2px}';document.head.appendChild(st);}
  const form=overlay.querySelector('form');
+ form.querySelectorAll('.crm-match-chip').forEach(btn=>btn.addEventListener('click',()=>{btn.classList.toggle('is-selected');btn.setAttribute('aria-pressed',btn.classList.contains('is-selected')?'true':'false');form.dispatchEvent(new Event('change',{bubbles:true}));}));
  const draftKey='crm_match_resume_draft_'+CURRENT_USER.id;
  try{
    const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
    if(draft&&typeof draft==='object'){
-     for(const [name,value] of Object.entries(draft)){const fields=form.querySelectorAll('[name="'+name+'"]');if(!fields.length)continue;const field=fields[0];if(field.tagName==='SELECT'&&field.multiple&&Array.isArray(value)){Array.from(field.options).forEach(o=>o.selected=value.includes(o.value));}else if(value!=null)field.value=value;}
+     for(const [name,value] of Object.entries(draft)){const group=form.querySelector('.crm-match-chip-group[data-name="'+name+'"]');if(group&&Array.isArray(value)){group.querySelectorAll('.crm-match-chip').forEach(b=>{const on=value.includes(b.dataset.value);b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',on?'true':'false');});continue;}const field=form.elements.namedItem(name);if(field&&value!=null)field.value=value;}
      const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Rascunho recuperado automaticamente.';
    }
  }catch(e){console.warn('match draft restore',e);}
  let draftTimer=null;
  const saveDraft=()=>{
    clearTimeout(draftTimer);draftTimer=setTimeout(()=>{
-     try{const data={};new FormData(form).forEach((value,key)=>{if(data[key]!==undefined)data[key]=Array.isArray(data[key])?[...data[key],value]:[data[key],value];else data[key]=value;});localStorage.setItem(draftKey,JSON.stringify(data));}catch(e){console.warn('match draft save',e);}
+     try{const data={};new FormData(form).forEach((value,key)=>data[key]=value);form.querySelectorAll('.crm-match-chip-group').forEach(g=>data[g.dataset.name]=Array.from(g.querySelectorAll('.crm-match-chip.is-selected')).map(b=>b.dataset.value));localStorage.setItem(draftKey,JSON.stringify(data));}catch(e){console.warn('match draft save',e);}
    },180);
  };
  form.addEventListener('input',saveDraft);form.addEventListener('change',saveDraft);
@@ -8400,7 +8402,7 @@ async function crmSaveMatchResume(ev){
  try{
   const fd=new FormData(form),uid=CURRENT_USER.id;
   const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,professional_summary:String(fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
-  const selected=name=>Array.from(form.querySelectorAll('[name="'+name+'"] option:checked')).map(o=>o.value).filter(Boolean);
+  const selected=name=>Array.from(form.querySelectorAll('.crm-match-chip-group[data-name="'+name+'"] .crm-match-chip.is-selected')).map(b=>b.dataset.value).filter(Boolean);
   const prefs={user_id:uid,target_roles:selected('roles'),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
   const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
   profile.completeness=crmMatchCompleteness(profile,yes,prefs);
