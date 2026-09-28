@@ -7890,12 +7890,20 @@ function runMembroMatch(){
     if(locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
     const words=summary.split(/\s+/).filter(w=>w.length>5),hits=words.filter(w=>text.includes(w));if(words.length)score+=(Math.min(hits.length,5)/5)*10;
     score=Math.max(0,score-explicitGaps.length*8);
-    return {...v,matchScore:Math.min(Math.round(score),98),strengths,explicitGaps};
+    const strengthLabels=[];
+    if(strengths.length)strengthLabels.push(...strengths.map(s=>'Competência · '+s));
+    if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))strengthLabels.push('Senioridade · '+p.seniority);}
+    const roleHit=roles.find(x=>text.includes(x.toLowerCase()));if(roleHit)strengthLabels.push('Cargo/área de interesse · '+roleHit);
+    const locationHit=locations.find(x=>text.includes(x.toLowerCase()));if(locationHit)strengthLabels.push('Localização · '+locationHit);
+    return {...v,matchScore:Math.min(Math.round(score),98),strengths,explicitGaps,strengthLabels};
   }).filter(v=>v.matchScore>=15).sort((a,b)=>b.matchScore-a.matchScore).slice(0,10);
   if(!scored.length){matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Nenhuma vaga compatível encontrada agora. Isso não significa falta de qualificação; pode haver informações ainda não declaradas no currículo.</div>';return;}
   matchEl.innerHTML=scored.map(v=>`<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:6px;">
    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div style="font-size:13px;font-weight:700;color:var(--text)">${escapeHtml(v.title)}</div><div style="font-size:11px;color:var(--muted)">${escapeHtml(v.company||'')}${v.location?' · '+escapeHtml(v.location):''}</div></div><div style="background:#f97316;color:#111111;border:1px solid #fb923c;border-radius:20px;padding:5px 11px;font-size:11px;font-weight:800;white-space:nowrap;line-height:1.2">${v.matchScore}% compatibilidade</div></div>
-   <div style="margin-top:9px;font-size:11px;line-height:1.55"><strong>Pontos que fortalecem:</strong> ${escapeHtml(v.strengths.join(', ')||'senioridade, área e contexto profissional')}<br><strong>Pontos para avaliar:</strong> ${v.explicitGaps.length?escapeHtml(v.explicitGaps.join(', '))+' foram marcados por você como não possui':'requisitos não declarados permanecem como “não informado” e não são tratados como ausência'}</div>
+   <div style="display:grid;gap:8px;margin-top:12px;font-size:11.5px;line-height:1.5">
+    <div><strong style="color:#22c55e">✓ O que fortalece seu Match</strong><div style="margin-top:4px;color:var(--text)">${(v.strengthLabels.length?v.strengthLabels:['Contexto profissional parcialmente compatível']).map(x=>'• '+escapeHtml(x)).join('<br>')}</div></div>
+    ${v.explicitGaps.length?'<div><strong style="color:#fb7185">✕ O que reduz seu Match</strong><div style="margin-top:4px;color:var(--text)">'+v.explicitGaps.map(x=>'• '+escapeHtml(x)+' · você informou que não possui').join('<br>')+'</div></div>':''}
+   </div>
    <div style="display:flex;gap:8px;align-items:center;margin-top:9px"><button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted)">Salvar</button><a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px">Ver vaga</a></div>
   </div>`).join('');
 }
