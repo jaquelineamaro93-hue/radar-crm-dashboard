@@ -2781,7 +2781,16 @@ crmShowSurveyReminder();
         </div>
       </div>
     </section>
-  </div><div class="tab-page" id="subpage-vagas-salvas"><section><div class="section-head"><h2>Vagas salvas &amp; Match IA</h2></div><p class="section-desc">Suas oportunidades e recomendações com base no perfil.</p><div id="crmSavedSlot"><div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+  </div><div class="tab-page" id="subpage-vagas-salvas"><section><div class="section-head"><h2>Seu Match profissional</h2></div><p class="section-desc">Seu perfil público continua separado. Aqui ficam, de forma privada, os dados profissionais usados para comparar você com as vagas.</p>
+<div id="crmMatchResumeCard" style="background:linear-gradient(135deg,#fff,#faf9f0);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:20px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;">
+  <div style="min-width:240px;flex:1;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Currículo para Match · privado</div>
+    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:5px;">Complete seu currículo profissional</div>
+    <div id="crmMatchResumeStatus" style="font-size:13px;color:var(--muted);line-height:1.5;">Carregando informações do Match...</div>
+  </div>
+  <button type="button" onclick="crmOpenMatchResume()" style="background:var(--text);color:#fffff3;border:0;border-radius:8px;padding:10px 16px;font:600 13px inherit;cursor:pointer;">Editar currículo</button>
+</div>
+<div id="crmSavedSlot"><div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
 
         <!-- Coluna esquerda: Vagas recomendadas -->
         <div>
@@ -7854,67 +7863,41 @@ async function loadMembroPanel(){
     }
   }catch(e) { salvEl.innerHTML = 'Erro ao carregar.'; }
 
+  await crmLoadMatchResume();
   const matchEl=document.getElementById('membroVagasMatch');
-  if(matchEl&&!matchEl.textContent.trim())matchEl.textContent='Seu perfil está pronto para comparação. Clique em Buscar Match para consultar as vagas compatíveis.';
+  if(matchEl&&!matchEl.textContent.trim())matchEl.textContent='Complete seu Currículo para Match e clique em Buscar Match para consultar as vagas compatíveis.';
 }
 
 
 function runMembroMatch(){
-  const matchEl = document.getElementById('membroVagasMatch');
-  if(!matchEl) return;
-  if(!CURRENT_PROFILE || !CURRENT_PROFILE.tools || !CURRENT_PROFILE.tools.length){
-    matchEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;"><a href="#" onclick="openProfileModal();return false;" style="color:var(--accent);">Complete seu perfil com ferramentas</a> para ver vagas recomendadas.</div>';
-    return;
+  const matchEl=document.getElementById('membroVagasMatch');if(!matchEl)return;
+  const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
+  const confirmed=skills.filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name);
+  const absent=skills.filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name);
+  if(!p||(!confirmed.length&&!p.professional_summary)){
+    matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Complete seu <button onclick="crmOpenMatchResume()" style="border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0">Currículo para Match</button> para receber recomendações mais precisas.</div>';return;
   }
-  if(typeof VAGAS === 'undefined' || !VAGAS.length){
-    matchEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;">Carregando vagas... Aguarde.</div>';
-    if(typeof loadVagas === 'function') loadVagas();
-    setTimeout(runMembroMatch, 3000);
-    return;
-  }
-  matchEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:16px;text-align:center;">Calculando match...</div>';
-  const tools = CURRENT_PROFILE.tools || [];
-  const seniority = (CURRENT_PROFILE.seniority || '').toLowerCase();
-  const bio = (CURRENT_PROFILE.summary || '').toLowerCase();
-  const srMap = {'gestão':'gerente,gestor,head,coordenador,liderança','liderança':'gerente,gestor,head,diretor','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador'};
-  const scored = VAGAS.map(v => {
-    let score = 0;
-    const text = ((v.title||'') + ' ' + (v.description||'')).toLowerCase();
-    const toolMatches = tools.filter(t => text.includes(t.toLowerCase()));
-    if(tools.length > 0) score += (toolMatches.length / tools.length) * 55;
-    if(seniority){
-      const kws = (srMap[seniority] || seniority).split(',');
-      if(kws.some(k => text.includes(k.trim()))) score += 25;
-    }
-    if(bio){
-      const bioWords = bio.split(/\s+/).filter(w => w.length > 4);
-      const bioHits = bioWords.filter(w => text.includes(w));
-      if(bioWords.length > 0) score += (Math.min(bioHits.length, 5) / 5) * 20;
-    }
-    return {...v, matchScore: Math.min(Math.round(score), 98), toolMatches};
-  }).filter(v => v.matchScore >= 20).sort((a,b) => b.matchScore - a.matchScore).slice(0, 10);
-
-  if(scored.length){
-    matchEl.innerHTML = scored.map(v => {
-      const pct = v.matchScore;
-      const barColor = pct >= 70 ? '#059669' : pct >= 45 ? '#d97706' : '#6b7280';
-      return `<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:4px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
-          <div><div style="font-size:13px;font-weight:700;color:var(--text);">${escapeHtml(v.title)}</div>
-          <div style="font-size:11px;color:var(--muted);">${escapeHtml(v.company||'')}${v.location?' · '+escapeHtml(v.location):''}</div></div>
-          <div style="background:${barColor};color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;">${pct}% match</div>
-        </div>
-        ${v.toolMatches.length ? `<div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;"> ${v.toolMatches.join(', ')}</div>` : ''}
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted);"> Salvar</button>
-          <a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px;">Ver vaga </a>
-        </div>
-        <div style="font-size:10px;color:var(--muted);margin-top:6px;"> Salvar não garante candidatura, entre na vaga e siga o processo seletivo.</div>
-        </div>`;
-    }).join('');
-  } else {
-    matchEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Nenhuma vaga com match acima de 20%. <a href="#" onclick="openProfileModal();return false;" style="color:var(--accent);">Atualize suas ferramentas</a>.</div>';
-  }
+  if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
+  const seniority=(p.seniority||'').toLowerCase(),summary=(p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[];
+  const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
+  const scored=VAGAS.map(v=>{
+    const text=((v.title||'')+' '+(v.description||'')+' '+(v.location||'')).toLowerCase();let score=0;
+    const strengths=confirmed.filter(s=>text.includes(s.toLowerCase()));
+    const explicitGaps=absent.filter(s=>text.includes(s.toLowerCase()));
+    if(confirmed.length)score+=(strengths.length/confirmed.length)*45;
+    if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))score+=20;}
+    if(roles.length&&roles.some(x=>text.includes(x.toLowerCase())))score+=15;
+    if(locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
+    const words=summary.split(/\s+/).filter(w=>w.length>5),hits=words.filter(w=>text.includes(w));if(words.length)score+=(Math.min(hits.length,5)/5)*10;
+    score=Math.max(0,score-explicitGaps.length*8);
+    return {...v,matchScore:Math.min(Math.round(score),98),strengths,explicitGaps};
+  }).filter(v=>v.matchScore>=15).sort((a,b)=>b.matchScore-a.matchScore).slice(0,10);
+  if(!scored.length){matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Nenhuma vaga compatível encontrada agora. Isso não significa falta de qualificação; pode haver informações ainda não declaradas no currículo.</div>';return;}
+  matchEl.innerHTML=scored.map(v=>`<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:6px;">
+   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div style="font-size:13px;font-weight:700;color:var(--text)">${escapeHtml(v.title)}</div><div style="font-size:11px;color:var(--muted)">${escapeHtml(v.company||'')}${v.location?' · '+escapeHtml(v.location):''}</div></div><div style="background:var(--text);color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">${v.matchScore}% compatibilidade</div></div>
+   <div style="margin-top:9px;font-size:11px;line-height:1.55"><strong>Pontos que fortalecem:</strong> ${escapeHtml(v.strengths.join(', ')||'senioridade, área e contexto profissional')}<br><strong>Pontos para avaliar:</strong> ${v.explicitGaps.length?escapeHtml(v.explicitGaps.join(', '))+' foram marcados por você como não possui':'requisitos não declarados permanecem como “não informado” e não são tratados como ausência'}</div>
+   <div style="display:flex;gap:8px;align-items:center;margin-top:9px"><button data-url="${escapeHtml(crmSafeUrl(v.url))}" data-title="${escapeHtml(v.title)}" data-company="${escapeHtml(v.company||'')}" onclick="saveScrapedJob(this.dataset.url,this.dataset.title,this.dataset.company)" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted)">Salvar</button><a class="ev-cta" href="${escapeHtml(crmSafeUrl(v.url))}" target="_blank" rel="noopener" style="font-size:11px">Ver vaga</a></div>
+  </div>`).join('');
 }
 
 
@@ -8285,10 +8268,90 @@ function crmFilterModality(){
  crmById('vagasCountHub').textContent=String(visible);
  let empty=crmById('crmModalityEmpty');if(!visible&&value){if(!empty){empty=document.createElement('p');empty.id='crmModalityEmpty';empty.className='crm-filter-empty';empty.textContent='Nenhuma vaga encontrada nesta modalidade.';container.append(empty);}}else if(empty)empty.remove();
 }
+
+let CURRENT_MATCH_RESUME=null;
+function crmCsvList(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,40);}
+function crmMatchCompleteness(p,skills,prefs){
+ const checks=[p?.professional_headline,p?.professional_summary,p?.primary_area,p?.seniority,p?.years_experience,skills?.length,prefs?.target_roles?.length,prefs?.work_models?.length,prefs?.employment_types?.length,prefs?.preferred_locations?.length];
+ return Math.round(checks.filter(Boolean).length/checks.length*100);
+}
+async function crmLoadMatchResume(){
+ if(!CURRENT_USER||!authSb)return null;
+ const uid=CURRENT_USER.id;
+ const [a,b,d,e]=await Promise.all([
+  authSb.from('match_profiles').select('*').eq('user_id',uid).maybeSingle(),
+  authSb.from('match_skills').select('*').eq('user_id',uid).order('skill_name'),
+  authSb.from('match_preferences').select('*').eq('user_id',uid).maybeSingle(),
+  authSb.from('match_experiences').select('*').eq('user_id',uid).order('start_date',{ascending:false})
+ ]);
+ if(a.error||b.error||d.error||e.error){console.error('match resume',a.error||b.error||d.error||e.error);return null;}
+ CURRENT_MATCH_RESUME={profile:a.data||null,skills:b.data||[],preferences:d.data||null,experiences:e.data||[]};
+ const status=crmById('crmMatchResumeStatus');
+ if(status){
+  const pct=crmMatchCompleteness(CURRENT_MATCH_RESUME.profile,CURRENT_MATCH_RESUME.skills,CURRENT_MATCH_RESUME.preferences);
+  const updated=CURRENT_MATCH_RESUME.profile?.updated_at?new Date(CURRENT_MATCH_RESUME.profile.updated_at).toLocaleDateString('pt-BR'):'ainda não iniciado';
+  status.innerHTML='<strong style="color:var(--text)">'+pct+'% completo</strong> · última atualização: '+escapeHtml(updated)+'<br><span style="font-size:12px">Não informado não é tratado como ausência de competência.</span>';
+ }
+ return CURRENT_MATCH_RESUME;
+}
+async function crmOpenMatchResume(){
+ if(!await crmRequireSession('Faça login para editar seu currículo de Match.'))return;
+ await crmLoadMatchResume();
+ const r=CURRENT_MATCH_RESUME||{},p=r.profile||{},pref=r.preferences||{};
+ const confirmed=(r.skills||[]).filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name).join(', ');
+ const absent=(r.skills||[]).filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name).join(', ');
+ crmById('crmMatchResumeOverlay')?.remove();
+ const overlay=document.createElement('div');overlay.id='crmMatchResumeOverlay';overlay.className='ev-modal-overlay';overlay.style.cssText='display:flex;overflow-y:auto;z-index:10000';
+ overlay.innerHTML=`<div class="ev-modal-box" style="max-width:760px;width:calc(100% - 24px);margin:auto;padding:26px;">
+  <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px"><div><div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Privado · usado no Match</div><h2 style="margin:4px 0 5px">Currículo para Match</h2><p style="margin:0;color:var(--muted);font-size:13px">Não altera seu perfil público. Informe somente competências e experiências que você realmente possui.</p></div><button type="button" data-close style="border:0;background:none;font-size:22px;cursor:pointer">×</button></div>
+  <form id="crmMatchResumeForm">
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <label class="ev-ilabel">Título profissional<input class="ev-ifield" name="headline" maxlength="160" value="${escapeHtml(p.professional_headline||'')}" placeholder="Ex.: Especialista de CRM e Customer Insights"></label>
+    <label class="ev-ilabel">Área principal<input class="ev-ifield" name="area" maxlength="100" value="${escapeHtml(p.primary_area||'')}" placeholder="Ex.: CRM, Growth, CX"></label>
+    <label class="ev-ilabel">Senioridade<select class="ev-ifield" name="seniority"><option value="">Não informado</option>${['Estágio','Júnior','Pleno','Sênior','Especialista','Coordenação','Gestão','Diretoria'].map(x=>'<option '+(p.seniority===x?'selected':'')+'>'+x+'</option>').join('')}</select></label>
+    <label class="ev-ilabel">Anos de experiência<input class="ev-ifield" name="years" type="number" min="0" max="60" step=".5" value="${escapeHtml(p.years_experience??'')}"></label>
+   </div>
+   <label class="ev-ilabel" style="margin-top:12px">Resumo profissional<textarea class="ev-ifield" name="summary" rows="4" maxlength="2000" placeholder="Experiência, escopo, segmentos e principais resultados.">${escapeHtml(p.professional_summary||'')}</textarea></label>
+   <label class="ev-ilabel" style="margin-top:12px">Competências e ferramentas que possui<textarea class="ev-ifield" name="skills" rows="3" placeholder="Salesforce, SQL, Power BI, RD Station...">${escapeHtml(confirmed)}</textarea><small style="color:var(--muted)">Separe por vírgulas.</small></label>
+   <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <label class="ev-ilabel">Cargos de interesse<input class="ev-ifield" name="roles" value="${escapeHtml((pref.target_roles||[]).join(', '))}" placeholder="CRM Manager, Coordenador de CRM"></label>
+    <label class="ev-ilabel">Localidades de interesse<input class="ev-ifield" name="locations" value="${escapeHtml((pref.preferred_locations||[]).join(', '))}" placeholder="São Paulo, Remoto"></label>
+    <label class="ev-ilabel">Modelo de trabalho<input class="ev-ifield" name="models" value="${escapeHtml((pref.work_models||[]).join(', '))}" placeholder="Remoto, Híbrido"></label>
+    <label class="ev-ilabel">Tipo de contratação<input class="ev-ifield" name="types" value="${escapeHtml((pref.employment_types||[]).join(', '))}" placeholder="CLT, PJ"></label>
+    <label class="ev-ilabel">Pretensão mínima (R$)<input class="ev-ifield" name="salary" type="number" min="0" step="100" value="${escapeHtml(pref.salary_min??'')}"></label>
+    <label class="ev-ilabel">Disponibilidade<input class="ev-ifield" name="availability" maxlength="100" value="${escapeHtml(p.availability||'')}" placeholder="Imediata, 30 dias..."></label>
+   </div>
+   <div style="margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);font-size:12px;color:var(--muted)">O Match diferencia <strong>confirmado</strong>, <strong>não possui</strong> e <strong>não informado</strong>. A ausência de informação nunca será tratada automaticamente como falta de competência.</div>
+   <div id="crmMatchResumeFormStatus" style="font-size:12px;margin-top:10px" role="status"></div>
+   <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button type="button" data-close class="crm-button crm-outline">Cancelar</button><button type="submit" class="crm-button">Salvar currículo</button></div>
+  </form></div>`;
+ document.body.append(overlay);
+ overlay.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>overlay.remove());
+ overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
+ overlay.querySelector('form').onsubmit=crmSaveMatchResume;
+}
+async function crmSaveMatchResume(ev){
+ ev.preventDefault();const form=ev.currentTarget,status=crmById('crmMatchResumeFormStatus'),btn=form.querySelector('button[type=submit]');
+ const session=await crmRequireSession();if(!session)return;btn.disabled=true;status.textContent='Salvando...';
+ try{
+  const fd=new FormData(form),uid=CURRENT_USER.id;
+  const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,professional_summary:String(fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
+  const prefs={user_id:uid,target_roles:crmCsvList(fd.get('roles')),preferred_locations:crmCsvList(fd.get('locations')),work_models:crmCsvList(fd.get('models')),employment_types:crmCsvList(fd.get('types')),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
+  const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
+  profile.completeness=crmMatchCompleteness(profile,yes,prefs);
+  let res=await authSb.from('match_profiles').upsert(profile,{onConflict:'user_id'});if(res.error)throw res.error;
+  res=await authSb.from('match_preferences').upsert(prefs,{onConflict:'user_id'});if(res.error)throw res.error;
+  res=await authSb.from('match_skills').delete().eq('user_id',uid);if(res.error)throw res.error;
+  const rows=[...yes.map(skill_name=>({user_id:uid,skill_name,evidence_status:'confirmed'})),...no.map(skill_name=>({user_id:uid,skill_name,evidence_status:'does_not_have'}))];
+  if(rows.length){res=await authSb.from('match_skills').insert(rows);if(res.error)throw res.error;}
+  await crmLoadMatchResume();status.textContent='Currículo salvo.';setTimeout(()=>{crmById('crmMatchResumeOverlay')?.remove();runMembroMatch();},450);
+ }catch(e){console.error(e);status.textContent='Não foi possível salvar: '+(e.message||'erro inesperado');btn.disabled=false;}
+}
 async function crmRunMatch(){
  if(typeof CURRENT_USER==='undefined'||!CURRENT_USER){openLoginModal();return;}
  const result=crmById('membroVagasMatch');
- if(!CURRENT_PROFILE?.tools?.length){runMembroMatch();return;}
+ if(!CURRENT_MATCH_RESUME)await crmLoadMatchResume();
  try{
   result.textContent='Buscando oportunidades compatíveis…';
   initVagasSupabase();
