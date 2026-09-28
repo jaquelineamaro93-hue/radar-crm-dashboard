@@ -8327,9 +8327,30 @@ async function crmOpenMatchResume(){
    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button type="button" data-close class="crm-button crm-outline">Cancelar</button><button type="submit" class="crm-button">Salvar currículo</button></div>
   </form></div>`;
  document.body.append(overlay);
- overlay.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>overlay.remove());
- overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
- overlay.querySelector('form').onsubmit=crmSaveMatchResume;
+ const form=overlay.querySelector('form');
+ const draftKey='crm_match_resume_draft_'+CURRENT_USER.id;
+ try{
+   const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
+   if(draft&&typeof draft==='object'){
+     for(const [name,value] of Object.entries(draft)){const field=form.elements.namedItem(name);if(field&&value!=null)field.value=value;}
+     const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Rascunho recuperado automaticamente.';
+   }
+ }catch(e){console.warn('match draft restore',e);}
+ let draftTimer=null;
+ const saveDraft=()=>{
+   clearTimeout(draftTimer);draftTimer=setTimeout(()=>{
+     try{const data={};new FormData(form).forEach((value,key)=>data[key]=value);localStorage.setItem(draftKey,JSON.stringify(data));}catch(e){console.warn('match draft save',e);}
+   },180);
+ };
+ form.addEventListener('input',saveDraft);form.addEventListener('change',saveDraft);
+ const requestClose=()=>{
+   let hasDraft=false;try{hasDraft=!!localStorage.getItem(draftKey);}catch{}
+   if(hasDraft&&!confirm('Seu preenchimento está salvo como rascunho neste navegador. Deseja fechar o currículo agora?'))return;
+   overlay.remove();
+ };
+ overlay.querySelectorAll('[data-close]').forEach(b=>b.onclick=requestClose);
+ overlay.onclick=e=>{if(e.target===overlay){const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Para evitar perda de dados, use Cancelar ou × para fechar. Seu rascunho está sendo salvo automaticamente.';}};
+ form.onsubmit=crmSaveMatchResume;
 }
 async function crmSaveMatchResume(ev){
  ev.preventDefault();const form=ev.currentTarget,status=crmById('crmMatchResumeFormStatus'),btn=form.querySelector('button[type=submit]');
@@ -8345,6 +8366,7 @@ async function crmSaveMatchResume(ev){
   res=await authSb.from('match_skills').delete().eq('user_id',uid);if(res.error)throw res.error;
   const rows=[...yes.map(skill_name=>({user_id:uid,skill_name,evidence_status:'confirmed'})),...no.map(skill_name=>({user_id:uid,skill_name,evidence_status:'does_not_have'}))];
   if(rows.length){res=await authSb.from('match_skills').insert(rows);if(res.error)throw res.error;}
+  try{localStorage.removeItem('crm_match_resume_draft_'+uid);}catch{}
   await crmLoadMatchResume();status.textContent='Currículo salvo.';setTimeout(()=>{crmById('crmMatchResumeOverlay')?.remove();runMembroMatch();},450);
  }catch(e){console.error(e);status.textContent='Não foi possível salvar: '+(e.message||'erro inesperado');btn.disabled=false;}
 }
