@@ -8823,6 +8823,23 @@ function setup(){
  page.dataset.analyticsReady="1";
 
  let memberPage=0,memberLimit=50,memberSearch="";
+ function crmPhoneDigits(value){
+  let digits=String(value??"").replace(/\D/g,"");
+  if(!digits)return "";
+  if(digits.startsWith("55")&&digits.length>=12)digits=digits.slice(2);
+  if(digits.length===10)digits=digits.slice(0,2)+"9"+digits.slice(2);
+  return digits.length===11?"55"+digits:"";
+ }
+ function crmPhoneLabel(value){
+  const intl=crmPhoneDigits(value);
+  if(!intl)return value?String(value):"—";
+  const d=intl.slice(2);
+  return "+55 ("+d.slice(0,2)+") "+d.slice(2,7)+"-"+d.slice(7);
+ }
+ function crmPhoneHtml(value){
+  const intl=crmPhoneDigits(value),label=crmPhoneLabel(value);
+  return intl?'<a href="https://wa.me/'+intl+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>':esc(label);
+ }
  function crmSankeyHtml(data){
  const tr=(data.transitions||[]).filter(x=>x.users>0&&x.source!=="/admin"&&x.target!=="/admin");
  const ignoredActions=["Fechar","Agora não","Continuar","Cancelar","Menu","Administração","Administracao","Analytics","Jornada","Membros","Aprovações","Aprovacoes","Newsletter"];
@@ -8856,13 +8873,13 @@ function setup(){
  sel.onchange=load;load();
 }
  async function renderMembers(){
-  members.innerHTML='<h2>Membros</h2><p class="crm-analytics-note">Gerencie e consulte os perfis cadastrados na comunidade.</p><div class="crm-admin-members-toolbar"><input class="crm-period crm-admin-members-search" id="crmMemberSearch" placeholder="Buscar por nome, e-mail ou gênero" value="'+esc(memberSearch)+'"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="crm-admin-tab active" id="crmMembersCsv">↓ Baixar CSV</button><label>Resultados por página <select class="crm-period" id="crmMemberLimit"><option value="50">50</option><option value="100">100</option></select></label></div></div><p id="crmMembersStatus">Carregando membros…</p><div style="overflow:auto"><table class="crm-admin-members-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Gênero</th><th>Recebe novidades</th><th>Newsletter</th><th>Cadastro</th><th>Último acesso</th><th>Login</th><th>Permissão</th><th>Status do perfil</th><th>Open to Work</th></tr></thead><tbody id="crmMembersBody"></tbody></table></div><div class="crm-admin-members-footer"><span id="crmMembersRange"></span><div class="crm-admin-members-pager"><button class="crm-button crm-outline" id="crmMembersPrev">‹</button><span id="crmMembersPage"></span><button class="crm-button crm-outline" id="crmMembersNext">›</button></div></div>';
+  members.innerHTML='<h2>Membros</h2><p class="crm-analytics-note">Gerencie e consulte os perfis cadastrados na comunidade.</p><div class="crm-admin-members-toolbar"><input class="crm-period crm-admin-members-search" id="crmMemberSearch" placeholder="Buscar por nome, e-mail, gênero ou telefone" value="'+esc(memberSearch)+'"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="crm-admin-tab active" id="crmMembersCsv">↓ Baixar CSV</button><label>Resultados por página <select class="crm-period" id="crmMemberLimit"><option value="50">50</option><option value="100">100</option></select></label></div></div><p id="crmMembersStatus">Carregando membros…</p><div style="overflow:auto"><table class="crm-admin-members-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Gênero</th><th>Recebe novidades</th><th>Newsletter</th><th>Cadastro</th><th>Último acesso</th><th>Whats/Telefone</th><th>Permissão</th><th>Status do perfil</th><th>Open to Work</th></tr></thead><tbody id="crmMembersBody"></tbody></table></div><div class="crm-admin-members-footer"><span id="crmMembersRange"></span><div class="crm-admin-members-pager"><button class="crm-button crm-outline" id="crmMembersPrev">‹</button><span id="crmMembersPage"></span><button class="crm-button crm-outline" id="crmMembersNext">›</button></div></div>';
   const lim=members.querySelector("#crmMemberLimit");lim.value=String(memberLimit);
   const [{data,error},{data:total,error:countError}]=await Promise.all([authSb.rpc("crm_admin_members_v2",{p_limit:memberLimit,p_offset:memberPage*memberLimit,p_search:memberSearch||null}),authSb.rpc("crm_admin_members_count",{p_search:memberSearch||null})]);
   if(error||countError){console.error("Admin members RPC:",error||countError);members.querySelector("#crmMembersStatus").innerHTML='Não foi possível carregar os membros. <button type="button" class="crm-admin-tab" id="crmMembersRetry">Tentar novamente</button>';members.querySelector("#crmMembersRetry").onclick=renderMembers;return}
   const rows=Array.isArray(data)?data:[],n=Number(total||0),start=n?memberPage*memberLimit+1:0,end=Math.min((memberPage+1)*memberLimit,n);
   members.querySelector("#crmMembersStatus").textContent=n+" membros encontrados";
-  members.querySelector("#crmMembersBody").innerHTML=rows.map(u=>'<tr><td><strong>'+esc(u.full_name||"Sem nome")+'</strong></td><td>'+esc(u.email||"")+'</td><td>'+esc(u.gender_identity||"Não informado")+'</td><td>'+(u.receive_community_updates?"Sim":"Não")+'</td><td>'+(u.newsletter_subscribed?"Inscrito":"Não inscrito")+'</td><td>'+esc(u.created_at?new Date(u.created_at).toLocaleDateString("pt-BR"):"—")+'</td><td>'+esc(u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString("pt-BR"):"Nunca")+'</td><td>'+esc(u.provider||"email")+'</td><td><span class="crm-admin-role">'+esc(u.portal_role||"Membro")+'</span></td><td>'+((u.onboarding_completed)?"Completo":"Pendente")+'</td><td>'+(u.open_to_work?"Sim":"Não")+'</td></tr>').join("");
+  members.querySelector("#crmMembersBody").innerHTML=rows.map(u=>'<tr><td><strong>'+esc(u.full_name||"Sem nome")+'</strong></td><td>'+esc(u.email||"")+'</td><td>'+esc(u.gender_identity||"Não informado")+'</td><td>'+(u.receive_community_updates?"Sim":"Não")+'</td><td>'+(u.newsletter_subscribed?"Inscrito":"Não inscrito")+'</td><td>'+esc(u.created_at?new Date(u.created_at).toLocaleDateString("pt-BR"):"—")+'</td><td>'+esc(u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString("pt-BR"):"Nunca")+'</td><td>'+crmPhoneHtml(u.whatsapp)+'</td><td><span class="crm-admin-role">'+esc(u.portal_role||"Membro")+'</span></td><td>'+((u.onboarding_completed)?"Completo":"Pendente")+'</td><td>'+(u.open_to_work?"Sim":"Não")+'</td></tr>').join("");
   members.querySelector("#crmMembersRange").textContent=start+"–"+end+" de "+n;
   members.querySelector("#crmMembersPage").textContent="Página "+(memberPage+1)+" de "+Math.max(1,Math.ceil(n/memberLimit));
   members.querySelector("#crmMembersPrev").disabled=memberPage<=0;members.querySelector("#crmMembersNext").disabled=end>=n;
@@ -8875,11 +8892,11 @@ function setup(){
       const {data:all,error:exportError}=await authSb.rpc("crm_admin_members_export",{p_search:memberSearch||null});
       if(exportError)throw exportError;
       const q=v=>'"'+String(v??"").replaceAll('"','""')+'"';
-      const header=["nome","email","genero","recebe_novidades","newsletter","cadastro","ultimo_acesso","login","permissao","perfil","open_to_work"];
+      const header=["nome","email","genero","recebe_novidades","newsletter","cadastro","ultimo_acesso","whats_telefone","permissao","perfil","open_to_work"];
       const csv=[header.join(","),...(all||[]).map(u=>[
         q(u.full_name),q(u.email),q(u.gender_identity||"Não informado"),q(u.receive_community_updates?"Sim":"Não"),q(u.newsletter_subscribed?"Inscrito":"Não inscrito"),
         q(u.created_at?new Date(u.created_at).toLocaleString("pt-BR"):""),q(u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString("pt-BR"):""),
-        q(u.provider||"email"),q(u.portal_role||"Membro"),q(u.onboarding_completed?"Completo":"Pendente"),q(u.open_to_work?"Sim":"Não")
+        q(crmPhoneLabel(u.whatsapp)),q(u.portal_role||"Membro"),q(u.onboarding_completed?"Completo":"Pendente"),q(u.open_to_work?"Sim":"Não")
       ].join(","))].join("\n");
       const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
       a.href=url;a.download="conexao-crm-membros-"+new Date().toISOString().slice(0,10)+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
