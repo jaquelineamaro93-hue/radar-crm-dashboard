@@ -1193,7 +1193,7 @@ dialog:not([open]){pointer-events:none!important}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',recover,{once:true});else recover();
   window.addEventListener('pageshow',recover);
   // Remove service workers antigos que possam manter HTML/JS obsoleto.
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}).catch(function(){});}
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}).catch(function(){});} if('caches' in window){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));}).catch(function(){});}
 })();
 </script>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -8313,7 +8313,21 @@ function crmEnhanceCards(){
  /* A confirmação de presença é feita pelo controle Vou / Talvez / Não vou do próprio card. */
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
-function crmHandleHash(){let hash=decodeURIComponent(location.hash.slice(1));hash=crmRouteAliases[hash]||hash;if(hash.includes('access_token'))return;if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}crmNavigate(hash.replace(/^subpage-/, '')||'inicio',false);}
+function crmHandleHash(){
+ let hash=decodeURIComponent(location.hash.slice(1));
+ hash=crmRouteAliases[hash]||hash;
+ if(hash.includes('access_token'))return;
+ if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}
+ const route=hash.replace(/^subpage-/,'')||'inicio';
+ // Rota privada antiga não pode abrir um modal automaticamente e travar a página.
+ if(!crmSignedIn() && route!=='inicio' && !crmPublicRoutes.has(route)){
+   crmPendingRoute=route;
+   history.replaceState(null,'','#inicio');
+   crmNavigate('inicio',false);
+   return;
+ }
+ crmNavigate(route,false);
+}
 document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleHash();
