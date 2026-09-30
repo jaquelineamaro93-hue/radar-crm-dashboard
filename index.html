@@ -1176,26 +1176,6 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 @media(max-width:620px){.cx-hub{gap:26px}.cx-hub-hero{align-items:flex-start;flex-direction:column}.cx-hub-hero p{font-size:15px}.cx-suggest-btn{width:100%}.cx-format-links{grid-template-columns:1fr 1fr}.cx-curation-note{grid-template-columns:1fr}.cx-curation-note button{width:100%}.cx-featured-grid{grid-template-columns:1fr}.cx-filter-group{display:block}.cx-filter-label{display:block;width:auto;padding:0;margin-bottom:8px}.cx-resource-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
-<style id="crm-emergency-click-recovery">
-/* RECUPERAÇÃO DE PRODUÇÃO: nenhuma camada oculta pode capturar cliques. */
-.ev-modal-overlay:not(.open), .crm-mobile-scrim {display:none!important;pointer-events:none!important}
-body:not(.crm-menu-open) .crm-mobile-scrim{display:none!important;pointer-events:none!important}
-dialog:not([open]){pointer-events:none!important}
-#crmSurveyReminder{pointer-events:auto}
-</style>
-<script id="crm-emergency-click-recovery-js">
-(function(){
-  function recover(){
-    try{document.body.classList.remove('crm-menu-open');document.body.style.overflow='';document.documentElement.style.overflow='';}catch(e){}
-    document.querySelectorAll('.ev-modal-overlay').forEach(function(el){if(!el.classList.contains('open')){el.style.display='none';el.style.pointerEvents='none';}});
-    document.querySelectorAll('.crm-mobile-scrim').forEach(function(el){el.style.pointerEvents='none';});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',recover,{once:true});else recover();
-  window.addEventListener('pageshow',recover);
-  // Remove service workers antigos que possam manter HTML/JS obsoleto.
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}).catch(function(){});} if('caches' in window){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));}).catch(function(){});}
-})();
-</script>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
  <h2 id="crmSurveyReminderTitle">Sua experiência faz diferença.</h2>
@@ -7440,26 +7420,6 @@ function authInitSB(){
 
 let CURRENT_USER = null;
 let CURRENT_PROFILE = null;
-let CRM_PROFILE_REALTIME_CHANNEL = null;
-async function crmStopProfileRealtime(){
-  if(CRM_PROFILE_REALTIME_CHANNEL&&authSb){
-    try{await authSb.removeChannel(CRM_PROFILE_REALTIME_CHANNEL)}catch{}
-  }
-  CRM_PROFILE_REALTIME_CHANNEL=null;
-}
-async function crmStartProfileRealtime(userId){
-  if(!authSb||!userId)return;
-  await crmStopProfileRealtime();
-  CRM_PROFILE_REALTIME_CHANNEL=authSb
-    .channel('profile-realtime-'+userId)
-    .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:'id=eq.'+userId},payload=>{
-      if(!payload?.new||CURRENT_USER?.id!==userId)return;
-      CURRENT_PROFILE={...(CURRENT_PROFILE||{}),...payload.new};
-      try{activateLoggedArea(CURRENT_PROFILE);crmRenderSavedProfile();}catch{}
-      try{window.crmInngageSyncIdentity?.(CURRENT_USER,CURRENT_PROFILE);window.crmInngageEvent?.('PROFILE_REALTIME_SYNC',{perfil_completo:!!CURRENT_PROFILE?.onboarding_completed},CURRENT_USER?.email);}catch{}
-    })
-    .subscribe();
-}
 
 async function handleGoogleLogin(){
  if(crmSignedIn()){crmNavigate('membros');return;}
@@ -7640,15 +7600,13 @@ async function authInit(){
    currentUserEmail=data.user.email;currentUserRole='member';isAdminLoggedIn=false;await crmRefreshAdmin();
    if(crmValidatedUserId!==id)return;currentUserRole=crmAdminVerified?'admin':'member';
    try{window.posthog?.identify(data.user.id,{crm_logged_in:true});}catch{}
-   try{window.crmInngageSyncIdentity?.(data.user,profile);window.crmInngageEvent?.('LOGIN',{perfil_completo:!!profile?.onboarding_completed},data.user.email);}catch{}
-   try{await crmStartProfileRealtime(id);}catch(e){console.warn('crmStartProfileRealtime',e)}
    authRenderUI();crmById('loggedUserHeadline').textContent=data.user.email||'';crmSyncAuth();
    if(needsOnboarding)setTimeout(()=>{if(CURRENT_USER?.id===id&&!document.getElementById('profileModalOverlay')){crmNavigate('membro');openProfileModal({onboarding:true});}},300);
    if(location.hash.includes('access_token'))history.replaceState(null,'',location.pathname+'#dashboard');
-  }catch{if(epoch!==crmAuthEpoch)return;await crmStopProfileRealtime();crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
+  }catch{if(epoch!==crmAuthEpoch)return;crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
  };
  authSb.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_OUT'){await crmStopProfileRealtime();crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;crmClearPrivateData();authRenderUI();crmSyncAuth();return;}
+  if(event==='SIGNED_OUT'){crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;crmClearPrivateData();authRenderUI();crmSyncAuth();return;}
   if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event))setTimeout(()=>update(session),0);
  });
  const {data:{session}}=await authSb.auth.getSession();await update(session);
@@ -7839,7 +7797,6 @@ async function saveProfile(){
     const { error } = await authSb.from('profiles').upsert(payload, { onConflict: 'id' });
     if(error) throw error;
     CURRENT_PROFILE = { ...CURRENT_PROFILE, ...payload };
-    try{window.crmInngageSyncIdentity?.(CURRENT_USER,CURRENT_PROFILE);window.crmInngageEvent?.('PROFILE_UPDATED',{perfil_completo:true,diretorio_visivel:payload.directory_visible===true},CURRENT_USER.email);}catch{}
     statusEl.style.color='#86efac';statusEl.textContent=payload.directory_visible?'Perfil salvo e sincronizado com o Diretório de Membros.':'Perfil salvo. Seu perfil está oculto no Diretório de Membros.';
     activateLoggedArea(payload);authRenderUI();crmRenderSavedProfile();
     if(crmActiveRoute==='membros')setTimeout(()=>renderComDiretorio(),250);
@@ -8313,21 +8270,7 @@ function crmEnhanceCards(){
  /* A confirmação de presença é feita pelo controle Vou / Talvez / Não vou do próprio card. */
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
-function crmHandleHash(){
- let hash=decodeURIComponent(location.hash.slice(1));
- hash=crmRouteAliases[hash]||hash;
- if(hash.includes('access_token'))return;
- if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}
- const route=hash.replace(/^subpage-/,'')||'inicio';
- // Rota privada antiga não pode abrir um modal automaticamente e travar a página.
- if(!crmSignedIn() && route!=='inicio' && !crmPublicRoutes.has(route)){
-   crmPendingRoute=route;
-   history.replaceState(null,'','#inicio');
-   crmNavigate('inicio',false);
-   return;
- }
- crmNavigate(route,false);
-}
+function crmHandleHash(){let hash=decodeURIComponent(location.hash.slice(1));hash=crmRouteAliases[hash]||hash;if(hash.includes('access_token'))return;if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}crmNavigate(hash.replace(/^subpage-/, '')||'inicio',false);}
 document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleHash();
