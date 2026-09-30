@@ -1176,37 +1176,7 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 @media(max-width:620px){.cx-hub{gap:26px}.cx-hub-hero{align-items:flex-start;flex-direction:column}.cx-hub-hero p{font-size:15px}.cx-suggest-btn{width:100%}.cx-format-links{grid-template-columns:1fr 1fr}.cx-curation-note{grid-template-columns:1fr}.cx-curation-note button{width:100%}.cx-featured-grid{grid-template-columns:1fr}.cx-filter-group{display:block}.cx-filter-label{display:block;width:auto;padding:0;margin-bottom:8px}.cx-resource-grid{grid-template-columns:1fr}}
 </style>  <script src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js" defer></script>
   <script src="/assets/inngage-integration.js?v=20260930-1" defer></script>
-<style id="crm-team-and-member-icons-20260930">
-.crm-navbar .crm-team-link{color:#f4f3ed}
-.crm-navbar .crm-team-link:hover,.crm-navbar .crm-team-link[aria-current="page"]{color:#fb923c}
-.crm-team-page{max-width:1440px;margin:0 auto;color:#f8fafc}
-.crm-team-hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr);gap:56px;align-items:end;margin-bottom:54px}
-.crm-team-kicker,.crm-team-role-label{font-size:12px;font-weight:800;letter-spacing:.12em;color:#fb923c;margin:0 0 14px}
-.crm-team-hero h2{font-size:clamp(38px,5.4vw,72px);line-height:1.04;letter-spacing:-.045em;max-width:980px;margin:0 0 22px}
-.crm-team-hero .crm-muted{font-size:18px;line-height:1.7;max-width:850px;color:#c7c7c2}
-.crm-team-scope{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #48433e;border-left:1px solid #48433e}
-.crm-team-scope span{min-height:78px;display:flex;align-items:center;padding:18px;border-right:1px solid #48433e;border-bottom:1px solid #48433e;font-size:14px;font-weight:700;color:#d8d4cc}
-.crm-team-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
-.crm-team-card{display:grid;grid-template-columns:220px minmax(0,1fr);gap:36px;padding:34px;background:#181716;border:1px solid #3d3833;border-radius:18px}
-.crm-team-avatar{width:220px;height:220px;border-radius:50%;display:grid;place-items:center;position:relative;overflow:hidden;background:#2a1d15;border:1px solid #5a3520;color:#fb923c;font-size:48px;font-weight:900}
-.crm-team-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.crm-team-card-body h3{font-size:clamp(30px,4vw,48px);line-height:1.05;margin:0 0 8px}
-.crm-team-meta{font-size:16px;color:#d1d5db;margin:0 0 22px}
-.crm-team-description{font-size:17px;line-height:1.75;color:#d1d5db;max-width:850px;margin:0 0 24px}
-.crm-team-responsibilities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
-.crm-team-responsibilities span{padding:8px 11px;border:1px solid #4b4540;border-radius:999px;background:#111;color:#e5e7eb;font-size:12px;font-weight:650}
-.crm-team-social{display:flex;gap:10px;align-items:center}
-.crm-team-social a{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 13px;border:1px solid #5a3520;border-radius:9px;color:#fdba74;text-decoration:none;font-size:13px;font-weight:750;background:#21170f}
-.crm-team-social a:hover{border-color:#fb923c;background:#2a1d15}.crm-team-social svg{width:18px;height:18px;fill:currentColor}
-.crm-team-community-note{margin-top:28px;padding:22px 24px;border-top:1px solid #35322e;color:#b8bec7}
-.crm-team-community-note strong{display:block;color:#f8fafc;font-size:17px;margin-bottom:6px}.crm-team-community-note p{margin:0;line-height:1.7;max-width:960px}
-.crm-member-links{gap:8px!important;justify-content:center}
-.crm-member-contact-icon{width:38px;height:38px;display:inline-flex!important;align-items:center;justify-content:center;border:1px solid #4b4540;border-radius:50%;background:#21170f;color:#fdba74!important;text-decoration:none!important;transition:transform .15s,border-color .15s,background .15s}
-.crm-member-contact-icon:hover{transform:translateY(-2px);border-color:#fb923c;background:#2a1d15}
-.crm-member-contact-icon svg{width:17px;height:17px;fill:currentColor;stroke:currentColor;stroke-width:1.8}
-.crm-member-contact-icon span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-width:800px){.crm-team-hero{grid-template-columns:1fr;gap:28px}.crm-team-card{grid-template-columns:1fr;padding:24px}.crm-team-avatar{width:150px;height:150px}.crm-team-scope{max-width:520px}}
-</style></head>
+</head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -1243,58 +1213,16 @@ crmShowSurveyReminder();
       <nav class="crm-navlinks" aria-label="Navegação principal">
         <a href="#quem-somos" data-crm-route="quem-somos">QUEM SOMOS</a>
         <a class="crm-open-link" href="#open-to-work" data-crm-route="search">OPEN TO WORK</a>
-        <details class="crm-solutions-menu"><summary>SOLUÇÕES</summary><div><a href="#courses" data-crm-route="courses">Cursos</a><a href="#solucoes" data-crm-route="solucoes">Todas as soluções</a><a href="#calc" data-crm-route="calc">Calculadora CLT x PJ</a><a href="#ferramentas" data-crm-route="ferramentas">Comparativo de CRMs e Plataformas</a><a href="#conteudos" data-crm-route="conteudos">Conteúdos, Cases e Frameworks</a><a href="#pesquisa" data-crm-route="pesquisa">Pesquisas de Mercado e Censo</a><a href="#cargos" data-crm-route="cargos">Médias Salariais e Cargos</a><a href="#vagas" data-crm-route="vagas">Vagas de CRM</a><a href="#eventos" data-crm-route="eventos">Agenda de Eventos</a></div></details><a class="crm-team-link" href="#quem-faz" data-crm-route="quem-faz">QUEM FAZ</a><a class="crm-sponsor-link" href="#patrocinio" data-crm-route="patrocinio">SEJA PATROCINADOR</a>
+        <details class="crm-solutions-menu"><summary>SOLUÇÕES</summary><div><a href="#courses" data-crm-route="courses">Cursos</a><a href="#solucoes" data-crm-route="solucoes">Todas as soluções</a><a href="#calc" data-crm-route="calc">Calculadora CLT x PJ</a><a href="#ferramentas" data-crm-route="ferramentas">Comparativo de CRMs e Plataformas</a><a href="#conteudos" data-crm-route="conteudos">Conteúdos, Cases e Frameworks</a><a href="#pesquisa" data-crm-route="pesquisa">Pesquisas de Mercado e Censo</a><a href="#cargos" data-crm-route="cargos">Médias Salariais e Cargos</a><a href="#vagas" data-crm-route="vagas">Vagas de CRM</a><a href="#eventos" data-crm-route="eventos">Agenda de Eventos</a></div></details><a class="crm-sponsor-link" href="#patrocinio" data-crm-route="patrocinio">SEJA PATROCINADOR</a>
       </nav>
     </div>
-    <div class="crm-navbar-actions"><button id="loginBtn" type="button" onclick="handleGoogleLogin()" class="crm-button">MINHA ÁREA</button></div>
+    <div class="crm-navbar-actions"><button id="loginBtn" type="button" onclick="handleGoogleLogin()" class="crm-button">ENTRAR</button></div>
   </div>
 </header>
-<section id="crmPublicWorkspace" hidden><header class="crm-public-pagebar"><a href="#inicio" data-crm-route="inicio"> Início</a><h1 id="crmPublicTitle">Explore a comunidade</h1><a href="#solucoes" data-crm-route="solucoes">Todas as soluções </a></header><nav class="crm-public-tabs" aria-label="Soluções públicas"><a href="#conteudos" data-crm-route="conteudos">Conteúdos</a><a href="#comunidade" data-crm-route="comunidade">Grupos</a><a href="#courses" data-crm-route="courses">Cursos</a><a href="#vagas" data-crm-route="vagas">Vagas</a><a href="#search" data-crm-route="search">Talentos</a><a href="#freelancers" data-crm-route="freelancers">Freelancers</a><a href="#cargos" data-crm-route="cargos">Salários</a><a href="#calc" data-crm-route="calc">CLT x PJ</a><a href="#eventos" data-crm-route="eventos">Eventos</a></nav><div id="crmPublicPages"></div></section><div id="publicHero"><section class="crm-hero" id="inicio"><div class="crm-hero-image" role="img" aria-label="Encontro de integrantes da comunidade Conexão CRM" style="background-image:linear-gradient(rgba(0,0,0,.85),rgba(0,0,0,.85)),url(assets/crm-image-0.webp)"></div><div class="crm-hero-content"><div class="crm-eyebrow">CRM ACADEMY + MULHERES DE CRM</div><h1>CONEXÃO<br>CRM<span class="hero-dot">.</span></h1><p class="crm-hero-subtitle">ESTRATÉGIA, DADOS E PESSOAS CONECTADAS.</p><div class="crm-actions"><button class="crm-button" onclick="handleGoogleLogin()">ME INSCREVER</button><a class="crm-button crm-outline" href="#quem-somos" data-crm-route="quem-somos">VER QUEM SOMOS</a></div></div><div class="crm-hero-foot"><span>O FUTURO DO CRM SE CONSTRÓI EM COMUNIDADE.</span><a href="#quem-somos" aria-label="Conheça a comunidade" data-crm-route="quem-somos"></a></div></section></div>
+<section id="crmPublicWorkspace" hidden><header class="crm-public-pagebar"><a href="#inicio" data-crm-route="inicio"> Início</a><h1 id="crmPublicTitle">Explore a comunidade</h1><a href="#solucoes" data-crm-route="solucoes">Todas as soluções </a></header><nav class="crm-public-tabs" aria-label="Soluções públicas"><a href="#conteudos" data-crm-route="conteudos">Conteúdos</a><a href="#comunidade" data-crm-route="comunidade">Grupos</a><a href="#courses" data-crm-route="courses">Cursos</a><a href="#vagas" data-crm-route="vagas">Vagas</a><a href="#search" data-crm-route="search">Talentos</a><a href="#freelancers" data-crm-route="freelancers">Freelancers</a><a href="#cargos" data-crm-route="cargos">Salários</a><a href="#calc" data-crm-route="calc">CLT x PJ</a><a href="#eventos" data-crm-route="eventos">Eventos</a></nav><div id="crmPublicPages"></div></section><div id="publicHero"><section class="crm-hero" id="inicio"><div class="crm-hero-image" role="img" aria-label="Encontro de integrantes da comunidade Conexão CRM" style="background-image:linear-gradient(rgba(0,0,0,.85),rgba(0,0,0,.85)),url(assets/crm-image-0.webp)"></div><div class="crm-hero-content"><div class="crm-eyebrow">CRM ACADEMY + MULHERES DE CRM</div><h1>CONEXÃO<br>CRM<span class="hero-dot">.</span></h1><p class="crm-hero-subtitle">ESTRATÉGIA, DADOS E PESSOAS CONECTADAS.</p><div class="crm-actions"><button class="crm-button" onclick="handleGoogleLogin()">ME INSCREVER COM GOOGLE </button><a class="crm-button crm-outline" href="#quem-somos" data-crm-route="quem-somos">VER QUEM SOMOS</a></div></div><div class="crm-hero-foot"><span>O FUTURO DO CRM SE CONSTRÓI EM COMUNIDADE.</span><a href="#quem-somos" aria-label="Conheça a comunidade" data-crm-route="quem-somos"></a></div></section></div>
 <section class="crm-manifesto crm-section tab-page" id="quem-somos"><div class="crm-section-label"><span>01 / A COMUNIDADE</span><span>QUEM SOMOS</span></div><h2>Ninguém vai construir<br>o futuro por nós.<br><em>Nós assumimos<br>o protagonismo.</em></h2><div class="crm-manifesto-body"><p class="crm-manifesto-intro">Somos a comunidade de profissionais, líderes e entusiastas que se recusa a ver a gestão de clientes apenas como um software burocrático ou uma caixa de envios de e-mail. A <strong>Conexão CRM</strong> é o espaço misto onde quem cria, lidera e constrói estratégias de CRM, Retenção, Growth e Customer Experience no Brasil se encontra.</p><div class="crm-manifesto-copy"><p>No passado, a gestão de relacionamento era fragmentada. Vendas operava de um lado, Marketing do outro e o cliente ficava perdido no meio. Aprendemos a trabalhar em silos, a isolar dados e a encarar métricas de forma individualizada.</p><p class="crm-highlight-line">Analisamos. Otimizamos. Vendemos. Retivemos.</p><p>Hoje vivemos a maior transformação tecnológica no engajamento de clientes: a era dos dados unificados, da automação preditiva e da personalização em escala. E quem tenta caminhar de forma isolada fica para trás.</p><p>Fomos ensinados a guardar estratégias a sete chaves, a esperar a ferramenta perfeita para agir e a acreditar que compartilhar desafios era expor fraqueza.</p><p>Mas nós já conhecemos essa história. O isolamento só atrasa a inovação do mercado.<br><strong>Não vai ser assim com a evolução do CRM.</strong></p><p>A gestão do relacionamento com o consumidor está sendo redefinida agora. Toda tecnologia baseada em dados amplia o impacto de quem aprende a usá-la com visão estratégica e sensibilidade humana.</p><p>Por isso, escolhemos evoluir juntos. Escolhemos testar e fazer. Escolhemos buscar resultados expressivos, porque alinhar dados, tecnologia e jornadas de clientes é o básico para quem quer transformar negócios.</p></div></div>
 <div class="crm-beliefs"><h3>EM QUE ACREDITAMOS</h3><div class="crm-belief-grid" id="crmBeliefs"><article><span class="crm-card-number">01</span><p>Ninguém vai abrir caminho por nós. Nós ocupamos o espaço estratégico nas decisões do negócio.</p></article><article><span class="crm-card-number">02</span><p>Profissionais e líderes ambiciosos juntos não competem: eles se impulsionam.</p></article><article><span class="crm-card-number">03</span><p>Errar hipóteses, reajustar réguas e testar novos fluxos faz parte do processo, e compartilhar esses aprendizados encurta a jornada de todos.</p></article><article><span class="crm-card-number">04</span><p>O CRM não transforma apenas gráficos e faturamento: transforma a maneira como marcas e pessoas constroem conexões de verdade.</p></article><article><span class="crm-card-number">05</span><p>O conhecimento sobre dados e estratégia se multiplica quando circula livremente.</p></article><article><span class="crm-card-number">06</span><p>Nenhum profissional precisa atravessar a transformação digital sozinho.</p></article></div></div><p class="crm-community-statement">Somos analistas, gestores, diretores, fundadores, especialistas em dados e estrategistas de Vendas, Marketing, Customer Success e Tecnologia. Somos uma comunidade mista construindo o futuro do engajamento de clientes.</p><p class="crm-community-statement">E esta é a rede de CRM mais relevante do Brasil. Porque cada membro que entra traz um novo case, uma nova perspectiva e fortalece todo o ecossistema.</p><div class="crm-purpose-grid" id="crmPurpose"><article><h3>PROPÓSITO</h3><p>Garantir que profissionais e empresas do Brasil liderem a evolução do relacionamento com o cliente, conectando mentes diversas para integrar dados, tecnologia e estratégia, sem barreiras, sem silos e focados em resultados reais.</p></article><article><h3>MISSÃO</h3><p>Elevar a maturidade do ecossistema de CRM no Brasil, capacitando uma comunidade mista de profissionais de Vendas, Marketing, Customer Success e Tecnologia a liderar e construir estratégias de retenção, automação e fidelização de forma prática e colaborativa.</p></article><article><h3>VISÃO</h3><p>Ser o principal ponto de encontro e inteligência coletiva em CRM do Brasil, onde qualquer profissional consiga contribuir (com cases, ferramentas e ideias) e receber (aprendizados práticos, mentoria e networking), sem teorias rasas, sem spam e sem burocracia.</p></article></div><h3 class="crm-values-title">NOSSOS VALORES</h3><div class="crm-values-grid" id="crmValues"><article><span class="crm-card-number">01</span><h4>Protagonismo e Atitude</h4><p>Não esperamos o mercado ou os softwares definirem como devemos trabalhar. Aprendemos, testamos e moldamos a inteligência de CRM na prática.</p></article><article><span class="crm-card-number">02</span><h4>Ambição por Resultados</h4><p>Acreditamos que a retenção e o valor do tempo de vida do cliente (LTV) são os motores de qualquer negócio. Focamos em eficiência, métricas e crescimento sustentável.</p></article><article><span class="crm-card-number">03</span><h4>Ambiente de Aprendizado Real</h4><p>Uma comunidade mista evolui no debate aberto. Criamos um espaço seguro onde errar testes faz parte da evolução e o conhecimento circula sem vaidades.</p></article><article><span class="crm-card-number">04</span><h4>Prática acima de Tudo</h4><p>Reunimos executivos, analistas, consultores e operadores unidos por um objetivo claro: transformar dados e processos em relacionamentos valiosos e duradouros.</p></article></div></section>
-<section id="solucoes" class="crm-section tab-page"><div class="crm-section-label">ABERTO À COMUNIDADE / SOLUÇÕES</div><h2>Conexões que viram próximos passos.</h2><p class="crm-muted">Explore o mercado, descubra oportunidades e conheça quem constrói o futuro do CRM.</p><div class="crm-solution-grid"><a class="crm-solution-card" href="#mercado" data-crm-route="mercado"><span>01 </span><h3>Dashboard executivo</h3><p>Dados agregados para entender o mercado.</p></a><a class="crm-solution-card" href="#vagas" data-crm-route="vagas"><span>02 </span><h3>Vagas de CRM</h3><p>Filtre por cargo, empresa, nível e plataforma.</p></a><a class="crm-solution-card" href="#search" data-crm-route="search"><span>03 </span><h3>Talentos Open to Work</h3><p>Conheça perfis. Entre para acessar os contatos.</p></a><a class="crm-solution-card" href="#freelancers" data-crm-route="freelancers"><span>04 </span><h3>Freelancers</h3><p>Especialistas para tirar seu projeto do papel.</p></a><a class="crm-solution-card" href="#ferramentas" data-crm-route="ferramentas"><span>05 </span><h3>Comparativo de CRMs</h3><p>Explore ferramentas e plataformas do ecossistema.</p></a><a class="crm-solution-card" href="#agencias" data-crm-route="agencias"><span>06 </span><h3>Agências &amp; consultorias</h3><p>Encontre parceiros para sua estratégia.</p></a><a class="crm-solution-card" href="#courses" data-crm-route="courses"><span>07 </span><h3>Cursos</h3><p>Aprenda com conteúdos selecionados.</p></a><a class="crm-solution-card" href="#conteudos" data-crm-route="conteudos"><span>08 </span><h3>Conteúdos da comunidade</h3><p>Cases, ideias e aprendizados em circulação.</p></a><a class="crm-solution-card" href="#cargos" data-crm-route="cargos"><span>09 </span><h3>Cargos &amp; salários</h3><p>Referências agregadas para planejar sua carreira.</p></a><a class="crm-solution-card" href="#conteudos" data-crm-route="conteudos"><h3>Conteúdos, Cases e Frameworks</h3><p>Artigos e materiais da comunidade.</p></a><a class="crm-solution-card" href="#comunidade" data-crm-route="comunidade"><h3>Grupos e Comunidades</h3><p>Encontre seu grupo de CRM, carreira ou tecnologia.</p></a></div></section><section id="pageQuemFaz" class="crm-section tab-page crm-team-page">
-  <div class="crm-section-label"><span>POR TRÁS DA CONEXÃO</span><span>QUEM FAZ ACONTECER</span></div>
-  <div class="crm-team-hero">
-    <div>
-      <p class="crm-team-kicker">PESSOAS, NÃO LOGOS.</p>
-      <h2>A Conexão CRM é construída por quem também vive CRM na prática.</h2>
-      <p class="crm-muted">Estratégia, comunidade, produto e conteúdo se encontram aqui para transformar conhecimento em conexão e conexão em oportunidade.</p>
-    </div>
-    <div class="crm-team-scope" aria-label="Frentes da Conexão CRM">
-      <span>Estratégia</span><span>Comunidade</span><span>Produto</span><span>Conteúdo</span>
-    </div>
-  </div>
-  <div class="crm-team-grid">
-    <article class="crm-team-card">
-      <div class="crm-team-avatar">
-        <span>JA</span>
-        <img src="https://lh3.googleusercontent.com/a/ACg8ocK5UM1XQO5ZsfxXR9UFYwL0AMIwJbtOw8azK85UTGZE2ljwqCzksQ=s192-c" alt="Jaqueline Amaro" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
-      </div>
-      <div class="crm-team-card-body">
-        <p class="crm-team-role-label">FUNDADORA &amp; RESPONSÁVEL PELA CONEXÃO CRM</p>
-        <h3>Jaqueline Amaro</h3>
-        <p class="crm-team-meta">Gerente de CRM · NUVIA.AI</p>
-        <p class="crm-team-description">Responsável por transformar a visão da Conexão CRM em experiência, conteúdo e iniciativas que aproximam profissionais, empresas, ferramentas e oportunidades do ecossistema.</p>
-        <div class="crm-team-responsibilities" aria-label="Responsabilidades">
-          <span>Estratégia &amp; posicionamento</span>
-          <span>Produto &amp; experiência</span>
-          <span>Comunidade &amp; conteúdo</span>
-          <span>Parcerias &amp; evolução</span>
-        </div>
-        <div class="crm-team-social">
-          <a href="https://www.linkedin.com/in/jaquelineamaro/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de Jaqueline Amaro" title="LinkedIn">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8.5H3.3V21h3.2V8.5ZM4.9 3A1.9 1.9 0 1 0 4.9 6.8 1.9 1.9 0 0 0 4.9 3ZM21 13.8c0-3.8-2-5.6-4.8-5.6-2.2 0-3.2 1.2-3.8 2.1V8.5H9.2V21h3.2v-6.2c0-1.6.3-3.2 2.3-3.2 2 0 2 1.8 2 3.3V21H20v-7.2Z"/></svg>
-            <span>LinkedIn</span>
-          </a>
-        </div>
-      </div>
-    </article>
-  </div>
-  <div class="crm-team-community-note">
-    <strong>Feito em comunidade.</strong>
-    <p>A Conexão cresce com a participação de membros, especialistas, parceiros e patrocinadores. Esta página apresenta quem responde pela direção do projeto; as construções coletivas continuam sendo parte central da comunidade.</p>
-  </div>
-</section><section class="crm-tools crm-section" id="ferramentas-publicas"><div class="crm-section-label"><span>02 / PARA SUA CARREIRA</span><span>ACESSO LIVRE</span></div><div class="crm-tool-heading"><h2>Conhecimento que<br>vira <em>decisão.</em></h2><p>Compare possibilidades de carreira e participe dos encontros da comunidade.</p></div><div class="crm-tools-nav"><a href="#calculadora">01, Calculadora CLT x PJ </a><a href="#agenda">02, Agenda da comunidade </a></div><div id="calculadora" class="crm-public-tool"><div class="tab-page" id="pageCalc">
+<section id="solucoes" class="crm-section tab-page"><div class="crm-section-label">ABERTO À COMUNIDADE / SOLUÇÕES</div><h2>Conexões que viram próximos passos.</h2><p class="crm-muted">Explore o mercado, descubra oportunidades e conheça quem constrói o futuro do CRM.</p><div class="crm-solution-grid"><a class="crm-solution-card" href="#mercado" data-crm-route="mercado"><span>01 </span><h3>Dashboard executivo</h3><p>Dados agregados para entender o mercado.</p></a><a class="crm-solution-card" href="#vagas" data-crm-route="vagas"><span>02 </span><h3>Vagas de CRM</h3><p>Filtre por cargo, empresa, nível e plataforma.</p></a><a class="crm-solution-card" href="#search" data-crm-route="search"><span>03 </span><h3>Talentos Open to Work</h3><p>Conheça perfis. Entre para acessar os contatos.</p></a><a class="crm-solution-card" href="#freelancers" data-crm-route="freelancers"><span>04 </span><h3>Freelancers</h3><p>Especialistas para tirar seu projeto do papel.</p></a><a class="crm-solution-card" href="#ferramentas" data-crm-route="ferramentas"><span>05 </span><h3>Comparativo de CRMs</h3><p>Explore ferramentas e plataformas do ecossistema.</p></a><a class="crm-solution-card" href="#agencias" data-crm-route="agencias"><span>06 </span><h3>Agências &amp; consultorias</h3><p>Encontre parceiros para sua estratégia.</p></a><a class="crm-solution-card" href="#courses" data-crm-route="courses"><span>07 </span><h3>Cursos</h3><p>Aprenda com conteúdos selecionados.</p></a><a class="crm-solution-card" href="#conteudos" data-crm-route="conteudos"><span>08 </span><h3>Conteúdos da comunidade</h3><p>Cases, ideias e aprendizados em circulação.</p></a><a class="crm-solution-card" href="#cargos" data-crm-route="cargos"><span>09 </span><h3>Cargos &amp; salários</h3><p>Referências agregadas para planejar sua carreira.</p></a><a class="crm-solution-card" href="#conteudos" data-crm-route="conteudos"><h3>Conteúdos, Cases e Frameworks</h3><p>Artigos e materiais da comunidade.</p></a><a class="crm-solution-card" href="#comunidade" data-crm-route="comunidade"><h3>Grupos e Comunidades</h3><p>Encontre seu grupo de CRM, carreira ou tecnologia.</p></a></div></section><section class="crm-tools crm-section" id="ferramentas-publicas"><div class="crm-section-label"><span>02 / PARA SUA CARREIRA</span><span>ACESSO LIVRE</span></div><div class="crm-tool-heading"><h2>Conhecimento que<br>vira <em>decisão.</em></h2><p>Compare possibilidades de carreira e participe dos encontros da comunidade.</p></div><div class="crm-tools-nav"><a href="#calculadora">01, Calculadora CLT x PJ </a><a href="#agenda">02, Agenda da comunidade </a></div><div id="calculadora" class="crm-public-tool"><div class="tab-page" id="pageCalc">
     <!-- Cláusulas PJ -->
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Calculadora CLT x PJ</h2></div>
@@ -6507,30 +6435,16 @@ async function renderComDiretorio(){
  catch(e){if(epoch===crmAuthEpoch&&request===crmMemberRequest){grid.innerHTML='<p class="empty-state">Não foi possível carregar os membros. <button class="crm-text-button" onclick="renderComDiretorio()">Tentar novamente</button></p>';}}
  finally{if(epoch===crmAuthEpoch&&request===crmMemberRequest)grid.removeAttribute('aria-busy');}
 }
-function crmMemberContactIcon(kind){
- const icons={
-  whatsapp:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.7 11.7 0 0 0 2.1 17.6L.5 23.5l6-1.6A11.7 11.7 0 0 0 12 23h.1A11.7 11.7 0 0 0 20.5 3.5Zm-8.4 17.4a9.7 9.7 0 0 1-5-1.4l-.4-.2-3.5.9.9-3.4-.2-.4a9.6 9.6 0 1 1 8.2 4.5Zm5.3-7.2c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1a8 8 0 0 1-2.3-1.4 8.8 8.8 0 0 1-1.6-2c-.2-.3 0-.5.1-.7l.5-.6.3-.6c.1-.2 0-.5 0-.6l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 3s1.2 3.4 1.4 3.6c.2.2 2.5 3.8 6 5.3.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.7-.7 1.9-1.3.2-.6.2-1.2.2-1.3-.1-.2-.3-.3-.6-.4Z"/></svg>',
-  linkedin:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8.5H3.3V21h3.2V8.5ZM4.9 3A1.9 1.9 0 1 0 4.9 6.8 1.9 1.9 0 0 0 4.9 3ZM21 13.8c0-3.8-2-5.6-4.8-5.6-2.2 0-3.2 1.2-3.8 2.1V8.5H9.2V21h3.2v-6.2c0-1.6.3-3.2 2.3-3.2 2 0 2 1.8 2 3.3V21H20v-7.2Z"/></svg>',
-  instagram:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" fill="none"/><circle cx="12" cy="12" r="4.1" fill="none"/><circle cx="17.4" cy="6.7" r="1" stroke="none"/></svg>',
-  email:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z" fill="none"/><path d="m4 7 8 6 8-6" fill="none"/></svg>',
-  website:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none"/><path d="M3.5 12h17M12 3c2.2 2.4 3.3 5.4 3.3 9S14.2 18.6 12 21c-2.2-2.4-3.3-5.4-3.3-9S9.8 5.4 12 3Z" fill="none"/></svg>'
- };
- return icons[kind]||'';
-}
 function crmMemberContactLinks(m){
  const allowed=Array.isArray(m.contact_channels)?m.contact_channels:[];
  const links=[];
  const wa=String(m.whatsapp||'').replace(/\D/g,'');
  const linkedin=crmHttpUrl(m.linkedin);
- const instagram=crmHttpUrl(m.instagram);
- const website=crmHttpUrl(m.website);
  const email=String(m.email||'').trim();
- if(allowed.includes('whatsapp')&&wa)links.push({kind:'whatsapp',label:'WhatsApp',href:'https://wa.me/'+wa,email:false});
- if(instagram)links.push({kind:'instagram',label:'Instagram',href:instagram,email:false});
- if(allowed.includes('linkedin')&&linkedin)links.push({kind:'linkedin',label:'LinkedIn',href:linkedin,email:false});
- if(website)links.push({kind:'website',label:'Site',href:website,email:false});
- if(allowed.includes('email')&&email)links.push({kind:'email',label:'E-mail',href:'mailto:'+encodeURIComponent(email),email:true});
- return links.map(x=>'<a class="crm-member-contact-icon crm-member-contact-'+x.kind+'" href="'+escapeHtml(x.href)+'" aria-label="'+escapeHtml(x.label)+'" title="'+escapeHtml(x.label)+'" '+(x.email?'':'target="_blank" rel="noopener noreferrer"')+'>'+crmMemberContactIcon(x.kind)+'<span>'+escapeHtml(x.label)+'</span></a>').join('');
+ if(allowed.includes('whatsapp')&&wa)links.push({label:'WhatsApp',href:'https://wa.me/'+wa,email:false});
+ if(allowed.includes('linkedin')&&linkedin)links.push({label:'LinkedIn',href:linkedin,email:false});
+ if(allowed.includes('email')&&email)links.push({label:'E-mail',href:'mailto:'+encodeURIComponent(email),email:true});
+ return links.map(x=>'<a href="'+escapeHtml(x.href)+'" '+(x.email?'':'target="_blank" rel="noopener noreferrer"')+'>'+escapeHtml(x.label)+'</a>').join('');
 }
 
 function renderComDiretorioCards(all,q){
@@ -7588,8 +7502,8 @@ function deactivateLoggedArea(){
 
   const loginBtn = document.getElementById('loginBtn');
   if(loginBtn && !isAdminLoggedIn && !currentUserEmail){
-    loginBtn.textContent = 'MINHA ÁREA';
-    loginBtn.style.background = '#2563eb';
+    loginBtn.textContent = 'ACESSO';
+    loginBtn.style.background = '#1e3a8a';
     loginBtn.onclick = openLoginModal;
   }
 }
@@ -8225,8 +8139,8 @@ document.addEventListener('DOMContentLoaded', authInit);
 
 </script>
 <script id="crm-rebrand-ui">/* Public browsing is separate from Supabase-authenticated member actions. */
-const crmRoutes={'patrocinio/apoiadores':['pageApoiadores','Quem nos apoia'],'quem-somos':['quem-somos','Quem somos'],'quem-faz':['pageQuemFaz','Quem faz acontecer'],solucoes:['solucoes','Soluções'],'public-match':['crmPublicMatch','Open to Work'],dashboard:['crmPersonalDashboard','Dashboard'],mercado:['pageDashboard','Dashboard executivo'],vagas:['pageVagas','Vagas de CRM'],'vagas-salvas':['subpage-vagas-salvas','Vagas salvas & Match IA'],search:['pageSearch','Open to Work'],membros:['subpage-membros','Membros da Comunidade'],freelancers:['pageFreelancers','Freelancers'],membro:['pageMembro','Meu Painel'],cargos:['pageCargos','Cargos & Salários'],calc:['pageCalc','CLT x PJ'],plataformas:['pagePlataformas','Plataformas'],agencias:['pageAgencias','Agências & Consultorias'],courses:['pageCourses','Cursos'],conteudos:['pageConteudos','Conteúdos'],eventos:['pageEventos','Eventos da Comunidade'],comunidade:['pageComunidade','Comunidade / Grupos'],patrocinio:['pagePatrocinio','Seja Patrocinador'],pesquisa:['pagePesquisa','Pesquisas & Censo'],ferramentas:['pageFerramentas','Comparativo de CRMs'],'match-recrutador':['crmRecruiterAI','Match por IA'],'meus-eventos':['crmMyEvents','Meus Eventos'],publicar:['crmPublish','Publicar Vaga / Anunciar Agência']};
-const crmPublicRoutes=new Set(['patrocinio/apoiadores','quem-somos','quem-faz','solucoes','mercado','vagas','search','freelancers','cargos','calc','plataformas','agencias','courses','conteudos','eventos','ferramentas','patrocinio','pesquisa','comunidade','public-match']);
+const crmRoutes={'patrocinio/apoiadores':['pageApoiadores','Quem nos apoia'],'quem-somos':['quem-somos','Quem somos'],solucoes:['solucoes','Soluções'],'public-match':['crmPublicMatch','Open to Work'],dashboard:['crmPersonalDashboard','Dashboard'],mercado:['pageDashboard','Dashboard executivo'],vagas:['pageVagas','Vagas de CRM'],'vagas-salvas':['subpage-vagas-salvas','Vagas salvas & Match IA'],search:['pageSearch','Open to Work'],membros:['subpage-membros','Membros da Comunidade'],freelancers:['pageFreelancers','Freelancers'],membro:['pageMembro','Meu Painel'],cargos:['pageCargos','Cargos & Salários'],calc:['pageCalc','CLT x PJ'],plataformas:['pagePlataformas','Plataformas'],agencias:['pageAgencias','Agências & Consultorias'],courses:['pageCourses','Cursos'],conteudos:['pageConteudos','Conteúdos'],eventos:['pageEventos','Eventos da Comunidade'],comunidade:['pageComunidade','Comunidade / Grupos'],patrocinio:['pagePatrocinio','Seja Patrocinador'],pesquisa:['pagePesquisa','Pesquisas & Censo'],ferramentas:['pageFerramentas','Comparativo de CRMs'],'match-recrutador':['crmRecruiterAI','Match por IA'],'meus-eventos':['crmMyEvents','Meus Eventos'],publicar:['crmPublish','Publicar Vaga / Anunciar Agência']};
+const crmPublicRoutes=new Set(['patrocinio/apoiadores','quem-somos','solucoes','mercado','vagas','search','freelancers','cargos','calc','plataformas','agencias','courses','conteudos','eventos','ferramentas','patrocinio','pesquisa','comunidade','public-match']);
 const crmById=id=>document.getElementById(id);
 const CRM_PORTAL_URL='https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-portal';
 let crmActiveRoute='inicio',crmWasSignedIn=false,crmAuthEpoch=0,crmValidatedUserId=null,crmPendingRoute=null;
@@ -8276,7 +8190,7 @@ function crmSyncAuth(){
   if(signed){crmById('crmJoinDialog')?.close();for(const [id] of Object.values(crmRoutes)){const p=crmById(id);if(p)crmById('crmPages').append(p);}crmSetLanding(false);crmNavigate(crmPendingRoute||'membros',true);crmPendingRoute=null;}
   else{crmToggleMenu(false);crmNavigate('inicio');}
  }
- if(!signed){const b=crmById('loginBtn');if(b)b.textContent='MINHA ÁREA';}
+ if(!signed){const b=crmById('loginBtn');if(b)b.textContent='ENTRAR';}
 }
 function crmSetLanding(show){
  document.querySelectorAll('#view-publica > :not(.crm-navbar):not(#crmPublicWorkspace)').forEach(e=>{e.hidden=!show||['quem-somos','solucoes','ferramentas-publicas'].includes(e.id);});
@@ -8295,10 +8209,10 @@ function crmNavigate(route,updateHash=true){
  if(!crmSignedIn()&&!crmPublicRoutes.has(route)){crmPendingRoute=route;crmJoin('Faça login gratuito para acessar esta área.');return;}
  crmActiveRoute=route;window.posthogTracker?.pageView(route);const id=crmRoutes[route][0];
  document.querySelectorAll('.crm-public-tabs [data-crm-route], .crm-navlinks > [data-crm-route]').forEach(link=>{if(link.dataset.crmRoute===route||(route==='patrocinio/apoiadores'&&link.dataset.crmRoute==='patrocinio')||(route==='public-match'&&link.dataset.crmRoute==='search'))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
- const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','quem-faz','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
+ const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
  if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{crmById('crmPages').append(crmById(id));}
  const base=route==='mercado'?'dashboard':route==='vagas-salvas'?'membro':route==='membros'?'comunidade':route;
- if(!window.CXWorkspace?.handles(route)&&!['admin','membros','patrocinio/apoiadores','quem-somos','quem-faz','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
+ if(!window.CXWorkspace?.handles(route)&&!['admin','membros','patrocinio/apoiadores','quem-somos','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
  document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.id===id));
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
@@ -8318,7 +8232,7 @@ function crmNavigate(route,updateHash=true){
 }
 function crmInitPublicTools(){if(typeof initCalcTab==='function'&&!calcInitialized)initCalcTab();if(typeof initEventosTab==='function'&&!eventosInitialized)Promise.resolve(initEventosTab()).catch(()=>{});}
 function crmJoin(message){
- let d=crmById('crmJoinDialog');if(!d){d=document.createElement('dialog');d.id='crmJoinDialog';d.className='crm-join-dialog';d.innerHTML='<button class="crm-close" aria-label="Fechar" onclick="this.closest(\'dialog\').close()">Fechar</button><h2>Sua próxima conexão<br>começa aqui.</h2><p id="crmJoinMessage"></p><button class="crm-button" id="crmJoinGoogle">ENTRAR NA MINHA ÁREA</button><small>Acesso gratuito para membros e recrutadores. Use a mesma conta para voltar.</small><p id="crmJoinError" role="status"></p>';document.body.append(d);d.addEventListener('click',e=>{if(e.target===d)d.close();});crmById('crmJoinGoogle').addEventListener('click',async()=>{try{await handleGoogleLogin();}catch(e){crmById('crmJoinError').textContent=e.message||'Não foi possível iniciar o acesso.';}});}
+ let d=crmById('crmJoinDialog');if(!d){d=document.createElement('dialog');d.id='crmJoinDialog';d.className='crm-join-dialog';d.innerHTML='<button class="crm-close" aria-label="Fechar" onclick="this.closest(\'dialog\').close()">Fechar</button><h2>Sua próxima conexão<br>começa aqui.</h2><p id="crmJoinMessage"></p><button class="crm-button" id="crmJoinGoogle">CONTINUAR COM GOOGLE </button><small>Login gratuito para membros e recrutadores. Use a mesma conta para voltar.</small><p id="crmJoinError" role="status"></p>';document.body.append(d);d.addEventListener('click',e=>{if(e.target===d)d.close();});crmById('crmJoinGoogle').addEventListener('click',async()=>{try{await handleGoogleLogin();}catch(e){crmById('crmJoinError').textContent=e.message||'Não foi possível iniciar o acesso.';}});}
  crmById('crmJoinMessage').textContent=message||'Crie seu perfil para salvar vagas, conhecer profissionais e participar da comunidade.';if(!d.open)d.showModal();
 }
 async function crmLogout(){
@@ -8381,22 +8295,7 @@ function crmEnhanceCards(){
  /* A confirmação de presença é feita pelo controle Vou / Talvez / Não vou do próprio card. */
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
-function crmHandleHash(){
- let hash=decodeURIComponent(location.hash.slice(1));
- hash=crmRouteAliases[hash]||hash;
- if(hash.includes('access_token'))return;
- if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}
- const route=hash.replace(/^subpage-/,'')||'inicio';
- // Não abrir dialog modal automaticamente ao restaurar uma rota privada.
- // Em abas antigas isso deixava o restante da página "inerte" e parecia travado.
- if(!crmSignedIn() && route!=='inicio' && !crmPublicRoutes.has(route)){
-   crmPendingRoute=route;
-   history.replaceState(null,'','#inicio');
-   crmNavigate('inicio',false);
-   return;
- }
- crmNavigate(route,false);
-}
+function crmHandleHash(){let hash=decodeURIComponent(location.hash.slice(1));hash=crmRouteAliases[hash]||hash;if(hash.includes('access_token'))return;if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}crmNavigate(hash.replace(/^subpage-/, '')||'inicio',false);}
 document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleHash();
