@@ -1174,10 +1174,28 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .cx-resource-modal{width:min(560px,calc(100vw - 28px));max-height:90dvh;overflow:auto;border:1px solid #48433e;border-radius:14px;background:#181716;color:#f8fafc;padding:0}.cx-resource-modal::backdrop{background:#000b;backdrop-filter:blur(4px)}.cx-resource-modal form{padding:24px}.cx-resource-modal-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:20px}.cx-resource-modal-head h2{margin:5px 0 0;font-size:24px}.cx-resource-modal-head button{background:none;border:0;color:#b6b1aa;font-size:13px}.cx-resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cx-resource-modal .crm-field{margin-bottom:12px}.cx-resource-modal textarea{min-height:100px}.cx-resource-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.cx-resource-footer .crm-button{min-height:42px;padding:10px 15px}
 @media(max-width:900px){.cx-format-links{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-featured-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.cx-hub{gap:26px}.cx-hub-hero{align-items:flex-start;flex-direction:column}.cx-hub-hero p{font-size:15px}.cx-suggest-btn{width:100%}.cx-format-links{grid-template-columns:1fr 1fr}.cx-curation-note{grid-template-columns:1fr}.cx-curation-note button{width:100%}.cx-featured-grid{grid-template-columns:1fr}.cx-filter-group{display:block}.cx-filter-label{display:block;width:auto;padding:0;margin-bottom:8px}.cx-resource-grid{grid-template-columns:1fr}}
-</style>  <script src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js" defer></script>
-  <script src="/assets/inngage-integration.js?v=20260930-1" defer></script>
-</head>
+</style></head>
 <body>
+<style id="crm-emergency-click-recovery">
+/* RECUPERAÇÃO DE PRODUÇÃO: nenhuma camada oculta pode capturar cliques. */
+.ev-modal-overlay:not(.open), .crm-mobile-scrim {display:none!important;pointer-events:none!important}
+body:not(.crm-menu-open) .crm-mobile-scrim{display:none!important;pointer-events:none!important}
+dialog:not([open]){pointer-events:none!important}
+#crmSurveyReminder{pointer-events:auto}
+</style>
+<script id="crm-emergency-click-recovery-js">
+(function(){
+  function recover(){
+    try{document.body.classList.remove('crm-menu-open');document.body.style.overflow='';document.documentElement.style.overflow='';}catch(e){}
+    document.querySelectorAll('.ev-modal-overlay').forEach(function(el){if(!el.classList.contains('open')){el.style.display='none';el.style.pointerEvents='none';}});
+    document.querySelectorAll('.crm-mobile-scrim').forEach(function(el){el.style.pointerEvents='none';});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',recover,{once:true});else recover();
+  window.addEventListener('pageshow',recover);
+  // Remove service workers antigos que possam manter HTML/JS obsoleto.
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}).catch(function(){});}
+})();
+</script>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
  <h2 id="crmSurveyReminderTitle">Sua experiência faz diferença.</h2>
