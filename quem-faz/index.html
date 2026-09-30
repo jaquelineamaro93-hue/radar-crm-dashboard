@@ -75,7 +75,7 @@ async function load(){
     const initials=esc((m.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
     const tags=(m.responsibilities||[]).map(x=>'<span>'+esc(x)+'</span>').join('');
     return '<article class="card">'+(isAdmin?'<button class="btn secondary edit" onclick="openEditor('+Number(m.id)+')">Editar</button>':'')+
-      '<div class="cardtop"><div class="avatar">'+(photo?'<img src="'+esc(photo)+'" alt="">':initials)+'</div><div><h2>'+esc(m.full_name)+'</h2><div class="role">'+esc(m.role_title||'Conexão CRM')+'</div></div></div>'+
+      '<div class="cardtop"><div class="avatar">'+(photo?'<img src="'+esc(photo)+'" alt="Foto de '+esc(m.full_name)+'" referrerpolicy="no-referrer" onerror="this.remove()">':initials)+'</div><div><h2>'+esc(m.full_name)+'</h2><div class="role">'+esc(m.role_title||'Conexão CRM')+'</div></div></div>'+
       '<p class="desc">'+esc(m.description||'')+'</p>'+(tags?'<div class="tags">'+tags+'</div>':'')+
       (linkedin?'<div class="links"><a href="'+esc(linkedin)+'" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>':'')+
       (isAdmin&&m.is_active===false?'<div class="hiddenflag">OCULTO DO PÚBLICO</div>':'')+'</article>';
