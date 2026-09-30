@@ -7588,8 +7588,8 @@ function deactivateLoggedArea(){
 
   const loginBtn = document.getElementById('loginBtn');
   if(loginBtn && !isAdminLoggedIn && !currentUserEmail){
-    loginBtn.textContent = 'ACESSO';
-    loginBtn.style.background = '#1e3a8a';
+    loginBtn.textContent = 'MINHA ÁREA';
+    loginBtn.style.background = '#2563eb';
     loginBtn.onclick = openLoginModal;
   }
 }
@@ -8381,7 +8381,22 @@ function crmEnhanceCards(){
  /* A confirmação de presença é feita pelo controle Vou / Talvez / Não vou do próprio card. */
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
-function crmHandleHash(){let hash=decodeURIComponent(location.hash.slice(1));hash=crmRouteAliases[hash]||hash;if(hash.includes('access_token'))return;if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}crmNavigate(hash.replace(/^subpage-/, '')||'inicio',false);}
+function crmHandleHash(){
+ let hash=decodeURIComponent(location.hash.slice(1));
+ hash=crmRouteAliases[hash]||hash;
+ if(hash.includes('access_token'))return;
+ if(hash==='pesquisa-crm'||hash==='pesquisa-censo'){crmNavigate('pesquisa',false);switchSubTab(hash==='pesquisa-censo'?'censo':'crm',false);return;}
+ const route=hash.replace(/^subpage-/,'')||'inicio';
+ // Não abrir dialog modal automaticamente ao restaurar uma rota privada.
+ // Em abas antigas isso deixava o restante da página "inerte" e parecia travado.
+ if(!crmSignedIn() && route!=='inicio' && !crmPublicRoutes.has(route)){
+   crmPendingRoute=route;
+   history.replaceState(null,'','#inicio');
+   crmNavigate('inicio',false);
+   return;
+ }
+ crmNavigate(route,false);
+}
 document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleHash();
