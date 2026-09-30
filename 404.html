@@ -5963,9 +5963,16 @@ function crmCommunityLogoUrl(path){
  const safe=crmCommunityLogoPath(path);if(!safe)return '';
  return 'https://rwkbpafpniwzvlkfngag.supabase.co/storage/v1/object/public/'+CRM_COMMUNITY_LOGO_BUCKET+'/'+safe.split('/').map(encodeURIComponent).join('/');
 }
-function crmBrandMark(path,name){
- const logo=crmCommunityLogoUrl(path),initials=escapeHtml(initialsFor(name||'?')),bg=avatarColorFor(name||'?');
- return '<span class="crm-brand-mark" style="background:'+bg+'"><span>'+initials+'</span>'+(logo?'<img src="'+escapeHtml(logo)+'" alt="Logo de '+escapeHtml(name||'empresa')+'" loading="lazy" onerror="this.remove()">':'')+'</span>';
+function crmPlatformFallbackLogo(site){
+ const url=crmHttpUrl(site);if(!url)return '';
+ try{
+  const host=new URL(url).hostname.replace(/^www\./,'');
+  return 'https://www.google.com/s2/favicons?domain='+encodeURIComponent(host)+'&sz=128';
+ }catch{return ''}
+}
+function crmBrandMark(path,name,site){
+ const stored=crmCommunityLogoUrl(path),fallback=crmPlatformFallbackLogo(site),logo=stored||fallback,initials=escapeHtml(initialsFor(name||'?')),bg=avatarColorFor(name||'?');
+ return '<span class="crm-brand-mark" style="background:'+bg+'"><span>'+initials+'</span>'+(logo?'<img src="'+escapeHtml(logo)+'" alt="Logo de '+escapeHtml(name||'empresa')+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</span>';
 }
 async function crmUploadCommunityLogo(input,kind){
  const file=input?.files?.[0];if(!file)return null;
@@ -6167,7 +6174,7 @@ function starRowHtml(nome){
 
 function agenciaCardHtml(a){
  const reviews=(window.AG_REVIEWS||[]).filter(r=>r.agencia_nome===a.nome);
- return '<article class="pro-card"><div class="pro-head">'+crmBrandMark(a.logo_path,a.nome)+'<div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span>'+crmCatalogLogoButton('agency',a.nome,a.logo_path)+'</div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
+ return '<article class="pro-card"><div class="pro-head">'+crmBrandMark(a.logo_path,a.nome,a.site)+'<div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span>'+crmCatalogLogoButton('agency',a.nome,a.logo_path)+'</div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
 }
 function renderAgencias(){
   const q = (document.getElementById('agenciaSearchText').value||'').toLowerCase().trim();
@@ -7160,7 +7167,7 @@ function renderPfGrid(){
   }
   const gridEl = document.getElementById('pfGrid');
   if(!list.length){ gridEl.innerHTML = '<div class="empty-state">Nenhuma ferramenta nesta categoria. <button onclick="pfFilterBy(\'Todos\')">Ver todas as ferramentas</button></div>'; return; }
-  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head">'+crmBrandMark(t.logo_path,t.name)+'<div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3>'+crmCatalogLogoButton('platform',t.name,t.logo_path)+'</div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
+  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head">'+crmBrandMark(t.logo_path,t.name,t.site)+'<div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3>'+crmCatalogLogoButton('platform',t.name,t.logo_path)+'</div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
 }
 
 // ============ PLATAFORMAS RECOMENDADAS - VOTAÇÃO E REVIEWS (Supabase) ============
