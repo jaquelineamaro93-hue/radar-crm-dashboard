@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quem Faz | Conexão CRM</title>
+<meta name="description" content="Conheça quem constrói a Conexão CRM.">
+<link rel="icon" href="/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0d0d0d;--panel:#181716;--line:#35322e;--text:#f4f3ed;--muted:#aaa79f;--accent:#ff8a3d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+a{color:inherit}.top{min-height:92px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 5vw;background:#0d0d0d;position:sticky;top:0;z-index:20}
+.brand{text-decoration:none;font-size:20px;font-weight:900;letter-spacing:-1px}.brand span{display:block;color:var(--accent);font-size:27px}.nav{display:flex;align-items:center;gap:24px}.nav a{text-decoration:none;font-size:13px;font-weight:800;letter-spacing:.04em}.nav a:hover{color:var(--accent)}
+main{max-width:1440px;margin:auto;padding:64px 5vw 90px}.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:800;margin-bottom:18px}.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;margin-bottom:50px}.hero h1{font-size:clamp(46px,7vw,92px);line-height:.98;letter-spacing:-.055em;margin:0 0 18px}.hero h1 em{color:var(--accent);font-style:normal}.hero p{max-width:800px;font-size:18px;line-height:1.7;color:#c8c5bf;margin:0}
+.adminbar{display:none;align-items:center;gap:10px;flex-wrap:wrap}.adminbar.show{display:flex}.btn{border:1px solid var(--accent);background:var(--accent);color:#111;padding:12px 16px;border-radius:7px;font-weight:800;cursor:pointer}.btn.secondary{background:transparent;color:var(--accent);border-color:#754425}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}.card{position:relative;background:var(--panel);border:1px solid #3d3833;border-radius:16px;padding:26px;min-height:330px}.cardtop{display:flex;gap:18px;align-items:center;margin-bottom:22px}.avatar{width:90px;height:90px;flex:0 0 90px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#2a1d15;border:1px solid #5a3520;color:var(--accent);font-size:29px;font-weight:900}.avatar img{width:100%;height:100%;object-fit:cover}.card h2{font-size:27px;margin:0 0 6px}.role{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.desc{color:#d1d5db;line-height:1.72;font-size:15px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}.tags span{padding:7px 10px;border:1px solid #4b4540;border-radius:999px;background:#111;color:#d8d4cc;font-size:12px}.links{display:flex;gap:8px;flex-wrap:wrap}.links a{border:1px solid #5a3520;border-radius:8px;background:#21170f;color:#fdba74;text-decoration:none;padding:9px 12px;font-size:13px;font-weight:800}.edit{position:absolute;right:16px;top:16px}.hiddenflag{margin-top:14px;color:#f3a484;font-size:12px;font-weight:800}.empty{grid-column:1/-1;padding:42px;text-align:center;border:1px dashed #48433e;border-radius:12px;color:var(--muted)}
+dialog{width:min(700px,calc(100vw - 28px));max-height:90vh;overflow:auto;background:#181716;color:var(--text);border:1px solid #4b4540;border-radius:14px;padding:24px}dialog::backdrop{background:#000c;backdrop-filter:blur(4px)}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:grid;gap:6px;color:#c5c0b8;font-size:13px}input,textarea{width:100%;background:#211f1d;color:var(--text);border:1px solid #48433e;border-radius:7px;padding:11px;font:inherit}textarea{min-height:110px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.close{background:none;border:0;color:var(--text);font-size:25px;cursor:pointer}.status{min-height:22px;color:var(--muted)}
+@media(max-width:760px){.top{padding:18px 22px;align-items:flex-start}.nav{gap:12px;flex-wrap:wrap;justify-content:flex-end}.nav a:not(.home){display:none}main{padding:42px 22px 70px}.hero{display:block}.adminbar{margin-top:22px}.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="/">CONEXÃO <span>CRM.</span></a><nav class="nav"><a class="home" href="/">INÍCIO</a><a href="/#quem-somos">QUEM SOMOS</a><a href="/#solucoes">SOLUÇÕES</a><a href="/#patrocinio">SEJA PATROCINADOR</a></nav></header>
+<main>
+<div class="eyebrow">POR TRÁS DA CONEXÃO · QUEM FAZ ACONTECER</div>
+<section class="hero"><div><h1>Quem constrói a<br><em>Conexão CRM.</em></h1><p>Conheça as pessoas responsáveis por transformar estratégia, comunidade, conteúdo e produto em experiências para o ecossistema de CRM.</p></div><div id="adminBar" class="adminbar"><button class="btn" onclick="openEditor()">+ Adicionar pessoa</button><span style="font-size:12px;color:var(--muted)">Controles visíveis apenas para administradores.</span></div></section>
+<section id="grid" class="grid"><div class="empty">Carregando equipe…</div></section>
+</main>
+<dialog id="editor"></dialog>
+<script>
+const SUPABASE_URL='https://rwkbpafpniwzvlkfngag.supabase.co';
+const SUPABASE_KEY='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let members=[],isAdmin=false,currentSession=null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function safeUrl(v){try{const u=new URL(String(v||''));return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}}
+async function detectAdmin(){
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    currentSession=session||null;
+    if(!session){isAdmin=false;document.getElementById('adminBar').classList.remove('show');return}
+    const {data,error}=await sb.rpc('crm_is_admin');
+    isAdmin=!error&&data===true;
+  }catch{currentSession=null;isAdmin=false}
+  document.getElementById('adminBar').classList.toggle('show',isAdmin);
+}
+async function load(){
+  await detectAdmin();
+  const q=sb.from('crm_team_members').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true});
+  const {data,error}=await q;
+  const grid=document.getElementById('grid');
+  if(error){console.error(error);grid.innerHTML='<div class="empty">Não foi possível carregar a equipe agora.</div>';return}
+  members=data||[];
+
+  // Se o administrador logado também é um membro da equipe, reutiliza a foto
+  // do Google e persiste a URL para que visitantes públicos também a vejam.
+  const googleAvatar=currentSession?.user?.user_metadata?.avatar_url||currentSession?.user?.user_metadata?.picture||'';
+  const currentUserId=currentSession?.user?.id||null;
+  if(isAdmin&&googleAvatar&&currentUserId){
+    const mine=members.find(x=>x.profile_id===currentUserId);
+    if(mine){
+      const needsSync=mine.photo_url!==googleAvatar;
+      mine.photo_url=googleAvatar;
+      const {error:photoSyncError}=needsSync
+        ? await sb.from('crm_team_members').update({photo_url:googleAvatar,updated_at:new Date().toISOString()}).eq('id',mine.id)
+        : {error:null};
+      if(photoSyncError) console.warn('Não foi possível sincronizar a foto do Google.',photoSyncError);
+    }
+  }
+
+  const list=isAdmin?members:members.filter(x=>x.is_active!==false);
+  if(!list.length){grid.innerHTML='<div class="empty">Em breve você conhecerá quem faz a Conexão CRM acontecer.</div>';return}
+  grid.innerHTML=list.map(m=>{
+    const photo=safeUrl(m.photo_url),linkedin=safeUrl(m.linkedin_url);
+    const initials=esc((m.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
+    const tags=(m.responsibilities||[]).map(x=>'<span>'+esc(x)+'</span>').join('');
+    return '<article class="card">'+(isAdmin?'<button class="btn secondary edit" onclick="openEditor('+Number(m.id)+')">Editar</button>':'')+
+      '<div class="cardtop"><div class="avatar">'+(photo?'<img src="'+esc(photo)+'" alt="">':initials)+'</div><div><h2>'+esc(m.full_name)+'</h2><div class="role">'+esc(m.role_title||'Conexão CRM')+'</div></div></div>'+
+      '<p class="desc">'+esc(m.description||'')+'</p>'+(tags?'<div class="tags">'+tags+'</div>':'')+
+      (linkedin?'<div class="links"><a href="'+esc(linkedin)+'" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>':'')+
+      (isAdmin&&m.is_active===false?'<div class="hiddenflag">OCULTO DO PÚBLICO</div>':'')+'</article>';
+  }).join('');
+}
+function openEditor(id){
+  if(!isAdmin)return;
+  const m=id?members.find(x=>Number(x.id)===Number(id)):null,d=document.getElementById('editor');
+  d.innerHTML='<form id="form"><div style="display:flex;justify-content:space-between;gap:15px"><div><div class="eyebrow" style="margin-bottom:7px">ADMIN · QUEM FAZ</div><h2 style="margin:0 0 20px">'+(m?'Editar pessoa':'Adicionar pessoa')+'</h2></div><button type="button" class="close" onclick="editor.close()">×</button></div>'+
+  '<div class="formgrid"><label>Nome<input name="full_name" required value="'+esc(m?.full_name||'')+'"></label><label>Função / título<input name="role_title" value="'+esc(m?.role_title||'')+'"></label>'+
+  '<label class="full">Descrição<textarea name="description">'+esc(m?.description||'')+'</textarea></label><label class="full">Responsabilidades (separe por vírgulas)<textarea name="responsibilities">'+esc((m?.responsibilities||[]).join(', '))+'</textarea></label>'+
+  '<label>URL da foto<input name="photo_url" type="url" value="'+esc(m?.photo_url||'')+'"></label><label>LinkedIn<input name="linkedin_url" type="url" value="'+esc(m?.linkedin_url||'')+'"></label>'+
+  '<label>Ordem<input name="sort_order" type="number" value="'+esc(m?.sort_order??100)+'"></label><label style="display:flex;grid-template-columns:auto 1fr;align-items:center;margin-top:24px"><input name="is_active" type="checkbox" '+(m?.is_active===false?'':'checked')+'> Exibir publicamente</label></div>'+
+  '<div id="status" class="status"></div><div class="actions"><button class="btn secondary" type="button" onclick="editor.close()">Cancelar</button><button class="btn" type="submit">Salvar</button></div></form>';
+  d.showModal();d.querySelector('#form').onsubmit=e=>save(e,m?.id);
+}
+async function save(e,id){
+  e.preventDefault();if(!isAdmin)return;
+  const f=e.currentTarget,fd=new FormData(f),st=document.getElementById('status'),b=f.querySelector('[type=submit]');
+  const payload={full_name:String(fd.get('full_name')||'').trim(),role_title:String(fd.get('role_title')||'').trim()||null,description:String(fd.get('description')||'').trim()||null,responsibilities:String(fd.get('responsibilities')||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,12),photo_url:String(fd.get('photo_url')||'').trim()||null,linkedin_url:String(fd.get('linkedin_url')||'').trim()||null,sort_order:Number(fd.get('sort_order')||100),is_active:fd.get('is_active')==='on',updated_at:new Date().toISOString()};
+  b.disabled=true;st.textContent='Salvando…';
+  const {error}=id?await sb.from('crm_team_members').update(payload).eq('id',id):await sb.from('crm_team_members').insert(payload);
+  b.disabled=false;if(error){console.error(error);st.textContent='Não foi possível salvar. Confirme que você está logada como administradora.';return}
+  document.getElementById('editor').close();await load();
+}
+sb.auth.onAuthStateChange(()=>setTimeout(load,0));load();
+</script>
+</body></html>
