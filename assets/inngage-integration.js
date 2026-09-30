@@ -9,9 +9,28 @@ function ready(fn,tries=0){
   }
   if(tries<READY_MAX)setTimeout(()=>ready(fn,tries+1),READY_DELAY);
 }
-function fields(profile={}){
+function posthogContext(){
+  let sessionId,distinctId;
+  try{sessionId=window.posthog?.get_session_id?.()}catch{}
+  try{distinctId=window.posthog?.get_distinct_id?.()}catch{}
+  return compactObject({posthog_session_id:sessionId,posthog_distinct_id:distinctId});
+}
+function phone(value){
+  let d=String(value||'').replace(/\D/g,'');
+  if(!d)return undefined;
+  if(d.startsWith('00'))d=d.slice(2);
+  if(d.length===10||d.length===11)d='55'+d;
+  return d;
+}
+function fields(profile={},user={}){
   return compactObject({
-    nome:clean(profile.full_name),
+    user_id:user.id,
+    nome:clean(profile.full_name||user.user_metadata?.full_name),
+    email:clean(user.email)?.toLowerCase(),
+    telefone:phone(profile.whatsapp),
+    is_member:true,
+    logged_in:true,
+    tipo_usuario:(typeof crmAdminVerified!=='undefined'&&crmAdminVerified)?'admin':'member',
     cargo:clean(profile.headline),
     empresa_atual:clean(profile.current_company),
     senioridade:clean(profile.seniority),
@@ -28,14 +47,25 @@ window.crmInngageSyncIdentity=function(user,profile){
   if(!user?.email)return;
   ready(()=>{
     const email=String(user.email).trim().toLowerCase();
-    window.newCustomField(fields(profile),email,email,null);
+    window.newCustomField(fields(profile,user),email,email,phone(profile?.whatsapp)||null);
   });
 };
 window.crmInngageEvent=function(name,values={},identifier){
   if(!name)return;
   ready(()=>{
     const id=identifier||(typeof CURRENT_USER!=='undefined'&&CURRENT_USER?.email?String(CURRENT_USER.email).trim().toLowerCase():undefined);
-    window.newEvent({event_name:String(name),event_values:compactObject({...values,origem:'conexao_crm'})},id);
+    const user=(typeof CURRENT_USER!=='undefined'&&CURRENT_USER)||{};
+    const profile=(typeof CURRENT_PROFILE!=='undefined'&&CURRENT_PROFILE)||{};
+    window.newEvent({event_name:String(name),event_values:compactObject({
+      ...values,
+      user_id:user.id,
+      email:user.email?String(user.email).trim().toLowerCase():undefined,
+      telefone:phone(profile.whatsapp),
+      is_member:!!user.id,
+      logged_in:!!user.id,
+      ...posthogContext(),
+      origem:'conexao_crm'
+    })},id);
   });
 };
 window.crmInngagePageView=function(){
