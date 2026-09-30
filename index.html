@@ -6174,7 +6174,7 @@ function starRowHtml(nome){
 
 function agenciaCardHtml(a){
  const reviews=(window.AG_REVIEWS||[]).filter(r=>r.agencia_nome===a.nome);
- return '<article class="pro-card"><div class="pro-head">'+crmBrandMark(a.logo_path,a.nome)+'<div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span>'+crmCatalogLogoButton('agency',a.nome,a.logo_path)+'</div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
+ return '<article class="pro-card"><div class="pro-head">'+crmBrandMark(a.logo_path,a.nome,a.site)+'<div><h3>'+escapeHtml(a.nome)+'</h3><span class="pro-tag">'+escapeHtml(a.especialidade||'Consultoria')+'</span>'+crmCatalogLogoButton('agency',a.nome,a.logo_path)+'</div></div><div class="pro-body"><p>'+escapeHtml(a.descricao||'Conheça esta agência.')+'</p></div><div class="pro-footer">'+(crmSafeUrl(a.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(a.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('agencia',a.nome,reviews)+'</div></article>';
 }
 function renderAgencias(){
   const q = (document.getElementById('agenciaSearchText').value||'').toLowerCase().trim();
@@ -7167,7 +7167,7 @@ function renderPfGrid(){
   }
   const gridEl = document.getElementById('pfGrid');
   if(!list.length){ gridEl.innerHTML = '<div class="empty-state">Nenhuma ferramenta nesta categoria. <button onclick="pfFilterBy(\'Todos\')">Ver todas as ferramentas</button></div>'; return; }
-  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head">'+crmBrandMark(t.logo_path,t.name)+'<div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3>'+crmCatalogLogoButton('platform',t.name,t.logo_path)+'</div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
+  gridEl.innerHTML = list.map(t=>'<article class="pf-card"><div class="pf-card-head">'+crmBrandMark(t.logo_path,t.name,t.site)+'<div><span class="pf-cat">'+escapeHtml(t.cat)+'</span><h3>'+escapeHtml(t.name)+'</h3>'+crmCatalogLogoButton('platform',t.name,t.logo_path)+'</div></div><p>'+escapeHtml(t.desc||'')+'</p><div class="pf-tags">'+(t.tags||[]).map(tag=>'<span class="pf-tag">'+escapeHtml(tag)+'</span>').join('')+'</div>'+(crmSafeUrl(t.site)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(t.site))+'" target="_blank" rel="noopener noreferrer">Visitar site</a>':'')+crmReviewSection('plataforma',t.name,PF_AVALIACOES[t.name]||[])+'</article>').join('');
 }
 
 // ============ PLATAFORMAS RECOMENDADAS - VOTAÇÃO E REVIEWS (Supabase) ============
