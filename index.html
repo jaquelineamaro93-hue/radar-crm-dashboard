@@ -8479,12 +8479,15 @@ const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos'
 async function crmRefreshAdmin(){
  const epoch=crmAuthEpoch;
  crmAdminVerified=false;isAdminLoggedIn=false;
- const button=crmById('crmAdminNav');if(button)button.hidden=true;
+ const button=crmById('crmAdminNav'),teamButton=crmById('crmTeamAdminNav');
+ if(button)button.hidden=true;
+ if(teamButton)teamButton.hidden=true;
  if(!crmSignedIn())return;
  const {data,error}=await authSb.rpc('crm_is_admin');
  if(epoch!==crmAuthEpoch)return;
  crmAdminVerified=!error&&data===true;isAdminLoggedIn=crmAdminVerified;
  if(button)button.hidden=!crmAdminVerified;
+ if(teamButton)teamButton.hidden=!crmAdminVerified;
 }
 async function crmVerificationAPI(body,session){
  const response=await fetch(AUTH_SUPABASE_URL+'/functions/v1/crm-submit-check',{method:'POST',headers:{apikey:AUTH_SUPABASE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -8581,7 +8584,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
  page.innerHTML='<h1>Administração</h1><p>Gerencie aprovações e acompanhe o uso do Conexão CRM.</p><div class="crm-admin-tabs" id="crmAdminTabs" role="tablist" aria-label="Áreas da Administração"><button type="button" class="crm-admin-tab active" data-a="analytics" role="tab" aria-selected="true">▥ Analytics</button><button type="button" class="crm-admin-tab" data-a="journey" role="tab" aria-selected="false">↝ Jornada</button><button type="button" class="crm-admin-tab" data-a="members" role="tab" aria-selected="false">◎ Membros</button><button type="button" class="crm-admin-tab" data-a="approvals" role="tab" aria-selected="false">⌁ Aprovações</button><button type="button" class="crm-admin-tab" data-a="newsletter" role="tab" aria-selected="false">✉ Newsletter</button></div><section id="crmAdminAnalytics"></section><section id="crmAdminJourney" hidden></section><section id="crmAdminMembers" hidden></section><section id="crmAdminApprovals" hidden><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button id="crmModerationRefresh" type="button">↻ Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div></section><section id="crmAdminNewsletter" hidden></section>';
  crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
- const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;const home=crmById('navMembro');const nav=home?.parentElement;if(nav&&home)nav.insertBefore(b,home.nextSibling);else crmById('crmNavSlot').append(b);
+ const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;
+ const team=document.createElement('button');team.id='crmTeamAdminNav';team.className='tab-btn';team.hidden=true;team.innerHTML='<span class="crm-nav-glyph">◎</span>Equipe / Quem Faz';team.onclick=()=>{window.location.href='/quem-faz/';};
+ const home=crmById('navMembro');const nav=home?.parentElement;
+ if(nav&&home){nav.insertBefore(b,home.nextSibling);nav.insertBefore(team,b.nextSibling);}else{crmById('crmNavSlot').append(b,team);}
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
  crmRefreshAdmin().then(()=>{if(location.pathname==='/admin'&&crmAdminVerified)crmOpenAdmin();});
 });
