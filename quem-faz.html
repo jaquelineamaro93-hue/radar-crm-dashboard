@@ -31,16 +31,17 @@ dialog{width:min(700px,calc(100vw - 28px));max-height:90vh;overflow:auto;backgro
 const SUPABASE_URL='https://rwkbpafpniwzvlkfngag.supabase.co';
 const SUPABASE_KEY='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let members=[],isAdmin=false;
+let members=[],isAdmin=false,currentSession=null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function safeUrl(v){try{const u=new URL(String(v||''));return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}}
 async function detectAdmin(){
   try{
     const {data:{session}}=await sb.auth.getSession();
-    if(!session){isAdmin=false;return}
+    currentSession=session||null;
+    if(!session){isAdmin=false;document.getElementById('adminBar').classList.remove('show');return}
     const {data,error}=await sb.rpc('crm_is_admin');
     isAdmin=!error&&data===true;
-  }catch{isAdmin=false}
+  }catch{currentSession=null;isAdmin=false}
   document.getElementById('adminBar').classList.toggle('show',isAdmin);
 }
 async function load(){
@@ -50,6 +51,23 @@ async function load(){
   const grid=document.getElementById('grid');
   if(error){console.error(error);grid.innerHTML='<div class="empty">Não foi possível carregar a equipe agora.</div>';return}
   members=data||[];
+
+  // Se o administrador logado também é um membro da equipe, reutiliza a foto
+  // do Google e persiste a URL para que visitantes públicos também a vejam.
+  const googleAvatar=currentSession?.user?.user_metadata?.avatar_url||currentSession?.user?.user_metadata?.picture||'';
+  const currentUserId=currentSession?.user?.id||null;
+  if(isAdmin&&googleAvatar&&currentUserId){
+    const mine=members.find(x=>x.profile_id===currentUserId);
+    if(mine){
+      const needsSync=mine.photo_url!==googleAvatar;
+      mine.photo_url=googleAvatar;
+      const {error:photoSyncError}=needsSync
+        ? await sb.from('crm_team_members').update({photo_url:googleAvatar,updated_at:new Date().toISOString()}).eq('id',mine.id)
+        : {error:null};
+      if(photoSyncError) console.warn('Não foi possível sincronizar a foto do Google.',photoSyncError);
+    }
+  }
+
   const list=isAdmin?members:members.filter(x=>x.is_active!==false);
   if(!list.length){grid.innerHTML='<div class="empty">Em breve você conhecerá quem faz a Conexão CRM acontecer.</div>';return}
   grid.innerHTML=list.map(m=>{
