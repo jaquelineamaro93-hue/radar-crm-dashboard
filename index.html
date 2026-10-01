@@ -8210,6 +8210,23 @@ async function crmAI(kind,prompt,extra={}){
  const r=await fetch(AUTH_SUPABASE_URL+'/functions/v1/openai-assistant',{method:'POST',headers:{apikey:AUTH_SUPABASE_KEY,...(session?{Authorization:'Bearer '+session.access_token}:{}),'Content-Type':'application/json'},body:JSON.stringify({kind,prompt,...extra})});
  const data=await r.json();if(epoch!==crmAuthEpoch)throw Error('A sessão mudou. Entre novamente.');if(!r.ok)throw Error(data.error||'Não foi possível analisar agora.');return data;
 }
+function crmActivitySessionId(){
+ try{
+  let id=sessionStorage.getItem('crm_activity_session_id');
+  if(!id){id=crypto.randomUUID();sessionStorage.setItem('crm_activity_session_id',id);}
+  return id;
+ }catch{return ''}
+}
+let crmLastTrackedRoute='',crmLastTrackedAt=0;
+function crmTrackMemberActivity(route){
+ if(!CURRENT_USER||!authSb)return;
+ const now=Date.now(),path=crmRoutePath(route||crmActiveRoute||'membros');
+ if(path===crmLastTrackedRoute&&now-crmLastTrackedAt<15000)return;
+ crmLastTrackedRoute=path;crmLastTrackedAt=now;
+ authSb.rpc('crm_track_member_activity',{p_path:path,p_session_id:crmActivitySessionId()}).then(({error})=>{
+  if(error)console.warn('Activity tracking:',error.message||error);
+ }).catch(()=>{});
+}
 function crmSyncAuth(){
  const signed=crmSignedIn();crmById('view-publica').hidden=signed;crmById('view-logada').hidden=!signed;
  if(signed!==crmWasSignedIn){crmWasSignedIn=signed;
@@ -8229,12 +8246,12 @@ function crmNavigate(route,updateHash=true){
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
  if(route==='inicio'){
-  crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';window.posthogTracker?.pageView('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
+  crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
  }
  if(route==='admin'&&!crmAdminVerified){crmOpenAdmin();return;}
  if(!crmRoutes[route])return;
  if(!crmSignedIn()&&!crmPublicRoutes.has(route)){crmPendingRoute=route;crmJoin('Faça login gratuito para acessar esta área.');return;}
- crmActiveRoute=route;window.posthogTracker?.pageView(route);const id=crmRoutes[route][0];
+ crmActiveRoute=route;window.posthogTracker?.pageView(route);crmTrackMemberActivity(route);const id=crmRoutes[route][0];
  document.querySelectorAll('.crm-public-tabs [data-crm-route], .crm-navlinks > [data-crm-route]').forEach(link=>{if(link.dataset.crmRoute===route||(route==='patrocinio/apoiadores'&&link.dataset.crmRoute==='patrocinio')||(route==='public-match'&&link.dataset.crmRoute==='search'))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
  const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
  if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{crmById('crmPages').append(crmById(id));}
@@ -8814,7 +8831,7 @@ async function loadSupabase(){
 
 async function renderSurveys(){
  const root=document.getElementById("crmAdminSurveys");if(!root)return;
- root.innerHTML='<div class="crm-analytics-panel"><h3>Pesquisas</h3><p class="crm-analytics-note">Carregando respostas…</p></div>';
+ root.innerHTML='<div class="crm-analytics-panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3 style="margin-bottom:4px">Pesquisas</h3><p class="crm-analytics-note">Carregando respostas…</p></div><button type="button" class="crm-admin-tab active" id="crmSurveyRefresh">↻ Atualizar respostas</button></div></div>';
  if(!authSb&&!authInitSB())return;
  const {data,error}=await authSb.rpc("crm_admin_survey_responses");
  if(error||!data){root.innerHTML='<div class="crm-analytics-panel"><h3>Pesquisas</h3><p class="crm-analytics-note">Não foi possível carregar as respostas agora.</p></div>';return}
@@ -8827,7 +8844,7 @@ async function renderSurveys(){
   const crmOn=type==="crm";
   root.innerHTML=
    '<div class="crm-analytics-grid">'+card("Pesquisa CRM",fmt(data.crm_count||0),"respostas importadas")+card("Censo",fmt(data.censo_count||0),"respostas importadas")+card("Total",fmt(Number(data.crm_count||0)+Number(data.censo_count||0)),"respostas")+'</div>'+
-   '<div class="crm-analytics-panel"><div class="crm-story-head"><div><span class="crm-kicker">Respostas das pesquisas</span><h3>'+ (crmOn?"Implementação de CRMs":"Censo da Comunidade") +'</h3><p class="crm-analytics-note">Dados históricos importados das planilhas de respostas do Google Forms para o Supabase.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="crm-admin-tab '+(crmOn?"active":"")+'" data-survey-type="crm">Implementação CRM</button><button type="button" class="crm-admin-tab '+(!crmOn?"active":"")+'" data-survey-type="censo">Censo</button></div></div>'+
+   '<div class="crm-analytics-panel"><div class="crm-story-head"><div><span class="crm-kicker">Respostas das pesquisas</span><h3>'+ (crmOn?"Implementação de CRMs":"Censo da Comunidade") +'</h3><p class="crm-analytics-note">Dados do Supabase atualizados quando você abre ou atualiza esta aba.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="crm-admin-tab active" id="crmSurveyRefresh">↻ Atualizar respostas</button><button type="button" class="crm-admin-tab '+(crmOn?"active":"")+'" data-survey-type="crm">Implementação CRM</button><button type="button" class="crm-admin-tab '+(!crmOn?"active":"")+'" data-survey-type="censo">Censo</button></div></div>'+
    '<div class="crm-admin-members-toolbar"><input id="crmSurveySearch" class="crm-period crm-admin-members-search" placeholder="Buscar nas respostas" value="'+surveyEsc(search)+'"><span class="crm-analytics-note">'+fmt(filtered.length)+' de '+fmt(rows.length)+' respostas</span></div>'+
    '<div style="overflow:auto;max-height:68vh"><table class="crm-admin-members-table"><thead><tr>'+
    (crmOn?'<th>Data</th><th>E-mail</th><th>Área</th><th>Porte</th><th>Plataforma</th><th>Execução</th><th>Tempo</th><th>Empresa</th><th>Gargalos</th>':'<th>Data</th><th>Nome</th><th>E-mail</th><th>WhatsApp</th><th>Cidade</th><th>Cargo</th><th>Senioridade</th><th>Área</th><th>Vínculo</th><th>Porte</th><th>Decisão</th><th>Ferramentas</th><th>Design</th><th>Estrutura</th><th>Interesses</th><th>Parcerias</th><th>LGPD</th>')+
@@ -8839,6 +8856,7 @@ async function renderSurveys(){
    ).join("")+
    '</tbody></table></div></div>';
   root.querySelectorAll("[data-survey-type]").forEach(b=>b.onclick=()=>{type=b.dataset.surveyType;draw()});
+ const refresh=root.querySelector("#crmSurveyRefresh");if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent="Atualizando…";await renderSurveys();};
   const input=root.querySelector("#crmSurveySearch");let timer;input.oninput=e=>{clearTimeout(timer);search=e.target.value;timer=setTimeout(draw,250)};
  }
  draw();
