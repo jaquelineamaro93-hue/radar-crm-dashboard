@@ -69,6 +69,8 @@
       vagas: [],
       vagasSalvas: [],
       vagasMatches: [],
+      filtroTrilha: 'todas',
+      filtroArea: 'todas',
       carregando: true,
       abaSelecionada: 'dashboard'
     };
@@ -210,8 +212,7 @@
           scoreMatching: calcularScoreMatching(estadoApp.perfil, vaga)
         }))
         .filter(vaga => vaga.scoreMatching > 0)
-        .sort((a, b) => b.scoreMatching - a.scoreMatching)
-        .slice(0, 5);
+        .sort((a, b) => b.scoreMatching - a.scoreMatching);
     }
 
     // ============================================================================
@@ -459,21 +460,61 @@
     }
 
     function renderizarVagasParaVoce() {
+      const trilhas = [...new Set(estadoApp.vagasMatches.map(v => v.trilha).filter(Boolean))].sort();
+      const vagasFiltradas = estadoApp.vagasMatches.filter(vaga => {
+        const passaTrilha = estadoApp.filtroTrilha === 'todas' || vaga.trilha === estadoApp.filtroTrilha;
+        const passaArea =
+          estadoApp.filtroArea === 'todas' ||
+          (estadoApp.filtroArea === 'principal' && vaga.area_correlata === false) ||
+          (estadoApp.filtroArea === 'correlata' && vaga.area_correlata === true);
+        return passaTrilha && passaArea;
+      });
+
       return `
         <div class="max-w-7xl mx-auto px-6 py-8">
           <div class="mb-6">
             <h1 class="text-3xl font-bold text-slate-800 mb-2">🎯 Vagas Compatíveis com Seu Perfil</h1>
-            <p class="text-slate-600">Mostrando ${estadoApp.vagasMatches.length} vagas com match baseado em ferramentas e senioridade</p>
+            <p class="text-slate-600">Mostrando ${vagasFiltradas.length} de ${estadoApp.vagasMatches.length} vagas com match baseado em ferramentas e senioridade</p>
           </div>
 
-          ${estadoApp.vagasMatches.length > 0 ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <label class="block">
+              <span class="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Trilha</span>
+              <select
+                onchange="estadoApp.filtroTrilha=this.value; renderizar()"
+                class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+              >
+                <option value="todas" ${estadoApp.filtroTrilha === 'todas' ? 'selected' : ''}>Todas as trilhas</option>
+                ${trilhas.map(trilha => `<option value="${escapeHtml(trilha)}" ${estadoApp.filtroTrilha === trilha ? 'selected' : ''}>${escapeHtml(trilha)}</option>`).join('')}
+              </select>
+            </label>
+
+            <label class="block">
+              <span class="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Relação com CRM/CX</span>
+              <select
+                onchange="estadoApp.filtroArea=this.value; renderizar()"
+                class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+              >
+                <option value="todas" ${estadoApp.filtroArea === 'todas' ? 'selected' : ''}>Diretas + correlatas</option>
+                <option value="principal" ${estadoApp.filtroArea === 'principal' ? 'selected' : ''}>Área principal</option>
+                <option value="correlata" ${estadoApp.filtroArea === 'correlata' ? 'selected' : ''}>Áreas correlatas</option>
+              </select>
+            </label>
+          </div>
+
+          ${vagasFiltradas.length > 0 ? `
             <div class="space-y-4">
-              ${estadoApp.vagasMatches.map((vaga, idx) => `
+              ${vagasFiltradas.map((vaga, idx) => `
                 <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-600 fade-in hover:shadow-lg transition" style="animation-delay: ${idx * 50}ms">
                   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                       <p class="text-sm text-slate-600 mb-1">Cargo</p>
                       <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo)}</p>
+                      <div class="flex flex-wrap gap-1.5 mt-2">
+                        ${vaga.trilha ? `<span class="inline-flex rounded-full bg-indigo-50 text-indigo-700 px-2.5 py-1 text-[11px] font-semibold">${escapeHtml(vaga.trilha)}</span>` : ''}
+                        ${vaga.subcategoria ? `<span class="inline-flex rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-[11px]">${escapeHtml(vaga.subcategoria)}</span>` : ''}
+                        ${vaga.area_correlata === true ? `<span class="inline-flex rounded-full bg-amber-50 text-amber-700 px-2.5 py-1 text-[11px] font-medium">Área correlata</span>` : ''}
+                      </div>
                     </div>
                     <div>
                       <p class="text-sm text-slate-600 mb-1">Empresa</p>
