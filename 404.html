@@ -1176,6 +1176,29 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .cx-resource-modal{width:min(560px,calc(100vw - 28px));max-height:90dvh;overflow:auto;border:1px solid #48433e;border-radius:14px;background:#181716;color:#f8fafc;padding:0}.cx-resource-modal::backdrop{background:#000b;backdrop-filter:blur(4px)}.cx-resource-modal form{padding:24px}.cx-resource-modal-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:20px}.cx-resource-modal-head h2{margin:5px 0 0;font-size:24px}.cx-resource-modal-head button{background:none;border:0;color:#b6b1aa;font-size:13px}.cx-resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cx-resource-modal .crm-field{margin-bottom:12px}.cx-resource-modal textarea{min-height:100px}.cx-resource-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.cx-resource-footer .crm-button{min-height:42px;padding:10px 15px}
 @media(max-width:900px){.cx-format-links{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-featured-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.cx-hub{gap:26px}.cx-hub-hero{align-items:flex-start;flex-direction:column}.cx-hub-hero p{font-size:15px}.cx-suggest-btn{width:100%}.cx-format-links{grid-template-columns:1fr 1fr}.cx-curation-note{grid-template-columns:1fr}.cx-curation-note button{width:100%}.cx-featured-grid{grid-template-columns:1fr}.cx-filter-group{display:block}.cx-filter-label{display:block;width:auto;padding:0;margin-bottom:8px}.cx-resource-grid{grid-template-columns:1fr}}
+</style><style id="crm-floating-prompts-style">
+.crm-float-prompt{position:fixed;z-index:1085;width:min(330px,calc(100vw - 32px));box-sizing:border-box;background:#191919;color:#f8fafc;border:1px solid #4c4945;border-radius:14px;padding:18px;box-shadow:0 14px 44px #0008;text-align:left}
+.crm-float-prompt[hidden]{display:none!important}
+#crmProfilePrompt{right:18px;bottom:18px;border-top:4px solid #ff8a3d}
+#crmExperiencePrompt{left:18px;bottom:18px;border-top:4px solid #60a5fa}
+.crm-float-label{font-size:11px;letter-spacing:.09em;font-weight:800;color:#ff9b54;margin:0 0 7px}
+#crmExperiencePrompt .crm-float-label{color:#93c5fd}
+.crm-float-prompt h3{font:700 18px/1.25 Arial,sans-serif;margin:0 0 8px;color:#f8fafc}
+.crm-float-prompt p{font-size:13px;line-height:1.5;color:#cbd5e1;margin:0 0 14px}
+.crm-float-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.crm-float-primary{min-height:38px;border:0;border-radius:8px;background:#ff8a3d;color:#151515;padding:8px 12px;font:700 13px/1 Arial,sans-serif;cursor:pointer}
+.crm-float-secondary{min-height:38px;border:1px solid #5b5752;border-radius:8px;background:transparent;color:#d6d3d1;padding:8px 11px;font:600 12px/1 Arial,sans-serif;cursor:pointer}
+.crm-rating-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+.crm-rating-row button{min-width:0;min-height:38px;border:1px solid #565c65;border-radius:8px;background:#23252a;color:#f8fafc;font-weight:800;cursor:pointer}
+.crm-rating-row button:hover,.crm-rating-row button:focus-visible{border-color:#93c5fd;background:#243347}
+.crm-rating-scale{display:flex;justify-content:space-between;color:#8f99a8;font-size:10px;margin-top:6px}
+body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
+@media(max-width:700px){
+ #crmProfilePrompt{right:12px;left:12px;bottom:12px;width:auto}
+ #crmExperiencePrompt{right:12px;left:12px;bottom:205px;width:auto}
+ body.crm-profile-prompt-visible #crmSurveyReminder{right:12px;left:12px;bottom:398px;width:auto}
+ .crm-float-prompt{padding:15px}
+}
 </style></head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -7610,7 +7633,7 @@ async function authInit(){
    if(crmValidatedUserId!==id)return;currentUserRole=crmAdminVerified?'admin':'member';
    try{window.posthog?.identify(data.user.id,{crm_logged_in:true});}catch{}
    authRenderUI();crmById('loggedUserHeadline').textContent=data.user.email||'';crmSyncAuth();
-   if(needsOnboarding)setTimeout(()=>{if(CURRENT_USER?.id===id&&!document.getElementById('profileModalOverlay')){crmNavigate('membro');openProfileModal({onboarding:true});}},300);
+   if(needsOnboarding)setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);else setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);
    if(location.hash.includes('access_token'))history.replaceState(null,'','/dashboard');
   }catch{if(epoch!==crmAuthEpoch)return;crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
  };
@@ -7807,7 +7830,7 @@ async function saveProfile(){
     if(error) throw error;
     CURRENT_PROFILE = { ...CURRENT_PROFILE, ...payload };
     statusEl.style.color='#86efac';statusEl.textContent=payload.directory_visible?'Perfil salvo e sincronizado com o Diretório de Membros.':'Perfil salvo. Seu perfil está oculto no Diretório de Membros.';
-    activateLoggedArea(payload);authRenderUI();crmRenderSavedProfile();
+    activateLoggedArea(payload);authRenderUI();crmRenderSavedProfile();window.crmRenderFloatingPrompts?.();
     if(crmActiveRoute==='membros')setTimeout(()=>renderComDiretorio(),250);
     setTimeout(()=>document.getElementById('profileModalOverlay')?.remove(),900);
     if(typeof evToastMsg==='function')evToastMsg('Perfil atualizado!', '');
@@ -8175,6 +8198,7 @@ function crmSyncAuth(){
   else{crmToggleMenu(false);crmNavigate('inicio');}
  }
  if(!signed){const b=crmById('loginBtn');if(b)b.textContent='ENTRAR';}
+ window.crmRenderFloatingPrompts?.();
 }
 function crmSetLanding(show){
  document.querySelectorAll('#view-publica > :not(.crm-navbar):not(#crmPublicWorkspace)').forEach(e=>{e.hidden=!show||['quem-somos','solucoes','ferramentas-publicas'].includes(e.id);});
@@ -8986,5 +9010,108 @@ async function newsletterPrompt(){
 window.addEventListener('crm:auth-ready',newsletterPrompt);document.addEventListener('DOMContentLoaded',()=>{setTimeout(newsletterPrompt,2500);setTimeout(newsletterPrompt,6000)});
 })();
 </script>
-</body>
+<div id="crm-floating-prompts">
+<aside id="crmProfilePrompt" class="crm-float-prompt" hidden aria-live="polite">
+  <p class="crm-float-label">COMPLETE SEU PERFIL</p>
+  <h3>Seu cadastro ainda está incompleto</h3>
+  <p>Preencha seu perfil para aproveitar melhor o diretório, o Match IA e as oportunidades da comunidade.</p>
+  <div class="crm-float-actions">
+    <button type="button" class="crm-float-primary" onclick="crmOpenProfileFromPrompt()">Completar cadastro</button>
+    <button type="button" class="crm-float-secondary" onclick="crmSnoozeProfilePrompt()">Lembrar depois</button>
+  </div>
+</aside>
+<aside id="crmExperiencePrompt" class="crm-float-prompt" hidden aria-live="polite">
+  <p class="crm-float-label">SUA EXPERIÊNCIA</p>
+  <h3>Como está sua experiência no Conexão CRM?</h3>
+  <p>Avalie de 1 a 5. Sua nota ajuda a priorizar as próximas melhorias.</p>
+  <div class="crm-rating-row" role="group" aria-label="Avaliação da experiência">
+    <button type="button" onclick="crmSubmitExperienceRating(1)" aria-label="Nota 1">1</button>
+    <button type="button" onclick="crmSubmitExperienceRating(2)" aria-label="Nota 2">2</button>
+    <button type="button" onclick="crmSubmitExperienceRating(3)" aria-label="Nota 3">3</button>
+    <button type="button" onclick="crmSubmitExperienceRating(4)" aria-label="Nota 4">4</button>
+    <button type="button" onclick="crmSubmitExperienceRating(5)" aria-label="Nota 5">5</button>
+  </div>
+  <div class="crm-rating-scale"><span>Ruim</span><span>Ótima</span></div>
+  <div class="crm-float-actions" style="margin-top:10px">
+    <button type="button" class="crm-float-secondary" onclick="crmSnoozeExperiencePrompt()">Responder depois</button>
+  </div>
+</aside>
+</div>
+<script id="crm-floating-prompts-script">
+let crmExperienceCheckUser=null;
+let crmExperienceHasAnswer=false;
+function crmPromptSnoozeKey(kind){return 'crm_'+kind+'_prompt_snooze_'+(CURRENT_USER?.id||'anon')}
+function crmPromptIsSnoozed(kind){
+  try{return Number(localStorage.getItem(crmPromptSnoozeKey(kind))||0)>Date.now()}catch{return false}
+}
+function crmSetPromptSnooze(kind,ms){
+  try{localStorage.setItem(crmPromptSnoozeKey(kind),String(Date.now()+ms))}catch{}
+}
+function crmSnoozeProfilePrompt(){
+  crmSetPromptSnooze('profile',24*60*60*1000);
+  document.getElementById('crmProfilePrompt').hidden=true;
+  document.body.classList.remove('crm-profile-prompt-visible');
+  window.posthogTracker?.track('profile_completion_prompt_snoozed');
+}
+function crmSnoozeExperiencePrompt(){
+  crmSetPromptSnooze('experience',7*24*60*60*1000);
+  document.getElementById('crmExperiencePrompt').hidden=true;
+  window.posthogTracker?.track('experience_prompt_snoozed');
+}
+function crmOpenProfileFromPrompt(){
+  window.posthogTracker?.track('profile_completion_prompt_clicked');
+  document.getElementById('crmProfilePrompt').hidden=true;
+  document.body.classList.remove('crm-profile-prompt-visible');
+  openProfileModal({onboarding:true});
+}
+async function crmLoadExperienceAnswer(){
+  const uid=CURRENT_USER?.id;
+  if(!uid||!authSb){crmExperienceCheckUser=null;crmExperienceHasAnswer=false;return false}
+  if(crmExperienceCheckUser===uid)return crmExperienceHasAnswer;
+  crmExperienceCheckUser=uid;crmExperienceHasAnswer=false;
+  try{
+    const {data,error}=await authSb.from('crm_experience_feedback').select('rating').eq('user_id',uid).maybeSingle();
+    if(!error&&data)crmExperienceHasAnswer=true;
+  }catch{}
+  return crmExperienceHasAnswer;
+}
+async function crmRenderFloatingPrompts(){
+  const profileEl=document.getElementById('crmProfilePrompt'),experienceEl=document.getElementById('crmExperiencePrompt');
+  if(!profileEl||!experienceEl)return;
+  if(!CURRENT_USER){
+    profileEl.hidden=true;experienceEl.hidden=true;document.body.classList.remove('crm-profile-prompt-visible');return;
+  }
+  const incomplete=!CURRENT_PROFILE||CURRENT_PROFILE.guided_onboarding_completed!==true||!crmProfileComplete(CURRENT_PROFILE);
+  const showProfile=incomplete&&!crmPromptIsSnoozed('profile')&&!document.getElementById('profileModalOverlay');
+  profileEl.hidden=!showProfile;
+  document.body.classList.toggle('crm-profile-prompt-visible',showProfile);
+  if(showProfile)window.posthogTracker?.track('profile_completion_prompt_shown');
+
+  const answered=await crmLoadExperienceAnswer();
+  if(CURRENT_USER?.id!==crmExperienceCheckUser)return;
+  const showExperience=!answered&&!crmPromptIsSnoozed('experience');
+  experienceEl.hidden=!showExperience;
+  if(showExperience)window.posthogTracker?.track('experience_prompt_shown');
+}
+async function crmSubmitExperienceRating(rating){
+  if(!CURRENT_USER?.id||!authSb)return;
+  const el=document.getElementById('crmExperiencePrompt');
+  el?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  try{
+    const payload={user_id:CURRENT_USER.id,rating:Number(rating),updated_at:new Date().toISOString()};
+    const {error}=await authSb.from('crm_experience_feedback').upsert(payload,{onConflict:'user_id'});
+    if(error)throw error;
+    crmExperienceHasAnswer=true;crmExperienceCheckUser=CURRENT_USER.id;
+    if(el)el.hidden=true;
+    window.posthogTracker?.track('experience_feedback_submitted',{rating:Number(rating)});
+    if(typeof evToastMsg==='function')evToastMsg('Obrigada pela avaliação.','');
+  }catch(e){
+    console.error('crmSubmitExperienceRating',e);
+    if(typeof evToastMsg==='function')evToastMsg('Não foi possível salvar sua avaliação agora.','');
+    el?.querySelectorAll('button').forEach(b=>b.disabled=false);
+  }
+}
+window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
+document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
+</script></body>
 </html>
