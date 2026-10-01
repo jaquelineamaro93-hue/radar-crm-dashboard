@@ -7774,6 +7774,16 @@ function openProfileModal(options={}){
       </div>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
+  const photoInput=document.getElementById('pf_photo');
+  if(photoInput)photoInput.addEventListener('change',()=>{
+    const file=photoInput.files?.[0];if(!file)return;
+    const row=photoInput.closest('.crm-profile-avatar-row');if(!row)return;
+    const current=row.querySelector('img,.crm-profile-avatar-placeholder');
+    const url=URL.createObjectURL(file);
+    const img=document.createElement('img');img.src=url;img.alt='Prévia da nova foto';img.referrerPolicy='no-referrer';
+    img.onload=()=>URL.revokeObjectURL(url);
+    if(current)current.replaceWith(img);else row.prepend(img);
+  });
   if(!CRM_PROFILE_ONBOARDING)document.getElementById('profileModalOverlay').addEventListener('click',e=>{if(e.target.id==='profileModalOverlay')e.target.remove();});
 }
 async function saveProfile(){
@@ -7819,15 +7829,24 @@ async function saveProfile(){
   try{
     crmValidateSubmission(payload);
     const photo=document.getElementById('pf_photo')?.files?.[0];
+    const previousAvatarPath=CURRENT_PROFILE?.avatar_path||null;
+    let newAvatarPath=null;
     if(photo){
       if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>5242880)throw new Error('PHOTO_INVALID');
       const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[photo.type];
-      payload.avatar_path=CURRENT_USER.id+'/avatar.'+ext;
-      const uploaded=await authSb.storage.from('profile-photos-private').upload(payload.avatar_path,photo,{upsert:true,contentType:photo.type});
+      newAvatarPath=CURRENT_USER.id+'/avatar-'+Date.now()+'.'+ext;
+      payload.avatar_path=newAvatarPath;
+      const uploaded=await authSb.storage.from('profile-photos-private').upload(newAvatarPath,photo,{upsert:false,contentType:photo.type,cacheControl:'3600'});
       if(uploaded.error)throw uploaded.error;
     }
     const { error } = await authSb.from('profiles').upsert(payload, { onConflict: 'id' });
-    if(error) throw error;
+    if(error){
+      if(newAvatarPath)try{await authSb.storage.from('profile-photos-private').remove([newAvatarPath]);}catch{}
+      throw error;
+    }
+    if(newAvatarPath&&previousAvatarPath&&previousAvatarPath!==newAvatarPath){
+      try{await authSb.storage.from('profile-photos-private').remove([previousAvatarPath]);}catch{}
+    }
     CURRENT_PROFILE = { ...CURRENT_PROFILE, ...payload };
     statusEl.style.color='#86efac';statusEl.textContent=payload.directory_visible?'Perfil salvo e sincronizado com o Diretório de Membros.':'Perfil salvo. Seu perfil está oculto no Diretório de Membros.';
     activateLoggedArea(payload);authRenderUI();crmRenderSavedProfile();window.crmRenderFloatingPrompts?.();
@@ -7850,7 +7869,7 @@ async function crmRenderSavedProfile(){
   let photo=crmSafeUrl(user.user_metadata?.avatar_url||'');
   if(p.avatar_path){
     const result=await authSb.storage.from('profile-photos-private').createSignedUrl(p.avatar_path,3600);
-    if(!result.error)photo=result.data.signedUrl;
+    if(!result.error)photo=result.data.signedUrl+(result.data.signedUrl.includes('?')?'&':'?')+'v='+encodeURIComponent(p.updated_at||Date.now());
   }
   if(CURRENT_USER?.id!==user.id)return;
   for(const id of ['membroAvatar','loggedAvatar']){
@@ -8667,7 +8686,7 @@ async function crmSubmitReviewForm(event){
 }
 
 </script>
-<script src="/assets/google-login.js?v=20260921-4"></script>
+<script src="/assets/google-login.js?v=20261001-1"></script>
 <script src="/assets/workspace.js?v=20260925-2130"></script>
 <script src="/assets/connections.js?v=20260923-2"></script>
 <script src="/assets/talent-links.js?v=20260923-2"></script>
