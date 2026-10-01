@@ -54,19 +54,16 @@ async function load(){
   if(error){console.error(error);grid.innerHTML='<div class="empty">Não foi possível carregar a equipe agora.</div>';return}
   members=data||[];
 
-  // Se o administrador logado também é um membro da equipe, reutiliza a foto
-  // do Google e persiste a URL para que visitantes públicos também a vejam.
+  // Foto definida manualmente em "Quem Faz" tem prioridade.
+  // Usa a foto do Google apenas quando o membro ainda não tem photo_url.
   const googleAvatar=currentSession?.user?.user_metadata?.avatar_url||currentSession?.user?.user_metadata?.picture||'';
   const currentUserId=currentSession?.user?.id||null;
   if(isAdmin&&googleAvatar&&currentUserId){
     const mine=members.find(x=>x.profile_id===currentUserId);
-    if(mine){
-      const needsSync=mine.photo_url!==googleAvatar;
+    if(mine&&!safeUrl(mine.photo_url)){
       mine.photo_url=googleAvatar;
-      const {error:photoSyncError}=needsSync
-        ? await sb.from('crm_team_members').update({photo_url:googleAvatar,updated_at:new Date().toISOString()}).eq('id',mine.id)
-        : {error:null};
-      if(photoSyncError) console.warn('Não foi possível sincronizar a foto do Google.',photoSyncError);
+      const {error:photoSyncError}=await sb.from('crm_team_members').update({photo_url:googleAvatar,updated_at:new Date().toISOString()}).eq('id',mine.id);
+      if(photoSyncError) console.warn('Não foi possível sincronizar a foto inicial do Google.',photoSyncError);
     }
   }
 
