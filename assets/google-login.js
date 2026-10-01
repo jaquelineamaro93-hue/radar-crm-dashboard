@@ -1,6 +1,22 @@
 (()=>{'use strict';
 const CLIENT_ID='65499621887-0ohgbg1lkoljkl7mdvcln918arc6amav.apps.googleusercontent.com';
 let library,dialog,version=0,busy=false;
+
+function isIOSBrowser(){
+ const ua=navigator.userAgent||'';
+ return /iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+}
+
+async function openRedirect(){
+ if(!authSb&&!authInitSB())throw Error('Não foi possível iniciar o login.');
+ const redirectTo=location.origin+'/';
+ const {data,error}=await authSb.auth.signInWithOAuth({
+  provider:'google',
+  options:{redirectTo,queryParams:{prompt:'select_account'}}
+ });
+ if(error)throw error;
+ if(data?.url)location.assign(data.url);
+}
 function loadGoogle(){
  if(window.google?.accounts?.id)return Promise.resolve(window.google.accounts.id);
  if(library)return library;
@@ -12,6 +28,23 @@ function loadGoogle(){
 }
 async function open(){
  if(busy)return;
+
+ // iOS/Safari pode transformar o popup do Google em uma nova aba e deixá-la
+ // branca mesmo após o token ser entregue ao site. No iPhone/iPad usamos
+ // OAuth por redirecionamento completo: Google -> Supabase -> conexaocrm.com.
+ if(isIOSBrowser()){
+  busy=true;
+  try{
+   await openRedirect();
+   return;
+  }catch(e){
+   busy=false;
+   console.error('Google redirect login',e);
+   // Se o redirecionamento não puder ser iniciado, cai no fluxo visual abaixo
+   // em vez de deixar o usuário sem resposta.
+  }
+ }
+
  if(!dialog){dialog=document.createElement('dialog');dialog.className='crm-join-dialog';dialog.id='crmGoogleDialog';dialog.innerHTML='<button type="button" class="crm-close" data-close>Fechar</button><h2>Entre no Conexão CRM</h2><p>Use sua conta Google para participar da comunidade.</p><div data-google-button></div><p role="status" data-google-status></p><button type="button" class="crm-button" data-retry hidden>Tentar novamente</button>';document.body.append(dialog);dialog.querySelector('[data-close]').onclick=()=>dialog.close();dialog.querySelector('[data-retry]').onclick=open;dialog.addEventListener('close',()=>{version++;});}
  document.getElementById('crmJoinDialog')?.close();
  if(!dialog.open)dialog.showModal();const attempt=++version,status=dialog.querySelector('[data-google-status]'),button=dialog.querySelector('[data-google-button]'),retry=dialog.querySelector('[data-retry]');button.replaceChildren();retry.hidden=true;status.textContent='Carregando acesso com Google';
@@ -28,6 +61,7 @@ async function open(){
     if(!authSb&&!authInitSB())throw Error();
     const {data,error}=await authSb.auth.signInWithIdToken({provider:'google',token:response.credential,nonce});
     if(error||!data?.session)throw Error();
+    try{window.focus();}catch{}
     if(attempt===version)dialog.close();
    }catch{if(attempt===version){status.textContent='Não foi possível confirmar seu acesso. Tente novamente.';retry.hidden=false;}}
    finally{busy=false;}
