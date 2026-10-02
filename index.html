@@ -7933,11 +7933,11 @@ function runMembroMatch(){
   const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
   const confirmed=skills.filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name);
   const absent=skills.filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name);
-  if(!p||(!confirmed.length&&!p.professional_summary)){
+  if(!p||(!confirmed.length&&!(p.cv_full_text||p.professional_summary))){
     matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Complete seu <button onclick="crmOpenMatchResume()" style="border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0">Currículo para Match</button> para receber recomendações mais precisas.</div>';return;
   }
   if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
-  const seniority=(p.seniority||'').toLowerCase(),summary=(p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
+  const seniority=(p.seniority||'').toLowerCase(),summary=(p.cv_full_text||p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
   const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
   const scored=VAGAS.map(v=>{
     const text=((v.title||'')+' '+(v.description||'')+' '+(v.location||'')).toLowerCase();let score=0;
@@ -8413,7 +8413,7 @@ function crmFilterModality(){
 let CURRENT_MATCH_RESUME=null;
 function crmCsvList(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,40);}
 function crmMatchCompleteness(p,skills,prefs){
- const checks=[p?.professional_headline,p?.professional_summary,p?.primary_area,p?.seniority,p?.years_experience,skills?.length,prefs?.target_roles?.length,prefs?.work_models?.length,prefs?.employment_types?.length,prefs?.preferred_locations?.length];
+ const checks=[p?.professional_headline,(p?.cv_full_text||p?.professional_summary),p?.primary_area,p?.seniority,p?.years_experience,skills?.length,prefs?.target_roles?.length,prefs?.work_models?.length,prefs?.employment_types?.length,prefs?.preferred_locations?.length];
  return Math.round(checks.filter(Boolean).length/checks.length*100);
 }
 async function crmLoadMatchResume(){
@@ -8452,7 +8452,7 @@ async function crmOpenMatchResume(){
     <label class="ev-ilabel">Senioridade<select class="ev-ifield" name="seniority"><option value="">Não informado</option>${['Estágio','Júnior','Pleno','Sênior','Especialista','Coordenação','Gestão','Diretoria'].map(x=>'<option '+(p.seniority===x?'selected':'')+'>'+x+'</option>').join('')}</select></label>
     <label class="ev-ilabel">Anos de experiência<input class="ev-ifield" name="years" type="number" min="0" max="60" step=".5" value="${escapeHtml(p.years_experience??'')}"></label>
    </div>
-   <label class="ev-ilabel" style="margin-top:12px">Currículo completo<textarea class="ev-ifield" name="summary" rows="12" style="min-height:340px;resize:vertical" placeholder="Cole aqui seu currículo completo: resumo, experiências profissionais, formação, certificações, projetos e demais informações relevantes para o Match.">${escapeHtml(p.professional_summary||'')}</textarea><small style="display:block;color:var(--muted);margin-top:6px">Este conteúdo é privado e usado somente no Match de vagas. O Resumo profissional continua sendo um campo separado do seu Perfil de Membro.</small></label>
+   <label class="ev-ilabel" style="margin-top:12px">Currículo completo<textarea class="ev-ifield" name="cv" rows="12" style="min-height:340px;resize:vertical" placeholder="Cole aqui seu currículo completo: resumo, experiências profissionais, formação, certificações, projetos e demais informações relevantes para o Match.">${escapeHtml(p.cv_full_text||p.professional_summary||'')}</textarea><small style="display:block;color:var(--muted);margin-top:6px">Este conteúdo é privado, fica separado do Resumo profissional do Perfil de Membro e é usado somente no Match de vagas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências e ferramentas que possui<textarea class="ev-ifield" name="skills" rows="3" placeholder="Salesforce, SQL, Power BI, RD Station...">${escapeHtml(confirmed)}</textarea><small style="color:var(--muted)">Separe por vírgulas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
@@ -8475,7 +8475,7 @@ async function crmOpenMatchResume(){
  try{
    const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
    if(draft&&typeof draft==='object'){
-     for(const [name,value] of Object.entries(draft)){const group=form.querySelector('.crm-match-chip-group[data-name="'+name+'"]');if(group&&Array.isArray(value)){group.querySelectorAll('.crm-match-chip').forEach(b=>{const on=value.includes(b.dataset.value);b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',on?'true':'false');});continue;}const field=form.elements.namedItem(name);if(field&&value!=null)field.value=value;}
+     for(const [name,value] of Object.entries(draft)){const group=form.querySelector('.crm-match-chip-group[data-name="'+name+'"]');if(group&&Array.isArray(value)){group.querySelectorAll('.crm-match-chip').forEach(b=>{const on=value.includes(b.dataset.value);b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',on?'true':'false');});continue;}const field=form.elements.namedItem(name)||(name==='summary'?form.elements.namedItem('cv'):null);if(field&&value!=null)field.value=value;}
      const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Rascunho recuperado automaticamente.';
    }
  }catch(e){console.warn('match draft restore',e);}
@@ -8500,7 +8500,7 @@ async function crmSaveMatchResume(ev){
  const session=await crmRequireSession();if(!session)return;btn.disabled=true;status.textContent='Salvando...';
  try{
   const fd=new FormData(form),uid=CURRENT_USER.id;
-  const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,professional_summary:String(fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
+  const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,cv_full_text:String(fd.get('cv')||fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
   const selected=name=>Array.from(form.querySelectorAll('.crm-match-chip-group[data-name="'+name+'"] .crm-match-chip.is-selected')).map(b=>b.dataset.value).filter(Boolean);
   const prefs={user_id:uid,target_roles:selected('roles'),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
   const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
