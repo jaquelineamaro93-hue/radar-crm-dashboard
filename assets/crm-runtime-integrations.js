@@ -104,4 +104,32 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-a="surveys"],#crmSurveyRefresh'))setTimeout(()=>renderExperienceAdmin(true),650);
 });
 setInterval(()=>renderExperienceAdmin(false),5000);
+
+// Currículo para Match: aceita o CV completo. O banco usa TEXT e não possui limite de caracteres.
+function enhanceMatchResumeField(){
+  const form=document.getElementById('crmMatchResumeForm');
+  const field=form?.querySelector('textarea[name="summary"]');
+  if(!field||field.dataset.fullCvReady==='1')return;
+  field.dataset.fullCvReady='1';
+  field.removeAttribute('maxlength');
+  field.rows=12;
+  field.style.minHeight='340px';
+  field.style.resize='vertical';
+
+  const label=field.closest('label');
+  if(label){
+    const help=document.createElement('small');
+    help.style.cssText='display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);margin-top:6px';
+    help.innerHTML='<span>Pode colar seu currículo completo aqui. O antigo limite de 2.000 caracteres foi removido.</span><span data-cv-count></span>';
+    label.appendChild(help);
+    const count=help.querySelector('[data-cv-count]');
+    const updateCount=()=>{count.textContent=new Intl.NumberFormat('pt-BR').format(field.value.length)+' caracteres';};
+    field.addEventListener('input',updateCount);
+    updateCount();
+  }
+}
+const matchResumeObserver=new MutationObserver(enhanceMatchResumeField);
+if(document.body)matchResumeObserver.observe(document.body,{childList:true,subtree:true});
+else document.addEventListener('DOMContentLoaded',()=>matchResumeObserver.observe(document.body,{childList:true,subtree:true}),{once:true});
+enhanceMatchResumeField();
 })();
