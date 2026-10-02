@@ -108,7 +108,7 @@ setInterval(()=>renderExperienceAdmin(false),5000);
 // Currículo para Match: aceita o CV completo. O banco usa TEXT e não possui limite de caracteres.
 function enhanceMatchResumeField(){
   const form=document.getElementById('crmMatchResumeForm');
-  const field=form?.querySelector('textarea[name="summary"]');
+  const field=form?.querySelector('textarea[name="cv"], textarea[name="summary"]');
   if(!field||field.dataset.fullCvReady==='1')return;
   field.dataset.fullCvReady='1';
   field.removeAttribute('maxlength');
@@ -120,7 +120,7 @@ function enhanceMatchResumeField(){
   if(label){
     const help=document.createElement('small');
     help.style.cssText='display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);margin-top:6px';
-    help.innerHTML='<span>Pode colar seu currículo completo aqui. O antigo limite de 2.000 caracteres foi removido.</span><span data-cv-count></span>';
+    help.innerHTML='<span>Pode colar seu currículo completo aqui. Este campo é separado do Resumo profissional do Perfil de Membro e não tem limite de 2.000 caracteres.</span><span data-cv-count></span>';
     label.appendChild(help);
     const count=help.querySelector('[data-cv-count]');
     const updateCount=()=>{count.textContent=new Intl.NumberFormat('pt-BR').format(field.value.length)+' caracteres';};
