@@ -1,3 +1,5 @@
+(()=>{try{if(!document.getElementById('crm-runtime-integrations-loader')){const s=document.createElement('script');s.id='crm-runtime-integrations-loader';s.src='/assets/crm-runtime-integrations.js?v=20261002-1';s.async=true;document.head.appendChild(s);}}catch(e){console.warn('CRM runtime integrations',e)}})();
+
 (()=>{'use strict';
 const CLIENT_ID='65499621887-0ohgbg1lkoljkl7mdvcln918arc6amav.apps.googleusercontent.com';
 let library,dialog,version=0,busy=false;
