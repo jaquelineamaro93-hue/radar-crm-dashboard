@@ -22,7 +22,18 @@ function phone(value){
   if(d.length===10||d.length===11)d='55'+d;
   return d;
 }
+function profileComplete(profile={}){
+  return !!(
+    profile.guided_onboarding_completed===true &&
+    String(profile.full_name||'').trim() &&
+    String(profile.headline||'').trim() &&
+    String(profile.seniority||'').trim() &&
+    Array.isArray(profile.tools) &&
+    profile.tools.length
+  );
+}
 function fields(profile={},user={}){
+  const complete=profileComplete(profile);
   return compactObject({
     user_id:user.id,
     nome:clean(profile.full_name||user.user_metadata?.full_name),
@@ -37,7 +48,8 @@ function fields(profile={},user={}){
     ferramentas:Array.isArray(profile.tools)?profile.tools:undefined,
     modelo_trabalho:Array.isArray(profile.work_model)?profile.work_model:undefined,
     open_to_work:profile.open_to_work===true,
-    perfil_completo:profile.onboarding_completed===true,
+    perfil_completo:complete,
+    cadastro_incompleto:!complete,
     diretorio_visivel:profile.directory_visible!==false,
     recebe_novidades:profile.receive_community_updates===true,
     origem:'conexao_crm'
@@ -48,6 +60,18 @@ window.crmInngageSyncIdentity=function(user,profile){
   ready(()=>{
     const email=String(user.email).trim().toLowerCase();
     window.newCustomField(fields(profile,user),email,email,phone(profile?.whatsapp)||null);
+  });
+};
+window.crmInngageSyncExperience=function(user,feedback){
+  if(!user?.email)return;
+  ready(()=>{
+    const email=String(user.email).trim().toLowerCase();
+    const answered=feedback?.answered===true;
+    window.newCustomField(compactObject({
+      pesquisa_experiencia_respondida:answered,
+      experiencia_nota:answered&&Number.isFinite(Number(feedback?.rating))?Number(feedback.rating):undefined,
+      experiencia_atualizada_em:answered&&feedback?.updated_at?feedback.updated_at:undefined
+    }),email,email,null);
   });
 };
 window.crmInngageEvent=function(name,values={},identifier){
