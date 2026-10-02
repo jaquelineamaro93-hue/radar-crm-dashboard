@@ -1,5 +1,4 @@
 (()=>{'use strict';
-const SDK_URL='https://cdn.inngage.com.br/midia/js/wsdk/inngage.js';
 const INTEGRATION_URL='/assets/inngage-integration.js?v=20261002-1';
 
 function addScript(src,id){
@@ -8,7 +7,6 @@ function addScript(src,id){
   s.id=id;s.src=src;s.async=true;
   document.head.appendChild(s);
 }
-addScript(SDK_URL,'crm-inngage-sdk-runtime');
 addScript(INTEGRATION_URL,'crm-inngage-integration-runtime');
 
 function registerPushWorker(){
