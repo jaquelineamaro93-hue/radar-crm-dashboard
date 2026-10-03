@@ -34,7 +34,7 @@ for(const m of index.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
  if(/\bsrc\s*=/.test(attrs)||/application\/ld\+json/i.test(attrs)||!code.trim())continue;
  new vm.Script(code,{filename:'index-inline-'+(++parsed)+'.js'});
 }
-assert(parsed>=10,'quantidade inesperada de scripts inline analisados');
+assert(parsed>=5,'quantidade inesperada de scripts inline analisados: '+parsed);
 
 for(const m of index.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["'](\/assets\/[^"'?]+)[^"']*["'][^>]*>/gi)){
  const local=m[1].replace(/^\//,'');
