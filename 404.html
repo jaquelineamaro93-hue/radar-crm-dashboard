@@ -8707,6 +8707,7 @@ async function crmOpenAdmin(){
  if(!await crmRequireSession())return;
  await crmRefreshAdmin();
  if(!crmAdminVerified){evToastMsg('Esta área é exclusiva da administradora.','');return;}
+ document.dispatchEvent(new Event('crm:admin-ready'));
  crmNavigate('admin');
  await crmLoadModeration();
 }
@@ -9074,7 +9075,7 @@ async function renderAnalytics(){
  renderPeriod(PH_PERIODS["30d"],{label:PH_PERIODS["30d"]?.label||"Últimos 30 dias",behaviorDays:30});
 }
 function setup(){
- const page=document.getElementById("crmAdminPage");if(!page)return;
+ const page=document.getElementById("crmAdminPage");if(!page||!crmAdminVerified)return;
  analyticsCss();
  const tabs=document.getElementById("crmAdminTabs");
  const approvals=document.getElementById("crmAdminApprovals");
@@ -9194,7 +9195,7 @@ function setup(){
  tabs.onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;activateAdminTab(b.dataset.a)};
  activateAdminTab("analytics");
 }
-document.addEventListener("DOMContentLoaded",()=>setTimeout(setup,0));new MutationObserver(()=>{const p=document.getElementById("crmAdminPage");if(p&&p.dataset.analyticsReady!=="1")setup()}).observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener("DOMContentLoaded",()=>setTimeout(setup,0));document.addEventListener("crm:admin-ready",setup);
 })();
 </script>
 <script>
