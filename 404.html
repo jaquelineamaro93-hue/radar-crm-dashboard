@@ -1199,7 +1199,9 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
  body.crm-profile-prompt-visible #crmSurveyReminder{right:12px;left:12px;bottom:398px;width:auto}
  .crm-float-prompt{padding:15px}
 }
-</style></head>
+</style>  <!-- Inngage Web Push -->
+  <script type="text/javascript" src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js"></script>
+</head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -2473,6 +2475,27 @@ crmShowSurveyReminder();
             </select>
           </div>
 
+          <!-- Filtro por Estado -->
+          <div>
+            <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;" for="filtro-estado">Estado</label>
+            <select id="filtro-estado" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);">
+              <option value="">Todos os estados</option>
+              <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option>
+              <option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option>
+              <option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option>
+              <option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option>
+              <option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option>
+              <option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option>
+              <option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+            </select>
+          </div>
+
+          <!-- Filtro por Município -->
+          <div>
+            <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;" for="filtro-municipio">Município</label>
+            <input type="text" id="filtro-municipio" placeholder="Ex: São Paulo" autocomplete="off" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit;">
+          </div>
+
           <!-- Ordenação -->
           <div>
             <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
@@ -2482,7 +2505,11 @@ crmShowSurveyReminder();
               <option value="cargo">Cargo (A-Z)</option>
             </select>
           </div>
-        <div><label for="filtro-modalidade">Modalidade</label><select id="filtro-modalidade"><option value="">Todas</option><option>Remoto</option><option>Híbrido</option><option>Presencial</option><option>A combinar</option></select></div></div>
+          <div>
+            <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;" for="filtro-modalidade">Modalidade</label>
+            <select id="filtro-modalidade" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);"><option value="">Todas</option><option>Remoto</option><option>Híbrido</option><option>Presencial</option><option>A combinar</option></select>
+          </div>
+        </div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button onclick="crmSearchJobs()" style="background:var(--text); color:#fffff3; border:none; border-radius:8px; padding:8px 14px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;" id="btn-buscar"> Buscar</button>
@@ -3627,6 +3654,73 @@ function formatarDataVagas(dataString) {
   }
 }
 
+const CRM_JOB_STATE_LABELS = {
+  AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',
+  GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',
+  PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',
+  SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'
+};
+const CRM_JOB_CAPITAL_STATE = {
+  'rio branco':'AC','maceio':'AL','macapa':'AP','manaus':'AM','salvador':'BA','fortaleza':'CE','brasilia':'DF','vitoria':'ES',
+  'goiania':'GO','sao luis':'MA','cuiaba':'MT','campo grande':'MS','belo horizonte':'MG','belem':'PA','joao pessoa':'PB',
+  'curitiba':'PR','recife':'PE','teresina':'PI','rio de janeiro':'RJ','natal':'RN','porto alegre':'RS','porto velho':'RO',
+  'boa vista':'RR','florianopolis':'SC','sao paulo':'SP','aracaju':'SE','palmas':'TO'
+};
+function crmNormalizeJobPlace(value){
+  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+function crmJobLocationInfo(vaga){
+  const rawParts=[vaga.regiao,vaga.location].map(v=>String(v||'').trim()).filter(Boolean);
+  let raw=rawParts.find(v=>!/^((100%\s*)?remot[oa]|home\s*office|teletrabalho|h[ií]brid[oa]|presencial|brasil|todo\s+brasil|nacional|n[aã]o informado)$/i.test(v))||'';
+  let norm=crmNormalizeJobPlace(raw);
+  let estado='';
+  for(const [uf,nome] of Object.entries(CRM_JOB_STATE_LABELS)){
+    const nomeNorm=crmNormalizeJobPlace(nome);
+    const ufRe=new RegExp('(^|[^a-z])'+uf.toLowerCase()+'(?=$|[^a-z])','i');
+    if(norm.includes(nomeNorm)||ufRe.test(norm)){estado=uf;break;}
+  }
+  let municipio='';
+  if(raw){
+    let cleaned=raw
+      .replace(/\b(remoto|remota|híbrido|hibrido|híbrida|hibrida|presencial|home office|teletrabalho|brasil|todo brasil|nacional)\b/gi,' ')
+      .replace(/[()]/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+    if(estado){
+      const nome=CRM_JOB_STATE_LABELS[estado];
+      cleaned=cleaned.replace(new RegExp('\\b'+estado+'\\b','gi'),' ').replace(new RegExp(nome,'gi'),' ');
+    }
+    const parts=cleaned.split(/[,|\/–—-]/).map(x=>x.trim().replace(/\be\s+regi[aã]o\b/gi,'').trim()).filter(Boolean);
+    municipio=parts.find(x=>x.length>1&&!/^(regi[aã]o|estado)$/i.test(x))||'';
+  }
+  if(!estado&&municipio){
+    const hint=CRM_JOB_CAPITAL_STATE[crmNormalizeJobPlace(municipio)];
+    if(hint)estado=hint;
+  }
+  if(!estado){
+    const titleNorm=crmNormalizeJobPlace(vaga.title||vaga.cargo||'');
+    for(const [city,uf] of Object.entries(CRM_JOB_CAPITAL_STATE)){
+      if(titleNorm.includes(city)){estado=uf;if(!municipio)municipio=CRM_JOB_STATE_LABELS[uf]==='São Paulo'?'São Paulo':city.replace(/\b\w/g,m=>m.toUpperCase());break;}
+    }
+    if(!estado){
+      for(const uf of Object.keys(CRM_JOB_STATE_LABELS)){
+        const re=new RegExp('(^|[\\s|/\\-])'+uf.toLowerCase()+'(?=$|[\\s|/\\-])','i');
+        if(re.test(titleNorm)){estado=uf;break;}
+      }
+    }
+  }
+  const display=municipio?(municipio+(estado?' · '+estado:'')):(estado?CRM_JOB_STATE_LABELS[estado]+' · '+estado:'');
+  return {raw,municipio,estado,display};
+}
+function crmJobMatchesLocation(vaga,estado,municipio){
+  const info=crmJobLocationInfo(vaga);
+  const cityNeedle=crmNormalizeJobPlace(municipio);
+  const haystack=crmNormalizeJobPlace([info.raw,vaga.regiao,vaga.location,vaga.title].filter(Boolean).join(' '));
+  const stateOk=!estado||info.estado===estado||haystack.includes(crmNormalizeJobPlace(CRM_JOB_STATE_LABELS[estado]));
+  const cityOk=!cityNeedle||haystack.includes(cityNeedle)||crmNormalizeJobPlace(info.municipio).includes(cityNeedle);
+  return stateOk&&cityOk;
+}
+
 // Inicializar cliente Supabase para Vagas
 let vagasSb = null;
 function initVagasSupabase() {
@@ -3688,7 +3782,7 @@ async function carregarVagasHub() {
 }
 
 function obterModalidade(vaga) {
-  const textoCompleto = `${vaga.work_model || ''} ${vaga.location || ''} ${vaga.title || ''} ${vaga.description || ''}`.toLowerCase();
+  const textoCompleto = `${vaga.work_model || ''} ${vaga.modelo || ''} ${vaga.location || ''} ${vaga.title || ''} ${vaga.description || ''}`.toLowerCase();
 
   if (textoCompleto.includes('remoto') || textoCompleto.includes('home office') || textoCompleto.includes('teletrabalho')) {
     return { label: 'Remoto', badge: 'Remoto', icon: '', color: 'rgba(34,197,94,0.1)', textColor: 'var(--accent)' };
@@ -3733,7 +3827,8 @@ function mapearCampoVaga(vaga) {
     salario: vaga.salario || vaga.salary || vaga.salary_range || '',
     criado_em: vaga.criado_em || vaga.created_at || vaga.posted_at || '',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
-    modalidade: obterModalidade(vaga)
+    modalidade: obterModalidade(vaga),
+    localidade: crmJobLocationInfo(vaga)
   };
 }
 
@@ -3755,6 +3850,7 @@ function renderizarVagasHub(vagas) {
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
+        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ((vaga.modalidade?.badge==='Remoto'||vaga.modalidade?.badge==='Híbrido') ? `<span style="font-size:10px; background:var(--panel-2); color:var(--muted); padding:3px 8px; border-radius:4px;">📍 Localidade não informada</span>` : '')}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
@@ -3829,6 +3925,8 @@ async function aplicarFiltrosVagas() {
     const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
     const nivel = document.getElementById('filtro-nivel-hub').value;
     const plataforma = document.getElementById('filtro-plataforma-hub').value;
+    const estado = document.getElementById('filtro-estado')?.value || '';
+    const municipio = sanitizeInputVagas(document.getElementById('filtro-municipio')?.value || '', 80);
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
     let query = vagasSb.from('vagas_crm').select('*');
@@ -3863,6 +3961,10 @@ async function aplicarFiltrosVagas() {
       query = query.ilike('source', `%${plataforma}%`);
     }
 
+    if (municipio) {
+      query = query.or(`location.ilike.%${municipio}%,regiao.ilike.%${municipio}%,title.ilike.%${municipio}%`);
+    }
+
     if (ordem === 'empresa') {
       query = query.order('company', { ascending: true });
     } else if (ordem === 'cargo') {
@@ -3871,7 +3973,7 @@ async function aplicarFiltrosVagas() {
       query = query.order('created_at', { ascending: false });
     }
 
-    query = query.limit(300);
+    query = query.limit(1000);
 
     const { data, error } = await query;
 
@@ -3881,13 +3983,14 @@ async function aplicarFiltrosVagas() {
       return;
     }
 
-    if (!data || data.length === 0) {
+    const filtradas = (data || []).filter(vaga => crmJobMatchesLocation(vaga, estado, municipio));
+    if (!filtradas.length) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada com esses critérios.</p></div>';
       document.getElementById('vagasCountHub').textContent = '0';
       return;
     }
 
-    renderizarVagasHub(data);
+    renderizarVagasHub(filtradas);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
@@ -3899,6 +4002,8 @@ function limparFiltrosVagas() {
   document.getElementById('filtro-empresa-hub').value = '';
   document.getElementById('filtro-nivel-hub').value = '';
   document.getElementById('filtro-plataforma-hub').value = '';
+  if (document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = '';
+  if (document.getElementById('filtro-municipio')) document.getElementById('filtro-municipio').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
   carregarVagasHub();
 }
@@ -7933,11 +8038,11 @@ function runMembroMatch(){
   const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
   const confirmed=skills.filter(x=>x.evidence_status==='confirmed').map(x=>x.skill_name);
   const absent=skills.filter(x=>x.evidence_status==='does_not_have').map(x=>x.skill_name);
-  if(!p||(!confirmed.length&&!p.professional_summary)){
+  if(!p||(!confirmed.length&&!(p.cv_full_text||p.professional_summary))){
     matchEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Complete seu <button onclick="crmOpenMatchResume()" style="border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0">Currículo para Match</button> para receber recomendações mais precisas.</div>';return;
   }
   if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
-  const seniority=(p.seniority||'').toLowerCase(),summary=(p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
+  const seniority=(p.seniority||'').toLowerCase(),summary=(p.cv_full_text||p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
   const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
   const scored=VAGAS.map(v=>{
     const text=((v.title||'')+' '+(v.description||'')+' '+(v.location||'')).toLowerCase();let score=0;
@@ -8373,7 +8478,7 @@ function crmHandleLocation(){
 document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleLocation();
- let searchTimer;for(const n of ['cargo','empresa','nivel','plataforma']){const input=crmById('filtro-'+n);input.addEventListener(input.tagName==='SELECT'?'change':'input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(crmSearchJobs,400);});input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(searchTimer);crmSearchJobs();}});}
+ let searchTimer;for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio']){const input=crmById('filtro-'+n);if(!input)continue;input.addEventListener(input.tagName==='SELECT'?'change':'input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(crmSearchJobs,400);});input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(searchTimer);crmSearchJobs();}});}
  crmById('filtro-modalidade').addEventListener('change',crmFilterModality);
  new MutationObserver(()=>{crmFilterModality();crmEnhanceCards();}).observe(crmById('vagasContainerHub'),{childList:true});
  new MutationObserver(crmEnhanceCards).observe(crmById('evGrid'),{childList:true});
@@ -8393,14 +8498,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 async function crmSearchJobs(){
  const seq=++crmJobSearchSequence;
- const searchProps={cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
+ const searchProps={cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',estado:crmById('filtro-estado')?.value||'',municipio:crmById('filtro-municipio')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
  window.posthogTracker?.track('search_performed',{area:'vagas',...searchProps});
 
  for(const n of ['cargo','empresa','nivel','plataforma'])crmById('filtro-'+n+'-hub').value=crmById('filtro-'+n).value;
  const b=crmById('btn-buscar');b.disabled=true;b.textContent='Buscando…';
  try{await aplicarFiltrosVagas();if(seq===crmJobSearchSequence)crmFilterModality();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
 }
-function crmClearJobs(){for(const n of ['cargo','empresa','nivel','plataforma','modalidade'])crmById('filtro-'+n).value='';limparFiltrosVagas();}
+function crmClearJobs(){for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
 function crmFilterModality(){
  const container=crmById('vagasContainerHub'),value=crmById('filtro-modalidade').value;
  const cards=Array.from(container.children).filter(c=>c.querySelector('h3'));
@@ -8413,7 +8518,7 @@ function crmFilterModality(){
 let CURRENT_MATCH_RESUME=null;
 function crmCsvList(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,40);}
 function crmMatchCompleteness(p,skills,prefs){
- const checks=[p?.professional_headline,p?.professional_summary,p?.primary_area,p?.seniority,p?.years_experience,skills?.length,prefs?.target_roles?.length,prefs?.work_models?.length,prefs?.employment_types?.length,prefs?.preferred_locations?.length];
+ const checks=[p?.professional_headline,(p?.cv_full_text||p?.professional_summary),p?.primary_area,p?.seniority,p?.years_experience,skills?.length,prefs?.target_roles?.length,prefs?.work_models?.length,prefs?.employment_types?.length,prefs?.preferred_locations?.length];
  return Math.round(checks.filter(Boolean).length/checks.length*100);
 }
 async function crmLoadMatchResume(){
@@ -8452,7 +8557,7 @@ async function crmOpenMatchResume(){
     <label class="ev-ilabel">Senioridade<select class="ev-ifield" name="seniority"><option value="">Não informado</option>${['Estágio','Júnior','Pleno','Sênior','Especialista','Coordenação','Gestão','Diretoria'].map(x=>'<option '+(p.seniority===x?'selected':'')+'>'+x+'</option>').join('')}</select></label>
     <label class="ev-ilabel">Anos de experiência<input class="ev-ifield" name="years" type="number" min="0" max="60" step=".5" value="${escapeHtml(p.years_experience??'')}"></label>
    </div>
-   <label class="ev-ilabel" style="margin-top:12px">Resumo profissional<textarea class="ev-ifield" name="summary" rows="4" maxlength="2000" placeholder="Experiência, escopo, segmentos e principais resultados.">${escapeHtml(p.professional_summary||'')}</textarea></label>
+   <label class="ev-ilabel" style="margin-top:12px">Currículo completo<textarea class="ev-ifield" name="cv" rows="12" style="min-height:340px;resize:vertical" placeholder="Cole aqui seu currículo completo: resumo, experiências profissionais, formação, certificações, projetos e demais informações relevantes para o Match.">${escapeHtml(p.cv_full_text||p.professional_summary||'')}</textarea><small style="display:block;color:var(--muted);margin-top:6px">Este conteúdo é privado, fica separado do Resumo profissional do Perfil de Membro e é usado somente no Match de vagas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências e ferramentas que possui<textarea class="ev-ifield" name="skills" rows="3" placeholder="Salesforce, SQL, Power BI, RD Station...">${escapeHtml(confirmed)}</textarea><small style="color:var(--muted)">Separe por vírgulas.</small></label>
    <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
@@ -8475,7 +8580,7 @@ async function crmOpenMatchResume(){
  try{
    const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
    if(draft&&typeof draft==='object'){
-     for(const [name,value] of Object.entries(draft)){const group=form.querySelector('.crm-match-chip-group[data-name="'+name+'"]');if(group&&Array.isArray(value)){group.querySelectorAll('.crm-match-chip').forEach(b=>{const on=value.includes(b.dataset.value);b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',on?'true':'false');});continue;}const field=form.elements.namedItem(name);if(field&&value!=null)field.value=value;}
+     for(const [name,value] of Object.entries(draft)){const group=form.querySelector('.crm-match-chip-group[data-name="'+name+'"]');if(group&&Array.isArray(value)){group.querySelectorAll('.crm-match-chip').forEach(b=>{const on=value.includes(b.dataset.value);b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',on?'true':'false');});continue;}const field=form.elements.namedItem(name)||(name==='summary'?form.elements.namedItem('cv'):null);if(field&&value!=null)field.value=value;}
      const status=crmById('crmMatchResumeFormStatus');if(status)status.textContent='Rascunho recuperado automaticamente.';
    }
  }catch(e){console.warn('match draft restore',e);}
@@ -8500,7 +8605,7 @@ async function crmSaveMatchResume(ev){
  const session=await crmRequireSession();if(!session)return;btn.disabled=true;status.textContent='Salvando...';
  try{
   const fd=new FormData(form),uid=CURRENT_USER.id;
-  const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,professional_summary:String(fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
+  const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,cv_full_text:String(fd.get('cv')||fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
   const selected=name=>Array.from(form.querySelectorAll('.crm-match-chip-group[data-name="'+name+'"] .crm-match-chip.is-selected')).map(b=>b.dataset.value).filter(Boolean);
   const prefs={user_id:uid,target_roles:selected('roles'),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
   const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
@@ -9161,11 +9266,16 @@ async function crmLoadExperienceAnswer(){
   const uid=CURRENT_USER?.id;
   if(!uid||!authSb){crmExperienceCheckUser=null;crmExperienceHasAnswer=false;return false}
   if(crmExperienceCheckUser===uid)return crmExperienceHasAnswer;
-  crmExperienceCheckUser=uid;crmExperienceHasAnswer=false;
+  crmExperienceHasAnswer=false;
   try{
     const {data,error}=await authSb.from('crm_experience_feedback').select('rating').eq('user_id',uid).maybeSingle();
-    if(!error&&data)crmExperienceHasAnswer=true;
-  }catch{}
+    if(error)throw error;
+    crmExperienceCheckUser=uid;
+    crmExperienceHasAnswer=!!data;
+  }catch(e){
+    console.warn('crmLoadExperienceAnswer',e);
+    crmExperienceCheckUser=null;
+  }
   return crmExperienceHasAnswer;
 }
 async function crmRenderFloatingPrompts(){
@@ -9174,7 +9284,7 @@ async function crmRenderFloatingPrompts(){
   if(!CURRENT_USER){
     profileEl.hidden=true;experienceEl.hidden=true;document.body.classList.remove('crm-profile-prompt-visible');return;
   }
-  const incomplete=!CURRENT_PROFILE||CURRENT_PROFILE.guided_onboarding_completed!==true||!crmProfileComplete(CURRENT_PROFILE);
+  const incomplete=!CURRENT_PROFILE||!crmProfileComplete(CURRENT_PROFILE);
   const showProfile=incomplete&&!crmPromptIsSnoozed('profile')&&!document.getElementById('profileModalOverlay');
   profileEl.hidden=!showProfile;
   document.body.classList.toggle('crm-profile-prompt-visible',showProfile);
@@ -9182,7 +9292,7 @@ async function crmRenderFloatingPrompts(){
 
   const answered=await crmLoadExperienceAnswer();
   if(CURRENT_USER?.id!==crmExperienceCheckUser)return;
-  const showExperience=!answered&&!crmPromptIsSnoozed('experience');
+  const showExperience=!showProfile&&!answered&&!crmPromptIsSnoozed('experience');
   experienceEl.hidden=!showExperience;
   if(showExperience)window.posthogTracker?.track('experience_prompt_shown');
 }
@@ -9191,12 +9301,14 @@ async function crmSubmitExperienceRating(rating){
   const el=document.getElementById('crmExperiencePrompt');
   el?.querySelectorAll('button').forEach(b=>b.disabled=true);
   try{
-    const payload={user_id:CURRENT_USER.id,rating:Number(rating),updated_at:new Date().toISOString()};
-    const {error}=await authSb.from('crm_experience_feedback').upsert(payload,{onConflict:'user_id'});
+    const score=Number(rating);
+    const {data,error}=await authSb.rpc('crm_submit_experience_feedback',{p_rating:score});
     if(error)throw error;
+    if(data?.ok===false)throw Error(data?.error||'Não foi possível salvar.');
     crmExperienceHasAnswer=true;crmExperienceCheckUser=CURRENT_USER.id;
     if(el)el.hidden=true;
-    window.posthogTracker?.track('experience_feedback_submitted',{rating:Number(rating)});
+    window.posthogTracker?.track('experience_feedback_submitted',{rating:score});
+    window.crmInngageSyncExperience?.(CURRENT_USER,{answered:true,rating:score,updated_at:data?.updated_at||new Date().toISOString()});
     if(typeof evToastMsg==='function')evToastMsg('Obrigada pela avaliação.','');
   }catch(e){
     console.error('crmSubmitExperienceRating',e);
