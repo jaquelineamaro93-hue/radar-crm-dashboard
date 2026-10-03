@@ -88,12 +88,26 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function mount(nav,page){
     const memberHeader=page.querySelector(':scope > .crm-members-heading-row');
     if(memberHeader){memberHeader.insertAdjacentElement('afterend',nav);return;}
-    const desc=page.querySelector(':scope > section > .section-desc');
-    if(desc){desc.insertAdjacentElement('afterend',nav);return;}
-    const hero=page.querySelector(':scope > .cx-hub-hero, :scope > .crm-dashboard-heading');
-    if(hero){hero.insertAdjacentElement('afterend',nav);return;}
-    const firstVisible=Array.from(page.children).find(el=>el.nodeType===1&&el.tagName!=='SCRIPT'&&!el.hidden&&getComputedStyle(el).display!=='none');
-    if(firstVisible){page.insertBefore(nav,firstVisible.nextSibling);return;}
+
+    const directTitle=page.querySelector(':scope > h1');
+    if(directTitle){
+      const intro=directTitle.nextElementSibling?.matches('.crm-muted')?directTitle.nextElementSibling:directTitle;
+      intro.insertAdjacentElement('afterend',nav);return;
+    }
+
+    const section=Array.from(page.children).find(el=>el.tagName==='SECTION'&&!el.hidden&&getComputedStyle(el).display!=='none');
+    if(section){
+      const desc=section.querySelector(':scope > .section-desc');
+      if(desc){desc.insertAdjacentElement('afterend',nav);return;}
+      const hero=section.querySelector(':scope > .cx-hub-hero, :scope > .cx-groups-intro, :scope > .crm-dashboard-heading');
+      if(hero){hero.insertAdjacentElement('afterend',nav);return;}
+      const introBlock=section.firstElementChild;
+      if(introBlock){introBlock.insertAdjacentElement('afterend',nav);return;}
+      section.prepend(nav);return;
+    }
+
+    const tabs=page.querySelector(':scope > .search-tabs-container');
+    if(tabs){tabs.insertAdjacentElement('afterend',nav);return;}
     page.prepend(nav);
   }
   function render(route){
