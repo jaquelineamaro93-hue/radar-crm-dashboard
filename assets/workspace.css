@@ -26,5 +26,6 @@ body:has(#view-logada:not([hidden])) #crmSurveyReminder{display:none!important}
 .crm-topic-card__desc{display:block;color:#aaa39c;font-size:12.5px;line-height:1.45}
 .crm-topic-card__state{align-self:start;display:inline-flex;align-items:center;min-height:27px;padding:4px 8px;border:1px solid #45403b;border-radius:999px;color:#b7b0aa;font-size:11px;font-weight:700;white-space:nowrap}
 .crm-topic-card.is-current .crm-topic-card__state{border-color:#7c3c17;background:#3a2113;color:#fdba74}
+@media(max-width:1100px){.crm-topic-nav__grid{grid-template-columns:1fr}.crm-topic-nav__hint{text-align:left}.crm-topic-nav__head{align-items:start}}
 @media(max-width:760px){.crm-topic-nav{padding:17px;margin:20px 0 26px}.crm-topic-nav__head{display:block}.crm-topic-nav__hint{margin-top:6px;text-align:left}.crm-topic-nav__grid{grid-template-columns:1fr}.crm-topic-card{grid-template-columns:40px minmax(0,1fr) auto;min-height:82px;padding:13px}.crm-topic-card__icon{width:40px;height:40px}.crm-topic-card__desc{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.crm-topic-card{transition:none}.crm-topic-card:hover{transform:none}}
