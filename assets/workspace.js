@@ -164,17 +164,39 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function currentRoute(){
     try{return crmActiveRoute||crmRouteFromLocation?.()||'';}catch{return '';}
   }
+  let syncFrame=0;
+  function sync(route=currentRoute()){
+    cancelAnimationFrame(syncFrame);
+    syncFrame=requestAnimationFrame(()=>{
+      const normalized=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
+      render(normalized==='dashboard'?(crmSignedIn()?'membro':'mercado'):normalized);
+    });
+  }
+  function syncStable(route=currentRoute()){
+    sync(route);
+    setTimeout(()=>sync(route||currentRoute()),80);
+  }
 
   const originalNavigate=window.crmNavigate;
   if(typeof originalNavigate==='function'){
     window.crmNavigate=function(route,updateHash=true){
       const result=originalNavigate.call(this,route,updateHash);
-      const normalized=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
-      requestAnimationFrame(()=>render(normalized==='dashboard'?(crmSignedIn()?'membro':'mercado'):normalized));
+      syncStable(route);
       return result;
     };
   }
 
-  document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(()=>render(currentRoute())));
-  window.addEventListener('popstate',()=>requestAnimationFrame(()=>render(currentRoute())));
+  document.addEventListener('click',event=>{
+    const navTrigger=event.target.closest('[data-crm-route], .crm-nav-items .tab-btn, #crmSidebar .tab-btn');
+    if(navTrigger)setTimeout(()=>syncStable(currentRoute()),0);
+  },true);
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    syncStable(currentRoute());
+    const roots=[document.getElementById('crmPages'),document.getElementById('crmPublicPages')].filter(Boolean);
+    const observer=new MutationObserver(()=>sync(currentRoute()));
+    roots.forEach(root=>observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style']}));
+  });
+  window.addEventListener('popstate',()=>syncStable(currentRoute()));
+  window.CXTopicNav={render:route=>syncStable(route),sync:()=>syncStable(currentRoute())};
 })();
