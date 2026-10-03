@@ -716,45 +716,6 @@
   @media print{
     .tab-nav, header .header-links, header .sponsor-banner, .calc-actions, footer{display:none !important;}
   }
-
-/* Navegação contextual por tópicos — Conexão CRM */
-.crm-topic-nav{
-  margin:24px 0 32px;
-  padding:22px;
-  border:1px solid #34302d;
-  border-radius:14px;
-  background:#141312;
-}
-.crm-topic-nav__head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}
-.crm-topic-nav__eyebrow{display:block;margin:0 0 5px;color:#fb923c;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-.crm-topic-nav__title{margin:0;color:#f4f3ed;font-size:22px;line-height:1.25;letter-spacing:-.02em}
-.crm-topic-nav__hint{margin:0;color:#9f9891;font-size:13px;line-height:1.45;text-align:right}
-.crm-topic-nav__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.crm-topic-card{
-  position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:14px;
-  min-height:92px;padding:15px 16px;border:1px solid #3b3733;border-radius:12px;background:#1a1918;
-  color:#f4f3ed;text-decoration:none;transition:border-color .16s ease,background .16s ease,transform .16s ease;
-}
-.crm-topic-card:hover{border-color:#f97316;background:#211a15;transform:translateY(-1px)}
-.crm-topic-card:focus-visible{outline:3px solid #fdba74;outline-offset:3px;border-color:#f97316}
-.crm-topic-card.is-current{border-color:#f97316;background:linear-gradient(135deg,#2a1c14,#1b1816)}
-.crm-topic-card.is-current::before{content:"";position:absolute;left:-1px;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:#f97316}
-.crm-topic-card__icon{display:grid;place-items:center;width:44px;height:44px;border:1px solid #45403b;border-radius:10px;background:#23211f;color:#d7d2cc;font-size:20px;font-weight:700}
-.crm-topic-card.is-current .crm-topic-card__icon{border-color:#f97316;background:#f97316;color:#18181b}
-.crm-topic-card__copy{min-width:0}
-.crm-topic-card__name{display:block;margin-bottom:4px;color:inherit;font-size:15px;font-weight:750;line-height:1.3}
-.crm-topic-card__desc{display:block;color:#aaa39c;font-size:12.5px;line-height:1.45}
-.crm-topic-card__state{align-self:start;display:inline-flex;align-items:center;min-height:27px;padding:4px 8px;border:1px solid #45403b;border-radius:999px;color:#aaa39c;font-size:11px;font-weight:700;white-space:nowrap}
-.crm-topic-card.is-current .crm-topic-card__state{border-color:#7c3c17;background:#3a2113;color:#fdba74}
-@media(max-width:760px){
-  .crm-topic-nav{padding:17px;margin:20px 0 26px}
-  .crm-topic-nav__head{display:block}.crm-topic-nav__hint{margin-top:6px;text-align:left}
-  .crm-topic-nav__grid{grid-template-columns:1fr}
-  .crm-topic-card{grid-template-columns:40px minmax(0,1fr) auto;min-height:82px;padding:13px}
-  .crm-topic-card__icon{width:40px;height:40px}
-  .crm-topic-card__desc{font-size:12px}
-}
-@media(prefers-reduced-motion:reduce){.crm-topic-card{transition:none}.crm-topic-card:hover{transform:none}}
 </style>
 <style id="crm-rebrand-style">
 :root{--bg:#0d0d0d;--panel:#181716;--panel-2:#211f1d;--line:#35322e;--text:#f4f3ed;--muted:#aaa79f;--mint:#ff8a3d;--accent:#ff8a3d;--accent-tint:rgba(255,138,61,.08);--ink-tint:rgba(255,255,255,.05);--blue:#9ac5ff;--green:#b7df7c;--coral:#f3a484;--amber:#dfbd6e;--violet:#c4abe8;--pink:#e6a8cb;--cyan:#92d3ce;color-scheme:dark}
@@ -8312,74 +8273,6 @@ document.addEventListener('DOMContentLoaded', authInit);
 const crmRoutes={'patrocinio/apoiadores':['pageApoiadores','Quem nos apoia'],'quem-somos':['quem-somos','Quem somos'],solucoes:['solucoes','Soluções'],'public-match':['crmPublicMatch','Open to Work'],dashboard:['crmPersonalDashboard','Dashboard'],mercado:['pageDashboard','Dashboard executivo'],vagas:['pageVagas','Radar de Vagas'],'vagas-salvas':['subpage-vagas-salvas','Vagas salvas & Match IA'],search:['pageSearch','Open to Work'],membros:['subpage-membros','Membros da Comunidade'],freelancers:['pageFreelancers','Freelancers'],membro:['pageMembro','Meu Painel'],cargos:['pageCargos','Cargos & Salários'],calc:['pageCalc','CLT x PJ'],plataformas:['pagePlataformas','Plataformas'],agencias:['pageAgencias','Agências & Consultorias'],courses:['pageCourses','Cursos'],conteudos:['pageConteudos','Conteúdos'],eventos:['pageEventos','Eventos da Comunidade'],comunidade:['pageComunidade','Comunidade / Grupos'],patrocinio:['pagePatrocinio','Seja Patrocinador'],pesquisa:['pagePesquisa','Pesquisas & Censo'],ferramentas:['pageFerramentas','Comparativo de CRMs'],'match-recrutador':['crmRecruiterAI','Match por IA'],'meus-eventos':['crmMyEvents','Meus Eventos'],publicar:['crmPublish','Publicar Vaga / Anunciar Agência']};
 const crmPublicRoutes=new Set(['patrocinio/apoiadores','quem-somos','solucoes','mercado','vagas','search','freelancers','cargos','calc','plataformas','agencias','courses','conteudos','eventos','ferramentas','patrocinio','pesquisa','comunidade','public-match']);
 const crmById=id=>document.getElementById(id);
-
-const CRM_TOPIC_AREAS={
-  carreira:{
-    eyebrow:'CARREIRA & OPORTUNIDADES',
-    title:'Explore outros temas desta área',
-    hint:'Navegue sem voltar ao menu principal.',
-    items:[
-      ['vagas','▣','Radar de Vagas','Oportunidades em CRM, CX, CS, Growth, Marketing, Dados e áreas correlatas.'],
-      ['search','◎','Open to Work','Encontre profissionais disponíveis e compare perfis com oportunidades.'],
-      ['cargos','◫','Cargos & Salários','Dados reais de remuneração, senioridade e mercado.'],
-      ['calc','↔','CLT x PJ','Compare cenários de contratação e remuneração.'],
-      ['courses','▤','Cursos','Formações e conteúdos para desenvolver sua carreira.'],
-      ['eventos','▦','Eventos','Agenda de encontros, summits, imersões e webinars.']
-    ]
-  },
-  ecossistema:{
-    eyebrow:'DADOS, FERRAMENTAS & MERCADO',
-    title:'Continue explorando o ecossistema',
-    hint:'Conteúdo conectado para apoiar decisões.',
-    items:[
-      ['mercado','◈','Dashboard executivo','Indicadores agregados para entender o mercado.'],
-      ['pesquisa','⌁','Pesquisas & Censo','Dados da comunidade e leituras sobre o setor.'],
-      ['ferramentas','▥','Comparativo de CRMs','Compare plataformas, funcionalidades e avaliações.'],
-      ['plataformas','◇','Plataformas','Descubra ferramentas recomendadas pela comunidade.'],
-      ['conteudos','▤','Conteúdos','Artigos, cases, frameworks, livros e materiais.'],
-      ['agencias','◌','Agências & Consultorias','Encontre parceiros para estratégia e implementação.']
-    ]
-  },
-  comunidade:{
-    eyebrow:'COMUNIDADE & CONEXÕES',
-    title:'Acesse outros espaços da comunidade',
-    hint:'Pessoas, grupos e oportunidades em um só fluxo.',
-    items:[
-      ['membros','◉','Membros','Conheça profissionais que fazem parte da comunidade.'],
-      ['comunidade','◌','Grupos','Acesse grupos por tema, tecnologia e momento de carreira.'],
-      ['freelancers','◇','Freelancers','Encontre especialistas para projetos e entregas.'],
-      ['eventos','▦','Eventos','Veja a agenda e quem confirmou presença.'],
-      ['search','◎','Open to Work','Conheça talentos disponíveis para novas oportunidades.'],
-      ['patrocinio/apoiadores','✦','Quem nos apoia','Conheça empresas e parceiros que apoiam a comunidade.']
-    ]
-  }
-};
-const CRM_TOPIC_AREA_BY_ROUTE={
-  vagas:'carreira',search:'carreira',cargos:'carreira',calc:'carreira',courses:'carreira','public-match':'carreira',
-  mercado:'ecossistema',pesquisa:'ecossistema',ferramentas:'ecossistema',plataformas:'ecossistema',conteudos:'ecossistema',agencias:'ecossistema',
-  membros:'comunidade',comunidade:'comunidade',freelancers:'comunidade',eventos:'comunidade','patrocinio/apoiadores':'comunidade'
-};
-function crmRenderTopicNav(route,pageId){
-  const page=crmById(pageId),areaKey=CRM_TOPIC_AREA_BY_ROUTE[route],area=CRM_TOPIC_AREAS[areaKey];
-  if(!page||!area)return;
-  page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
-  const allowed=area.items.filter(([target])=>crmPublicRoutes.has(target)||crmSignedIn());
-  const nav=document.createElement('nav');
-  nav.className='crm-topic-nav';nav.dataset.crmGenerated='1';nav.setAttribute('aria-label','Navegação por temas relacionados');
-  const cards=allowed.map(([target,icon,name,desc])=>{
-    const current=target===route||(route==='public-match'&&target==='search');
-    const href=crmRoutePath(target);
-    return '<a class="crm-topic-card'+(current?' is-current':'')+'" href="'+href+'" data-crm-route="'+target+'"'+(current?' aria-current="page"':'')+'>'+
-      '<span class="crm-topic-card__icon" aria-hidden="true">'+icon+'</span>'+
-      '<span class="crm-topic-card__copy"><span class="crm-topic-card__name">'+escapeHtml(name)+'</span><span class="crm-topic-card__desc">'+escapeHtml(desc)+'</span></span>'+
-      '<span class="crm-topic-card__state">'+(current?'Você está aqui':'Abrir')+'</span></a>';
-  }).join('');
-  nav.innerHTML='<div class="crm-topic-nav__head"><div><span class="crm-topic-nav__eyebrow">'+area.eyebrow+'</span><h2 class="crm-topic-nav__title">'+area.title+'</h2></div><p class="crm-topic-nav__hint">'+area.hint+'</p></div><div class="crm-topic-nav__grid">'+cards+'</div>';
-  const section=page.querySelector(':scope > section')||page.querySelector('section')||page;
-  const anchor=section.querySelector(':scope > .section-desc, :scope > .cx-hub-hero, :scope > .crm-dashboard-heading');
-  if(anchor)anchor.insertAdjacentElement('afterend',nav);else section.prepend(nav);
-}
-
 const CRM_PORTAL_URL='https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-portal';
 let crmActiveRoute='inicio',crmWasSignedIn=false,crmAuthEpoch=0,crmValidatedUserId=null,crmPendingRoute=null;
 function crmSignedIn(){return !!CURRENT_USER&&CURRENT_USER.id===crmValidatedUserId;}
@@ -8472,7 +8365,6 @@ function crmNavigate(route,updateHash=true){
  document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.id===id));
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
- crmRenderTopicNav(route,id);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
  if(route==='freelancers')loadFreelancers();
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
