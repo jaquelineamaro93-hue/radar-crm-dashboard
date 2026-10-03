@@ -54,49 +54,21 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
 
 
 
-/* Contextual topic cards */
+/* Contextual topic cards — route-stable and idempotent */
 (function(){
   const AREAS={
-    trabalho:{
-      label:'TRABALHO',
-      title:'Acesse os outros temas desta área',
-      items:[
-        ['vagas-salvas','▱','Vagas Salvas'],
-        ['vagas','▣','Radar de Vagas'],
-        ['search','◎','Open to Work'],
-        ['freelancers','◇','Freelancers'],
-        ['match-recrutador','✦','Match por IA']
-      ]
-    },
-    comunidade:{
-      label:'COMUNIDADE',
-      title:'Acesse os outros temas desta área',
-      items:[
-        ['membros','◉','Membros'],
-        ['eventos','▦','Eventos'],
-        ['meus-eventos','✓','Meus Eventos'],
-        ['comunidade','◌','Grupos']
-      ]
-    },
-    conhecimento:{
-      label:'CONHECIMENTO',
-      title:'Acesse os outros temas desta área',
-      items:[
-        ['conteudos','▤','Conteúdos'],
-        ['courses','□','Cursos'],
-        ['pesquisa','⌁','Pesquisas & Censo']
-      ]
-    },
-    ferramentas:{
-      label:'FERRAMENTAS',
-      title:'Acesse os outros temas desta área',
-      items:[
-        ['cargos','≋','Cargos & Salários'],
-        ['calc','±','CLT x PJ'],
-        ['plataformas','⬡','Plataformas'],
-        ['agencias','△','Agências & Consultorias']
-      ]
-    }
+    trabalho:{label:'TRABALHO',title:'Acesse os outros temas desta área',items:[
+      ['vagas-salvas','▱','Vagas Salvas'],['vagas','▣','Radar de Vagas'],['search','◎','Open to Work'],['freelancers','◇','Freelancers'],['match-recrutador','✦','Match por IA']
+    ]},
+    comunidade:{label:'COMUNIDADE',title:'Acesse os outros temas desta área',items:[
+      ['membros','◉','Membros'],['eventos','▦','Eventos'],['meus-eventos','✓','Meus Eventos'],['comunidade','◌','Grupos']
+    ]},
+    conhecimento:{label:'CONHECIMENTO',title:'Acesse os outros temas desta área',items:[
+      ['conteudos','▤','Conteúdos'],['courses','□','Cursos'],['pesquisa','⌁','Pesquisas & Censo']
+    ]},
+    ferramentas:{label:'FERRAMENTAS',title:'Acesse os outros temas desta área',items:[
+      ['cargos','≋','Cargos & Salários'],['calc','±','CLT x PJ'],['plataformas','⬡','Plataformas'],['agencias','△','Agências & Consultorias']
+    ]}
   };
   const AREA_BY_ROUTE={
     'vagas-salvas':'trabalho',vagas:'trabalho',search:'trabalho',freelancers:'trabalho','match-recrutador':'trabalho','public-match':'trabalho',
@@ -110,93 +82,58 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     el.textContent=value;
     return el;
   };
-  function canOpen(route){
-    try{return crmPublicRoutes.has(route)||crmSignedIn();}catch{return true;}
-  }
-  function routePath(route){
-    try{return crmRoutePath(route);}catch{return '/'+route;}
+  function canOpen(route){try{return crmPublicRoutes.has(route)||crmSignedIn();}catch{return true;}}
+  function routePath(route){try{return crmRoutePath(route);}catch{return '/'+route;}}
+  function pageFor(route){try{return document.getElementById(crmRoutes?.[route]?.[0]||'');}catch{return null;}}
+  function mount(nav,page){
+    const memberHeader=page.querySelector(':scope > .crm-members-heading-row');
+    if(memberHeader){memberHeader.insertAdjacentElement('afterend',nav);return;}
+    const desc=page.querySelector(':scope > section > .section-desc');
+    if(desc){desc.insertAdjacentElement('afterend',nav);return;}
+    const hero=page.querySelector(':scope > .cx-hub-hero, :scope > .crm-dashboard-heading');
+    if(hero){hero.insertAdjacentElement('afterend',nav);return;}
+    const firstVisible=Array.from(page.children).find(el=>el.nodeType===1&&el.tagName!=='SCRIPT'&&!el.hidden&&getComputedStyle(el).display!=='none');
+    if(firstVisible){page.insertBefore(nav,firstVisible.nextSibling);return;}
+    page.prepend(nav);
   }
   function render(route){
-    let pageId,area;
-    try{pageId=crmRoutes?.[route]?.[0];area=AREAS[AREA_BY_ROUTE[route]];}catch{return;}
-    const page=document.getElementById(pageId);
+    const areaKey=AREA_BY_ROUTE[route],area=AREAS[areaKey],page=pageFor(route);
     if(!page||!area)return;
-    page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
-
+    const existing=page.querySelector(':scope > .crm-topic-nav[data-crm-generated="1"]');
+    if(existing&&existing.dataset.route===route&&existing.dataset.area===areaKey)return;
+    page.querySelectorAll(':scope > .crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
     const nav=document.createElement('nav');
-    nav.className='crm-topic-nav';
-    nav.dataset.crmGenerated='1';
+    nav.className='crm-topic-nav';nav.dataset.crmGenerated='1';nav.dataset.route=route;nav.dataset.area=areaKey;
     nav.setAttribute('aria-label',area.label+': navegação entre temas');
-
     const head=document.createElement('div');head.className='crm-topic-nav__head';
     const intro=document.createElement('div');
-    intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('h2','crm-topic-nav__title',area.title));
-    head.append(intro);
-
+    intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('h2','crm-topic-nav__title',area.title));head.append(intro);
     const grid=document.createElement('div');grid.className='crm-topic-nav__grid';
     area.items.filter(([target])=>canOpen(target)).forEach(([target,icon,name])=>{
       const current=target===route||(route==='public-match'&&target==='search');
-      const card=document.createElement('a');
-      card.className='crm-topic-card'+(current?' is-current':'');
-      card.href=routePath(target);
-      card.dataset.crmRoute=target;
+      const card=document.createElement('a');card.className='crm-topic-card'+(current?' is-current':'');card.href=routePath(target);card.dataset.crmRoute=target;
       if(current)card.setAttribute('aria-current','page');
-      card.addEventListener('click',event=>{
-        event.preventDefault();
-        event.stopPropagation();
-        if(current)return;
-        if(typeof window.crmNavigate==='function')window.crmNavigate(target);
-      });
-
+      card.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();if(current)return;if(typeof window.crmNavigate==='function')window.crmNavigate(target);});
       const iconEl=text('span','crm-topic-card__icon',icon);iconEl.setAttribute('aria-hidden','true');
       const copy=document.createElement('span');copy.className='crm-topic-card__copy';
       copy.append(text('span','crm-topic-card__name',name),text('span','crm-topic-card__state',current?'Você está aqui':'Abrir'));
-      card.append(iconEl,copy);
-      grid.append(card);
+      card.append(iconEl,copy);grid.append(card);
     });
-    nav.append(head,grid);
-
-    const section=page.querySelector(':scope > section')||page.querySelector('section')||page;
-    const anchor=section.querySelector(':scope > .section-desc, :scope > .cx-hub-hero, :scope > .crm-dashboard-heading');
-    if(anchor)anchor.insertAdjacentElement('afterend',nav);else section.prepend(nav);
+    nav.append(head,grid);mount(nav,page);
   }
-
-  function currentRoute(){
-    try{return crmActiveRoute||crmRouteFromLocation?.()||'';}catch{return '';}
-  }
-  let syncFrame=0;
+  function normalize(route){route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;return route==='dashboard'?(crmSignedIn()?'membro':'mercado'):route;}
+  function currentRoute(){try{return normalize(crmActiveRoute||crmRouteFromLocation?.()||'');}catch{return '';}}
+  let syncTimer=0;
   function sync(route=currentRoute()){
-    cancelAnimationFrame(syncFrame);
-    syncFrame=requestAnimationFrame(()=>{
-      const normalized=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
-      render(normalized==='dashboard'?(crmSignedIn()?'membro':'mercado'):normalized);
-    });
+    clearTimeout(syncTimer);const target=normalize(route);
+    requestAnimationFrame(()=>render(target));
+    syncTimer=setTimeout(()=>render(target||currentRoute()),100);
   }
-  function syncStable(route=currentRoute()){
-    sync(route);
-    setTimeout(()=>sync(route||currentRoute()),80);
-  }
-
   const originalNavigate=window.crmNavigate;
   if(typeof originalNavigate==='function'){
-    window.crmNavigate=function(route,updateHash=true){
-      const result=originalNavigate.call(this,route,updateHash);
-      syncStable(route);
-      return result;
-    };
+    window.crmNavigate=function(route,updateHash=true){const result=originalNavigate.call(this,route,updateHash);sync(route);return result;};
   }
-
-  document.addEventListener('click',event=>{
-    const navTrigger=event.target.closest('[data-crm-route], .crm-nav-items .tab-btn, #crmSidebar .tab-btn');
-    if(navTrigger)setTimeout(()=>syncStable(currentRoute()),0);
-  },true);
-
-  document.addEventListener('DOMContentLoaded',()=>{
-    syncStable(currentRoute());
-    const roots=[document.getElementById('crmPages'),document.getElementById('crmPublicPages')].filter(Boolean);
-    const observer=new MutationObserver(()=>sync(currentRoute()));
-    roots.forEach(root=>observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style']}));
-  });
-  window.addEventListener('popstate',()=>syncStable(currentRoute()));
-  window.CXTopicNav={render:route=>syncStable(route),sync:()=>syncStable(currentRoute())};
+  document.addEventListener('DOMContentLoaded',()=>sync(currentRoute()));
+  window.addEventListener('popstate',()=>sync(currentRoute()));
+  window.CXTopicNav={render:sync,sync:()=>sync(currentRoute())};
 })();
