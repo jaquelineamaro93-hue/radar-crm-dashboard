@@ -57,50 +57,52 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
 /* Contextual topic cards */
 (function(){
   const AREAS={
-    carreira:{
-      eyebrow:'CARREIRA & OPORTUNIDADES',
-      title:'Explore outros temas desta área',
-      hint:'Navegue sem voltar ao menu principal.',
+    trabalho:{
+      label:'TRABALHO',
+      title:'Acesse os outros temas desta área',
       items:[
-        ['vagas','▣','Radar de Vagas','Oportunidades em CRM, CX, CS, Growth, Marketing, Dados e áreas correlatas.'],
-        ['search','◎','Open to Work','Encontre profissionais disponíveis e compare perfis com oportunidades.'],
-        ['cargos','◫','Cargos & Salários','Dados reais de remuneração, senioridade e mercado.'],
-        ['calc','↔','CLT x PJ','Compare cenários de contratação e remuneração.'],
-        ['courses','▤','Cursos','Formações e conteúdos para desenvolver sua carreira.'],
-        ['eventos','▦','Eventos','Agenda de encontros, summits, imersões e webinars.']
-      ]
-    },
-    ecossistema:{
-      eyebrow:'DADOS, FERRAMENTAS & MERCADO',
-      title:'Continue explorando o ecossistema',
-      hint:'Conteúdo conectado para apoiar decisões.',
-      items:[
-        ['mercado','◈','Dashboard executivo','Indicadores agregados para entender o mercado.'],
-        ['pesquisa','⌁','Pesquisas & Censo','Dados da comunidade e leituras sobre o setor.'],
-        ['ferramentas','▥','Comparativo de CRMs','Compare plataformas, funcionalidades e avaliações.'],
-        ['plataformas','◇','Plataformas','Descubra ferramentas recomendadas pela comunidade.'],
-        ['conteudos','▤','Conteúdos','Artigos, cases, frameworks, livros e materiais.'],
-        ['agencias','◌','Agências & Consultorias','Encontre parceiros para estratégia e implementação.']
+        ['vagas-salvas','▱','Vagas Salvas'],
+        ['vagas','▣','Radar de Vagas'],
+        ['search','◎','Open to Work'],
+        ['freelancers','◇','Freelancers'],
+        ['match-recrutador','✦','Match por IA']
       ]
     },
     comunidade:{
-      eyebrow:'COMUNIDADE & CONEXÕES',
-      title:'Acesse outros espaços da comunidade',
-      hint:'Pessoas, grupos e oportunidades em um só fluxo.',
+      label:'COMUNIDADE',
+      title:'Acesse os outros temas desta área',
       items:[
-        ['membros','◉','Membros','Conheça profissionais que fazem parte da comunidade.'],
-        ['comunidade','◌','Grupos','Acesse grupos por tema, tecnologia e momento de carreira.'],
-        ['freelancers','◇','Freelancers','Encontre especialistas para projetos e entregas.'],
-        ['eventos','▦','Eventos','Veja a agenda e quem confirmou presença.'],
-        ['search','◎','Open to Work','Conheça talentos disponíveis para novas oportunidades.'],
-        ['patrocinio/apoiadores','✦','Quem nos apoia','Conheça empresas e parceiros que apoiam a comunidade.']
+        ['membros','◉','Membros'],
+        ['eventos','▦','Eventos'],
+        ['meus-eventos','✓','Meus Eventos'],
+        ['comunidade','◌','Grupos']
+      ]
+    },
+    conhecimento:{
+      label:'CONHECIMENTO',
+      title:'Acesse os outros temas desta área',
+      items:[
+        ['conteudos','▤','Conteúdos'],
+        ['courses','□','Cursos'],
+        ['pesquisa','⌁','Pesquisas & Censo']
+      ]
+    },
+    ferramentas:{
+      label:'FERRAMENTAS',
+      title:'Acesse os outros temas desta área',
+      items:[
+        ['cargos','≋','Cargos & Salários'],
+        ['calc','±','CLT x PJ'],
+        ['plataformas','⬡','Plataformas'],
+        ['agencias','△','Agências & Consultorias']
       ]
     }
   };
   const AREA_BY_ROUTE={
-    vagas:'carreira',search:'carreira',cargos:'carreira',calc:'carreira',courses:'carreira','public-match':'carreira',
-    mercado:'ecossistema',pesquisa:'ecossistema',ferramentas:'ecossistema',plataformas:'ecossistema',conteudos:'ecossistema',agencias:'ecossistema',
-    membros:'comunidade',comunidade:'comunidade',freelancers:'comunidade',eventos:'comunidade','patrocinio/apoiadores':'comunidade'
+    'vagas-salvas':'trabalho',vagas:'trabalho',search:'trabalho',freelancers:'trabalho','match-recrutador':'trabalho','public-match':'trabalho',
+    membros:'comunidade',eventos:'comunidade','meus-eventos':'comunidade',comunidade:'comunidade',
+    conteudos:'conhecimento',courses:'conhecimento',pesquisa:'conhecimento',
+    cargos:'ferramentas',calc:'ferramentas',plataformas:'ferramentas',agencias:'ferramentas'
   };
   const text=(tag,className,value)=>{
     const el=document.createElement(tag);
@@ -124,15 +126,15 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     const nav=document.createElement('nav');
     nav.className='crm-topic-nav';
     nav.dataset.crmGenerated='1';
-    nav.setAttribute('aria-label','Navegação por temas relacionados');
+    nav.setAttribute('aria-label',area.label+': navegação entre temas');
 
     const head=document.createElement('div');head.className='crm-topic-nav__head';
     const intro=document.createElement('div');
-    intro.append(text('span','crm-topic-nav__eyebrow',area.eyebrow),text('h2','crm-topic-nav__title',area.title));
-    head.append(intro,text('p','crm-topic-nav__hint',area.hint));
+    intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('h2','crm-topic-nav__title',area.title));
+    head.append(intro);
 
     const grid=document.createElement('div');grid.className='crm-topic-nav__grid';
-    area.items.filter(([target])=>canOpen(target)).forEach(([target,icon,name,desc])=>{
+    area.items.filter(([target])=>canOpen(target)).forEach(([target,icon,name])=>{
       const current=target===route||(route==='public-match'&&target==='search');
       const card=document.createElement('a');
       card.className='crm-topic-card'+(current?' is-current':'');
@@ -148,9 +150,8 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
 
       const iconEl=text('span','crm-topic-card__icon',icon);iconEl.setAttribute('aria-hidden','true');
       const copy=document.createElement('span');copy.className='crm-topic-card__copy';
-      copy.append(text('span','crm-topic-card__name',name),text('span','crm-topic-card__desc',desc));
-      const state=text('span','crm-topic-card__state',current?'Você está aqui':'Abrir');
-      card.append(iconEl,copy,state);
+      copy.append(text('span','crm-topic-card__name',name),text('span','crm-topic-card__state',current?'Você está aqui':'Abrir'));
+      card.append(iconEl,copy);
       grid.append(card);
     });
     nav.append(head,grid);
