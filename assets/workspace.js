@@ -139,6 +139,12 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
       card.href=routePath(target);
       card.dataset.crmRoute=target;
       if(current)card.setAttribute('aria-current','page');
+      card.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        if(current)return;
+        if(typeof window.crmNavigate==='function')window.crmNavigate(target);
+      });
 
       const iconEl=text('span','crm-topic-card__icon',icon);iconEl.setAttribute('aria-hidden','true');
       const copy=document.createElement('span');copy.className='crm-topic-card__copy';
