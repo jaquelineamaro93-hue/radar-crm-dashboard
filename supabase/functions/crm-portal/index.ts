@@ -1,4 +1,5 @@
 import {respond,preflight,userFor,talents,freelancers,database,shortName,text,safeUrl,phone} from '../_shared/portal.ts';
+import {createClient} from 'npm:@supabase/supabase-js@2';
 export async function handleRequest(req:Request){
  if(req.method==='OPTIONS')return preflight();if(req.method!=='GET')return respond({error:'Método não permitido.'},405);
  try{
@@ -9,7 +10,20 @@ export async function handleRequest(req:Request){
   if(resource==='talents')return respond({authenticated:!!user,items:(await talents()).map((p:any)=>({id:p.id,nome:p.nome,senioridade:p.senioridade,area:p.area,ferramentas:p.ferramentas,condicao:p.condicao,local:p.local,exp:p.exp,linkedin:p.linkedin,whatsapp:p.whatsapp,...(user?{idioma:p.idioma,muda:p.muda}:{})}))});
   if(resource==='freelancers')return respond({authenticated:!!user,items:(await freelancers()).map((p:any)=>user?p:{id:p.id,nome:p.nome,categoria:text(p.categoria),bio:text(p.bio),portfolio:p.portfolio,linkedin:p.linkedin})});
   const rows=await database('diretorio_membros','select=id,nome,area,email,senioridade,ferramentas,linkedin,foto_url,cargo,empresa,bio,instagram,website,whatsapp,contact_channels&order=id&limit=500');
-  return respond({authenticated:true,items:rows.map((p:any)=>{const channels=Array.isArray(p.contact_channels)?p.contact_channels.filter((x:any)=>['whatsapp','linkedin','email'].includes(x)):[];return {...p,email:channels.includes('email')?text(p.email):'',linkedin:channels.includes('linkedin')?safeUrl(p.linkedin):'',foto_url:safeUrl(p.foto_url),instagram:safeUrl(p.instagram),website:safeUrl(p.website),whatsapp:channels.includes('whatsapp')?phone(p.whatsapp):'',contact_channels:channels};})});
+  const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const {data:profiles}=await client.from('profiles').select('full_name,avatar_path').not('avatar_path','is',null).limit(1000);
+  const normalize=(v:any)=>text(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const photoByName=new Map<string,string>();
+  const photoRows=(profiles||[]).filter((p:any)=>text(p.avatar_path));
+  if(photoRows.length){
+    const paths=photoRows.map((p:any)=>p.avatar_path);
+    const {data:signed}=await client.storage.from('profile-photos-private').createSignedUrls(paths,3600);
+    for(let i=0;i<photoRows.length;i++){
+      const url=signed?.[i]?.signedUrl||'';
+      if(url)photoByName.set(normalize(photoRows[i].full_name),url);
+    }
+  }
+  return respond({authenticated:true,items:rows.map((p:any)=>{const channels=Array.isArray(p.contact_channels)?p.contact_channels.filter((x:any)=>['whatsapp','linkedin','email'].includes(x)):[];return {...p,email:channels.includes('email')?text(p.email):'',linkedin:channels.includes('linkedin')?safeUrl(p.linkedin):'',foto_url:photoByName.get(normalize(p.nome))||safeUrl(p.foto_url),instagram:safeUrl(p.instagram),website:safeUrl(p.website),whatsapp:channels.includes('whatsapp')?phone(p.whatsapp):'',contact_channels:channels};})});
  }catch(e){const message=e instanceof Error?e.message:'';const code=/^(DIRECTORY_STORAGE_HTTP_|SHEET_HTTP_)\d{3}$/.test(message)?message:message==='Cabeçalho inesperado'?'SHEET_COLUMNS':message==='Planilha vazia'?'SHEET_EMPTY':e instanceof DOMException&&e.name==='TimeoutError'?'UPSTREAM_TIMEOUT':'DIRECTORY_UNAVAILABLE';return respond({error:'Não foi possível carregar este recurso. Tente novamente.',code},503);}
 }
 Deno.serve(handleRequest);
