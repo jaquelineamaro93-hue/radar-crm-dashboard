@@ -104,7 +104,8 @@
     };
     window.aplicarFiltrosVagas=async function(){
       try{
-        if(!Array.isArray(window.todasAsVagasHub)||!window.todasAsVagasHub.length)return originalApply();
+        const sourceRows=(typeof todasAsVagasHub!=='undefined'&&Array.isArray(todasAsVagasHub))?todasAsVagasHub:null;
+        if(!sourceRows||!sourceRows.length)return originalApply();
         const cargo=normalize(document.getElementById('filtro-cargo-hub')?.value);
         const empresa=normalize(document.getElementById('filtro-empresa-hub')?.value);
         const nivel=document.getElementById('filtro-nivel-hub')?.value||'';
@@ -112,7 +113,7 @@
         const estado=document.getElementById('filtro-estado')?.value||'';
         const municipio=document.getElementById('filtro-municipio')?.value||'';
         const ordem=document.getElementById('filtro-ordem-hub')?.value||'recente';
-        let rows=window.todasAsVagasHub.filter(vaga=>{
+        let rows=sourceRows.filter(vaga=>{
           if(cargo&&!normalize(vaga.title||vaga.cargo).includes(cargo))return false;
           if(empresa&&!normalize(vaga.company||vaga.empresa).includes(empresa))return false;
           if(plataforma&&!normalize(vaga.source).includes(plataforma))return false;
