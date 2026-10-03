@@ -52,3 +52,122 @@ if(location.hash.startsWith('#workspace-'))crmHandleHash();}
 window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route=>route.startsWith('workspace-')&&!!routes[route.slice(10)]};init();
 })();
 
+
+
+/* Contextual topic cards */
+(function(){
+  const AREAS={
+    carreira:{
+      eyebrow:'CARREIRA & OPORTUNIDADES',
+      title:'Explore outros temas desta área',
+      hint:'Navegue sem voltar ao menu principal.',
+      items:[
+        ['vagas','▣','Radar de Vagas','Oportunidades em CRM, CX, CS, Growth, Marketing, Dados e áreas correlatas.'],
+        ['search','◎','Open to Work','Encontre profissionais disponíveis e compare perfis com oportunidades.'],
+        ['cargos','◫','Cargos & Salários','Dados reais de remuneração, senioridade e mercado.'],
+        ['calc','↔','CLT x PJ','Compare cenários de contratação e remuneração.'],
+        ['courses','▤','Cursos','Formações e conteúdos para desenvolver sua carreira.'],
+        ['eventos','▦','Eventos','Agenda de encontros, summits, imersões e webinars.']
+      ]
+    },
+    ecossistema:{
+      eyebrow:'DADOS, FERRAMENTAS & MERCADO',
+      title:'Continue explorando o ecossistema',
+      hint:'Conteúdo conectado para apoiar decisões.',
+      items:[
+        ['mercado','◈','Dashboard executivo','Indicadores agregados para entender o mercado.'],
+        ['pesquisa','⌁','Pesquisas & Censo','Dados da comunidade e leituras sobre o setor.'],
+        ['ferramentas','▥','Comparativo de CRMs','Compare plataformas, funcionalidades e avaliações.'],
+        ['plataformas','◇','Plataformas','Descubra ferramentas recomendadas pela comunidade.'],
+        ['conteudos','▤','Conteúdos','Artigos, cases, frameworks, livros e materiais.'],
+        ['agencias','◌','Agências & Consultorias','Encontre parceiros para estratégia e implementação.']
+      ]
+    },
+    comunidade:{
+      eyebrow:'COMUNIDADE & CONEXÕES',
+      title:'Acesse outros espaços da comunidade',
+      hint:'Pessoas, grupos e oportunidades em um só fluxo.',
+      items:[
+        ['membros','◉','Membros','Conheça profissionais que fazem parte da comunidade.'],
+        ['comunidade','◌','Grupos','Acesse grupos por tema, tecnologia e momento de carreira.'],
+        ['freelancers','◇','Freelancers','Encontre especialistas para projetos e entregas.'],
+        ['eventos','▦','Eventos','Veja a agenda e quem confirmou presença.'],
+        ['search','◎','Open to Work','Conheça talentos disponíveis para novas oportunidades.'],
+        ['patrocinio/apoiadores','✦','Quem nos apoia','Conheça empresas e parceiros que apoiam a comunidade.']
+      ]
+    }
+  };
+  const AREA_BY_ROUTE={
+    vagas:'carreira',search:'carreira',cargos:'carreira',calc:'carreira',courses:'carreira','public-match':'carreira',
+    mercado:'ecossistema',pesquisa:'ecossistema',ferramentas:'ecossistema',plataformas:'ecossistema',conteudos:'ecossistema',agencias:'ecossistema',
+    membros:'comunidade',comunidade:'comunidade',freelancers:'comunidade',eventos:'comunidade','patrocinio/apoiadores':'comunidade'
+  };
+  const text=(tag,className,value)=>{
+    const el=document.createElement(tag);
+    if(className)el.className=className;
+    el.textContent=value;
+    return el;
+  };
+  function canOpen(route){
+    try{return crmPublicRoutes.has(route)||crmSignedIn();}catch{return true;}
+  }
+  function routePath(route){
+    try{return crmRoutePath(route);}catch{return '/'+route;}
+  }
+  function render(route){
+    let pageId,area;
+    try{pageId=crmRoutes?.[route]?.[0];area=AREAS[AREA_BY_ROUTE[route]];}catch{return;}
+    const page=document.getElementById(pageId);
+    if(!page||!area)return;
+    page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
+
+    const nav=document.createElement('nav');
+    nav.className='crm-topic-nav';
+    nav.dataset.crmGenerated='1';
+    nav.setAttribute('aria-label','Navegação por temas relacionados');
+
+    const head=document.createElement('div');head.className='crm-topic-nav__head';
+    const intro=document.createElement('div');
+    intro.append(text('span','crm-topic-nav__eyebrow',area.eyebrow),text('h2','crm-topic-nav__title',area.title));
+    head.append(intro,text('p','crm-topic-nav__hint',area.hint));
+
+    const grid=document.createElement('div');grid.className='crm-topic-nav__grid';
+    area.items.filter(([target])=>canOpen(target)).forEach(([target,icon,name,desc])=>{
+      const current=target===route||(route==='public-match'&&target==='search');
+      const card=document.createElement('a');
+      card.className='crm-topic-card'+(current?' is-current':'');
+      card.href=routePath(target);
+      card.dataset.crmRoute=target;
+      if(current)card.setAttribute('aria-current','page');
+
+      const iconEl=text('span','crm-topic-card__icon',icon);iconEl.setAttribute('aria-hidden','true');
+      const copy=document.createElement('span');copy.className='crm-topic-card__copy';
+      copy.append(text('span','crm-topic-card__name',name),text('span','crm-topic-card__desc',desc));
+      const state=text('span','crm-topic-card__state',current?'Você está aqui':'Abrir');
+      card.append(iconEl,copy,state);
+      grid.append(card);
+    });
+    nav.append(head,grid);
+
+    const section=page.querySelector(':scope > section')||page.querySelector('section')||page;
+    const anchor=section.querySelector(':scope > .section-desc, :scope > .cx-hub-hero, :scope > .crm-dashboard-heading');
+    if(anchor)anchor.insertAdjacentElement('afterend',nav);else section.prepend(nav);
+  }
+
+  function currentRoute(){
+    try{return crmActiveRoute||crmRouteFromLocation?.()||'';}catch{return '';}
+  }
+
+  const originalNavigate=window.crmNavigate;
+  if(typeof originalNavigate==='function'){
+    window.crmNavigate=function(route,updateHash=true){
+      const result=originalNavigate.call(this,route,updateHash);
+      const normalized=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
+      requestAnimationFrame(()=>render(normalized==='dashboard'?(crmSignedIn()?'membro':'mercado'):normalized));
+      return result;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(()=>render(currentRoute())));
+  window.addEventListener('popstate',()=>requestAnimationFrame(()=>render(currentRoute())));
+})();
