@@ -9163,11 +9163,16 @@ async function crmLoadExperienceAnswer(){
   const uid=CURRENT_USER?.id;
   if(!uid||!authSb){crmExperienceCheckUser=null;crmExperienceHasAnswer=false;return false}
   if(crmExperienceCheckUser===uid)return crmExperienceHasAnswer;
-  crmExperienceCheckUser=uid;crmExperienceHasAnswer=false;
+  crmExperienceHasAnswer=false;
   try{
     const {data,error}=await authSb.from('crm_experience_feedback').select('rating').eq('user_id',uid).maybeSingle();
-    if(!error&&data)crmExperienceHasAnswer=true;
-  }catch{}
+    if(error)throw error;
+    crmExperienceCheckUser=uid;
+    crmExperienceHasAnswer=!!data;
+  }catch(e){
+    console.warn('crmLoadExperienceAnswer',e);
+    crmExperienceCheckUser=null;
+  }
   return crmExperienceHasAnswer;
 }
 async function crmRenderFloatingPrompts(){
@@ -9176,7 +9181,7 @@ async function crmRenderFloatingPrompts(){
   if(!CURRENT_USER){
     profileEl.hidden=true;experienceEl.hidden=true;document.body.classList.remove('crm-profile-prompt-visible');return;
   }
-  const incomplete=!CURRENT_PROFILE||CURRENT_PROFILE.guided_onboarding_completed!==true||!crmProfileComplete(CURRENT_PROFILE);
+  const incomplete=!CURRENT_PROFILE||!crmProfileComplete(CURRENT_PROFILE);
   const showProfile=incomplete&&!crmPromptIsSnoozed('profile')&&!document.getElementById('profileModalOverlay');
   profileEl.hidden=!showProfile;
   document.body.classList.toggle('crm-profile-prompt-visible',showProfile);
@@ -9184,7 +9189,7 @@ async function crmRenderFloatingPrompts(){
 
   const answered=await crmLoadExperienceAnswer();
   if(CURRENT_USER?.id!==crmExperienceCheckUser)return;
-  const showExperience=!answered&&!crmPromptIsSnoozed('experience');
+  const showExperience=!showProfile&&!answered&&!crmPromptIsSnoozed('experience');
   experienceEl.hidden=!showExperience;
   if(showExperience)window.posthogTracker?.track('experience_prompt_shown');
 }
@@ -9193,12 +9198,14 @@ async function crmSubmitExperienceRating(rating){
   const el=document.getElementById('crmExperiencePrompt');
   el?.querySelectorAll('button').forEach(b=>b.disabled=true);
   try{
-    const payload={user_id:CURRENT_USER.id,rating:Number(rating),updated_at:new Date().toISOString()};
-    const {error}=await authSb.from('crm_experience_feedback').upsert(payload,{onConflict:'user_id'});
+    const score=Number(rating);
+    const {data,error}=await authSb.rpc('crm_submit_experience_feedback',{p_rating:score});
     if(error)throw error;
+    if(data?.ok===false)throw Error(data?.error||'Não foi possível salvar.');
     crmExperienceHasAnswer=true;crmExperienceCheckUser=CURRENT_USER.id;
     if(el)el.hidden=true;
-    window.posthogTracker?.track('experience_feedback_submitted',{rating:Number(rating)});
+    window.posthogTracker?.track('experience_feedback_submitted',{rating:score});
+    window.crmInngageSyncExperience?.(CURRENT_USER,{answered:true,rating:score,updated_at:data?.updated_at||new Date().toISOString()});
     if(typeof evToastMsg==='function')evToastMsg('Obrigada pela avaliação.','');
   }catch(e){
     console.error('crmSubmitExperienceRating',e);
