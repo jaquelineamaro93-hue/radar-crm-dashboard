@@ -36,6 +36,10 @@ for(const m of index.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
 }
 assert(parsed>=5,'quantidade inesperada de scripts inline analisados: '+parsed);
 
+for(const file of fs.readdirSync(path.join(root,'assets')).filter(name=>name.endsWith('.js'))){
+ new vm.Script(read('assets/'+file),{filename:'assets/'+file});
+}
+
 for(const m of index.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["'](\/assets\/[^"'?]+)[^"']*["'][^>]*>/gi)){
  const local=m[1].replace(/^\//,'');
  assert(fs.existsSync(path.join(root,local)),'asset local ausente: '+local);
