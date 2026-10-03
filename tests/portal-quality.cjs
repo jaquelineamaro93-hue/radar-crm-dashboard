@@ -6,7 +6,7 @@ const index=read('index.html'),fallback=read('404.html'),workspace=read('assets/
 assert(index.length>900000&&index.length<1250000,'index.html fora da faixa esperada');
 assert.equal(index,fallback,'404.html precisa acompanhar index.html para deep links do GitHub Pages');
 assert(index.includes('/assets/portal-hardening.js?v=20261003-2'),'hardening precisa estar carregado');
-assert(index.includes('/assets/workspace.js?v=20261003-5'),'versao atual do workspace precisa estar carregada');
+assert(index.includes('/assets/workspace.js?v=20261003-6'),'versao atual do workspace precisa estar carregada');
 assert(index.indexOf('/assets/portal-hardening.js')>index.lastIndexOf('<script>'),'hardening deve carregar ao fim do documento');
 
 for(const id of ['crmPages','crmPublicPages','subpage-membros','pageEventos','pageVagas','crmSidebar','crmAdminPage']){
