@@ -113,9 +113,15 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function render(route){
     const areaKey=AREA_BY_ROUTE[route],area=AREAS[areaKey],page=pageFor(route);
     if(!page||!area)return;
-    const existing=page.querySelector(':scope > .crm-topic-nav[data-crm-generated="1"]');
-    if(existing&&existing.dataset.route===route&&existing.dataset.area===areaKey)return;
-    page.querySelectorAll(':scope > .crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
+
+    // O card pode ser montado dentro de sections/containers da página.
+    // Procurar apenas com :scope > fazia o runtime não enxergar o card já existente
+    // e criar uma nova cópia a cada navegação.
+    const generated=[...page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]')];
+    const same=generated.filter(el=>el.dataset.route===route&&el.dataset.area===areaKey);
+    if(generated.length===1&&same.length===1)return;
+    generated.forEach(el=>el.remove());
+
     const nav=document.createElement('nav');
     nav.className='crm-topic-nav';nav.dataset.crmGenerated='1';nav.dataset.route=route;nav.dataset.area=areaKey;
     nav.setAttribute('aria-label',area.label+': navegação entre temas');
