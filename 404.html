@@ -3099,9 +3099,17 @@ crmShowSurveyReminder();
         <option value="Online ou Presencial">Online ou Presencial</option>
       </select>
       <label class="ev-ilabel" for="cf_preco">Gratuito ou pago</label>
-      <select id="cf_preco" class="ev-ifield" style="margin-bottom:20px;">
+      <select id="cf_preco" class="ev-ifield" style="margin-bottom:12px;">
         <option value="Gratuito">Gratuito</option>
         <option value="Pago">Pago</option>
+      </select>
+      <label class="ev-ilabel" for="cf_preco_estimado">Valor estimado ou médio</label>
+      <input id="cf_preco_estimado" type="text" class="ev-ifield" placeholder="Ex: R$ 199 / US$ 49 por mês / consultar instituição" maxlength="120" style="margin-bottom:12px;">
+      <label class="ev-ilabel" for="cf_certificado">Tem certificado ou credencial?</label>
+      <select id="cf_certificado" class="ev-ifield" style="margin-bottom:20px;">
+        <option value="Não informado">Não informado</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
       </select>
       <div style="display:flex;gap:10px;">
         <button class="ev-modal-btn-cancel" id="courseSuggestCancel">Cancelar</button>
@@ -4578,6 +4586,9 @@ async function submitCourseForm(){
     disciplina: document.getElementById('cf_disciplina').value.trim(),
     formato: document.getElementById('cf_formato').value,
     gratuito_pago: document.getElementById('cf_preco').value,
+    preco_estimado: document.getElementById('cf_preco_estimado').value.trim(),
+    certificado: document.getElementById('cf_certificado').value,
+    origem: 'comunidade',
     sugerido_por: (typeof evUName !== 'undefined' && evUName) || 'Anônimo',
     aprovado: false,
   };
@@ -4592,9 +4603,10 @@ async function submitCourseForm(){
     evToastMsg('Curso enviado para aprovação.','');
     btn.disabled = false; btn.textContent = 'Enviar para aprovação';
     statusEl.className = ''; statusEl.textContent = '';
-    ['cf_nome','cf_instituicao','cf_url','cf_disciplina'].forEach(id=> document.getElementById(id).value = '');
+    ['cf_nome','cf_instituicao','cf_url','cf_disciplina','cf_preco_estimado'].forEach(id=> document.getElementById(id).value = '');
     document.getElementById('cf_formato').value = 'Online';
     document.getElementById('cf_preco').value = 'Gratuito';
+    document.getElementById('cf_certificado').value = 'Não informado';
   }catch(e) {
     console.error(e);
     statusEl.className = 'form-status err';
