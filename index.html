@@ -320,6 +320,9 @@
   .c-tag.unk{background:var(--panel-2); color:var(--muted);}
   .c-link{display:block; text-align:center; text-decoration:none; background:var(--text); color:#fffff3; font-weight:700; font-size:12.5px; padding:9px 0; border-radius:50px;}
   .c-link.disabled{background:var(--panel-2); color:var(--muted); pointer-events:none;}
+  .course-meta{display:grid;gap:7px;margin:2px 0 13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);font-size:11.5px;line-height:1.45;color:var(--muted);}
+  .course-meta strong{color:var(--text);font-weight:700;}
+  .course-source{font-size:10.5px;color:var(--muted);margin:-5px 0 10px;}
 
   .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   .form-field{display:flex; flex-direction:column; gap:6px;}
@@ -1962,7 +1965,7 @@ crmShowSurveyReminder();
   </div><div class="tab-page" id="pageCourses">
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Cursos para a comunidade</h2></div>
-      <p class="section-desc">Cursos e formações organizados por área, entre gratuitos e pagos, reunidos pela comunidade CRM Academy e Mulheres de CRM. Inclui curadoria própria de Gestão de Projetos, Metodologias Ágeis e IA, além das trilhas do Salesforce Trailhead.
+      <p class="section-desc">Cursos e formações organizados por área, entre gratuitos e pagos. Agora o catálogo também informa modalidade (online, presencial ou outras), valor estimado quando disponível e se há certificado ou credencial. Valores são referenciais e podem mudar na instituição.
 <!-- DESTAQUE: IMERSÃO CRM -->
 </p><div style="margin: 30px 0; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);">
   <div style="display: flex; align-items: center; gap: 20px;">
@@ -2015,7 +2018,11 @@ crmShowSurveyReminder();
             <label for="cPreco">Gratuito ou pago</label>
             <select id="cPreco"><option value="">Todos</option></select>
           </div>
-          <span class="filter-count" id="courseCount">245 cursos</span>
+          <div class="filter-field">
+            <label for="cCertificado">Certificado</label>
+            <select id="cCertificado"><option value="">Todos</option><option value="sim">Com certificado/credencial</option><option value="nao">Sem informação de certificado</option></select>
+          </div>
+          <span class="filter-count" id="courseCount">Cursos</span>
           <button class="filter-reset" id="btnResetCourses">Limpar filtros</button>
         </div>
       </div>
@@ -4396,6 +4403,43 @@ let courseSb = null;
 
 let coursesInitialized = false;
 let communityCoursesLoaded = false;
+let COURSE_DB = [];
+
+const COURSE_LEGACY_PRICE_OVERRIDES = {
+  'liderança, experiência disney, serviço de qualidade|disney institute':'a partir de US$ 1.700',
+  'tudo sobre reclame aqui: formação completa em experiência do cliente|ra educa (reclame aqui)':'R$ 169,00',
+  'cx primeiros passos|seda executive education':'R$ 389',
+  'trilha cx 20h - conhecendo & praticando|seda executive education':'R$ 1.460,00',
+  'do zero ao avançado|udemy':'≈ R$ 22,90 com cupom informado na base',
+  'desenvolva a habilidade de falar em público em apenas 7 dias!|antonio pacheco':'R$ 149,00',
+  'como fazer gestão de projetos|iped':'R$ 99,00',
+  'comunicação é a habilidade mais importante da atualidade|orador':'R$ 97,00',
+  'jornada do orador|orador':'R$ 87,00'
+};
+
+function courseTextKey(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
+function courseKey(c){
+  const url=String(c?.url||'').trim().toLowerCase().replace(/\/$/,'');
+  if(url&&/^https?:/.test(url))return 'u:'+url;
+  return 'n:'+courseTextKey(c?.nome)+'|'+courseTextKey(c?.instituicao);
+}
+function enrichLegacyCourse(c){
+  const key=courseTextKey(c?.nome)+'|'+courseTextKey(c?.instituicao);
+  return {
+    ...c,
+    preco_estimado:c?.preco_estimado||COURSE_LEGACY_PRICE_OVERRIDES[key]||'',
+    certificado:c?.certificado||'Não informado',
+    origem:c?.origem||'planilha_base'
+  };
+}
+COURSES.forEach((c,i)=>COURSES[i]=enrichLegacyCourse(c));
+
+function courseCatalog(){
+  const map=new Map();
+  COURSES.forEach(x=>map.set(courseKey(x),x));
+  COURSE_DB.forEach(x=>map.set(courseKey(x),{...(map.get(courseKey(x))||{}),...x}));
+  return [...map.values()];
+}
 
 function courseInitSB(){
   try{ courseSb = window.supabase.createClient(COURSE_SUPABASE_URL, COURSE_SUPABASE_KEY); return true; }
@@ -4410,13 +4454,13 @@ function initCoursesTab(){
   loadCommunityCourses();
   courseSubRT();
 
-  ['courseSearchText','cCategoria','cFormato','cPreco'].forEach(id=>{
+  ['courseSearchText','cCategoria','cFormato','cPreco','cCertificado'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderCourses);
     document.getElementById(id).addEventListener('change', renderCourses);
   });
   document.getElementById('btnResetCourses').addEventListener('click', ()=>{
     document.getElementById('courseSearchText').value = '';
-    ['cCategoria','cFormato','cPreco'].forEach(id=> document.getElementById(id).value = '');
+    ['cCategoria','cFormato','cPreco','cCertificado'].forEach(id=> document.getElementById(id).value = '');
     renderCourses();
   });
   document.getElementById('btnRefreshCourses').addEventListener('click', loadCommunityCourses);
@@ -4437,38 +4481,52 @@ function closeCourseSuggestModal(){
 }
 
 function populateCourseFilters(){
+  const all=courseCatalog();
   const fill = (id, values) => {
     const sel = document.getElementById(id);
-    values.forEach(v=>{
+    if(!sel)return;
+    const current=sel.value;
+    while(sel.options.length>1)sel.remove(1);
+    values.filter(Boolean).forEach(v=>{
       const opt = document.createElement('option');
       opt.value = v; opt.textContent = v;
       sel.appendChild(opt);
     });
+    if([...sel.options].some(o=>o.value===current))sel.value=current;
   };
-  fill('cCategoria', [...new Set(COURSES.map(c=>c.categoria))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
-  fill('cFormato', [...new Set(COURSES.map(c=>c.formato))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
-  fill('cPreco', [...new Set(COURSES.map(c=>c.gratuito_pago))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
+  fill('cCategoria', [...new Set(all.map(c=>c.categoria))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
+  fill('cFormato', [...new Set(all.map(c=>c.formato))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
+  fill('cPreco', [...new Set(all.map(c=>c.gratuito_pago))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
 }
 
 function priceTagClass(p){
-  if(p==='Gratuito') return 'free';
-  if(p==='Pago') return 'paid';
+  const v=String(p||'');
+  if(v.startsWith('Gratuito')) return 'free';
+  if(v==='Pago') return 'paid';
   return 'unk';
 }
 
 function courseCardHtml(c){
-  const url = c.url && c.url.trim();
+  const url = String(c.url||'').trim();
   const hasLink = url && url.startsWith('http');
+  const price=String(c.preco_estimado||'').trim();
+  const certificate=String(c.certificado||'Não informado').trim()||'Não informado';
+  const source=String(c.origem||'').trim();
   return `
     <div class="course-card">
       <div class="c-name">${escapeHtml(c.nome)}</div>
       <div class="c-inst">${escapeHtml(c.instituicao)||'Instituição não informada'}${c.disciplina ? ' · '+escapeHtml(c.disciplina) : ''}</div>
       <div class="course-tags">
-        <span class="c-tag cat">${escapeHtml(c.categoria)}</span>
-        <span class="c-tag ${priceTagClass(c.gratuito_pago)}">${escapeHtml(c.gratuito_pago)}</span>
-        <span class="c-tag unk">${escapeHtml(c.formato)}</span>
+        <span class="c-tag cat">${escapeHtml(c.categoria||'Outros')}</span>
+        <span class="c-tag ${priceTagClass(c.gratuito_pago)}">${escapeHtml(c.gratuito_pago||'Não informado')}</span>
+        <span class="c-tag unk">${escapeHtml(c.formato||'Não informado')}</span>
       </div>
-      <a class="c-link ${hasLink?'':'disabled'}" href="${hasLink?url:'#'}" target="_blank" rel="noopener">${hasLink?'Acessar curso':'Link indisponível'}</a>
+      <div class="course-meta">
+        ${price ? '<div><strong>Valor estimado:</strong> '+escapeHtml(price)+'</div>' : '<div><strong>Valor estimado:</strong> consultar instituição</div>'}
+        <div><strong>Certificado:</strong> ${escapeHtml(certificate)}</div>
+      </div>
+      ${source==='pesquisa_web'?'<div class="course-source">Informações verificadas em fonte oficial · 04/10/2026</div>':''}
+      <a class="c-link ${hasLink?'':'disabled'}" href="${hasLink?url:'#'}" target="_blank" rel="noopener noreferrer">${hasLink?'Acessar curso':'Link indisponível'}</a>
     </div>
   `;
 }
@@ -4478,13 +4536,16 @@ function renderCourses(){
   const fCat = document.getElementById('cCategoria').value;
   const fFmt = document.getElementById('cFormato').value;
   const fPreco = document.getElementById('cPreco').value;
+  const fCert = document.getElementById('cCertificado')?.value||'';
 
-  const results = COURSES.filter(c =>
-    (!fCat || c.categoria===fCat) &&
-    (!fFmt || c.formato===fFmt) &&
-    (!fPreco || c.gratuito_pago===fPreco) &&
-    (!q || [c.nome,c.instituicao,c.disciplina].join(' ').toLowerCase().includes(q))
-  );
+  const results = courseCatalog().filter(c => {
+    const hasCert=String(c.certificado||'').trim() && !/^não informado/i.test(String(c.certificado||'').trim());
+    return (!fCat || c.categoria===fCat) &&
+      (!fFmt || c.formato===fFmt) &&
+      (!fPreco || c.gratuito_pago===fPreco) &&
+      (!fCert || (fCert==='sim'?hasCert:!hasCert)) &&
+      (!q || [c.nome,c.instituicao,c.disciplina,c.categoria,c.preco_estimado,c.certificado].join(' ').toLowerCase().includes(q));
+  });
 
   document.getElementById('courseCount').textContent = results.length + (results.length===1?' curso':' cursos');
   const container = document.getElementById('courseResults');
@@ -4560,17 +4621,27 @@ function loadCommunityCourses(){
     .then(({data, error}) => {
       if(error) throw error;
       const list = (data||[]).map(r => ({
-        categoria: 'Sugerido pela comunidade',
+        categoria: r.categoria||'Sugerido pela comunidade',
         nome: r.nome, instituicao: r.instituicao||'', url: r.url||'',
         disciplina: r.disciplina||'', formato: r.formato||'Não informado',
         gratuito_pago: r.gratuito_pago||'Não informado',
+        preco_estimado:r.preco_estimado||'',
+        certificado:r.certificado||'Não informado',
+        origem:r.origem||'comunidade',
+        fonte_verificacao:r.fonte_verificacao||'',
+        verificado_em:r.verificado_em||''
       }));
+      COURSE_DB=list;
+      communityCoursesLoaded=true;
+      populateCourseFilters();
+      renderCourses();
       dot.className = 'status-dot ok';
       const now = new Date().toLocaleTimeString('pt-BR');
-      txt.textContent = `Conectado: ${list.length} cursos sugeridos, atualizado às ${now}.`;
+      txt.textContent = `Conectado: ${courseCatalog().length} cursos no catálogo, atualizado às ${now}.`;
+      const communityList=list.filter(x=>!x.origem||x.origem==='comunidade');
       const container = document.getElementById('communityCourseResults');
-      container.innerHTML = list.length
-        ? '<div class="result-grid">' + list.map(courseCardHtml).join('') + '</div>'
+      container.innerHTML = communityList.length
+        ? '<div class="result-grid">' + communityList.map(courseCardHtml).join('') + '</div>'
         : '<div class="empty-state">Ainda não há cursos sugeridos pela comunidade. Seja a primeira pessoa a enviar um!</div>';
     })
     .catch(err => {
