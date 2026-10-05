@@ -1029,7 +1029,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #ffb47f;outline-offset:3p
 body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
 @media(max-width:700px){.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
-<link rel="stylesheet" href="/assets/workspace.css?v=20261004-2">
+<link rel="stylesheet" href="/assets/workspace.css?v=20261005-1">
 <style id="crm-profile-directory-v3">
 .crm-profile-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
 .crm-profile-top-actions{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}.crm-profile-top-actions .crm-button{min-height:44px}
@@ -2278,7 +2278,7 @@ crmShowSurveyReminder();
         <div style="display:grid; gap:14px;">
           <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
             <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como me anuncio como freelancer? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Clique em "Anunciar meu perfil", preencha seus dados (nome, especialidade, bio), adicione links de contato e um artigo/post se tiver. O perfil fica aprovado automaticamente. Se cadastrou um artigo, o time da comunidade revisa antes de publicar na vitrine.</p>
+            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Clique em "Anunciar meu perfil", preencha seus dados (nome, especialidade e bio), inclua seu portfólio/site, LinkedIn e contato, e adicione um artigo/post se tiver. O perfil fica aprovado automaticamente. Se cadastrou um artigo, o time da comunidade revisa antes de publicar na vitrine.</p>
           </details>
 
           <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
@@ -3152,7 +3152,7 @@ crmShowSurveyReminder();
       </select>
       <label class="ev-ilabel" for="fl_bio">Sobre você (o que você faz, ferramentas, experiência)</label>
       <textarea id="fl_bio" class="ev-ifield" rows="3" placeholder="Ex: Especialista em copy para automações de CRM, 4 anos de experiência com RD Station e HubSpot." maxlength="400" style="margin-bottom:12px;resize:none;"></textarea>
-      <label class="ev-ilabel" for="fl_portfolio">Portfólio ou site</label>
+      <label class="ev-ilabel" for="fl_portfolio">Link do portfólio ou site (opcional)</label>
       <input id="fl_portfolio" type="url" class="ev-ifield" placeholder="https://" maxlength="300" style="margin-bottom:12px;">
       <label class="ev-ilabel" for="fl_linkedin">LinkedIn</label>
       <input id="fl_linkedin" type="url" class="ev-ifield" placeholder="https://linkedin.com/in/seu-perfil" maxlength="300" style="margin-bottom:12px;">
@@ -5827,7 +5827,7 @@ function openFreelancerEditModal(id, nome){
         <textarea id="flEditBio" class="ev-ifield" placeholder="Ex: Especialista em CRM com 5 anos de experiência..." maxlength="400" style="resize:vertical;height:80px;margin-bottom:10px;"></textarea>
         <label class="ev-ilabel">LinkedIn</label>
         <input id="flEditLinkedin" class="ev-ifield" type="url" placeholder="https://linkedin.com/in/..." style="margin-bottom:10px;">
-        <label class="ev-ilabel">Portfólio/Site</label>
+        <label class="ev-ilabel">Link do portfólio ou site</label>
         <input id="flEditPortfolio" class="ev-ifield" type="url" placeholder="https://..." style="margin-bottom:10px;">
         <label class="ev-ilabel">WhatsApp/contato</label>
         <input id="flEditContato" class="ev-ifield" type="text" placeholder="11999999999" style="margin-bottom:10px;">
@@ -5942,7 +5942,7 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSignedIn()&&crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
+ return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
