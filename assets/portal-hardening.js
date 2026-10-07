@@ -145,3 +145,21 @@
     stats(){return {cacheEntries:state.cache.size,inflight:state.inflight.size,lastValidatedAt:state.lastValidatedAt};}
   };
 })();
+
+/* Reports do Mercado de Trabalho — public navigation entry */
+(function(){
+  function addReportsNav(){
+    const root=document.querySelector('.crm-nav-items');
+    if(!root||document.getElementById('crmReportsMarketNav'))return;
+    const group=document.createElement('details');
+    group.id='crmReportsMarketNav';
+    group.className='cx-tools-nav';
+    group.innerHTML='<summary>Reports do mercado de trabalho</summary>'+
+      '<a class="tab-btn" href="/reports/?tab=cargos-salarios">Cargos &amp; Salários</a>'+
+      '<a class="tab-btn" href="/reports/?tab=open-to-work">Open to Work</a>';
+    root.append(group);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addReportsNav,{once:true});
+  else addReportsNav();
+  setTimeout(addReportsNav,800);
+})();
