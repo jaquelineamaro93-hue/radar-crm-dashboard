@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reports do Mercado de Trabalho | Conexão CRM</title>
+<meta name="description" content="Reports de carreira e mercado de trabalho para profissionais de CRM: Cargos & Salários e Open to Work.">
+<style>
+:root{--bg:#11100f;--panel:#191715;--line:#39332d;--text:#f5f2ec;--muted:#aaa39b;--orange:#f97316}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:28px 22px 70px}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px}
+.brand{font-size:20px;font-weight:900;letter-spacing:-.04em}.brand b{color:var(--orange)}.back{color:#fdba74;text-decoration:none;font-size:14px}
+.kicker{margin-top:46px;color:#fb923c;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:800}
+h1{font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-.055em;max-width:900px;margin:12px 0 18px}p.lead{max-width:760px;color:#b8b1a9;line-height:1.7;font-size:17px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:30px 0}.tab{border:1px solid #52483e;background:transparent;color:var(--text);padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:750}.tab.active{background:var(--orange);border-color:var(--orange);color:#18120e}
+.panel{display:none}.panel.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--orange);border-bottom:1px solid var(--line);margin:25px 0 34px}
+.stat{padding:24px 18px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}.stat strong{display:block;font-size:31px;color:#ff9a52;letter-spacing:-.04em}.stat span{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{border:1px solid var(--line);background:var(--panel);padding:22px}.card h2{font-size:23px;letter-spacing:-.03em;margin:4px 0 8px}.card p{color:#b8b1a9;line-height:1.65}
+.bars{display:grid;gap:11px;margin-top:18px}.barrow{display:grid;grid-template-columns:minmax(120px,1fr) 2fr 42px;align-items:center;gap:10px;font-size:13px}.track{height:9px;background:#2b2723;border-radius:999px;overflow:hidden}.fill{height:100%;background:var(--orange);border-radius:999px}.value{text-align:right;color:#d7d0c8}
+.note{margin-top:30px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:#aaa39b;line-height:1.65}.cta{display:inline-block;margin-top:14px;background:var(--orange);color:#18120e;text-decoration:none;padding:12px 17px;border-radius:8px;font-weight:800}
+.loading{color:#b8b1a9}.error{color:#fdba74}.stamp{font-size:12px;color:#8f8880;margin-top:10px}
+@media(max-width:800px){.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat{border-bottom:1px solid var(--line)}.grid{grid-template-columns:1fr}.barrow{grid-template-columns:105px 1fr 36px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><div class="brand">CONEXÃO <b>CRM.</b></div><a class="back" href="/">← Voltar ao portal</a></div>
+<div class="kicker">Reports / Mercado de Trabalho</div>
+<h1>Duas leituras para entender carreira em CRM.</h1>
+<p class="lead">Uma visão de quem está empregado e outra de quem está Open to Work. Os reports ficam separados de ferramentas e comparativos de tecnologia porque aqui o assunto é mercado, carreira e remuneração.</p>
+<nav class="tabs" aria-label="Reports do mercado de trabalho">
+<button class="tab" data-tab="cargos-salarios">Cargos & Salários</button>
+<button class="tab" data-tab="open-to-work">Open to Work</button>
+</nav>
+
+<section class="panel" id="cargos-salarios">
+<div class="stats">
+<div class="stat"><strong>651</strong><span>respostas de profissionais empregados</span></div>
+<div class="stat"><strong>R$ 8,1k</strong><span>salário médio publicado</span></div>
+<div class="stat"><strong>R$ 7,0k</strong><span>salário mediano publicado</span></div>
+<div class="stat"><strong>83%</strong><span>indicariam a própria empresa</span></div>
+</div>
+<div class="grid"><article class="card"><div class="kicker">01 / Empregados</div><h2>Cargos & Salários</h2><p>Report de quem está trabalhando hoje, com salário real informado, nível, porte e ramo da empresa, modelo de trabalho, contrato, benefícios e CRM utilizado.</p><a class="cta" href="/medias-salariais">Abrir report completo</a></article>
+<article class="card"><div class="kicker">Leitura</div><h2>Por que ele fica separado?</h2><p>Essa base responde quanto profissionais empregados recebem e em que contexto trabalham. Ela não deve ser misturada com expectativa salarial de quem está buscando uma nova oportunidade.</p></article></div>
+</section>
+
+<section class="panel" id="open-to-work">
+<div id="otw-status" class="loading">Carregando snapshot mais recente…</div>
+<div id="otw-content" hidden>
+<div class="stats" id="otw-stats"></div>
+<div class="grid">
+<article class="card"><div class="kicker">01 / Senioridade</div><h2>Quem está disponível</h2><div class="bars" id="senioridade"></div></article>
+<article class="card"><div class="kicker">02 / Modelo</div><h2>Preferência de trabalho</h2><div class="bars" id="modalidade"></div></article>
+<article class="card"><div class="kicker">03 / Faixa CLT</div><h2>Expectativa salarial</h2><div class="bars" id="faixa-clt"></div></article>
+<article class="card"><div class="kicker">04 / Ferramentas</div><h2>Skills mais citadas</h2><div class="bars" id="ferramentas"></div></article>
+</div>
+<div class="note" id="methodology"></div>
+</div>
+</section>
+</main>
+<script>
+const API='https://rwkbpafpniwzvlkfngag.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3a2JwYWZwbml3enZsa2ZuZ2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NzAxNzAsImV4cCI6MjA5NjI0NjE3MH0.zADJYzs3dXFvo51EAbf3Pu5-Oa7Fqsos4oN69ybvMy8';
+const fallback={"metrics":{"total_profissionais":255,"clt_media":8675.2,"clt_mediana":5750,"pj_media":12271.74,"pj_mediana":8000,"hibrido_pct":49.4,"remoto_pct":41.6,"presencial_pct":9,"aceita_mudanca_pct":44.7},"dimensions":{"senioridade":{"Pleno":63,"Sênior":54,"Especialista":40,"Júnior":37,"Gerência":23,"Coordenação":21,"Transição de carreira":12,"Estágio":5},"modalidade":{"Híbrido":126,"Remoto":106,"Presencial":23},"faixa_clt":{"R$ 4.5k a R$ 7k":70,"R$ 2.5k a R$ 4.5k":58,"R$ 10k a R$ 15k":51,"R$ 7k a R$ 9k":49,"R$ 16k a R$ 20k":14,"R$ 21k a R$ 30k":6,"Acima de R$ 31k":5,"8k a 9k":1,"Não informado":1},"ferramentas_top":[["Salesforce",130],["RD Station",82],["HubSpot",79],["Power BI",25],["ActiveCampaign",24],["SQL",23],["Oracle Responsys",17],["Mailchimp",15],["Braze",14],["Dito",13],["Dynamics 365",12],["Adobe Campaign",3]]},"methodology":{"updated_at":"2026-10-07","salary_rule":"Faixas fechadas usam o ponto médio; faixas abertas usam apenas o piso informado."}};
+const brl=n=>'R$ '+(n/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+'k';
+function setTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===tab));history.replaceState(null,'','?tab='+tab)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+setTab(new URLSearchParams(location.search).get('tab')||'open-to-work');
+function bars(el,data,maxItems=9){const items=Array.isArray(data)?data:Object.entries(data||{});const sliced=items.slice(0,maxItems);const max=Math.max(...sliced.map(x=>Number(x[1])||0),1);el.innerHTML=sliced.map(([label,v])=>'<div class="barrow"><span>'+label+'</span><div class="track"><div class="fill" style="width:'+((v/max)*100).toFixed(1)+'%"></div></div><span class="value">'+v+'</span></div>').join('')}
+function render(p,snapshotDate){const m=p.metrics,d=p.dimensions;document.getElementById('otw-stats').innerHTML=
+'<div class="stat"><strong>'+m.total_profissionais+'</strong><span>profissionais na base válida</span></div>'+
+'<div class="stat"><strong>'+brl(m.clt_media)+'</strong><span>CLT médio estimado</span></div>'+
+'<div class="stat"><strong>'+brl(m.pj_media)+'</strong><span>PJ médio estimado</span></div>'+
+'<div class="stat"><strong>'+m.hibrido_pct.toLocaleString('pt-BR')+'%</strong><span>preferem híbrido</span></div>';
+bars(document.getElementById('senioridade'),d.senioridade);
+bars(document.getElementById('modalidade'),d.modalidade);
+bars(document.getElementById('faixa-clt'),d.faixa_clt);
+bars(document.getElementById('ferramentas'),d.ferramentas_top);
+document.getElementById('methodology').innerHTML='<strong>Metodologia.</strong> '+(p.methodology?.salary_rule||'')+' Snapshot atualizado em '+new Date((snapshotDate||p.methodology?.updated_at)+'T12:00:00').toLocaleDateString('pt-BR')+'. O report usa dados agregados e não publica contatos individuais.';
+document.getElementById('otw-status').hidden=true;document.getElementById('otw-content').hidden=false}
+(async()=>{try{const r=await fetch(API+'/rest/v1/crm_market_report_snapshots?report_key=eq.open_to_work&select=snapshot_date,payload&order=snapshot_date.desc&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw Error('HTTP '+r.status);const rows=await r.json();render(rows[0]?.payload||fallback,rows[0]?.snapshot_date||'2026-10-07')}catch(e){document.getElementById('otw-status').className='error';document.getElementById('otw-status').textContent='Não foi possível consultar o snapshot agora. Exibindo a última versão validada.';render(fallback,'2026-10-07')}})();
+</script></body></html>
