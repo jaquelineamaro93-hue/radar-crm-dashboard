@@ -61,6 +61,17 @@
 @media(max-width:650px){.onboarding{align-items:flex-start;justify-content:flex-start}.onboarding-bar,.onboarding-bottom{width:calc(100% - 36px)}.onboarding-bar{height:68px}.onboarding-bottom{height:auto;min-height:58px;padding:14px 0}.onboarding-lockup{font-size:9px;gap:10px}.onboarding-lockup strong{font-size:14px}.onboarding-skip{font-size:10px}.onboarding-content{width:calc(100% - 40px);display:flex;flex-direction:column-reverse;justify-content:center;align-items:stretch;gap:30px;margin:28px auto 38px}.onboarding-visual{order:-1;align-items:flex-start;margin:12px 0 8px}.invite-ticket{min-height:0;width:168px;aspect-ratio:.90;transform:rotate(5deg);box-shadow:9px 12px 0 #c5b59e,13px 18px 30px #483e312a;padding:12px}.invite-top,.invite-bottom{font-size:6px}.invite-bottom{padding-top:7px}.invite-bottom span:last-child{font-size:13px}.invite-art{padding:0}.invite-overline{font-size:6px;margin:0 0 6px 2px}.invite-year{font-size:67px}.invite-art-title{font-size:13px;margin:10px 0 0 3px}.invite-underline{width:48px;height:3px;margin:8px 0 0 3px}.invite-ticket:before,.invite-ticket:after{width:12px;height:12px}.invite-ticket:before{left:-6px}.invite-ticket:after{right:-6px}.visual-caption{font-size:9px;margin-top:27px}.onboarding-progress{margin-bottom:20px}.onboarding h2{font-size:clamp(39px,9vw,52px);margin:16px 0}.onboarding-lead{font-size:17px}.onboarding-support{font-size:13px}.onboarding-controls{margin-top:25px}.onboarding-continue{width:100%}.onboarding-hint{margin:17px 0 0!important;font-size:10px!important}.onboarding-copy{width:100%}}
 @media(prefers-reduced-motion:reduce){.invite-ticket{transition:none}.onboarding-progress-fill{transition:none}}
 
+
+/* WCAG contrast refinement: accessible text and CTA color. */
+.onboarding-continue{background:#a9430d;border-color:#a9430d;color:#fff}
+.onboarding-continue:hover{background:#8b330b}
+.onboarding-hint{color:#665a4d!important}
+.onboarding-step-label{font-size:12px}
+.onboarding-skip,.onboarding-back{min-height:44px}
+.onboarding-preview-sound{border:1px solid #574c3d;padding:14px 18px;background:transparent;color:#332820;border-radius:4px;font-size:12px;font-weight:800;min-height:48px}
+.onboarding-preview-sound:hover{background:#1715130e}
+.onboarding-preview-sound[hidden]{display:none!important}
+@media(max-width:650px){.onboarding-controls{flex-wrap:wrap;gap:13px}.onboarding-preview-sound{width:100%}.onboarding-step-label{font-size:11px}}
 </style>
 </head>
 <body class="no-scroll">
@@ -83,7 +94,7 @@
     </div>
     <div class="onboarding-controls">
      <button type="button" class="onboarding-continue" id="onboardingNext">Quero conhecer <span aria-hidden="true">→</span></button>
-     <button type="button" class="onboarding-back" id="onboardingBack" hidden>Voltar</button>
+     <button type="button" class="onboarding-back" id="onboardingBack" hidden>Voltar</button><button type="button" class="onboarding-preview-sound" id="onboardingListen" hidden aria-pressed="false">♫ Ouvir trilha</button>
     </div>
     <p class="onboarding-hint">Prévia reservada para avaliação. Nenhuma indicação ou voto oficial é registrado aqui</p>
    </div>
@@ -264,7 +275,7 @@ var soundtrack=document.getElementById('awardsTheme');
 var soundEnabled=false;
 soundtrack.volume=.42;
 function cue(){ if(soundEnabled&&soundtrack.paused){soundtrack.play().catch(function(){updateSoundControl(false)})} }
-function updateSoundControl(on){soundEnabled=on;var b=document.getElementById('soundToggle');b.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia')}
+function updateSoundControl(on){soundEnabled=on;var b=document.getElementById('soundToggle');b.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia');var preview=document.getElementById('onboardingListen');if(preview){preview.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';preview.setAttribute('aria-pressed',String(on))}}
 function stopMusic(){soundtrack.pause();updateSoundControl(false)}
 function startMusic(){var p=soundtrack.play();if(p&&typeof p.then==='function')p.then(function(){updateSoundControl(true)}).catch(function(){updateSoundControl(false);notify('Não foi possível iniciar a trilha. A experiência continua sem som.')});else updateSoundControl(true)}
 document.getElementById('soundToggle').onclick=function(){soundEnabled?stopMusic():startMusic()};
@@ -284,6 +295,7 @@ function renderOnboard(){
  document.getElementById('onboardingNarrative').innerHTML='<h2 id="introTitle" tabindex="-1">'+stage.heading+'</h2><p class="onboarding-lead">'+stage.lead+'</p><p class="onboarding-support">'+stage.support+'</p>';
  document.getElementById('onboardingNext').innerHTML=stage.cta+' <span aria-hidden="true">→</span>';
  document.getElementById('onboardingBack').hidden=onboardStep===0;
+ document.getElementById('onboardingListen').hidden=onboardStep!==2;
  var ticket=document.querySelector('.invite-ticket');
  if(ticket)ticket.style.transform='rotate('+(3-onboardStep*2)+'deg)';
 }
@@ -296,6 +308,7 @@ function replayOnboard(){onboardStep=0;renderOnboard();var ov=document.getElemen
 document.getElementById('onboardingNext').onclick=function(){if(onboardStep>=onboardStages.length-1){endOnboard();return}onboardStep++;renderOnboard();document.getElementById('introTitle').focus()};
 document.getElementById('onboardingBack').onclick=function(){if(onboardStep>0){onboardStep--;renderOnboard();document.getElementById('introTitle').focus()}};
 document.getElementById('skipOnboarding').onclick=endOnboard;
+document.getElementById('onboardingListen').onclick=function(){if(soundEnabled){stopMusic();this.textContent='♫ Ouvir trilha';this.setAttribute('aria-pressed','false')}else{startMusic();this.textContent='♫ Pausar trilha';this.setAttribute('aria-pressed','true')}};
 document.getElementById('replayOnboarding').onclick=replayOnboard;
 document.addEventListener('keydown',function(e){var ov=document.getElementById('intro');if(ov.classList.contains('hidden'))return;if(e.key==='Escape'){e.preventDefault();endOnboard()}if(e.key==='Tab'){var items=Array.prototype.slice.call(ov.querySelectorAll('button:not([hidden]):not([disabled])'));if(!items.length)return;var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 renderOnboard();
