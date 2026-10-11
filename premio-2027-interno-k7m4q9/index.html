@@ -76,10 +76,12 @@
 <link rel="stylesheet" href="./editorial-v3.css?v=3">
 <link rel="stylesheet" href="./motion-v4.css?v=4">
 <link rel="stylesheet" href="./editorial-v5.css?v=5">
+<link rel="stylesheet" href="./journey-v6.css?v=6">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="./motion-v4.js?v=4" defer></script>
 <script src="./editorial-v5.js?v=5" defer></script>
+<script src="./journey-v6.js?v=6" defer></script>
 </head>
 <body class="no-scroll">
 <audio id="awardsTheme" preload="none" loop><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
@@ -103,7 +105,7 @@
      <button type="button" class="onboarding-continue" id="onboardingNext">Quero conhecer <span aria-hidden="true">→</span></button>
      <button type="button" class="onboarding-back" id="onboardingBack" hidden>Voltar</button><button type="button" class="onboarding-preview-sound" id="onboardingListen" hidden aria-pressed="false">♫ Ouvir trilha</button>
     </div>
-    <p class="onboarding-hint">Prévia reservada para avaliação. Nenhuma indicação ou voto oficial é registrado aqui</p>
+    <p class="onboarding-hint">A trilha começa após sua primeira interação e pode ser pausada ou silenciada a qualquer momento. Nenhum voto ou indicação oficial é registrado aqui</p>
    </div>
    <div class="onboarding-visual" aria-hidden="true">
     <div class="invite-ticket">
@@ -233,18 +235,43 @@
  <span class="v5-interlude-caption">UM NOVO ENCONTRO PARA O MERCADO</span>
  <div class="v5-paper-slice" aria-hidden="true"></div>
 </section>
-<section class="section story" id="jornada"><div class="frame">
- <div class="chapter-heading"><span class="num">02</span><span class="eyebrow">COMO ACONTECE</span></div>
- <h2 class="section-heading">Do primeiro nome<br>à noite que ninguém esquece</h2>
- <p class="section-desc">Cinco momentos para construir a primeira edição com transparência. O calendário oficial será anunciado depois que as regras estiverem definidas</p>
- <div class="journey-editorial" aria-label="Etapas propostas da premiação">
-  <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">01</span><h3>O convite</h3><p>Apresentamos a premiação, as categorias e as regras para participar</p></div></div>
-  <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">02</span><h3>Quem merece?</h3><p>Você indica profissionais, projetos e tecnologias que fizeram a diferença</p></div></div>
-  <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">03</span><h3>Um olhar cuidadoso</h3><p>Conferimos critérios, evidências e elegibilidade antes de anunciar os finalistas</p></div></div>
-  <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">04</span><h3>É a vez da comunidade</h3><p>A votação acontece conforme o regulamento, com participação e transparência</p></div></div>
-  <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">05</span><h3>A grande noite</h3><p>Uma cerimônia para aplaudir trajetórias e revelar quem entra no Hall da Fama</p></div></div>
+<section class="section story journey-reimagined" id="jornada" aria-labelledby="journeyTitle"><div class="frame">
+ <div class="chapter-heading"><span class="num">02</span><span class="eyebrow">DA INDICAÇÃO À ESTREIA</span></div>
+ <h2 class="section-heading" id="journeyTitle">Como uma história vira <em>reconhecimento</em></h2>
+ <p class="section-desc">Cinco momentos para você fazer parte da primeira edição. Cada etapa tem um propósito, e as regras finais serão divulgadas antes da abertura</p>
+ <div class="journey-flow" id="journeyFlow" data-step="0">
+  <div class="journey-flow-mesh" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="journey-flow-inner">
+   <div class="journey-flow-top"><b>O CAMINHO ATÉ A PRIMEIRA PREMIAÇÃO</b><span>ESTREIA / 2027</span></div>
+   <div class="journey-steps" role="tablist" aria-label="Explore as cinco etapas da premiação">
+    <button class="journey-step" type="button" role="tab" id="journeyTab0" aria-controls="journeyPanel" aria-selected="true"><span class="journey-step-number">01</span><span class="journey-step-name">O convite</span></button>
+    <button class="journey-step" type="button" role="tab" id="journeyTab1" aria-controls="journeyPanel" aria-selected="false" tabindex="-1"><span class="journey-step-number">02</span><span class="journey-step-name">Indicações</span></button>
+    <button class="journey-step" type="button" role="tab" id="journeyTab2" aria-controls="journeyPanel" aria-selected="false" tabindex="-1"><span class="journey-step-number">03</span><span class="journey-step-name">Curadoria</span></button>
+    <button class="journey-step" type="button" role="tab" id="journeyTab3" aria-controls="journeyPanel" aria-selected="false" tabindex="-1"><span class="journey-step-number">04</span><span class="journey-step-name">Escolha</span></button>
+    <button class="journey-step" type="button" role="tab" id="journeyTab4" aria-controls="journeyPanel" aria-selected="false" tabindex="-1"><span class="journey-step-number">05</span><span class="journey-step-name">Grande noite</span></button>
+   </div>
+   <div class="journey-stage" id="journeyPanel" role="tabpanel" aria-labelledby="journeyTab0" tabindex="0">
+    <div class="journey-stage-content">
+     <span class="journey-stage-index" id="journeyStageIndex">01 / O CONVITE</span>
+     <h3 id="journeyStageHeading">Tudo começa com <em>um convite</em></h3>
+     <p id="journeyStageDescription">Apresentamos as categorias e as regras para que todo mundo saiba como participar da nossa primeira edição</p>
+    </div>
+    <div class="journey-art" aria-hidden="true">
+     <span class="journey-art-letter" id="journeyPoster">✳</span>
+     <div class="journey-art-photo"><img id="journeyPhoto" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=580&q=76" width="300" height="360" decoding="async" loading="lazy" alt=""></div>
+     <span class="journey-art-sticker" id="journeyStamp">ESTREIA<br>2027</span>
+     <span class="journey-art-caption" id="journeyCaption">Tudo começa aqui</span>
+    </div>
+   </div>
+   <div class="journey-flow-bottom">
+    <span class="journey-footer-note">Etapas e datas em planejamento. Pessoas, cases e ferramentas terão métodos de avaliação próprios, definidos no regulamento oficial</span>
+    <div class="journey-flow-nav">
+     <button type="button" id="journeyPrev" disabled aria-label="Voltar à etapa anterior">← Voltar</button>
+     <button type="button" id="journeyNext" aria-label="Avançar para a próxima etapa">Próxima etapa →</button>
+    </div>
+   </div>
+  </div>
  </div>
- <p class="journey-stamp">Toda história merece ser contada</p>
 </div></section>
 <section class="process-section" id="metodologia" aria-labelledby="processTitle">
 <div class="frame">
@@ -320,9 +347,9 @@
  <button class="btn btn-primary" id="sharePreview">Copiar link da prévia ↗</button>
 </div></section>
 </main>
-<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V5 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
+<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V6 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
 <button type="button" class="motion-switch" id="motionSwitch" aria-label="Pausar movimento" aria-pressed="true">Pausar movimento</button>
-<button class="sound" id="soundToggle" aria-label="Tocar trilha de cerimônia" aria-pressed="false">♫ Ouvir trilha</button>
+<div class="sound-bar" role="group" aria-label="Controles da trilha sonora"><button type="button" class="sound" id="soundToggle" aria-label="Tocar trilha de cerimônia" aria-pressed="false">♫ Tocar</button><span class="sound-separator" aria-hidden="true"></span><button type="button" class="sound-mute" id="soundMute" aria-label="Silenciar trilha" aria-pressed="false">🔊 Som</button></div>
 <div class="modal-backdrop" id="modalBackdrop" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="close" id="closeModal" aria-label="Fechar">×</button><div id="modalContents"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -389,13 +416,52 @@ document.getElementById('menuToggle').onclick=function(){var n=document.getEleme
 /* Soundtrack replaces generated oscillator sounds. CC BY 4.0 attribution in footer. */
 var soundtrack=document.getElementById('awardsTheme');
 var soundEnabled=false;
+var soundMuted=false;
+var audioWasManuallyControlled=false;
+var audioAutoAttempted=false;
 soundtrack.volume=.42;
-function cue(){ if(soundEnabled&&soundtrack.paused){soundtrack.play().catch(function(){updateSoundControl(false)})} }
-function updateSoundControl(on){soundEnabled=on;var b=document.getElementById('soundToggle');b.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia');var preview=document.getElementById('onboardingListen');if(preview){preview.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';preview.setAttribute('aria-pressed',String(on))}}
-function stopMusic(){soundtrack.pause();updateSoundControl(false)}
-function startMusic(){var p=soundtrack.play();if(p&&typeof p.then==='function')p.then(function(){updateSoundControl(true)}).catch(function(){updateSoundControl(false);notify('Não foi possível iniciar a trilha. A experiência continua sem som.')});else updateSoundControl(true)}
-document.getElementById('soundToggle').onclick=function(){soundEnabled?stopMusic():startMusic()};
+function updateSoundControl(on){
+ soundEnabled=on;
+ var toggle=document.getElementById('soundToggle');
+ toggle.textContent=on?'❚❚ Pausar':'▶ Tocar';
+ toggle.setAttribute('aria-pressed',String(on));
+ toggle.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia');
+ var mute=document.getElementById('soundMute');
+ mute.textContent=soundMuted?'🔇 Silenciado':'🔊 Som';
+ mute.setAttribute('aria-pressed',String(soundMuted));
+ mute.setAttribute('aria-label',soundMuted?'Ativar som da trilha':'Silenciar trilha');
+ var preview=document.getElementById('onboardingListen');
+ if(preview){preview.textContent=on?'❚❚ Pausar trilha':'♫ Ouvir trilha';preview.setAttribute('aria-pressed',String(on))}
+}
+function cue(){if(soundEnabled&&soundtrack.paused){soundtrack.play().catch(function(){updateSoundControl(false)})}}
+function stopMusic(){
+ audioWasManuallyControlled=true;
+ soundtrack.pause();
+ updateSoundControl(false)
+}
+function startMusic(automatic){
+ if(!automatic)audioWasManuallyControlled=true;
+ var p=soundtrack.play();
+ if(p&&typeof p.then==='function')p.then(function(){updateSoundControl(true)}).catch(function(){updateSoundControl(false);if(!automatic)notify('O navegador não liberou o áudio. Tente novamente no botão de música.')});
+ else updateSoundControl(true)
+}
+function setMuted(value){
+ audioWasManuallyControlled=true;
+ soundMuted=Boolean(value);soundtrack.muted=soundMuted;
+ updateSoundControl(!soundtrack.paused);
+}
+document.getElementById('soundToggle').onclick=function(){if(soundtrack.paused)startMusic(false);else stopMusic()};
+document.getElementById('soundMute').onclick=function(){setMuted(!soundMuted)};
 soundtrack.addEventListener('error',function(){stopMusic();notify('A trilha não carregou. Você pode continuar sem som.')});
+/* Browsers require a user gesture for audio playback. Start once, after an intentional action. */
+document.addEventListener('click',function(event){
+ if(audioAutoAttempted||audioWasManuallyControlled||!event.isTrusted)return;
+ var target=event.target;
+ if(!target||typeof target.closest!=='function')return;
+ var trigger=target.closest('button,a');
+ if(!trigger||['soundToggle','soundMute','onboardingListen','motionSwitch','replayOnboarding'].indexOf(trigger.id)>=0)return;
+ audioAutoAttempted=true;startMusic(true);
+},true);
 /* Only onboarding state is stored separately. Voting and nomination history is untouched. */
 var onboardKey='conexaocrm_premio2027_onboarding_v2_seen';
 var onboardStep=0;
@@ -424,7 +490,7 @@ function replayOnboard(){onboardStep=0;renderOnboard();var ov=document.getElemen
 document.getElementById('onboardingNext').onclick=function(){if(onboardStep>=onboardStages.length-1){endOnboard();return}onboardStep++;renderOnboard();document.getElementById('introTitle').focus()};
 document.getElementById('onboardingBack').onclick=function(){if(onboardStep>0){onboardStep--;renderOnboard();document.getElementById('introTitle').focus()}};
 document.getElementById('skipOnboarding').onclick=endOnboard;
-document.getElementById('onboardingListen').onclick=function(){if(soundEnabled){stopMusic();this.textContent='♫ Ouvir trilha';this.setAttribute('aria-pressed','false')}else{startMusic();this.textContent='♫ Pausar trilha';this.setAttribute('aria-pressed','true')}};
+document.getElementById('onboardingListen').onclick=function(){if(soundtrack.paused)startMusic(false);else stopMusic()};
 document.getElementById('replayOnboarding').onclick=replayOnboard;
 document.addEventListener('keydown',function(e){var ov=document.getElementById('intro');if(ov.classList.contains('hidden'))return;if(e.key==='Escape'){e.preventDefault();endOnboard()}if(e.key==='Tab'){var items=Array.prototype.slice.call(ov.querySelectorAll('button:not([hidden]):not([disabled])'));if(!items.length)return;var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 renderOnboard();
