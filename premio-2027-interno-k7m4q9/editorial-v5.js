@@ -47,6 +47,7 @@ function setScene(i,initial){
  if(i===active&&!initial)return;
  active=i;
  reel.dataset.scene=String(i);
+ panel.setAttribute("aria-labelledby","v5ReelTab"+i);
  const s=scenes[i];
  function switchText(){
   label.textContent=s.kicker;
