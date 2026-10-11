@@ -17,21 +17,86 @@
 @media(max-width:810px){.nav{height:69px}.nav-links{display:none;position:absolute;top:69px;left:0;right:0;background:#131215;padding:24px;flex-direction:column;gap:20px;align-items:flex-start;border-bottom:1px solid #66533e}.nav-links.open{display:flex}.menu-toggle{display:block;margin-left:auto;background:transparent;border:1px solid #ffffff3b;color:var(--ink);padding:10px 12px;border-radius:9px}.nav .pill{display:none}.frame{width:min(100% - 36px,650px)}.hero{min-height:0;padding:72px 0 50px}.hero-inner{display:flex;flex-direction:column;align-items:flex-start;gap:0}.hero h1{font-size:clamp(44px,10vw,67px)}.hero-sub{font-size:14px}.hero-foot{margin-top:30px}.award-art{width:100%;height:330px;margin-top:15px}.hero-star{width:270px}.halo{width:260px;height:260px}.section{padding:75px 0}.section-top{align-items:flex-start}.star-walk,.final-grid{grid-template-columns:repeat(2,1fr)}.story-grid{grid-template-columns:repeat(2,1fr)}.activity-grid{grid-template-columns:1fr}.vote-grid{grid-template-columns:1fr}.vote-option{min-height:125px}.cta-wide,.sponsor-in{flex-direction:column;align-items:flex-start}.footer-in{flex-direction:column;align-items:flex-start}}
 @media(max-width:470px){.frame{width:calc(100% - 32px)}.hero h1{font-size:45px}.hero-foot{gap:18px}.hero-foot span{font-size:15px}.brand{font-size:13px}.hero-actions .btn{width:100%}.star-walk{gap:9px}.star-tile{padding:17px 9px;min-height:198px}.star-svg{width:60px;height:60px}.star-tile b{font-size:11px}.star-tile small{font-size:9px}.story-grid,.final-grid{grid-template-columns:1fr 1fr}.story-step{padding:18px 14px}.form-grid{grid-template-columns:1fr;gap:0}.form-card,.story-card{padding:25px}.cta-wide{padding:28px}.section-heading{font-size:35px}.overlay .opening-star{font-size:62px}.overlay h2{font-size:43px}.sound{bottom:10px;right:10px}.modal{padding:26px}.nav-in{gap:15px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Editorial onboarding. Isolado para não interferir nos fluxos existentes. */
+.onboarding{background:#e6e0d3;color:#171513;padding:0;text-align:left;overflow-y:auto}
+.onboarding-shell{display:flex;flex-direction:column;min-height:100dvh;width:100%;background:#e6e0d3}
+.onboarding-bar,.onboarding-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-shrink:0;width:min(1440px,calc(100% - 100px));margin:0 auto}
+.onboarding-bar{height:86px;border-bottom:1px solid #17151330}.onboarding-bottom{height:59px;border-top:1px solid #17151330;font-size:9px;color:#6f6459;letter-spacing:.15em;font-weight:800}
+.onboarding-lockup{display:flex;align-items:center;gap:15px;font-size:10px;letter-spacing:.14em;color:#574d40;font-weight:800;white-space:nowrap}
+.onboarding-lockup strong{font-size:17px;letter-spacing:-.055em;color:#171513;font-weight:900}.onboarding-lockup strong span{color:#dd651d}
+.onboarding-lockup i{height:23px;width:1px;background:#bcb2a5}
+.onboarding-skip{border:0;background:transparent;font-size:11px;font-weight:800;color:#47403a;padding:12px 5px;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.onboarding-skip:hover{text-decoration:underline}.onboarding-skip span{font-size:17px}
+.onboarding-content{flex:1;display:grid;grid-template-columns:minmax(0,1.07fr) minmax(0,.93fr);align-items:center;gap:6vw;width:min(1300px,calc(100% - 112px));margin:36px auto}
+.onboarding-copy{max-width:690px}.onboarding-progress{height:3px;width:145px;background:#cac0b2;margin-bottom:30px}.onboarding-progress-fill{display:block;height:100%;background:#d75b18;width:33.333%;transition:width .3s}
+.onboarding-step-label{font-size:10px;letter-spacing:.16em;color:#7c4c2c;font-weight:900}
+.onboarding h2{font:500 clamp(40px,4.65vw,78px)/1.13 'Playfair Display',Georgia,serif;color:#191613;letter-spacing:-.055em;margin:26px 0;max-width:710px}
+.onboarding h2 em{font-style:italic;color:#b55221}.onboarding h2:focus{outline:0}
+.onboarding-lead{font-size:clamp(17px,1.55vw,21px);font-weight:600;color:#3c342d;line-height:1.55;max-width:510px}
+.onboarding-support{font-size:14px;color:#695c51;line-height:1.8;max-width:420px;margin-top:12px}
+.onboarding-controls{display:flex;align-items:center;gap:28px;margin-top:40px}
+.onboarding-continue{display:inline-flex;gap:45px;align-items:center;justify-content:space-between;background:#dd651d;border:1px solid #dd651d;color:#fff;border-radius:4px;font-weight:800;font-size:13px;padding:17px 20px;min-width:220px;transition:background .18s,transform .18s}
+.onboarding-continue:hover{background:#ad4512;transform:translateY(-1px)}.onboarding-continue span{font-size:19px}
+.onboarding-back{background:transparent;border:0;color:#695c51;text-decoration:underline;font-weight:700;font-size:12px;padding:12px}
+.onboarding-hint{margin-top:28px!important;font-size:11px!important;color:#85786a!important;line-height:1.65!important;max-width:420px}
+.onboarding-visual{min-width:0;position:relative;text-align:center;display:flex;justify-content:center;flex-direction:column;align-items:center}
+.invite-ticket{width:min(100%,450px);aspect-ratio: .84;min-height:360px;max-height:540px;padding:24px 25px;display:flex;flex-direction:column;justify-content:space-between;position:relative;transform:rotate(3deg);background:#14171c;color:#f4e4c8;box-shadow:21px 27px 0 #c5b59e,27px 37px 65px #483e313e;transition:transform .7s}
+.invite-ticket:before,.invite-ticket:after{content:'';position:absolute;top:77%;width:29px;height:29px;border-radius:50%;background:#e6e0d3}
+.invite-ticket:before{left:-15px}.invite-ticket:after{right:-15px}
+.invite-top,.invite-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:9px;font-weight:800;letter-spacing:.12em;color:#b6a789;text-align:left}
+.invite-bottom{border-top:1px dashed #9f8f764e;padding-top:22px}
+.invite-bottom span:last-child{font-size:27px;color:#f97316}
+.invite-art{display:flex;align-items:flex-start;justify-content:center;flex-direction:column;position:relative;padding:10px 10px 25px}
+.invite-overline{font-size:10px;letter-spacing:.2em;color:#d7994b;font-weight:800;margin:0 0 9px 6px}
+.invite-year{font:800 clamp(98px,14vw,193px)/.93 'Manrope',sans-serif;letter-spacing:-.14em;color:#e5aa60}
+.invite-year>span{color:#ed732f}.invite-art-title{font:500 clamp(19px,2.6vw,33px)/1.12 'Playfair Display',serif;text-align:left;letter-spacing:-.02em;margin:27px 0 0 8px}
+.invite-underline{width:108px;height:5px;background:#ee7631;transform:rotate(-4deg);margin:20px 0 0 8px}
+.visual-caption{font-size:10px;color:#665b4e;letter-spacing:.12em;font-weight:800;margin-top:40px}
+.footer-replay{background:transparent;border:0;color:#c9a376;font-size:11px;text-decoration:underline;margin:9px 0 4px;padding:2px;cursor:pointer}
+.music-credit{display:block;max-width:320px;font-size:10px;line-height:1.7;color:#92897b}.music-credit a{text-decoration:underline}
+.onboarding .sound{display:none}
+@media(min-width:1600px){.onboarding h2{font-size:78px}}
+@media(max-width:900px){.onboarding-bar,.onboarding-bottom{width:calc(100% - 48px)}.onboarding-content{width:calc(100% - 48px);gap:24px}.onboarding h2{font-size:clamp(38px,6vw,58px)}.invite-ticket{min-height:310px;padding:19px}.invite-year{font-size:clamp(86px,15vw,148px)}.invite-art-title{font-size:25px}}
+@media(max-width:650px){.onboarding{align-items:flex-start;justify-content:flex-start}.onboarding-bar,.onboarding-bottom{width:calc(100% - 36px)}.onboarding-bar{height:68px}.onboarding-bottom{height:auto;min-height:58px;padding:14px 0}.onboarding-lockup{font-size:9px;gap:10px}.onboarding-lockup strong{font-size:14px}.onboarding-skip{font-size:10px}.onboarding-content{width:calc(100% - 40px);display:flex;flex-direction:column-reverse;justify-content:center;align-items:stretch;gap:30px;margin:28px auto 38px}.onboarding-visual{order:-1;align-items:flex-start;margin:12px 0 8px}.invite-ticket{min-height:0;width:168px;aspect-ratio:.90;transform:rotate(5deg);box-shadow:9px 12px 0 #c5b59e,13px 18px 30px #483e312a;padding:12px}.invite-top,.invite-bottom{font-size:6px}.invite-bottom{padding-top:7px}.invite-bottom span:last-child{font-size:13px}.invite-art{padding:0}.invite-overline{font-size:6px;margin:0 0 6px 2px}.invite-year{font-size:67px}.invite-art-title{font-size:13px;margin:10px 0 0 3px}.invite-underline{width:48px;height:3px;margin:8px 0 0 3px}.invite-ticket:before,.invite-ticket:after{width:12px;height:12px}.invite-ticket:before{left:-6px}.invite-ticket:after{right:-6px}.visual-caption{font-size:9px;margin-top:27px}.onboarding-progress{margin-bottom:20px}.onboarding h2{font-size:clamp(39px,9vw,52px);margin:16px 0}.onboarding-lead{font-size:17px}.onboarding-support{font-size:13px}.onboarding-controls{margin-top:25px}.onboarding-continue{width:100%}.onboarding-hint{margin:17px 0 0!important;font-size:10px!important}.onboarding-copy{width:100%}}
+@media(prefers-reduced-motion:reduce){.invite-ticket{transition:none}.onboarding-progress-fill{transition:none}}
+
 </style>
 </head>
 <body class="no-scroll">
+<audio id="awardsTheme" preload="none" loop><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
 <a class="skip-link" href="#main">Ir para o conteúdo</a>
-<div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
- <div class="overlay-inner">
-  <span class="eyebrow">CONEXÃO CRM APRESENTA · EDIÇÃO 2027</span>
-  <span class="opening-star" aria-hidden="true">✦</span>
-  <h2 id="introTitle">Grandes histórias<br><span class="gold">merecem um palco.</span></h2>
-  <p>Você está prestes a conhecer uma nova experiência de reconhecimento para quem transforma o mercado.</p>
-  <div class="overlay-buttons">
-   <button class="btn btn-primary" id="enterWithSound">✧ Iniciar experiência com som</button>
-   <button class="btn btn-ghost" id="enterSilent">Entrar sem som →</button>
+<div class="overlay onboarding" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+ <div class="onboarding-shell">
+  <div class="onboarding-bar">
+   <span class="onboarding-lockup"><strong>CONEXÃO<span>CRM.</span></strong> <i></i> PRÊMIO 2027</span>
+   <button type="button" class="onboarding-skip" id="skipOnboarding">Pular apresentação <span aria-hidden="true">↗</span></button>
   </div>
-  <p style="font-size:10px;color:#8d8377;margin-top:24px">PRÉVIA INTERNA · NENHUM VOTO OU INDICAÇÃO OFICIAL SERÁ REGISTRADO</p>
+  <div class="onboarding-content">
+   <div class="onboarding-copy">
+    <div class="onboarding-progress" aria-label="Progresso da apresentação"><span class="onboarding-progress-fill" id="onboardingProgress"></span></div>
+    <span id="onboardingStepLabel" class="onboarding-step-label">01 / 03 &nbsp; O CONVITE</span>
+    <div id="onboardingNarrative" aria-live="polite">
+     <h2 id="introTitle" tabindex="-1">Antes de existir uma estrela,<br><em>existe uma história</em></h2>
+     <p class="onboarding-lead">É sobre quem se dedica, cria caminhos e faz outras pessoas crescerem junto</p>
+     <p class="onboarding-support">Estamos preparando um reconhecimento feito pela comunidade e para a comunidade</p>
+    </div>
+    <div class="onboarding-controls">
+     <button type="button" class="onboarding-continue" id="onboardingNext">Quero conhecer <span aria-hidden="true">→</span></button>
+     <button type="button" class="onboarding-back" id="onboardingBack" hidden>Voltar</button>
+    </div>
+    <p class="onboarding-hint">Prévia reservada para avaliação. Nenhuma indicação ou voto oficial é registrado aqui</p>
+   </div>
+   <div class="onboarding-visual" aria-hidden="true">
+    <div class="invite-ticket">
+     <div class="invite-top"><span>UM CONVITE PARA RECONHECER</span><span>EDIÇÃO 01</span></div>
+     <div class="invite-art"><span class="invite-overline">CONEXÃO CRM APRESENTA</span><span class="invite-year">20<span>27</span></span><span class="invite-art-title">PRÊMIO<br>CONEXÃO CRM</span><span class="invite-underline"></span></div>
+     <div class="invite-bottom"><span>AS PESSOAS POR TRÁS DAS CONQUISTAS</span><span>✳</span></div>
+    </div>
+    <span class="visual-caption">O RECONHECIMENTO COMEÇA POR VOCÊ</span>
+   </div>
+  </div>
+  <div class="onboarding-bottom"><span>CONEXÃO CRM &nbsp; / &nbsp; DESDE A COMUNIDADE</span><span>01 &nbsp; / &nbsp; 2027</span></div>
  </div>
 </div>
 <header class="nav"><div class="frame nav-in">
@@ -129,8 +194,8 @@
  <button class="btn btn-primary" id="sharePreview">Copiar link da prévia ↗</button>
 </div></section>
 </main>
-<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V1 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span></div></div></footer>
-<button class="sound" id="soundToggle" aria-label="Ativar som da experiência">♫ Ativar trilha</button>
+<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V2 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div></div></footer>
+<button class="sound" id="soundToggle" aria-label="Tocar trilha de cerimônia" aria-pressed="false">♫ Ouvir trilha</button>
 <div class="modal-backdrop" id="modalBackdrop" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="close" id="closeModal" aria-label="Fechar">×</button><div id="modalContents"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -193,15 +258,48 @@ function reveal(){cue();confetti();openModal('<span class="tag">✦ REVELAÇÃO 
 document.getElementById('revealDemo').onclick=reveal;document.getElementById('hallReveal').onclick=reveal;
 document.getElementById('sharePreview').onclick=function(){var url=location.href.split('#')[0];if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){notify('Link da prévia copiado. Compartilhe apenas com o time!')},function(){window.prompt('Copie o link da prévia:',url)})}else window.prompt('Copie o link:',url)};
 document.getElementById('menuToggle').onclick=function(){var n=document.getElementById('navLinks');var on=n.classList.toggle('open');this.setAttribute('aria-expanded',String(on))};Array.prototype.forEach.call(document.querySelectorAll('#navLinks a'),function(el){el.onclick=function(){document.getElementById('navLinks').classList.remove('open')}});
-var audioCtx=null,soundEnabled=false,musicInterval=null;function getAudio(){var Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return null;if(!audioCtx)audioCtx=new Audio();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
-function note(freq,dur,delay,vol,type){var a=getAudio();if(!a)return;var start=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(freq,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(vol||.035,start+.03);g.gain.exponentialRampToValueAtTime(.0001,start+dur);o.connect(g);g.connect(a.destination);o.start(start);o.stop(start+dur+.05)}
-function cue(){if(!soundEnabled)return;[196,293.66,392,587.33,784].forEach(function(f,i){note(f,2.2,i*.19,.027,i%2?'triangle':'sine')});note(98,2.5,0,.04,'sine')}
-function stopMusic(){soundEnabled=false;clearInterval(musicInterval);musicInterval=null;document.getElementById('soundToggle').textContent='♫ Ativar trilha';if(audioCtx&&audioCtx.state==='running')audioCtx.suspend()}
-function startMusic(){soundEnabled=true;getAudio();document.getElementById('soundToggle').textContent='♫ Pausar trilha';cue();clearInterval(musicInterval);musicInterval=setInterval(function(){if(!soundEnabled||document.hidden)return;[146.83,196,220,293.66].forEach(function(f,i){note(f,2.9,i*.3,.011,'sine')})},4900)}
+
+/* Soundtrack replaces generated oscillator sounds. CC BY 4.0 attribution in footer. */
+var soundtrack=document.getElementById('awardsTheme');
+var soundEnabled=false;
+soundtrack.volume=.42;
+function cue(){ if(soundEnabled&&soundtrack.paused){soundtrack.play().catch(function(){updateSoundControl(false)})} }
+function updateSoundControl(on){soundEnabled=on;var b=document.getElementById('soundToggle');b.textContent=on?'♫ Pausar trilha':'♫ Ouvir trilha';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia')}
+function stopMusic(){soundtrack.pause();updateSoundControl(false)}
+function startMusic(){var p=soundtrack.play();if(p&&typeof p.then==='function')p.then(function(){updateSoundControl(true)}).catch(function(){updateSoundControl(false);notify('Não foi possível iniciar a trilha. A experiência continua sem som.')});else updateSoundControl(true)}
 document.getElementById('soundToggle').onclick=function(){soundEnabled?stopMusic():startMusic()};
-function enter(withSound){var ov=document.getElementById('intro');ov.classList.add('hidden');document.body.classList.remove('no-scroll');if(withSound)startMusic();setTimeout(function(){ov.setAttribute('aria-hidden','true')},900)}
-document.getElementById('enterSilent').onclick=function(){enter(false)};
-document.getElementById('enterWithSound').onclick=function(){enter(true)};
+soundtrack.addEventListener('error',function(){stopMusic();notify('A trilha não carregou. Você pode continuar sem som.')});
+/* Only onboarding state is stored separately. Voting and nomination history is untouched. */
+var onboardKey='conexaocrm_premio2027_onboarding_v2_seen';
+var onboardStep=0;
+var onboardStages=[
+{label:'O CONVITE',heading:'Antes de existir uma estrela,<br><em>existe uma história</em>',lead:'É sobre quem se dedica, cria caminhos e faz outras pessoas crescerem junto',support:'Estamos preparando um reconhecimento feito pela comunidade e para a comunidade',cta:'Quero conhecer'},
+{label:'A EXPERIÊNCIA',heading:'Quem faz a diferença<br><em>merece ser lembrado</em>',lead:'A Calçada da Fama é um jeito de conhecer as pessoas, os projetos e as ideias que movem o nosso mercado',support:'Explore as categorias, descubra as histórias e entenda como a comunidade poderá indicar e votar',cta:'E como funciona?'},
+{label:'A SUA VISITA',heading:'Entre, explore,<br><em>fique à vontade</em>',lead:'Nesta prévia, você pode testar uma indicação, simular uma votação e visitar o Hall da Fama',support:'Tudo o que for preenchido fica salvo apenas neste navegador. Não há inscrições abertas nem votos oficiais',cta:'Entrar na experiência'}
+];
+function renderOnboard(){
+ var stage=onboardStages[onboardStep];
+ document.getElementById('onboardingStepLabel').textContent=('0'+(onboardStep+1)).slice(-2)+' / 03    '+stage.label;
+ document.getElementById('onboardingProgress').style.width=((onboardStep+1)/3*100)+'%';
+ document.getElementById('onboardingNarrative').innerHTML='<h2 id="introTitle" tabindex="-1">'+stage.heading+'</h2><p class="onboarding-lead">'+stage.lead+'</p><p class="onboarding-support">'+stage.support+'</p>';
+ document.getElementById('onboardingNext').innerHTML=stage.cta+' <span aria-hidden="true">→</span>';
+ document.getElementById('onboardingBack').hidden=onboardStep===0;
+ var ticket=document.querySelector('.invite-ticket');
+ if(ticket)ticket.style.transform='rotate('+(3-onboardStep*2)+'deg)';
+}
+function endOnboard(){
+ try{localStorage.setItem(onboardKey,'yes')}catch(e){}
+ var ov=document.getElementById('intro');ov.classList.add('hidden');ov.setAttribute('aria-hidden','true');document.body.classList.remove('no-scroll');
+ document.getElementById('soundToggle').focus();
+}
+function replayOnboard(){onboardStep=0;renderOnboard();var ov=document.getElementById('intro');ov.classList.remove('hidden');ov.removeAttribute('aria-hidden');document.body.classList.add('no-scroll');document.getElementById('onboardingNext').focus()}
+document.getElementById('onboardingNext').onclick=function(){if(onboardStep>=onboardStages.length-1){endOnboard();return}onboardStep++;renderOnboard();document.getElementById('introTitle').focus()};
+document.getElementById('onboardingBack').onclick=function(){if(onboardStep>0){onboardStep--;renderOnboard();document.getElementById('introTitle').focus()}};
+document.getElementById('skipOnboarding').onclick=endOnboard;
+document.getElementById('replayOnboarding').onclick=replayOnboard;
+document.addEventListener('keydown',function(e){var ov=document.getElementById('intro');if(ov.classList.contains('hidden'))return;if(e.key==='Escape'){e.preventDefault();endOnboard()}if(e.key==='Tab'){var items=Array.prototype.slice.call(ov.querySelectorAll('button:not([hidden]):not([disabled])'));if(!items.length)return;var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+renderOnboard();
+try{if(localStorage.getItem(onboardKey)==='yes'){document.getElementById('intro').classList.add('hidden');document.getElementById('intro').setAttribute('aria-hidden','true');document.body.classList.remove('no-scroll')}}catch(e){}
 setupCategories();drawStars();drawVotes();renderRecords();
 })();
 </script>
