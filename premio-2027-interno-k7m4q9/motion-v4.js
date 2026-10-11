@@ -98,9 +98,7 @@ function setupGsap(){
   });
   if(isDesktop){
    var process=doc.querySelector(".process-section");
-   if(process){
-    g.to(".process-section:after",{opacity:1});
-   }
+   if(process){ /* Painel metodológico permanece legível durante a animação. */ }
    g.to(".walk-ribbon",{x:-80,scrollTrigger:{trigger:".walk-section",start:"top bottom",end:"bottom top",scrub:2}});
    g.to(".process-section .process-heading",{y:-33,scrollTrigger:{trigger:".process-section",start:"top bottom",end:"bottom top",scrub:2}});
   }
