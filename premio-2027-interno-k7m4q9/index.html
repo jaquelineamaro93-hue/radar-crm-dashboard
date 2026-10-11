@@ -74,6 +74,10 @@
 @media(max-width:650px){.onboarding-controls{flex-wrap:wrap;gap:13px}.onboarding-preview-sound{width:100%}.onboarding-step-label{font-size:11px}}
 </style>
 <link rel="stylesheet" href="./editorial-v3.css?v=3">
+<link rel="stylesheet" href="./motion-v4.css?v=4">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+<script src="./motion-v4.js?v=4" defer></script>
 </head>
 <body class="no-scroll">
 <audio id="awardsTheme" preload="none" loop><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
@@ -111,9 +115,10 @@
   <div class="onboarding-bottom"><span>CONEXÃO CRM &nbsp; / &nbsp; DESDE A COMUNIDADE</span><span>01 &nbsp; / &nbsp; 2027</span></div>
  </div>
 </div>
+<div class="motion-progress" aria-hidden="true"><span id="motionProgressFill"></span></div>
 <header class="nav"><div class="frame nav-in">
  <a class="brand" href="#inicio" aria-label="Conexão CRM Prêmio 2027"><span class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/><path d="m3 7 9 5 9-5M12 12v10"/></svg></span>CONEXÃO <b>CRM.</b></a>
- <nav class="nav-links" id="navLinks" aria-label="Navegação principal"><a href="#inicio">A EXPERIÊNCIA</a><a href="#calcada">CALÇADA DA FAMA</a><a href="#indicacoes">INDICAÇÕES</a><a href="#votacao">VOTAÇÃO</a><a href="#hall">HALL DA FAMA</a></nav>
+ <nav class="nav-links" id="navLinks" aria-label="Navegação principal"><a href="#inicio">A ESTREIA</a><a href="#calcada">CATEGORIAS</a><a href="#jornada">JORNADA</a><a href="#metodologia">METODOLOGIA</a><a href="#votacao">VOTAÇÃO</a><a href="#hall">HALL DA FAMA</a></nav>
  <span class="pill">✦ ACESSO INTERNO</span>
  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
 </div></header>
@@ -122,20 +127,25 @@
 <section class="hero" id="inicio">
  <div class="frame hero-inner">
   <div class="hero-copy">
-   <span class="eyebrow">PRÊMIO CONEXÃO CRM &nbsp; / &nbsp; EDIÇÃO 2027</span>
-   <h1><span class="hero-sans">Não é sobre</span> o troféu.<br><em>É sobre</em><br>você.</h1>
-   <p class="hero-sub">Tem gente que faz o nosso mercado acontecer todos os dias. Em 2027, vamos reconhecer essas histórias do jeito que elas merecem</p>
+   <span class="eyebrow">PRÊMIO CONEXÃO CRM &nbsp; / &nbsp; ESTREIA 2027</span>
+   <h1><span class="hero-sans">UM NOVO CAPÍTULO</span><em>Começa</em><br><span id="heroHighlight">com você.</span></h1>
+   <p class="hero-sub">CRM, CX e CS têm histórias que merecem ser vistas. Em 2027, nasce um novo prêmio para reconhecer profissionais, cases e tecnologias que fazem a diferença</p>
    <div class="hero-actions"><a href="#calcada" class="btn btn-primary">Conhecer a Calçada da Fama <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="#indicacoes">Testar uma indicação <span aria-hidden="true">→</span></a></div>
    <div class="hero-foot"><div><span>01</span>PRIMEIRA EDIÇÃO</div><div><span>08</span>CATEGORIAS EM ESTUDO</div><div><span>2027</span>O ANO DO RECONHECIMENTO</div></div>
   </div>
   <div class="award-art" aria-hidden="true">
    <span class="hero-handstamp">✳</span>
+   <span class="hero-caption-small">PRÊMIO CONEXÃO CRM / 2027</span>
+   <div class="hero-inkring"></div><div class="hero-film-strip"></div>
+   <div class="hero-collage-cut hero-cut-a"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=720&q=80" width="400" height="400" alt="" loading="lazy" decoding="async"></div>
+   <div class="hero-collage-cut hero-cut-b"><img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=720&q=80" width="400" height="400" alt="" loading="lazy" decoding="async"></div>
+   <span class="hero-film-caption">Ao vivo, em 2027</span>
    <div class="hero-photo">
     <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=82" alt="" width="850" height="1100" decoding="async" fetchpriority="high">
     <span class="hero-photo-caption">Quem faz<br>acontecer.</span>
    </div>
-   <span class="hero-photo-label">UMA EDIÇÃO PARA LEMBRAR</span>
-   <span class="hero-bottom-cue">UMA HOMENAGEM A QUEM FAZ O MERCADO</span>
+   <span class="hero-photo-label">A ESTREIA COMEÇA AQUI</span>
+   <span class="hero-bottom-cue">CRM · CX · CS · PRIMEIRA EDIÇÃO</span>
    <span class="stage-label">IMAGEM CONCEITUAL · PRÉVIA</span>
   </div>
  </div>
@@ -146,15 +156,29 @@
  <p class="intro-copy">Sabe aquela pessoa que compartilhou conhecimento, abriu portas, resolveu um problema difícil ou teve coragem de fazer diferente? É dela que estamos falando</p>
 </div></section>
 <section class="section walk-section" id="calcada"><div class="frame">
- <div class="section-top"><div><div class="chapter-heading"><span class="num">01</span><span class="eyebrow">RECONHECIMENTO QUE FICA</span></div><h2 class="section-heading">Uma calçada feita<br><span class="gold">de histórias.</span></h2><p class="section-desc">Cada estrela guarda um tipo de conquista. Caminhe por elas, escolha uma categoria e descubra quem poderá ser reconhecido</p></div><span class="section-index">EXPLORE · 01/05</span></div>
+ <div class="section-top"><div><div class="chapter-heading"><span class="num">01</span><span class="eyebrow">RECONHECIMENTO QUE FICA</span></div><h2 class="section-heading">Uma calçada feita<br><span class="gold">de histórias.</span></h2><p class="section-desc">Cada estrela guarda um tipo de conquista. Caminhe por elas, escolha uma categoria e descubra quem poderá ser reconhecido</p></div><span class="section-index">EXPLORE · ESTREIA</span></div>
  <div class="category-strip" id="categoryFilters" aria-label="Filtrar categorias"></div>
  <div class="star-walk" id="stars"></div>
  <p class="helper">Categorias propostas para experimentação. Critérios, elegibilidade e formato final dependerão do regulamento.</p>
 </div></section>
+<section class="category-theater" id="tech-awards" aria-labelledby="techTitle">
+ <div class="frame">
+  <div class="chapter-heading"><span class="num" style="color:#f2b67b;border-color:#b76f4b">✳</span><span class="eyebrow">TECH AWARDS 2027</span></div>
+  <h2 id="techTitle" data-reveal>Toda transformação tem <em>pessoas</em> e ferramentas por trás</h2>
+  <p class="section-desc" data-reveal>O reconhecimento também chega à tecnologia que ajuda profissionais a entender clientes, criar experiências e fazer boas ideias acontecerem</p>
+ </div>
+ <div class="tech-marquee" aria-hidden="true"><div class="tech-marquee-track">
+ <span>TECNOLOGIA <em>COM PROPÓSITO</em> ✳ CRM ✳ CX ✳ IA ✳ </span><span>TECNOLOGIA <em>COM PROPÓSITO</em> ✳ CRM ✳ CX ✳ IA ✳ </span></div></div>
+ <div class="frame"><div class="tech-choices" aria-label="Conheça as categorias de tecnologia">
+  <button type="button" class="tech-link" data-tech-category="techcrm">Ferramentas de CRM ↗</button>
+  <button type="button" class="tech-link" data-tech-category="techcx">Ferramentas de CX ↗</button>
+  <button type="button" class="tech-link" data-tech-category="techai">IA e automação ↗</button></div>
+  <p class="tech-caption">Escolha uma área para conhecer sua estrela na Calçada da Fama</p></div>
+</section>
 <section class="section story" id="jornada"><div class="frame">
  <div class="chapter-heading"><span class="num">02</span><span class="eyebrow">COMO ACONTECE</span></div>
  <h2 class="section-heading">Do primeiro nome<br>à noite que ninguém esquece</h2>
- <p class="section-desc">A participação acontece em etapas, com regras claras e espaço para a comunidade. As datas e os critérios serão publicados antes da abertura oficial</p>
+ <p class="section-desc">Cinco momentos para construir a primeira edição com transparência. O calendário oficial será anunciado depois que as regras estiverem definidas</p>
  <div class="journey-editorial" aria-label="Etapas propostas da premiação">
   <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">01</span><h3>O convite</h3><p>Apresentamos a premiação, as categorias e as regras para participar</p></div></div>
   <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">02</span><h3>Quem merece?</h3><p>Você indica profissionais, projetos e tecnologias que fizeram a diferença</p></div></div>
@@ -163,6 +187,32 @@
   <div class="journey-row"><div class="journey-inner"><span class="journey-count" aria-hidden="true">05</span><h3>A grande noite</h3><p>Uma cerimônia para aplaudir trajetórias e revelar quem entra no Hall da Fama</p></div></div>
  </div>
  <p class="journey-stamp">Toda história merece ser contada</p>
+</div></section>
+<section class="process-section" id="metodologia" aria-labelledby="processTitle">
+<div class="frame">
+ <div class="process-heading">
+  <div class="chapter-heading"><span class="num">✳</span><span class="eyebrow">COMO O RECONHECIMENTO ACONTECE</span></div>
+  <h2 id="processTitle" data-reveal>Um prêmio feito com <em>responsabilidade</em></h2>
+  <p data-reveal>A festa importa. A confiança também. O regulamento está em construção. Aqui mostramos a metodologia proposta, sem divulgar pesos, datas ou nomes de jurados antes da aprovação</p>
+ </div>
+ <div class="process-layout" data-reveal>
+  <div class="process-selector" role="tablist" aria-label="Etapas da metodologia">
+   <button type="button" class="process-tab" role="tab" id="processTab0" aria-controls="processPanel0" aria-selected="true">Indicações <span aria-hidden="true">01</span></button>
+   <button type="button" class="process-tab" role="tab" id="processTab1" aria-controls="processPanel1" aria-selected="false" tabindex="-1">Curadoria <span aria-hidden="true">02</span></button>
+   <button type="button" class="process-tab" role="tab" id="processTab2" aria-controls="processPanel2" aria-selected="false" tabindex="-1">Votação <span aria-hidden="true">03</span></button>
+   <button type="button" class="process-tab" role="tab" id="processTab3" aria-controls="processPanel3" aria-selected="false" tabindex="-1">Resultado <span aria-hidden="true">04</span></button>
+  </div>
+  <div class="process-display">
+   <section class="process-panel" role="tabpanel" id="processPanel0" aria-labelledby="processTab0"><span class="process-number">01</span><h3>Quem merece ser lembrado?</h3><p>A comunidade poderá apresentar histórias e realizações de profissionais, cases e ferramentas dentro das categorias oficiais</p><ul><li>Formulário por categoria</li><li>Justificativa e evidências</li><li>Regras públicas de participação</li></ul></section>
+   <section class="process-panel" role="tabpanel" id="processPanel1" aria-labelledby="processTab1" hidden><span class="process-number">02</span><h3>Critério antes de aplauso</h3><p>As indicações deverão passar por checagem de elegibilidade, documentação e possíveis conflitos de interesse antes da formação dos finalistas</p><ul><li>Critérios previamente divulgados</li><li>Tratamento de duplicidades</li><li>Governança e rastreabilidade</li></ul></section>
+   <section class="process-panel" role="tabpanel" id="processPanel2" aria-labelledby="processTab2" hidden><span class="process-number">03</span><h3>A comunidade faz parte</h3><p>Os finalistas poderão receber votos conforme o regulamento. A apuração e a eventual participação da banca serão definidas antes da abertura</p><ul><li>Proteção contra votos indevidos</li><li>Regras transparentes</li><li>Privacidade dos participantes</li></ul></section>
+   <section class="process-panel" role="tabpanel" id="processPanel3" aria-labelledby="processTab3" hidden><span class="process-number">04</span><h3>O primeiro Hall da Fama</h3><p>A cerimônia inaugural revelará os homenageados de 2027 e abrirá o registro das histórias reconhecidas nessa estreia</p><ul><li>Divulgação oficial dos resultados</li><li>Perfis dos homenageados</li><li>Registro histórico da primeira edição</li></ul></section>
+  </div>
+ </div>
+ <div class="governance-band" data-reveal>
+  <div><small>TRANSPARÊNCIA</small><h3>Confiança também merece destaque</h3><p>Planejamos critérios consistentes, checagem de elegibilidade e documentação das decisões. A banca e as regras de governança serão apresentadas quando aprovadas</p></div>
+  <div class="governance-mini"><div><strong>Regras claras</strong> Regulamento antes da abertura</div><div><strong>Banca a definir</strong> Composição sujeita à validação</div><div><strong>Privacidade</strong> Proteções adequadas para os participantes</div></div>
+ </div>
 </div></section>
 <section class="section" id="indicacoes"><div class="frame">
  <div class="chapter-heading"><span class="num">03</span><span class="eyebrow">VOCÊ CONHECE ALGUÉM QUE MERECE?</span></div><h2 class="section-heading">Você conhece alguém<br><span class="gold">que merece estar aqui?</span></h2>
@@ -212,7 +262,8 @@
  <button class="btn btn-primary" id="sharePreview">Copiar link da prévia ↗</button>
 </div></section>
 </main>
-<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V3 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
+<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V4 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
+<button type="button" class="motion-switch" id="motionSwitch" aria-label="Pausar movimento" aria-pressed="true">Pausar movimento</button>
 <button class="sound" id="soundToggle" aria-label="Tocar trilha de cerimônia" aria-pressed="false">♫ Ouvir trilha</button>
 <div class="modal-backdrop" id="modalBackdrop" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="close" id="closeModal" aria-label="Fechar">×</button><div id="modalContents"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
