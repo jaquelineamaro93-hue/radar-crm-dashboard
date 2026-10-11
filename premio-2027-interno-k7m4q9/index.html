@@ -84,7 +84,7 @@
 <script src="./journey-v6.js?v=6" defer></script>
 </head>
 <body class="no-scroll">
-<audio id="awardsTheme" preload="none" loop><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
+<audio id="awardsTheme" autoplay preload="auto" loop aria-hidden="true"><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
 <a class="skip-link" href="#main">Ir para o conteúdo</a>
 <div class="overlay onboarding" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
  <div class="onboarding-shell">
@@ -105,7 +105,7 @@
      <button type="button" class="onboarding-continue" id="onboardingNext">Quero conhecer <span aria-hidden="true">→</span></button>
      <button type="button" class="onboarding-back" id="onboardingBack" hidden>Voltar</button><button type="button" class="onboarding-preview-sound" id="onboardingListen" hidden aria-pressed="false">♫ Ouvir trilha</button>
     </div>
-    <p class="onboarding-hint">A trilha começa após sua primeira interação e pode ser pausada ou silenciada a qualquer momento. Nenhum voto ou indicação oficial é registrado aqui</p>
+    <p class="onboarding-hint">A trilha acompanha a experiência e você pode pausar ou silenciar quando quiser. Nenhum voto ou indicação oficial é registrado aqui</p>
    </div>
    <div class="onboarding-visual" aria-hidden="true">
     <div class="invite-ticket">
@@ -347,9 +347,15 @@
  <button class="btn btn-primary" id="sharePreview">Copiar link da prévia ↗</button>
 </div></section>
 </main>
-<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V6 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
+<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V7 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
 <button type="button" class="motion-switch" id="motionSwitch" aria-label="Pausar movimento" aria-pressed="true">Pausar movimento</button>
-<div class="sound-bar" role="group" aria-label="Controles da trilha sonora"><button type="button" class="sound" id="soundToggle" aria-label="Tocar trilha de cerimônia" aria-pressed="false">♫ Tocar</button><span class="sound-separator" aria-hidden="true"></span><button type="button" class="sound-mute" id="soundMute" aria-label="Silenciar trilha" aria-pressed="false">🔊 Som</button></div>
+<div class="sound-bar" id="globalSoundBar" role="group" aria-label="Trilha sonora de toda a experiência">
+ <span class="sound-bar-title">TRILHA DO PRÊMIO</span>
+ <button type="button" class="sound" id="soundToggle" aria-label="Ativar trilha sonora" aria-pressed="false">▶ Ativar trilha</button>
+ <span class="sound-separator" aria-hidden="true"></span>
+ <button type="button" class="sound-mute" id="soundMute" aria-label="Silenciar trilha" aria-pressed="false">🔊 Som</button>
+</div>
+<span class="sr-only" id="globalSoundStatus" role="status" aria-live="polite">Trilha pronta</span>
 <div class="modal-backdrop" id="modalBackdrop" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="close" id="closeModal" aria-label="Fechar">×</button><div id="modalContents"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -415,53 +421,117 @@ document.getElementById('menuToggle').onclick=function(){var n=document.getEleme
 
 /* Soundtrack replaces generated oscillator sounds. CC BY 4.0 attribution in footer. */
 var soundtrack=document.getElementById('awardsTheme');
-var soundEnabled=false;
-var soundMuted=false;
-var audioWasManuallyControlled=false;
-var audioAutoAttempted=false;
+var musicPausedByChoice=false;
+var audioActivationNeeded=false;
+var audioPlayRequestId=0;
+var initialAudioAttempted=false;
+var soundBar=document.getElementById('globalSoundBar');
+var soundStatus=document.getElementById('globalSoundStatus');
 soundtrack.volume=.42;
-function updateSoundControl(on){
- soundEnabled=on;
+soundtrack.muted=false;
+soundtrack.loop=true;
+function musicIsPlaying(){return !soundtrack.paused&&!soundtrack.ended}
+function updateSoundControl(){
+ var playing=musicIsPlaying();
  var toggle=document.getElementById('soundToggle');
- toggle.textContent=on?'❚❚ Pausar':'▶ Tocar';
- toggle.setAttribute('aria-pressed',String(on));
- toggle.setAttribute('aria-label',on?'Pausar trilha de cerimônia':'Tocar trilha de cerimônia');
+ toggle.textContent=playing?'❚❚ Pausar':audioActivationNeeded?'▶ Ativar trilha':'▶ Tocar';
+ toggle.setAttribute('aria-pressed',String(playing));
+ toggle.setAttribute('aria-label',playing?'Pausar trilha sonora':'Tocar trilha sonora');
  var mute=document.getElementById('soundMute');
- mute.textContent=soundMuted?'🔇 Silenciado':'🔊 Som';
- mute.setAttribute('aria-pressed',String(soundMuted));
- mute.setAttribute('aria-label',soundMuted?'Ativar som da trilha':'Silenciar trilha');
+ mute.textContent=soundtrack.muted?'🔇 Silenciado':'🔊 Som';
+ mute.setAttribute('aria-pressed',String(soundtrack.muted));
+ mute.setAttribute('aria-label',soundtrack.muted?'Ativar som da trilha':'Silenciar trilha');
+ if(soundBar){
+  soundBar.classList.toggle('audio-needs-gesture',audioActivationNeeded&&!playing&&!musicPausedByChoice);
+  soundBar.classList.toggle('audio-is-playing',playing);
+ }
  var preview=document.getElementById('onboardingListen');
- if(preview){preview.textContent=on?'❚❚ Pausar trilha':'♫ Ouvir trilha';preview.setAttribute('aria-pressed',String(on))}
+ if(preview){
+  preview.textContent=playing?'❚❚ Pausar trilha':'♫ Ouvir trilha';
+  preview.setAttribute('aria-pressed',String(playing));
+ }
+ if(soundStatus) soundStatus.textContent=playing?
+  (soundtrack.muted?'A trilha continua reproduzindo sem som':'Trilha sonora reproduzindo durante a experiência'):
+  musicPausedByChoice?'Trilha pausada':'Trilha pronta para tocar';
 }
-function cue(){if(soundEnabled&&soundtrack.paused){soundtrack.play().catch(function(){updateSoundControl(false)})}}
+function startMusic(origin){
+ if(origin!=='manual'&&musicPausedByChoice)return;
+ if(origin==='manual')musicPausedByChoice=false;
+ if(musicIsPlaying()){audioActivationNeeded=false;updateSoundControl();return}
+ var req=++audioPlayRequestId,attempt;
+ try{attempt=soundtrack.play()}
+ catch(error){
+  audioActivationNeeded=error&&error.name==='NotAllowedError';
+  updateSoundControl();
+  return
+ }
+ if(attempt&&typeof attempt.then==='function'){
+  attempt.then(function(){
+   if(musicPausedByChoice){soundtrack.pause()}
+   audioActivationNeeded=false;updateSoundControl()
+  }).catch(function(error){
+   if(req!==audioPlayRequestId)return;
+   if(error&&error.name==='NotAllowedError')audioActivationNeeded=true;
+   else if(error&&error.name!=='AbortError'){soundBar&&soundBar.classList.add('audio-load-unavailable')}
+   updateSoundControl()
+  })
+ }else updateSoundControl()
+}
+function cue(){
+ if(musicPausedByChoice)return;
+ if(!musicIsPlaying())startMusic('ambient')
+}
 function stopMusic(){
- audioWasManuallyControlled=true;
+ musicPausedByChoice=true;
+ audioActivationNeeded=false;
+ audioPlayRequestId++;
  soundtrack.pause();
- updateSoundControl(false)
-}
-function startMusic(automatic){
- if(!automatic)audioWasManuallyControlled=true;
- var p=soundtrack.play();
- if(p&&typeof p.then==='function')p.then(function(){updateSoundControl(true)}).catch(function(){updateSoundControl(false);if(!automatic)notify('O navegador não liberou o áudio. Tente novamente no botão de música.')});
- else updateSoundControl(true)
+ updateSoundControl()
 }
 function setMuted(value){
- audioWasManuallyControlled=true;
- soundMuted=Boolean(value);soundtrack.muted=soundMuted;
- updateSoundControl(!soundtrack.paused);
+ soundtrack.muted=Boolean(value);
+ if(!musicPausedByChoice&&!musicIsPlaying())startMusic('manual');
+ updateSoundControl()
 }
-document.getElementById('soundToggle').onclick=function(){if(soundtrack.paused)startMusic(false);else stopMusic()};
-document.getElementById('soundMute').onclick=function(){setMuted(!soundMuted)};
-soundtrack.addEventListener('error',function(){stopMusic();notify('A trilha não carregou. Você pode continuar sem som.')});
-/* Browsers require a user gesture for audio playback. Start once, after an intentional action. */
-document.addEventListener('click',function(event){
- if(audioAutoAttempted||audioWasManuallyControlled||!event.isTrusted)return;
- var target=event.target;
- if(!target||typeof target.closest!=='function')return;
- var trigger=target.closest('button,a');
- if(!trigger||['soundToggle','soundMute','onboardingListen','motionSwitch','replayOnboarding'].indexOf(trigger.id)>=0)return;
- audioAutoAttempted=true;startMusic(true);
-},true);
+document.getElementById('soundToggle').onclick=function(){
+ if(musicIsPlaying())stopMusic();
+ else startMusic('manual')
+};
+document.getElementById('soundMute').onclick=function(){setMuted(!soundtrack.muted)};
+document.getElementById('onboardingListen').onclick=function(){
+ if(musicIsPlaying())stopMusic();
+ else startMusic('manual')
+};
+soundtrack.addEventListener('play',function(){audioActivationNeeded=false;updateSoundControl()});
+soundtrack.addEventListener('playing',function(){audioActivationNeeded=false;updateSoundControl()});
+soundtrack.addEventListener('pause',updateSoundControl);
+soundtrack.addEventListener('volumechange',updateSoundControl);
+soundtrack.addEventListener('error',function(){
+ soundBar&&soundBar.classList.add('audio-load-unavailable');
+ updateSoundControl()
+});
+/* Audible autoplay is attempted immediately. If blocked, the first permitted action
+   resumes playback; no fake error toast or forced muted workaround. */
+function startOnFirstAllowedGesture(event){
+ if(musicPausedByChoice||musicIsPlaying())return;
+ if(event&&event.isTrusted===false)return;
+ var target=event&&event.target,control=target&&typeof target.closest==='function'?target.closest('#soundToggle,#soundMute,#onboardingListen'):null;
+ if(control)return;
+ startMusic('gesture')
+}
+document.addEventListener('click',startOnFirstAllowedGesture,false);
+document.addEventListener('keydown',function(event){
+ if(event.key==='Enter'||event.key===' '){startOnFirstAllowedGesture(event)}
+},false);
+document.addEventListener('visibilitychange',function(){
+ if(!document.hidden&&initialAudioAttempted&&!musicPausedByChoice&&!musicIsPlaying())startMusic('ambient')
+});
+window.addEventListener('pageshow',function(event){
+ if(event.persisted&&!musicPausedByChoice&&!musicIsPlaying())startMusic('ambient')
+});
+updateSoundControl();
+initialAudioAttempted=true;
+startMusic('autoplay');
 /* Only onboarding state is stored separately. Voting and nomination history is untouched. */
 var onboardKey='conexaocrm_premio2027_onboarding_v2_seen';
 var onboardStep=0;
@@ -490,7 +560,7 @@ function replayOnboard(){onboardStep=0;renderOnboard();var ov=document.getElemen
 document.getElementById('onboardingNext').onclick=function(){if(onboardStep>=onboardStages.length-1){endOnboard();return}onboardStep++;renderOnboard();document.getElementById('introTitle').focus()};
 document.getElementById('onboardingBack').onclick=function(){if(onboardStep>0){onboardStep--;renderOnboard();document.getElementById('introTitle').focus()}};
 document.getElementById('skipOnboarding').onclick=endOnboard;
-document.getElementById('onboardingListen').onclick=function(){if(soundtrack.paused)startMusic(false);else stopMusic()};
+/* Global player binds onboarding, site footer and every section to one audio element. */
 document.getElementById('replayOnboarding').onclick=replayOnboard;
 document.addEventListener('keydown',function(e){var ov=document.getElementById('intro');if(ov.classList.contains('hidden'))return;if(e.key==='Escape'){e.preventDefault();endOnboard()}if(e.key==='Tab'){var items=Array.prototype.slice.call(ov.querySelectorAll('button:not([hidden]):not([disabled])'));if(!items.length)return;var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 renderOnboard();
