@@ -138,6 +138,16 @@
 .v5-interlude-stamp{font-size:30px;top:11%}
 .v5-interlude-caption{font-size:8px}
 }
+@media(max-width:810px){
+.v5-reel-footer{flex-wrap:wrap;row-gap:10px}
+.v5-photo-credit{width:100%;text-align:left}
+.v5-art-scene .v5-art-photo{box-shadow:7px 13px 25px #3920163c}
+}
+@media(max-width:560px){
+.v5-reel .v5-reel-head{gap:15px;flex-wrap:wrap}
+.v5-reel .v5-reel-head span{font-size:8px}
+.v5-reel-progress{flex:1;max-width:none;min-width:90px}
+}
 @media(prefers-reduced-motion:reduce){
 .v5-reel .v5-mesh span,.v5-interlude .v5-mesh span{animation:none!important}
 .v5-interlude .v5-ripple::before,.v5-interlude .v5-ripple::after{animation:none!important}
