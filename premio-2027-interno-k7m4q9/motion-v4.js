@@ -51,7 +51,7 @@ function setupGsap(){
   var all=doc.querySelectorAll("[data-reveal]");
   all.forEach(function(el){
    g.fromTo(el,{autoAlpha:0,y:el.classList.contains("section-heading")?65:42},{
-    autoAlpha:1,y:0,duration:1.2,ease:"power3.out",clearProps:"transform,opacity,visibility",
+    autoAlpha:1,y:0,duration:1.2,ease:"power3.out",
     scrollTrigger:{trigger:el,start:"top 92%",once:true}
    })
   });
