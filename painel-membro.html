@@ -207,6 +207,7 @@
       }
 
       estadoApp.vagasMatches = estadoApp.vagas
+        .filter(vaga => vaga.availability_status !== 'closed')
         .map(vaga => ({
           ...vaga,
           scoreMatching: calcularScoreMatching(estadoApp.perfil, vaga)
