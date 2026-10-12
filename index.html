@@ -3773,6 +3773,7 @@ async function carregarVagasHub() {
       .select('*', { count: 'exact' })
       .neq('availability_status', 'closed')
       .order('last_seen_at', { ascending: false, nullsFirst: false })
+      .order('found_at', { ascending: false })
       .limit(1000);
 
     if (error) {
