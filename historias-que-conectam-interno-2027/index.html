@@ -192,6 +192,15 @@ header{height:77px;background:#f7eddee8;position:sticky;z-index:40;top:0;border-
 @media(prefers-reduced-motion:reduce){.dreams-finale-sky span{animation:none!important}}
 
 .awards-cta-mobile{display:none}@media(max-width:730px){.awards-cta-mobile{display:inline}.awards-cta-desktop{display:none}}@media(max-width:525px){header .nav{gap:9px}.navbar-awards{padding:9px 7px;font-size:8px}.mobilemenu{padding:8px}}
+
+.dream-song-options{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:13px 0}
+.dream-song-option{border:1px solid #c1a182;background:#f6e9da;color:#3c2a20;text-align:left;display:flex;flex-direction:column;gap:6px;padding:12px 10px;min-height:82px}
+.dream-song-option[aria-pressed="true"]{border-color:#a44316;background:#f9c998;box-shadow:inset 0 0 0 1px #b45720}
+.dream-song-option strong{font-size:11px;line-height:1.3}
+.dream-song-option small{font-size:10px;color:#654532;line-height:1.3}
+.dream-song-note{font-size:10px!important;font-weight:500!important;color:#6c5647!important;line-height:1.5!important;margin:12px 0 0!important}
+.dream-song-popover{width:min(395px,calc(100vw - 32px))}
+@media(max-width:370px){.dream-song-options{grid-template-columns:1fr}.dream-song-option{min-height:56px}}
 </style></head>
 <body>
 <a href="#conteudo" class="skip" style="position:absolute;top:-200px;left:12px;padding:12px;background:#f97316;z-index:99;color:#111" onfocus="this.style.top='12px'" onblur="this.style.top='-200px'">Pular para conteúdo</a>
@@ -204,7 +213,7 @@ header{height:77px;background:#f7eddee8;position:sticky;z-index:40;top:0;border-
 <div class="demo-banner">CONEXÃO CRM 2027 · NOSSO PRIMEIRO CAPÍTULO COMEÇA COM AS SUAS HISTÓRIAS <span class="demo-truth">· PRÉVIA INTERNA</span></div>
 <main id="conteudo">
 <section class="hero" aria-labelledby="heroTitle"><div class="mesh" aria-hidden="true"><span></span><span></span><span></span></div><div class="shell hero-grid">
-<div><span class="kicker label">UM LUGAR PARA SONHAR EM VOZ ALTA · CONEXÃO CRM</span><h1 id="heroTitle">O futuro<br><em>tem nome.</em></h1><p>Qual sonho ainda faz seu coração acelerar? Aqui, cada história tem lugar. E a próxima pode ser a sua</p><div class="hero-btns"><a class="btn" href="#mural">Conhecer os sonhos <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#participar">Contar o meu sonho →</a></div><div class="hero-music-line"><span class="now-playing-dot" aria-hidden="true"></span><span>MÚSICA QUE INSPIRA ESSA HISTÓRIA</span><button type="button" id="dreamSongOpen" aria-expanded="false" aria-controls="dreamSongPopover">♫ Amarelo, azul e branco ↗</button></div></div>
+<div><span class="kicker label">UM LUGAR PARA SONHAR EM VOZ ALTA · CONEXÃO CRM</span><h1 id="heroTitle">O futuro<br><em>tem nome.</em></h1><p>Qual sonho ainda faz seu coração acelerar? Aqui, cada história tem lugar. E a próxima pode ser a sua</p><div class="hero-btns"><a class="btn" href="#mural">Conhecer os sonhos <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#participar">Contar o meu sonho →</a></div><div class="hero-music-line"><span class="now-playing-dot" aria-hidden="true"></span><span>UMA TRILHA PARA SONHAR</span><button type="button" id="dreamSongOpen" aria-expanded="false" aria-controls="dreamSongPopover">♫ Escolher uma das duas músicas ↗</button></div></div>
 <div class="hero-col" aria-hidden="true"><div class="photo p1"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=740&q=80" alt="" width="560" height="760"></div><div class="photo p2"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=460&q=80" alt="" width="350" height="350"></div><div class="photo p3"><img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=460&q=80" alt="" width="360" height="320"></div><span class="paper-tape"></span><span class="hero-stamp">✳</span><span class="hero-footnote">O PRIMEIRO CAPÍTULO COMEÇA AGORA</span></div>
 </div></section>
 <div class="rail" aria-hidden="true"><div class="railtrack"><span>SONHAR TAMBÉM É FAZER HISTÓRIA</span><i>✳</i><span>CRM É GENTE</span><i>✳</i><span>CX É GENTE</span><i>✳</i><span>CS É GENTE</span><i>✳</i><span>SONHAR TAMBÉM É FAZER HISTÓRIA</span><i>✳</i><span>CRM É GENTE</span><i>✳</i><span>CX É GENTE</span><i>✳</i><span>CS É GENTE</span><i>✳</i></div></div>
@@ -244,13 +253,22 @@ header{height:77px;background:#f7eddee8;position:sticky;z-index:40;top:0;border-
 </main>
 <footer class="sitefoot"><div class="shell footin"><span><b>CONEXÃO CRM.</b> · O FUTURO TEM NOME · 2027</span><span>Histórias ilustrativas nesta prévia · <a href="https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa" target="_blank" rel="noopener noreferrer" style="text-decoration:underline">Música de inspiração: ANAVITÓRIA e Rita Lee</a></span></div></footer>
 <button class="motion-control" id="motionControl" type="button" aria-pressed="true">Pausar movimento</button>
-<div class="dream-song-popover" id="dreamSongPopover" role="region" aria-label="Ouça Amarelo, azul e branco" hidden>
- <div class="dream-song-popover-head"><span>♫ A trilha deste capítulo</span><button type="button" id="dreamSongClose" aria-label="Fechar player musical">×</button></div>
- <p>Amarelo, azul e branco · ANAVITÓRIA e Rita Lee</p>
- <div id="dreamSongEmbed"></div>
- <a href="https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa" target="_blank" rel="noopener noreferrer" class="dream-song-external">Ouvir no Spotify ↗</a>
+<div class="dream-song-popover" id="dreamSongPopover" role="region" aria-label="Escolha a música do seu sonho" hidden>
+ <div class="dream-song-popover-head"><span>♫ Uma trilha para sonhar</span><button type="button" id="dreamSongClose" aria-label="Fechar seleção musical">×</button></div>
+ <p>Escolha a música que mais combina com a sua história</p>
+ <div class="dream-song-options" role="group" aria-label="Opções de música">
+  <button type="button" id="dreamSongAna" class="dream-song-option" aria-pressed="true" data-song="ana">
+   <strong>Amarelo, azul e branco</strong><small>ANAVITÓRIA · com Rita Lee</small>
+  </button>
+  <button type="button" id="dreamSongWilian" class="dream-song-option" aria-pressed="false" data-song="wilian">
+   <strong>Lua de Cristal</strong><small>Wilian Metlei · versão de 2025</small>
+  </button>
+ </div>
+ <div id="dreamSongEmbed" aria-label="Player oficial da música selecionada"></div>
+ <a href="https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa" target="_blank" rel="noopener noreferrer" class="dream-song-external" id="dreamSongExternal">Ouvir na plataforma oficial ↗</a>
+ <p class="dream-song-note">O player oficial pode solicitar que você toque em reproduzir ou abra sua conta no serviço de música</p>
 </div>
-<button class="dream-song-toggle" id="dreamSongToggle" type="button" aria-expanded="false" aria-controls="dreamSongPopover">♫ Ouvir a música</button>
+<button class="dream-song-toggle" id="dreamSongToggle" type="button" aria-expanded="false" aria-controls="dreamSongPopover">♫ Música dos sonhos</button>
 <script>
 (function(){
 "use strict";
@@ -313,23 +331,70 @@ if("IntersectionObserver" in window){
  },{threshold:.08});
  document.querySelectorAll(".revealable").forEach(el=>observer.observe(el))
 }
-/* Official Spotify player. Commercial master is not copied or streamed from our server. */
-const openMusic=document.getElementById("dreamSongOpen"),floatingMusic=document.getElementById("dreamSongToggle"),popup=document.getElementById("dreamSongPopover"),closeMusic=document.getElementById("dreamSongClose"),embed=document.getElementById("dreamSongEmbed");
-function showMusic(){
- if(!embed.querySelector("iframe")){
-  const iframe=document.createElement("iframe");
-  iframe.src="https://open.spotify.com/embed/track/2LOIoeI16A8jjKubPKoCSa?utm_source=generator";
-  iframe.title="Player oficial: Amarelo, azul e branco, ANAVITÓRIA e Rita Lee";
-  iframe.loading="lazy";iframe.allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-  iframe.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
-  embed.append(iframe);
+/* The prologue has two authorized platform embeds.
+   No music files are extracted, proxied or hosted here.
+   The prize page and its independent Five Armies player remain untouched. */
+const openMusic=document.getElementById("dreamSongOpen");
+const floatingMusic=document.getElementById("dreamSongToggle");
+const popup=document.getElementById("dreamSongPopover");
+const closeMusic=document.getElementById("dreamSongClose");
+const embed=document.getElementById("dreamSongEmbed");
+const externalMusic=document.getElementById("dreamSongExternal");
+const songButtons=Array.from(popup.querySelectorAll(".dream-song-option"));
+const songChoices={
+ ana:{
+  title:"Amarelo, azul e branco",
+  artist:"ANAVITÓRIA com Rita Lee",
+  iframe:"https://open.spotify.com/embed/track/2LOIoeI16A8jjKubPKoCSa",
+  link:"https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa",
+  provider:"Spotify",
+  height:152
+ },
+ wilian:{
+  title:"Lua de Cristal",
+  artist:"Wilian Metlei",
+  iframe:"https://embed.music.apple.com/br/album/lua-de-cristal/1839994030?i=1839994031",
+  link:"https://music.apple.com/us/album/lua-de-cristal/1839994030?i=1839994031",
+  provider:"Apple Music",
+  height:175
  }
- popup.hidden=false;openMusic.setAttribute("aria-expanded","true");floatingMusic.setAttribute("aria-expanded","true");
- closeMusic.focus();
+};
+let activeSong="ana";
+function renderSong(){
+ const track=songChoices[activeSong];
+ songButtons.forEach(btn=>btn.setAttribute("aria-pressed",String(btn.dataset.song===activeSong)));
+ externalMusic.href=track.link;
+ externalMusic.textContent="Ouvir "+track.title+" no "+track.provider+" ↗";
+ embed.textContent="";
+ const iframe=document.createElement("iframe");
+ iframe.src=track.iframe;
+ iframe.title="Player oficial: "+track.title+" de "+track.artist;
+ iframe.loading="lazy";
+ iframe.height=String(track.height);
+ iframe.allow="autoplay; encrypted-media; clipboard-write; fullscreen; picture-in-picture";
+ iframe.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+ iframe.style.width="100%";
+ iframe.style.border="0";
+ embed.append(iframe);
+}
+function showMusic(){
+ if(!embed.querySelector("iframe"))renderSong();
+ popup.hidden=false;
+ openMusic.setAttribute("aria-expanded","true");
+ floatingMusic.setAttribute("aria-expanded","true");
+ closeMusic.focus()
 }
 function hideMusic(){
- popup.hidden=true;openMusic.setAttribute("aria-expanded","false");floatingMusic.setAttribute("aria-expanded","false");
+ popup.hidden=true;
+ openMusic.setAttribute("aria-expanded","false");
+ floatingMusic.setAttribute("aria-expanded","false")
 }
+songButtons.forEach(btn=>btn.addEventListener("click",()=>{
+ const id=btn.dataset.song;
+ if(!songChoices[id]||id===activeSong)return;
+ activeSong=id;
+ renderSong()
+}));
 openMusic.addEventListener("click",showMusic);
 floatingMusic.addEventListener("click",()=>popup.hidden?showMusic():hideMusic());
 closeMusic.addEventListener("click",()=>{hideMusic();floatingMusic.focus()});
