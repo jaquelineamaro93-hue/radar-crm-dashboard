@@ -77,6 +77,7 @@
 <link rel="stylesheet" href="./motion-v4.css?v=4">
 <link rel="stylesheet" href="./editorial-v5.css?v=5">
 <link rel="stylesheet" href="./journey-v6.css?v=7">
+<link rel="stylesheet" href="./calendar-v8.css?v=8">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="./motion-v4.js?v=4" defer></script>
@@ -135,7 +136,7 @@
    <h1><span class="hero-sans">UM NOVO CAPÍTULO</span><em>Começa</em><br><span id="heroHighlight">com você.</span></h1>
    <p class="hero-sub">CRM, CX e CS têm histórias que merecem ser vistas. Em 2027, nasce um novo prêmio para reconhecer profissionais, cases e tecnologias que fazem a diferença</p>
    <div class="hero-actions"><a href="#calcada" class="btn btn-primary">Conhecer a Calçada da Fama <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="#indicacoes">Testar uma indicação <span aria-hidden="true">→</span></a></div>
-   <div class="hero-foot"><div><span>01</span>PRIMEIRA EDIÇÃO</div><div><span>08</span>CATEGORIAS EM ESTUDO</div><div><span>2027</span>O ANO DO RECONHECIMENTO</div></div>
+   <div class="hero-foot"><div><span>01</span>PRIMEIRA EDIÇÃO</div><div><span>09</span>CATEGORIAS EM ESTUDO</div><div><span>2027</span>O ANO DO RECONHECIMENTO</div></div>
   </div>
   <div class="award-art" aria-hidden="true">
    <span class="hero-handstamp">✳</span>
@@ -158,13 +159,6 @@
 <section class="editorial-intro" aria-labelledby="introStatement"><div class="frame">
  <div class="intro-quote"><span class="quote-mark" aria-hidden="true">“</span><h2 id="introStatement">Por trás de cada resultado, <em>tem alguém que fez a diferença</em></h2></div>
  <p class="intro-copy">Sabe aquela pessoa que compartilhou conhecimento, abriu portas, resolveu um problema difícil ou teve coragem de fazer diferente? É dela que estamos falando</p>
-</div></section>
-<section class="stories-link" aria-label="Conheça as histórias por trás do prêmio" style="background:#f0d2ae;color:#27190f;padding:49px 0;border-block:1px solid #b8865a">
-<div class="frame" style="display:flex;align-items:center;justify-content:space-between;gap:25px;flex-wrap:wrap">
-<div style="max-width:700px"><span class="eyebrow" style="color:#9f4b20">UMA EXPERIÊNCIA QUE COMEÇA ANTES DA PREMIAÇÃO</span>
-<h2 style="font:400 clamp(43px,5.4vw,80px)/.96 'Instrument Serif',Georgia,serif;letter-spacing:-.05em;margin:14px 0">O futuro tem <em style="color:#bc501f">nome</em></h2>
-<p style="line-height:1.6;font-size:15px;max-width:620px;margin:0">Antes de celebrar os resultados, queremos conhecer os sonhos e as histórias de quem faz CRM, CX e CS acontecerem</p></div>
-<a class="btn btn-primary" href="https://conexaocrm.com/historias-que-conectam-interno-2027/?v=1" style="white-space:normal;flex-shrink:0">Conhecer o mural de histórias ↗</a>
 </div></section>
 <section class="v5-reel" id="universos" data-scene="0" aria-labelledby="v5ReelTitle">
  <div class="v5-reel-sticky">
@@ -349,12 +343,22 @@
  <div class="hall-stage"><span class="eyebrow">PRÊMIO CONEXÃO CRM · PRIMEIRA EDIÇÃO</span><div class="large-star" aria-hidden="true">✦</div><h3>Um palco à espera de novas histórias</h3><p>O futuro Hall da Fama estará aqui. Não existem vencedores confirmados nesta prévia.</p><button class="btn btn-ghost" id="hallReveal">Simular revelação na gala ✧</button></div>
  <div class="final-grid" id="hallTiles"></div>
 </div></section>
+<section class="event-season" id="agenda" aria-labelledby="agendaTitle">
+<div class="frame"><div class="chapter-heading"><span class="num">✳</span><span class="eyebrow">PRIMEIRA EDIÇÃO · ENCONTROS 2027</span></div>
+<h2 class="section-heading" id="agendaTitle">Três datas.<br><span class="gold">Uma estreia.</span></h2>
+<p class="section-desc">Dos primeiros encontros à primeira noite de premiação, cada momento foi pensado para aproximar a comunidade e celebrar quem constrói o mercado</p>
+<div class="event-season-steps" aria-label="Datas da programação de 2027">
+ <article class="event-season-step"><span class="event-season-day">27</span><span class="event-season-month">FEVEREIRO · 2027</span><h3>Jantar dos Indicados</h3><p>O encontro para celebrar as pessoas indicadas, suas histórias e os próximos capítulos</p></article>
+ <article class="event-season-step"><span class="event-season-day">06</span><span class="event-season-month">JULHO · 2027</span><h3>O grande evento</h3><p>Conexões, conteúdo e encontros do ecossistema de CRM, CX e CS</p></article>
+ <article class="event-season-step"><span class="event-season-day">07</span><span class="event-season-month">JULHO · 2027</span><h3>Jantar de Premiação</h3><p>A celebração oficial e a revelação das primeiras estrelas do Hall da Fama</p></article>
+</div><p class="event-season-note">Datas informadas para o planejamento da primeira edição. Programação detalhada e locais serão anunciados pela organização</p>
+</div></section>
 <section class="section sponsor"><div class="frame sponsor-in">
  <div><span class="eyebrow">MARCAS QUE TORNAM HISTÓRIAS POSSÍVEIS</span><h2 class="section-heading" style="margin-bottom:7px">Tem lugar para a sua marca<br>nessa história</h2><p class="section-desc">Espaço futuro para patrocinadores, apoiadores e parceiros institucionais. Nenhum patrocínio está sendo anunciado nesta prévia.</p></div>
  <button class="btn btn-primary" id="sharePreview">Copiar link da prévia ↗</button>
 </div></section>
 </main>
-<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V7 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
+<footer class="footer"><div class="frame footer-in"><div><div class="brand"><span class="brand-icon">✦</span>CONEXÃO <b>CRM.</b></div><p>Prêmio Conexão CRM 2027 · Conceito de experiência final em validação. A página original do planejamento permanece independente.</p></div><div>PRÉVIA INTERNA · V8 · 2026<br><span class="muted">Sem coleta de votos reais ou inscrições oficiais</span><br><button id="replayOnboarding" class="footer-replay" type="button">Rever apresentação</button><br><span class="music-credit">Trilha de demonstração: <a href="https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100875" target="_blank" rel="noopener noreferrer">Five Armies, Kevin MacLeod</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div><p class="music-credit">Foto de ambientação ilustrativa: <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>. Não retrata o Prêmio Conexão CRM</p></div></footer>
 <button type="button" class="motion-switch" id="motionSwitch" aria-label="Pausar movimento" aria-pressed="true">Pausar movimento</button>
 <div class="sound-bar" id="globalSoundBar" role="group" aria-label="Trilha sonora de toda a experiência">
  <span class="sound-bar-title">TRILHA DO PRÊMIO</span>
@@ -372,7 +376,8 @@ var categories=[
  {id:'crm',name:'Profissional do Ano · CRM',tag:'PESSOAS',type:'pessoas',detail:'Reconhece profissionais com impacto comprovável em estratégia, relacionamento, dados, lifecycle e resultados de CRM.'},
  {id:'cx',name:'Profissional do Ano · CX',tag:'PESSOAS',type:'pessoas',detail:'Reconhece profissionais que transformam experiência, escuta do cliente e cultura centrada no consumidor.'},
  {id:'cs',name:'Profissional do Ano · CS',tag:'PESSOAS',type:'pessoas',detail:'Celebra quem gera sucesso do cliente, adoção, retenção e crescimento sustentável.'},
- {id:'revelacao',name:'Revelação do Ano',tag:'PESSOAS',type:'pessoas',detail:'Valoriza talentos emergentes com crescimento, contribuição e potencial notáveis.'},
+ {id:'revelacao',name:'Revelação do Ano',tag:'PESSOAS',type:'pessoas',detail:'Valoriza talentos em início de carreira, incluindo estagiários, trainees, assistentes e profissionais juniores de CRM, CX e CS, segundo critérios a definir.'},
+ {id:'pcd',name:'Protagonismo PCD · CRM, CX e CS',tag:'PESSOAS',type:'pessoas',detail:'Reconhecimento proposto para a contribuição, liderança e realizações de profissionais com deficiência em CRM, CX e CS. A participação será voluntária, com critérios construídos com pessoas PCD. Não exige exposição pública de diagnóstico ou laudo.'},
  {id:'case',name:'Case do Ano',tag:'RESULTADOS',type:'cases',detail:'Destaca uma iniciativa real com desafio claro, uso de tecnologia, indicadores e impacto documentado.'},
  {id:'techcrm',name:'Tech Awards · CRM',tag:'TECNOLOGIA',type:'tech',detail:'Espaço para reconhecer ferramentas que viabilizam gestão de relacionamento e jornadas.'},
  {id:'techai',name:'Tech Awards · IA & Automação',tag:'TECNOLOGIA',type:'tech',detail:'Espaço para plataformas que apoiam automação inteligente, IA aplicada e eficiência operacional.'},
@@ -571,6 +576,15 @@ document.getElementById('skipOnboarding').onclick=endOnboard;
 document.getElementById('replayOnboarding').onclick=replayOnboard;
 document.addEventListener('keydown',function(e){var ov=document.getElementById('intro');if(ov.classList.contains('hidden'))return;if(e.key==='Escape'){e.preventDefault();endOnboard()}if(e.key==='Tab'){var items=Array.prototype.slice.call(ov.querySelectorAll('button:not([hidden]):not([disabled])'));if(!items.length)return;var first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 renderOnboard();
+/* Visitors who entered through the dreams prologue proceed directly to the approved awards experience. */
+try{
+ var query=new URLSearchParams(window.location.search);
+ if(query.get('entry')==='sonhos'){
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('intro').setAttribute('aria-hidden','true');
+  document.body.classList.remove('no-scroll');
+ }
+}catch(error){}
 try{if(localStorage.getItem(onboardKey)==='yes'){document.getElementById('intro').classList.add('hidden');document.getElementById('intro').setAttribute('aria-hidden','true');document.body.classList.remove('no-scroll')}}catch(e){}
 setupCategories();drawStars();drawVotes();renderRecords();
 })();
