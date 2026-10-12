@@ -3773,6 +3773,7 @@ async function carregarVagasHub() {
       .select('*', { count: 'exact' })
       .neq('availability_status', 'closed')
       .order('last_seen_at', { ascending: false, nullsFirst: false })
+      .order('found_at', { ascending: false })
       .limit(1000);
 
     if (error) {
@@ -3791,9 +3792,19 @@ async function carregarVagasHub() {
 
     todasAsVagasHub = data;
     document.getElementById('totalVagasHub').textContent = Number.isFinite(count) ? count : todasAsVagasHub.length;
-    const latestSighting = todasAsVagasHub.find(v => v.last_seen_at)?.last_seen_at || todasAsVagasHub[0]?.found_at;
+    const lastSeen = todasAsVagasHub.reduce((max, v) => {
+      const date = Date.parse(v.last_seen_at || '');
+      return Number.isFinite(date) ? Math.max(max, date) : max;
+    }, 0);
+    const lastFound = todasAsVagasHub.reduce((max, v) => {
+      const date = Date.parse(v.found_at || v.created_at || '');
+      return Number.isFinite(date) ? Math.max(max, date) : max;
+    }, 0);
+    const latestSighting = lastSeen || lastFound;
     const lastRunEl = document.getElementById('vagasUltimaColetaHub');
-    if (lastRunEl && latestSighting) lastRunEl.textContent = 'Última coleta registrada: ' + new Date(latestSighting).toLocaleDateString('pt-BR');
+    if (lastRunEl) lastRunEl.textContent = latestSighting
+      ? (lastSeen ? 'Última vaga reencontrada: ' : 'Última vaga cadastrada: ') + new Date(latestSighting).toLocaleDateString('pt-BR')
+      : 'Sem data de coleta confirmada';
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
