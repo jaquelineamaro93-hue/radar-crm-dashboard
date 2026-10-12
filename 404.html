@@ -2419,7 +2419,7 @@ crmShowSurveyReminder();
   </div><div class="tab-page" id="pageVagas">
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Radar de Vagas</h2></div>
-      <p class="section-desc">Encontre oportunidades em CRM, CX, Customer Success, Growth, MarTech, Marketing, Dados e áreas correlatas. Vagas atualizadas em tempo real.</p>
+      <p class="section-desc">Encontre oportunidades em CRM, CX, Customer Success, Growth, MarTech, Marketing, Dados e áreas correlatas. Vagas coletadas automaticamente. Confirme a disponibilidade no anúncio original.</p>
 
       <!-- Filtros -->
       <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin:20px 0;">
@@ -2528,7 +2528,7 @@ crmShowSurveyReminder();
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
           <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas Disponíveis</h3>
-          <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas</p>
+          <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
       </div>
@@ -3768,10 +3768,12 @@ async function carregarVagasHub() {
     }
 
     console.log('[VAGAS] Iniciando consulta de vagas...');
-    const { data, error } = await vagasSb
+    const { data, error, count } = await vagasSb
       .from('vagas_crm')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .neq('availability_status', 'closed')
+      .order('last_seen_at', { ascending: false, nullsFirst: false })
+      .limit(1000);
 
     if (error) {
       console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
@@ -3788,7 +3790,10 @@ async function carregarVagasHub() {
     }
 
     todasAsVagasHub = data;
-    document.getElementById('totalVagasHub').textContent = todasAsVagasHub.length;
+    document.getElementById('totalVagasHub').textContent = Number.isFinite(count) ? count : todasAsVagasHub.length;
+    const latestSighting = todasAsVagasHub.find(v => v.last_seen_at)?.last_seen_at || todasAsVagasHub[0]?.found_at;
+    const lastRunEl = document.getElementById('vagasUltimaColetaHub');
+    if (lastRunEl && latestSighting) lastRunEl.textContent = 'Última coleta registrada: ' + new Date(latestSighting).toLocaleDateString('pt-BR');
     renderizarVagasHub(todasAsVagasHub);
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
@@ -3840,7 +3845,8 @@ function mapearCampoVaga(vaga) {
     descricao: vaga.descricao || vaga.description || '',
     requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
     salario: vaga.salario || vaga.salary || vaga.salary_range || '',
-    criado_em: vaga.criado_em || vaga.created_at || vaga.posted_at || '',
+    criado_em: vaga.published_at || vaga.criado_em || vaga.created_at || vaga.posted_at || '',
+    disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
     modalidade: obterModalidade(vaga),
     localidade: crmJobLocationInfo(vaga)
@@ -3944,7 +3950,7 @@ async function aplicarFiltrosVagas() {
     const municipio = sanitizeInputVagas(document.getElementById('filtro-municipio')?.value || '', 80);
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
-    let query = vagasSb.from('vagas_crm').select('*');
+    let query = vagasSb.from('vagas_crm').select('*').neq('availability_status', 'closed');
 
     if (cargo) {
       query = query.ilike('title', `%${cargo}%`);
@@ -3985,7 +3991,7 @@ async function aplicarFiltrosVagas() {
     } else if (ordem === 'cargo') {
       query = query.order('title', { ascending: true });
     } else {
-      query = query.order('created_at', { ascending: false });
+      query = query.order('last_seen_at', { ascending: false, nullsFirst: false });
     }
 
     query = query.limit(1000);
@@ -6516,7 +6522,8 @@ function loadVagas(){
   }
   // Otimized query: select only essential columns to avoid timeout
   vgSb.from('vagas_crm')
-    .select('id,title,company,location,url,found_at,source,category')
+    .select('id,title,company,location,url,found_at,source,category,availability_status')
+    .neq('availability_status', 'closed')
     .order('found_at', {ascending:false})
     .limit(300)
     .then(({data, error})=>{
@@ -8709,7 +8716,7 @@ async function crmRunMatch(){
  try{
   result.textContent='Buscando oportunidades compatíveis…';
   initVagasSupabase();
-  const {data,error}=await vagasSb.from('vagas_crm').select('*').order('created_at',{ascending:false}).limit(300);
+  const {data,error}=await vagasSb.from('vagas_crm').select('*').neq('availability_status','closed').order('last_seen_at',{ascending:false,nullsFirst:false}).limit(300);
   if(error)throw error;
   VAGAS=data||[];
   if(!VAGAS.length){result.textContent='Nenhuma vaga disponível para comparar agora.';return;}
