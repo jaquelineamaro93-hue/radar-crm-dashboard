@@ -251,21 +251,21 @@ header{height:77px;background:#f7eddee8;position:sticky;z-index:40;top:0;border-
  </div>
 </section>
 </main>
-<footer class="sitefoot"><div class="shell footin"><span><b>CONEXÃO CRM.</b> · O FUTURO TEM NOME · 2027</span><span>Histórias ilustrativas nesta prévia · <a href="https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa" target="_blank" rel="noopener noreferrer" style="text-decoration:underline">Música de inspiração: ANAVITÓRIA e Rita Lee</a></span></div></footer>
+<footer class="sitefoot"><div class="shell footin"><span><b>CONEXÃO CRM.</b> · O FUTURO TEM NOME · 2027</span><span>Histórias ilustrativas nesta prévia · <a href="https://www.youtube.com/watch?v=riSNfxIDa1I" target="_blank" rel="noopener noreferrer" style="text-decoration:underline">Música de inspiração: ANAVITÓRIA ao vivo com Orquestra Ouro Preto</a></span></div></footer>
 <button class="motion-control" id="motionControl" type="button" aria-pressed="true">Pausar movimento</button>
 <div class="dream-song-popover" id="dreamSongPopover" role="region" aria-label="Escolha a música do seu sonho" hidden>
  <div class="dream-song-popover-head"><span>♫ Uma trilha para sonhar</span><button type="button" id="dreamSongClose" aria-label="Fechar seleção musical">×</button></div>
- <p>Escolha a música que mais combina com a sua história</p>
+ <p>Escolha a música que mais combina com a sua história. Na primeira opção, Ana e Vitória cantam ao vivo, sem a participação de Rita Lee</p>
  <div class="dream-song-options" role="group" aria-label="Opções de música">
   <button type="button" id="dreamSongAna" class="dream-song-option" aria-pressed="true" data-song="ana">
-   <strong>Amarelo, azul e branco</strong><small>ANAVITÓRIA · com Rita Lee</small>
+   <strong>Amarelo, azul e branco</strong><small>ANAVITÓRIA ao vivo · Orquestra Ouro Preto</small>
   </button>
   <button type="button" id="dreamSongWilian" class="dream-song-option" aria-pressed="false" data-song="wilian">
    <strong>Lua de Cristal</strong><small>Wilian Metlei · versão de 2025</small>
   </button>
  </div>
  <div id="dreamSongEmbed" aria-label="Player oficial da música selecionada"></div>
- <a href="https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa" target="_blank" rel="noopener noreferrer" class="dream-song-external" id="dreamSongExternal">Ouvir na plataforma oficial ↗</a>
+ <a href="https://www.youtube.com/watch?v=riSNfxIDa1I" target="_blank" rel="noopener noreferrer" class="dream-song-external" id="dreamSongExternal">Ouvir na plataforma oficial ↗</a>
  <p class="dream-song-note">O player oficial pode solicitar que você toque em reproduzir ou abra sua conta no serviço de música</p>
 </div>
 <button class="dream-song-toggle" id="dreamSongToggle" type="button" aria-expanded="false" aria-controls="dreamSongPopover">♫ Música dos sonhos</button>
@@ -331,7 +331,7 @@ if("IntersectionObserver" in window){
  },{threshold:.08});
  document.querySelectorAll(".revealable").forEach(el=>observer.observe(el))
 }
-/* The prologue has two authorized platform embeds.
+/* The prologue has two official platform embeds.
    No music files are extracted, proxied or hosted here.
    The prize page and its independent Five Armies player remain untouched. */
 const openMusic=document.getElementById("dreamSongOpen");
@@ -344,11 +344,11 @@ const songButtons=Array.from(popup.querySelectorAll(".dream-song-option"));
 const songChoices={
  ana:{
   title:"Amarelo, azul e branco",
-  artist:"ANAVITÓRIA com Rita Lee",
-  iframe:"https://open.spotify.com/embed/track/2LOIoeI16A8jjKubPKoCSa",
-  link:"https://open.spotify.com/track/2LOIoeI16A8jjKubPKoCSa",
-  provider:"Spotify",
-  height:152
+  artist:"ANAVITÓRIA ao vivo com Orquestra Ouro Preto",
+  iframe:"https://www.youtube-nocookie.com/embed/riSNfxIDa1I?rel=0&playsinline=1",
+  link:"https://www.youtube.com/watch?v=riSNfxIDa1I",
+  provider:"YouTube",
+  height:222
  },
  wilian:{
   title:"Lua de Cristal",
