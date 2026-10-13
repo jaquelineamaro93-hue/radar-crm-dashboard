@@ -8880,6 +8880,27 @@ async function crmLoadModeration(){
    count++;const card=document.createElement('article');card.className='card';card.style.cssText='padding:22px;margin:16px 0;overflow-wrap:anywhere';
    const heading=document.createElement('h3');heading.textContent=row.nome||row.titulo||row.nome_freelancer||row.payload?.title||label;
    const meta=document.createElement('p');meta.textContent=label+' · '+new Date(row.created_at).toLocaleString('pt-BR');
+   if(table==='crm_talent_claims'){
+    let claimantName='Nome não disponível',claimantLinkedin='';
+    try{
+     const {data:owner}=await authSb.from('profiles').select('full_name,linkedin_url').eq('id',row.owner_id).maybeSingle();
+     if(epoch!==crmAuthEpoch||!crmAdminVerified)return;
+     claimantName=owner?.full_name||claimantName;claimantLinkedin=owner?.linkedin_url||'';
+    }catch(e){console.warn('Perfil da solicitante indisponível',e)}
+    let sourceName='',sourceLinkedin='';
+    try{const parts=decodeURIComponent(String(row.source_id||'').replace(/^csv-/,'' )).split('|');sourceName=parts[0]||'';sourceLinkedin=parts[1]||'';}catch{}
+    heading.textContent='Vínculo de perfil: '+(sourceName||'profissional');
+    const identity=document.createElement('div');identity.className='crm-claim-identity';identity.style.cssText='margin:14px 0;padding:16px;border:1px solid #41362e;border-radius:12px;background:#201b18;display:grid;gap:9px';
+    const addLine=(label,value)=>{const line=document.createElement('p');line.style.margin='0';const strong=document.createElement('strong');strong.textContent=label+': ';line.append(strong,document.createTextNode(value||'Não informado'));identity.append(line)};
+    addLine('Conta solicitante',claimantName);
+    addLine('Perfil reivindicado',sourceName);
+    addLine('Evidência informada',row.evidence);
+    const addLink=(label,url)=>{if(!/^https:\/\/([a-z0-9-]+\.)*linkedin\.com\//i.test(url||''))return;const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=label+' ↗';link.style.color='#fb923c';identity.append(link)};
+    addLink('LinkedIn da conta',claimantLinkedin);
+    addLink('LinkedIn do perfil reivindicado',sourceLinkedin);
+    const warning=document.createElement('small');warning.textContent='Confira se a conta e o perfil pertencem à mesma pessoa antes de aprovar. A evidência declarada não é uma verificação automática de identidade.';warning.style.color='#e6c7a9';identity.append(warning);
+    card.append(identity);
+   }
    const detail=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Ver todos os dados enviados';detail.append(summary);
    const fields=document.createElement('dl');
    for(const [key,value] of Object.entries(row)){
