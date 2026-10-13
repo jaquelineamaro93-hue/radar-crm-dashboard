@@ -88,9 +88,9 @@ async function renderExperienceAdmin(force=false){
       '<div class="crm-analytics-grid" style="margin-top:14px">'+
         '<div class="crm-analytics-card"><span>Respostas</span><b>'+fmt(total)+'</b><span>membros</span></div>'+
         '<div class="crm-analytics-card"><span>Nota média</span><b>'+avg.toFixed(1).replace('.',',')+'</b><span>de 5</span></div>'+
-        '<div class="crm-analytics-card"><span>Distribuição</span><b style="font-size:16px">'+dist.map(x=>x[0]+'★ '+x[1]).join(' · ')+'</b><span>1 a 5</span></div>'+
+        '<div class="crm-analytics-card crm-experience-distribution"><span>Distribuição das notas</span><div class="crm-rating-bars">'+dist.map(x=>'<div class="crm-rating-row"><span>'+x[0]+' de 5</span><div class="crm-rating-track"><div class="crm-rating-fill" style="width:'+(total?100*x[1]/total:0)+'%"></div></div><strong>'+fmt(x[1])+'</strong></div>').join('')+'</div><span>Respostas por nota</span></div>'+
       '</div>'+
-      '<div style="overflow:auto;max-height:52vh;margin-top:16px"><table class="crm-admin-members-table"><thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Nota</th><th>Comentário</th></tr></thead><tbody>'+
+      '<div class="crm-experience-table-scroll" role="region" aria-label="Respostas individuais da pesquisa" tabindex="0"><table class="crm-admin-members-table"><thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Nota</th><th>Comentário</th></tr></thead><tbody>'+
       (rows.length?rows.map(r=>'<tr><td>'+esc(r.updated_at?new Date(r.updated_at).toLocaleString('pt-BR'):'')+'</td><td>'+esc(r.nome||'Membro')+'</td><td>'+esc(r.email||'')+'</td><td><strong>'+esc(r.rating)+'/5</strong></td><td style="min-width:280px;white-space:normal">'+esc(r.comment||'—')+'</td></tr>').join(''):'<tr><td colspan="5">Ainda não há respostas.</td></tr>')+
       '</tbody></table></div>';
     panel.querySelector('#crmExperienceAdminRefresh').onclick=()=>renderExperienceAdmin(true);
