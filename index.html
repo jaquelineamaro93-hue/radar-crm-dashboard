@@ -1204,6 +1204,40 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 }
 </style>  <!-- Inngage Web Push -->
   <script type="text/javascript" src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js"></script>
+
+<!-- Conexao CRM visual refinement: components only; navigation hierarchy unchanged -->
+<style id="crm-component-refinement-20261013">
+:root{--crm-soft-radius:14px;--crm-soft-line:rgba(255,255,255,.105);--crm-soft-hover:rgba(255,255,255,.045)}
+/* Public directory, job radar and member area: reduce heavy card outlines. */
+#crmPublicWorkspace .p-card,#crmPublicWorkspace .pro-card,#crmPublicWorkspace .crm-solution-card,
+#crmPublicWorkspace .filter-bar,#crmPublicWorkspace .search-bar,
+#view-logada .crm-panel,#view-logada .crm-card,#view-logada .crm-solution-card{
+ border-radius:var(--crm-soft-radius);border-color:var(--crm-soft-line);
+}
+#crmPublicWorkspace .p-card,#crmPublicWorkspace .pro-card,#crmPublicWorkspace .crm-solution-card{
+ transition:background-color .22s ease,border-color .22s ease,transform .22s ease;
+}
+@media(hover:hover){#crmPublicWorkspace .p-card:hover,#crmPublicWorkspace .pro-card:hover,#crmPublicWorkspace .crm-solution-card:hover{
+ border-color:rgba(249,115,22,.30);background-color:#1d1b19;transform:translateY(-2px);
+}}
+#crmPublicWorkspace .p-btn,#crmPublicWorkspace .filter-reset,#crmPublicWorkspace .search-input,
+#crmPublicWorkspace .filter-field select,#crmPublicWorkspace .crm-button,
+#view-logada .crm-button,#view-logada input,#view-logada select{
+ border-radius:10px;border-color:var(--crm-soft-line);
+}
+#crmPublicWorkspace .filter-field select:focus-visible,#crmPublicWorkspace .search-input:focus-visible,
+#crmPublicWorkspace .p-btn:focus-visible,#crmPublicWorkspace .crm-button:focus-visible{
+ outline:2px solid #f97316;outline-offset:3px;
+}
+#crmPublicWorkspace .p-actions{gap:10px}#crmPublicWorkspace .p-btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+/* Fine, rounded icon strokes; only existing vector icons, no emoji substitutions. */
+#crmPublicWorkspace svg:not([data-preserve-stroke]),#view-logada svg:not([data-preserve-stroke]){
+ stroke-linecap:round;stroke-linejoin:round;
+}
+#crmPublicWorkspace .crm-otw-signup{box-shadow:0 8px 32px rgba(0,0,0,.08)}
+/* Accessible, restrained motion. */
+@media(prefers-reduced-motion:reduce){#crmPublicWorkspace .p-card,#crmPublicWorkspace .pro-card,#crmPublicWorkspace .crm-solution-card{transition:none!important;transform:none!important}}
+</style>
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
