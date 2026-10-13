@@ -76,6 +76,31 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     conteudos:'conhecimento',courses:'conhecimento',pesquisa:'conhecimento',
     cargos:'ferramentas',calc:'ferramentas',plataformas:'ferramentas',agencias:'ferramentas'
   };
+  // Lightweight inline stroke icons. No font dependency or emoji glyphs.
+  const paths={
+    'vagas-salvas':'<path d="M4 6h16v14H4z"/><path d="M8 3v6m8-6v6"/>',
+    vagas:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/>',
+    search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
+    freelancers:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    'match-recrutador':'<path d="m12 3 2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/>',
+    membros:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/>',
+    eventos:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
+    'meus-eventos':'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M8 15l3 3 5-6"/>',
+    comunidade:'<path d="M4 5h16v12H8l-4 4z"/><path d="M8 10h8m-8 3h5"/>',
+    conteudos:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5zm0 12A2.5 2.5 0 0 1 6.5 15H20"/>',
+    courses:'<path d="m2 9 10-5 10 5-10 5zM6 11v6c4 3 8 3 12 0v-6M22 9v7"/>',
+    pesquisa:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8m-8 4h8m-8 4h5"/>',
+    cargos:'<path d="M4 20V9m6 11V4m6 16v-7m4 7H2"/>',
+    calc:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h2m4 0h2m-8 4h2m4 0h2"/>',
+    plataformas:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>',
+    agencias:'<rect x="4" y="8" width="16" height="13" rx="2"/><path d="M8 8V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3M4 13h16"/>'
+  };
+  function topicIcon(route){
+    const holder=document.createElement('span');holder.className='crm-topic-card__icon';
+    holder.setAttribute('aria-hidden','true');
+    holder.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false">'+(paths[route]||paths.plataformas)+'</svg>';
+    return holder;
+  }
   const text=(tag,className,value)=>{
     const el=document.createElement(tag);
     if(className)el.className=className;
@@ -134,7 +159,7 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
       const card=document.createElement('a');card.className='crm-topic-card'+(current?' is-current':'');card.href=routePath(target);card.dataset.crmRoute=target;
       if(current)card.setAttribute('aria-current','page');
       card.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();if(current)return;if(typeof window.crmNavigate==='function')window.crmNavigate(target);});
-      const iconEl=text('span','crm-topic-card__icon',icon);iconEl.setAttribute('aria-hidden','true');
+      const iconEl=topicIcon(target);
       const copy=document.createElement('span');copy.className='crm-topic-card__copy';
       copy.append(text('span','crm-topic-card__name',name),text('span','crm-topic-card__state',current?'Você está aqui':'Abrir'));
       card.append(iconEl,copy);grid.append(card);
