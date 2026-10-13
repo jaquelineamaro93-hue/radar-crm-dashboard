@@ -1906,14 +1906,15 @@ crmShowSurveyReminder();
       <!-- SUB-PÁGINA 1: MATCH POR IA -->
       <!-- SUB-PÁGINA 2: DIRETÓRIO COMPLETO -->
       <section id="searchDirPanel" style="display:block">
-        <details class="join-card crm-directory-join">
-          <summary>Está open to work? Cadastre seu perfil na lista.</summary>
-          <p>É só preencher o formulário da comunidade com suas informações. Leva menos de 5 minutos.</p>
-          <p>Um pedido importante: preencha uma única vez. Cadastros duplicados do mesmo perfil são removidos da base, e reincidência tira a pessoa da corrente do bem (ninguém quer isso, então capricha e preenche certinho da primeira vez). Se você já foi recolocado e não faz mais parte do "open to work", avise os admins da CRM Academy ou Mulheres de CRM para tirarem seus dados da lista.</p>
-          <a class="join-btn" href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener">Preencher o formulário</a>
-        </details>
+        <section class="crm-otw-signup" aria-labelledby="crmOtwSignupTitle" style="margin:20px 0 24px;padding:24px;border:1px solid #f97316;border-radius:14px;background:linear-gradient(115deg,rgba(249,115,22,.19),rgba(249,115,22,.04));display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
+          <div style="flex:1 1 260px">
+            <span style="display:block;color:#fb923c;font-size:12px;font-weight:800;letter-spacing:.1em;margin-bottom:8px">OPEN TO WORK · CADASTRO GRATUITO</span>
+            <h3 id="crmOtwSignupTitle" style="font-size:clamp(20px,3vw,27px);line-height:1.25;margin:0 0 8px;color:#fff">Buscando uma oportunidade? Faça parte da nossa vitrine de talentos!</h3>
+            <p style="margin:0;color:#e0d8d1;font-size:14px;line-height:1.6">Apresente seu perfil à comunidade e facilite o contato de recrutadores. Preencha uma única vez.</p>
+          </div>
+          <a href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:14px 24px;border-radius:9px;background:#f97316;color:#14100c;font-size:15px;font-weight:800;text-decoration:none;white-space:normal;text-align:center">Cadastrar meu perfil gratuitamente ↗</a>
+        </section>
 
-        <div class="cx-work" style="margin:16px 0"><button type="button" class="crm-button" onclick="CXTalentLinks.open()">Meus links no Open to Work</button><p class="crm-muted">Já está na lista? Entre para corrigir os contatos do seu próprio cadastro.</p></div>
         <div class="search-bar">
           <input type="text" class="search-input" id="searchText" placeholder="Buscar por nome, ferramenta, empresa ou área (ex: HubSpot, Salesforce, São Paulo)...">
           <div class="filter-bar" style="position:static;">
@@ -4371,7 +4372,7 @@ function renderSearch(){
  crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
    const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
    const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!=='Não especificado'?' · '+x.level:'')).join(' | '))+'</p>':'';
-   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+'<button type="button" class="p-btn" data-otw-source="'+escapeHtml(p.id)+'">Corrigir meus links</button></article>';
+   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+'</article>';
  }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
 function escapeHtml(s){
