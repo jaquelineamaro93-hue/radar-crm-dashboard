@@ -14,7 +14,19 @@ function tabs(){
  '<button class="crm-button" type="button" aria-current="page" onclick="crmNavigate(\'mercado\')">Open to Work</button></div>';
 }
 function bar(id,title,data,h=380){
- return '<div class="card" style="height:'+h+'px;position:relative;overflow:hidden"><h3>'+esc(title)+'</h3><div style="position:absolute;top:50px;left:16px;right:16px;bottom:14px"><canvas id="'+id+'"></canvas></div></div>';
+ return '<div class="card" style="min-height:'+h+'px;position:relative"><h3>'+esc(title)+'</h3><div style="height:'+(h-85)+'px;position:relative;margin:14px 0 4px"><canvas id="'+id+'"></canvas></div><p style="font-size:12px;color:#b8b1aa;margin:8px 0 0">Unidade: número de respostas · passe o cursor ou toque para detalhes</p>'+tableFor(id,data)+'</div>';
+}
+function total(rows){return rows.reduce((n,x)=>n+Number(x[1]||0),0)}
+function top(rows){return [...rows].sort((a,b)=>Number(b[1]||0)-Number(a[1]||0))[0]}
+function insight(rows,description){
+ const sum=total(rows),leader=top(rows);
+ if(!leader||!sum)return '<div class="note" role="note">Não há respostas suficientes para interpretar esta distribuição.</div>';
+ const share=100*Number(leader[1])/sum;
+ return '<div class="note" role="note" style="margin-top:12px"><b>Insight.</b> '+esc(description)+' <b>'+esc(leader[0])+'</b> lidera com <b>'+esc(Number(leader[1]).toLocaleString('pt-BR'))+'</b> respostas ('+esc(pct(share))+') entre '+esc(sum.toLocaleString('pt-BR'))+' respostas contabilizadas nesta dimensão.</div>';
+}
+function tableFor(id,rows){
+ if(!rows.length)return '';
+ return '<details class="crm-chart-data" style="margin-top:12px"><summary style="cursor:pointer;color:#ff9a54;font-weight:600">Ver dados e percentuais do gráfico</summary><div style="overflow-x:auto;margin-top:10px"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="text-align:left;padding:9px">Categoria</th><th style="text-align:right;padding:9px">Respostas</th><th style="text-align:right;padding:9px">Participação</th></tr></thead><tbody>'+rows.map(([name,value])=>'<tr><td style="padding:9px;border-top:1px solid #38332f">'+esc(name)+'</td><td style="text-align:right;padding:9px;border-top:1px solid #38332f">'+esc(Number(value||0).toLocaleString('pt-BR'))+'</td><td style="text-align:right;padding:9px;border-top:1px solid #38332f">'+esc(total(rows)?pct(Number(value||0)*100/total(rows)):'0%')+'</td></tr>').join('')+'</tbody></table></div></details>';
 }
 function destroy(){reportCharts.forEach(c=>{try{c.destroy()}catch{}});reportCharts=[]}
 function chart(id,type,labels,data,opts={}){
@@ -25,7 +37,7 @@ function chart(id,type,labels,data,opts={}){
   data:{labels,datasets:[{label:opts.label||'Profissionais',data,backgroundColor:type==='doughnut'?colors:opts.color||'#ff8a3d',borderColor:opts.border||'#ff8a3d',borderWidth:type==='doughnut'?0:1,borderRadius:type==='bar'?4:0}]},
   options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
    plugins:{legend:{display:type==='doughnut',position:'bottom',labels:{boxWidth:12,usePointStyle:true,pointStyle:'circle'}},
-    tooltip:{callbacks:{label:c=>(opts.money?brl(c.raw):c.raw+' '+(c.raw===1?'pessoa':'pessoas'))}}},
+    tooltip:{callbacks:{label:c=>{const v=Number(c.raw||0),sum=data.reduce((a,b)=>a+Number(b||0),0);return (c.label||'')+': '+v.toLocaleString('pt-BR')+' respostas'+(sum?' ('+pct(v*100/sum)+')':'');}}}},
    scales:type==='doughnut'?{}:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{size:10}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{size:10}}}}
   }
  });reportCharts.push(c);
@@ -68,14 +80,14 @@ function render(payload,date){
  '<div class="stat"><div class="num">'+esc(brl(m.pj_media))+'</div><div class="label">PJ médio estimado</div></div>'+
  '<div class="stat"><div class="num">'+esc(pct(m.hibrido_pct))+'</div><div class="label">Preferem híbrido</div></div></div></section>'+
  '<section><div class="section-head"><span class="section-num">01</span><h2>Quem está Open to Work</h2></div><p class="section-desc">Distribuição por senioridade e tempo de experiência da base atual.</p><div class="grid-2">'+
- bar('otwSenioridade','Senioridade',senior,390)+bar('otwExperiencia','Tempo de experiência',exp,390)+'</div></section>'+
+ bar('otwSenioridade','Senioridade',senior,390)+bar('otwExperiencia','Tempo de experiência',exp,390)+'</div>'+insight(senior,'Na senioridade,')+insight(exp,'No tempo de experiência,')+'</section>'+
  '<section><div class="section-head"><span class="section-num">02</span><h2>Modelo de trabalho</h2></div><div class="grid-2">'+
  bar('otwModalidade','Preferência de modalidade',model,390)+
  '<div class="card"><h3>Leitura</h3><ul class="insight-list"><li><b>Híbrido</b>: '+esc(pct(m.hibrido_pct))+' da base.</li><li><b>Remoto</b>: '+esc(pct(m.remoto_pct))+' da base.</li><li><b>Presencial</b>: '+esc(pct(m.presencial_pct))+' da base.</li><li><b>'+esc(pct(m.aceita_mudanca_pct))+'</b> consideram mudança de cidade.</li></ul></div></div></section>'+
  '<section><div class="section-head"><span class="section-num">03</span><h2>Expectativa salarial</h2></div><p class="section-desc">Faixas declaradas no formulário. As médias usam ponto médio nas faixas fechadas e o piso informado nas faixas abertas.</p><div class="grid-2">'+
- bar('otwClt','Distribuição de faixas CLT',clt,430)+bar('otwPj','Distribuição de faixas PJ',pj,430)+'</div></section>'+
- '<section><div class="section-head"><span class="section-num">04</span><h2>Ferramentas mais presentes</h2></div>'+bar('otwTools','Ferramentas citadas na experiência profissional',tools,470)+'</section>'+
- '<section><div class="section-head"><span class="section-num">05</span><h2>Onde estão os profissionais</h2></div>'+bar('otwLocations','Localizações mais citadas',loc,470)+'</section>'+
+ bar('otwClt','Distribuição de faixas CLT',clt,430)+bar('otwPj','Distribuição de faixas PJ',pj,430)+'</div>'+insight(clt,'Entre as faixas CLT informadas,')+insight(pj,'Entre as faixas PJ informadas,')+'</section>'+
+ '<section><div class="section-head"><span class="section-num">04</span><h2>Ferramentas mais presentes</h2></div>'+bar('otwTools','Ferramentas citadas na experiência profissional',tools,470)+insight(tools,'Entre as ferramentas citadas,')+'</section>'+
+ '<section><div class="section-head"><span class="section-num">05</span><h2>Onde estão os profissionais</h2></div>'+bar('otwLocations','Localizações mais citadas',loc,470)+insight(loc,'Entre as localizações mais citadas,')+'</section>'+
  '<section><div class="note"><b>Metodologia.</b> '+esc(method.salary_rule||'Faixas fechadas usam o ponto médio; faixas abertas usam o piso informado.')+' A base considera as respostas válidas do arquivo Open to Work atualizado. O report exibe somente dados agregados.</div></section>';
 
  chart('otwSenioridade','bar',senior.map(x=>x[0]),senior.map(x=>x[1]),{horizontal:true});
