@@ -44,10 +44,11 @@
       }
     });
     const clear=box.querySelector('#btn-limpar');
-    if(clear)action.insertBefore(toggle,clear);
+    if(clear){action.insertBefore(toggle,clear);clear.addEventListener('click',()=>setExpanded(false));}
     else action.append(toggle);
     // Quando filtros avançados já têm valores, mantenha-os visíveis.
     for(const el of grid.querySelectorAll('.crm-filter-extra input,.crm-filter-extra select')){
+      if(el.id==='filtro-ordem-hub') {if(el.value && el.value!=='recente') {setExpanded(true);break;} continue;}
       if(el.value && el.value!=='Todas'){setExpanded(true);break;}
     }
   }
