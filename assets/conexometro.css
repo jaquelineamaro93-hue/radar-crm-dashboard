@@ -1,164 +1,145 @@
-/* CONEXÔMETRO — seção exclusiva, não altera hero nem navegação */
+/* Conexômetro 3.0 | edição da seção, sem interferir na hero */
 #crmConexometro.crm-conexometro{
-  position:relative; isolation:isolate; overflow:hidden;
-  width:100%; max-width:none; margin:0; box-sizing:border-box;
-  padding:clamp(52px,6vw,92px) clamp(20px,5vw,88px) clamp(50px,5vw,74px);
-  border-top:1px solid #30241c; color:#f8f6f2;
-  background:radial-gradient(ellipse 64% 70% at 85% 6%,rgba(249,115,22,.085),transparent 75%),#111110
+  --conexo-orange:#ff791e;--conexo-green:#40cf82;
+  isolation:isolate;position:relative;box-sizing:border-box;overflow:hidden;width:100%;
+  padding:clamp(56px,6vw,104px) clamp(20px,5vw,90px) clamp(48px,5vw,78px);
+  background:radial-gradient(ellipse 50% 84% at 94% 5%,rgba(249,115,22,.085),transparent 70%),#10100f;
+  border-top:1px solid #2c2926;color:#f6f5f2
 }
-#crmConexometro::before{
-  content:""; position:absolute;left:0;top:0;width:100%;height:2px;
-  background:linear-gradient(90deg,transparent,#f97316,transparent);
-  transform:translateX(-100%);animation:crmConexoSweep 7s ease-in-out infinite;
-  pointer-events:none;z-index:-1
-}
-#crmConexometro .crm-conexo-wrap{
-  box-sizing:border-box;width:100%;max-width:1240px;margin:0 auto
+#crmConexometro .crm-conexo-wrap{box-sizing:border-box;max-width:1270px;width:100%;margin:0 auto;position:relative}
+#crmConexometro .crm-conexo-wrap::after{
+ content:"";position:absolute;z-index:-1;top:6rem;right:-12%;width:min(46vw,580px);height:440px;pointer-events:none;
+ background:radial-gradient(ellipse,rgba(249,115,22,.06),transparent 70%);filter:blur(50px)
 }
 #crmConexometro .crm-conexo-kicker{
-  display:flex;align-items:center;flex-wrap:wrap;gap:11px;
-  color:#f9954f;letter-spacing:.12em;text-transform:uppercase;
-  font-size:clamp(11px,.85vw,13px);font-weight:760
+ display:flex;align-items:center;gap:13px;flex-wrap:wrap;
+ font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#ff933f
 }
-#crmConexometro .crm-conexo-kicker-note{color:#b8afa7;font-size:11px;letter-spacing:.08em}
+#crmConexometro .crm-conexo-kicker-note{color:#bcb4ad;font-size:11px;font-weight:650;letter-spacing:.10em}
 #crmConexometro .crm-conexo-live-dot{
-  flex:none;width:9px;height:9px;border-radius:50%;
-  background:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,.13);
-  animation:crmConexoLive 2.5s ease-in-out infinite
+ width:9px;height:9px;flex:none;background:var(--conexo-orange);border-radius:50%;
+ box-shadow:0 0 0 4px rgba(255,121,30,.14);animation:conexoHeartbeat 2.4s ease-out infinite
 }
-#crmConexometro h2{
-  color:#f8f6f2;font:800 clamp(33px,4vw,60px)/1.12 Arial,Helvetica,sans-serif;
-  letter-spacing:-.045em;max-width:1050px;margin:22px 0 15px
+#crmConexometro .crm-conexo-heading{
+ font:850 clamp(36px,4.1vw,67px)/1.10 Arial,Helvetica,sans-serif;letter-spacing:-.055em;
+ color:#faf8f5;max-width:1120px;margin:25px 0 17px
 }
-#crmConexometro h2 em{font-style:normal;color:#f97316}
+#crmConexometro .crm-conexo-heading span{display:block}
+#crmConexometro .crm-conexo-heading em{font-style:normal;color:var(--conexo-orange)}
 #crmConexometro .crm-conexo-intro{
-  max-width:820px;margin:0 0 clamp(26px,3vw,40px);
-  color:#c4beb7;font-size:clamp(15px,1.15vw,18px);line-height:1.65
+ max-width:690px;color:#bcb8b3;font-size:clamp(15px,1.08vw,17px);
+ line-height:1.65;margin:0 0 clamp(29px,3vw,42px)
 }
-/* display:contents integra os três artigos na mesma grade sem mudar o DOM nem o JS */
-#crmConexometro .crm-conexo-stats{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  width:100%;align-items:stretch;gap:16px
-}
+#crmConexometro .crm-conexo-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
 #crmConexometro .crm-conexo-secondary{display:contents}
-#crmConexometro .crm-conexo-feature,
-#crmConexometro .crm-conexo-card{
-  box-sizing:border-box;position:relative;grid-column:auto;
-  display:flex;flex-direction:column;justify-content:space-between;gap:18px;
-  min-width:0;width:100%;height:244px;min-height:0;
-  border:1px solid #3b332e;border-radius:20px;
-  padding:27px 28px;background:#1c1b19;color:#f8f6f2;
-  box-shadow:none;overflow:hidden;
-  transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease,opacity .6s ease
+#crmConexometro .crm-conexo-feature,#crmConexometro .crm-conexo-card{
+ box-sizing:border-box;position:relative;isolation:isolate;overflow:hidden;width:100%;min-width:0;
+ display:flex;flex-direction:column;justify-content:space-between;gap:24px;height:284px;min-height:0;
+ padding:29px 30px 27px;border-radius:20px;border:1px solid #37342f;
+ background:linear-gradient(140deg,#1c1c1b,#171717);color:#f7f6f3;
+ transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease,opacity .55s ease
 }
-#crmConexometro .crm-conexo-feature{
-  background:linear-gradient(142deg,#2a201a 0%,#1c1b19 70%);
-  border-color:rgba(249,115,22,.46)
+#crmConexometro .crm-conexo-feature{border-color:rgba(249,115,22,.46);background:linear-gradient(135deg,#282018 0%,#181716 75%)}
+#crmConexometro .crm-conexo-card::before,#crmConexometro .crm-conexo-feature::before{
+ content:"";position:absolute;z-index:-1;top:-90px;right:-90px;width:240px;height:240px;
+ border-radius:50%;background:radial-gradient(circle,rgba(64,207,130,.07),transparent 66%);
+ pointer-events:none
 }
-#crmConexometro .crm-conexo-feature::after{
-  content:"";position:absolute;left:28px;right:28px;bottom:0;height:2px;
-  background:linear-gradient(90deg,#f97316,transparent)
+#crmConexometro .crm-conexo-feature::before{background:radial-gradient(circle,rgba(249,115,22,.13),transparent 66%)}
+#crmConexometro .crm-conexo-feature:hover,#crmConexometro .crm-conexo-card:hover{
+ transform:translateY(-5px);border-color:rgba(249,115,22,.65);box-shadow:0 24px 55px rgba(0,0,0,.24)
 }
-#crmConexometro .crm-conexo-feature:hover,
-#crmConexometro .crm-conexo-card:hover{
-  transform:translateY(-4px);border-color:#f97316;
-  box-shadow:0 15px 32px rgba(0,0,0,.14)
+#crmConexometro .crm-conexo-card-top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+#crmConexometro .crm-conexo-feature-label,#crmConexometro .crm-conexo-card-label{
+ display:block;color:#c9c4bd;font-size:11px;font-weight:820;text-transform:uppercase;letter-spacing:.11em;line-height:1.4
 }
-#crmConexometro .crm-conexo-feature-label,
-#crmConexometro .crm-conexo-card-label{
-  color:#d7d0c9;font-size:12px;font-weight:750;letter-spacing:.10em;
-  line-height:1.4;text-transform:uppercase
+#crmConexometro .crm-conexo-card-mark{
+ display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;
+ background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.065);color:#a69c92
 }
-#crmConexometro .crm-conexo-feature-value,
-#crmConexometro .crm-conexo-card-value{
-  display:block;flex:none;align-self:flex-start;
-  color:#f7f5f2;font-family:Arial,Helvetica,sans-serif;
-  font-variant-numeric:tabular-nums;
-  font-size:clamp(50px,5.2vw,83px);font-weight:850;line-height:1.03;
-  letter-spacing:-.065em;overflow-wrap:anywhere
+#crmConexometro .crm-conexo-card-mark svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#crmConexometro .crm-conexo-feature-value,#crmConexometro .crm-conexo-card-value{
+ display:flex;align-items:center;min-width:0;margin:9px 0 4px;white-space:nowrap;
+ font-family:Arial,Helvetica,sans-serif;font-size:clamp(49px,5.7vw,84px);
+ letter-spacing:-.07em;font-weight:880;line-height:1.06;color:#f7f7f5;
+ font-variant-numeric:tabular-nums
 }
-#crmConexometro .crm-conexo-feature-value{color:#f97316}
-#crmConexometro .crm-conexo-feature-desc,
-#crmConexometro .crm-conexo-card-desc{
-  color:#bcb5ad;font-size:14px;line-height:1.45;margin:0
+#crmConexometro .crm-conexo-feature-value{color:var(--conexo-orange)}
+#crmConexometro .crm-conexo-feature-desc,#crmConexometro .crm-conexo-card-desc{
+ display:block;color:#c2bab0;font-size:13px;line-height:1.5;margin:0
 }
+#crmConexometro .crm-conexo-card-bottom{display:flex;flex-direction:column;gap:12px;min-width:0}
+#crmConexometro .crm-conexo-trend{
+ min-height:25px;display:flex;align-items:center;gap:7px;
+ color:var(--conexo-green);font-size:12px;font-weight:780;letter-spacing:0
+}
+#crmConexometro .crm-conexo-trend[data-direction="flat"]{color:#aaa59e}
+#crmConexometro .crm-conexo-trend-graphic{width:34px;height:25px;display:block;flex:none;overflow:visible;color:var(--conexo-green)}
+#crmConexometro .crm-conexo-trend-graphic path{stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:3.4}
+#crmConexometro .crm-conexo-trend-graphic .trend-line{stroke-dasharray:72;stroke-dashoffset:0}
+#crmConexometro .crm-conexo-trend[data-direction="up"] .crm-conexo-trend-graphic{
+ animation:conexoArrowLift 3.5s ease-in-out infinite
+}
+#crmConexometro .crm-conexo-trend[data-direction="up"] .trend-line{
+ animation:conexoTrendDraw 1.65s cubic-bezier(.22,1,.36,1) both
+}
+#crmConexometro .crm-conexo-trend[data-direction="flat"] .crm-conexo-trend-graphic{display:none}
+#crmConexometro .crm-conexo-trend[data-direction="up"]{text-shadow:0 0 13px rgba(64,207,130,.11)}
+#crmConexometro .crm-conexo-divider{position:absolute;bottom:0;left:28px;right:28px;height:2px;opacity:.5;background:linear-gradient(90deg,#ff791e,transparent);pointer-events:none}
+#crmConexometro .crm-conexo-card .crm-conexo-divider{background:linear-gradient(90deg,#40cf82,transparent);opacity:.23}
 #crmConexometro .crm-conexo-info{
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:12px;margin:22px 0 0
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:23px 0 0
 }
 #crmConexometro .crm-conexo-status{
-  display:inline-flex;align-items:center;gap:9px;
-  color:#dfa680;font-size:12px;font-weight:650
+ display:inline-flex;align-items:center;gap:9px;
+ color:#c7c0ba;font-size:12px;font-weight:650
 }
-#crmConexometro .crm-conexo-status::before{
-  content:"";width:7px;height:7px;display:block;background:#aaa;
-  border-radius:50%;flex:none
-}
-#crmConexometro .crm-conexo-status.is-online::before{background:#86c99d}
-#crmConexometro .crm-conexo-refresh{color:#aaa39a;font-size:12px}
-#crmConexometro .crm-conexo-ctas{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  width:100%;gap:14px;margin-top:27px
-}
+#crmConexometro .crm-conexo-status::before{content:"";display:block;flex:none;width:7px;height:7px;background:#a6a09b;border-radius:50%}
+#crmConexometro .crm-conexo-status.is-online::before{background:#40cf82;box-shadow:0 0 0 3px rgba(64,207,130,.12)}
+#crmConexometro .crm-conexo-refresh{font-size:12px;color:#a6a19b}
+#crmConexometro .crm-conexo-ctas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:30px 0 0}
 #crmConexometro .crm-conexo-ctas a{
-  box-sizing:border-box;display:flex;align-items:center;justify-content:center;
-  min-width:0;width:100%;min-height:52px;padding:12px 20px;
-  border-radius:11px;background:#1b1a18;color:#f7f5f2;
-  border:1px solid #5b5048;font-size:14px;font-weight:750;
-  text-decoration:none;white-space:normal;text-align:center;
-  transition:transform .2s ease,border-color .2s ease,background .2s ease
+ box-sizing:border-box;display:flex;align-items:center;justify-content:center;min-width:0;width:100%;min-height:52px;
+ padding:12px 18px;border:1px solid #5a524c;border-radius:11px;text-align:center;
+ background:#1c1b1a;color:#f7f6f2;font-size:14px;font-weight:780;text-decoration:none;
+ transition:background .22s ease,transform .22s ease,border-color .22s ease
 }
-#crmConexometro .crm-conexo-ctas a:first-child{background:#f97316;border-color:#f97316;color:#17120e}
-#crmConexometro .crm-conexo-ctas a:hover{transform:translateY(-2px);border-color:#fa994f;background:#30231b}
-#crmConexometro .crm-conexo-ctas a:first-child:hover{background:#ff9b59}
-#crmConexometro .crm-conexo-ctas a:focus-visible{outline:3px solid #ffb877;outline-offset:3px}
+#crmConexometro .crm-conexo-ctas a:first-child{background:var(--conexo-orange);color:#17100c;border-color:var(--conexo-orange)}
+#crmConexometro .crm-conexo-ctas a:hover{transform:translateY(-3px);background:#33221a;border-color:#fd9b60}
+#crmConexometro .crm-conexo-ctas a:first-child:hover{background:#ff9e57}
+#crmConexometro .crm-conexo-ctas a:focus-visible{outline:3px solid #ffbc87;outline-offset:3px}
 #crmConexometro .crm-conexo-note{
-  margin:16px 0 0;max-width:1100px;
-  color:#a9a198;font-size:12px;line-height:1.65
+ color:#a49f98;font-size:11px;line-height:1.55;max-width:960px;margin:17px 0 0
 }
-/* Motion é exclusivo do bloco e desativável via sistema operacional */
-#crmConexometro.crm-conexo-enhanced .crm-conexo-reveal:not(.is-visible){
-  opacity:0;transform:translateY(18px)
-}
+/* Dígitos como odômetro: colunas independentes giram até o valor real */
+#crmConexometro .crm-odometer{display:inline-flex;align-items:center;height:1.08em;overflow:hidden;line-height:1.07;white-space:nowrap}
+#crmConexometro .crm-odometer-column{height:1.08em;display:block;overflow:hidden;flex:none;width:.6em}
+#crmConexometro .crm-odometer-strip{display:block;transform:translate3d(0,0,0);will-change:transform}
+#crmConexometro .crm-odometer-strip>span{display:block;height:1.08em;line-height:1.08em;text-align:center}
+#crmConexometro .crm-odometer-separator{display:inline-block;width:.22em;text-align:center;line-height:1.08}
+#crmConexometro.crm-conexo-enhanced .crm-conexo-reveal:not(.is-visible){opacity:0;transform:translateY(17px)}
 #crmConexometro .crm-conexo-reveal.is-visible{opacity:1;transform:translateY(0)}
-#crmConexometro .crm-conexo-feature[data-flash="true"],
-#crmConexometro .crm-conexo-card[data-flash="true"]{
-  animation:crmConexoNewCount 1.2s ease-out
+#crmConexometro .crm-conexo-feature[data-flash="true"],#crmConexometro .crm-conexo-card[data-flash="true"]{animation:conexoCardGlow 1.2s ease-out}
+@keyframes conexoHeartbeat{50%{box-shadow:0 0 0 10px rgba(255,121,30,0)}}
+@keyframes conexoArrowLift{0%,100%{transform:translateY(1px)}50%{transform:translate(1px,-2px)}}
+@keyframes conexoTrendDraw{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+@keyframes conexoCardGlow{25%{box-shadow:0 0 28px rgba(64,207,130,.14),0 0 11px rgba(255,121,30,.08)}100%{box-shadow:0 0 0 transparent}}
+@media(max-width:1000px){
+ #crmConexometro.crm-conexometro{padding:62px 26px}
+ #crmConexometro .crm-conexo-feature,#crmConexometro .crm-conexo-card{padding:23px;height:265px}
+ #crmConexometro .crm-conexo-feature-value,#crmConexometro .crm-conexo-card-value{font-size:clamp(43px,5.6vw,70px)}
 }
-@keyframes crmConexoSweep{
-  0%,20%{transform:translateX(-100%)}
-  55%,100%{transform:translateX(100%)}
-}
-@keyframes crmConexoLive{
-  50%{box-shadow:0 0 0 11px rgba(249,115,22,0)}
-}
-@keyframes crmConexoNewCount{
-  15%{box-shadow:0 0 28px rgba(249,115,22,.27)}
-  100%{box-shadow:none}
-}
-@media(max-width:900px){
-  #crmConexometro.crm-conexometro{padding:55px 22px}
-  #crmConexometro .crm-conexo-stats{gap:10px}
-  #crmConexometro .crm-conexo-feature,
-  #crmConexometro .crm-conexo-card{height:220px;padding:21px}
-  #crmConexometro .crm-conexo-feature-value,
-  #crmConexometro .crm-conexo-card-value{font-size:clamp(39px,6vw,68px)}
-}
-@media(max-width:680px){
-  #crmConexometro.crm-conexometro{padding:49px 20px 53px}
-  #crmConexometro .crm-conexo-stats{grid-template-columns:1fr;gap:11px}
-  #crmConexometro .crm-conexo-feature,
-  #crmConexometro .crm-conexo-card{height:auto;min-height:178px;padding:23px 24px;gap:14px}
-  #crmConexometro .crm-conexo-feature-value,
-  #crmConexometro .crm-conexo-card-value{font-size:clamp(60px,14vw,88px)}
-  #crmConexometro .crm-conexo-ctas{grid-template-columns:1fr;gap:10px}
-  #crmConexometro .crm-conexo-ctas a{min-height:50px}
-  #crmConexometro .crm-conexo-info{align-items:flex-start}
+@media(max-width:720px){
+ #crmConexometro.crm-conexometro{padding:50px 20px 56px}
+ #crmConexometro .crm-conexo-heading{font-size:clamp(34px,8vw,49px)}
+ #crmConexometro .crm-conexo-stats{grid-template-columns:1fr;gap:12px}
+ #crmConexometro .crm-conexo-feature,#crmConexometro .crm-conexo-card{height:auto;min-height:205px;padding:24px;gap:17px}
+ #crmConexometro .crm-conexo-feature-value,#crmConexometro .crm-conexo-card-value{font-size:clamp(56px,14vw,86px);margin:0}
+ #crmConexometro .crm-conexo-ctas{grid-template-columns:1fr;gap:10px}
+ #crmConexometro .crm-conexo-ctas a{min-height:49px}
 }
 @media(prefers-reduced-motion:reduce){
-  #crmConexometro::before,#crmConexometro .crm-conexo-live-dot,
-  #crmConexometro .crm-conexo-feature,#crmConexometro .crm-conexo-card{
-    animation:none!important;transition:none!important
-  }
-  #crmConexometro.crm-conexo-enhanced .crm-conexo-reveal:not(.is-visible){opacity:1;transform:none}
+ #crmConexometro .crm-conexo-live-dot,#crmConexometro .crm-conexo-trend-graphic,#crmConexometro .trend-line,
+ #crmConexometro .crm-conexo-feature,#crmConexometro .crm-conexo-card{animation:none!important;transition:none!important}
+ #crmConexometro.crm-conexo-enhanced .crm-conexo-reveal:not(.is-visible){opacity:1;transform:none}
 }
