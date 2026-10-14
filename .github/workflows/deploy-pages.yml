@@ -24,4 +24,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Portal quality gate
-        run: node tests/portal-quality.cjs
+        run: |
+          node tests/portal-quality.cjs
+          node tests/community-jobs-isolation.cjs
