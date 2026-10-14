@@ -1259,7 +1259,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-compact2">
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-cards1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2625,7 +2625,7 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas publicadas nos últimos 14 dias</h3>
+          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
@@ -2640,10 +2640,7 @@ crmShowSurveyReminder();
         </div>
       </div>
 
-    <div class="crm-radar-archive" id="crmRadarArchive" style="margin-top:35px;padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--panel)">
-  <h3 style="margin:0 0 8px;font-size:16px">Vagas encerradas nesta área</h3>
-  <p id="crmRadarArchiveList" style="font-size:12px;color:var(--muted)">Consultando registros encerrados, sem excluir oportunidades salvas</p>
-</div>
+
     </section>
   </div><div class="tab-page" id="pageConteudos">
   <section class="cx-hub">
@@ -4001,6 +3998,8 @@ async function crmLoadClosedJobs(category='') {
 }
 
 function renderizarVagasHub(vagas) {
+  // Apenas exibição: registros encerrados continuam no banco e nos salvos.
+  vagas=(vagas||[]).filter(v=>String(v.availability_status||'').toLowerCase()!=='closed');
   const container = document.getElementById('vagasContainerHub');
   if (!vagas || vagas.length === 0) {
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px;"><div style="font-size:24px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada.</p></div>';
@@ -4012,11 +4011,11 @@ function renderizarVagasHub(vagas) {
   container.innerHTML = vagas.map((vagaRaw, idx) => {
     const vaga = mapearCampoVaga(vagaRaw);
     return `
-    <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
+    <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="display:flex; flex-direction:column;">
       <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
       <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
-      <div class="crm-job-status-line"><span class="crm-job-status ${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at?'crm-job-status-open':vaga.disponibilidade==='closed'?'crm-job-status-closed':'crm-job-status-unverified'}">${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at?'Disponibilidade verificada':vaga.disponibilidade==='closed'?'Encerrada':'A verificar'}</span>
-      ${vagaRaw.tipo_contrato?'<span class="crm-job-contract">'+escapeHtmlVagas(vagaRaw.tipo_contrato)+'</span>':''}</div>
+      ${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at ? '<p class="crm-job-confirmed">Disponibilidade confirmada</p>' : ''}
+      ${vagaRaw.tipo_contrato ? `<span class="crm-job-contract">${escapeHtmlVagas(vagaRaw.tipo_contrato)}</span>` : ''}
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
@@ -4032,9 +4031,9 @@ function renderizarVagasHub(vagas) {
 
       ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
 
-      <div style="margin-top:auto; padding-top:8px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:10px;">
-        <span style="color:var(--muted);">${formatarDataVagas(vaga.criado_em) ? 'Publicada: ' + formatarDataVagas(vaga.criado_em) : ''}</span>
-        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" style="background:var(--accent); color:#fff; padding:5px 10px; border-radius:4px; text-decoration:none; font-weight:600; font-size:10px;">Candidatar </a>` : ''}
+      <div class="crm-job-clean-footer">
+        <span class="crm-job-posted-date">${formatarDataVagas(vaga.criado_em) ? formatarDataVagas(vaga.criado_em) : "Data não informada"}</span>
+        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <span aria-hidden="true">↗</span></a>` : ""}
       </div>
     </div>
   `;
