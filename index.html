@@ -1259,7 +1259,8 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style></head>
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-compact2">
+</head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -2511,7 +2512,7 @@ crmShowSurveyReminder();
     </section>
   </div><div class="tab-page" id="pageVagas">
     <section>
-      <div class="section-head"><span class="section-num"></span><h2>Radar de Vagas</h2></div>
+      <div class="section-head crm-radar-header"><span class="section-num"></span><h2>Radar de Vagas</h2><button type="button" class="crm-add-community-job" aria-label="Adicionar uma vaga ao Radar">+ Adicionar vaga</button></div>
       <p class="section-desc">Encontre oportunidades em CRM, CX, Customer Success, Growth, MarTech, Marketing, Dados e áreas correlatas. Vagas coletadas automaticamente. Confirme a disponibilidade no anúncio original.</p>
 
       <!-- Filtros -->
@@ -8734,10 +8735,6 @@ async function crmAnalyzeJob(button){
  const card=button.closest('[data-crm-job]');const description=card?.textContent.slice(0,9000)||'';let d=crmById('crmJobAnalysis');if(d)d.remove();d=document.createElement('dialog');d.id='crmJobAnalysis';d.className='crm-join-dialog';d.innerHTML='<button class="crm-close" onclick="this.closest(\'dialog\').close()" aria-label="Fechar">Fechar</button><h2>Análise da vaga</h2><p role="status">Analisando requisitos…</p>';document.body.append(d);d.showModal();
  try{const answer=await processarComOpenAI('Analise os requisitos, pontos de atenção e perguntas para entrevista desta vaga pública: '+description);if(d.isConnected)d.querySelector('p').textContent=answer||'Análise indisponível.';}catch(e){if(d.isConnected)d.querySelector('p').textContent=e.message;}
 }
-function crmEnhanceCards(){
- for(const card of crmById('vagasContainerHub').children){if(!card.querySelector('h3')||card.querySelector('[data-analyze-job]'))continue;card.dataset.crmJob='true';const b=document.createElement('button');b.className='crm-button crm-outline';b.dataset.analyzeJob='true';b.textContent=' Analisar com IA';card.append(b);}
- /* A confirmação de presença é feita pelo controle Vou / Talvez / Não vou do próprio card. */
-}
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
 const crmRoutePaths={'inicio':'/','quem-somos':'/quem-somos','solucoes':'/solucoes','public-match':'/match','dashboard':'/dashboard','mercado':'/mercado','vagas':'/vagas','vagas-salvas':'/vagas-salvas','search':'/open-to-work','membros':'/membros','freelancers':'/freelancers','membro':'/meu-painel','cargos':'/medias-salariais','calc':'/calculadora-clt-pj','plataformas':'/plataformas','agencias':'/agencias','courses':'/cursos','conteudos':'/conteudos','eventos':'/eventos','comunidade':'/comunidade','patrocinio':'/patrocinio','pesquisa':'/pesquisas-censo','ferramentas':'/comparativo-crms','match-recrutador':'/match-recrutador','meus-eventos':'/meus-eventos','publicar':'/publicar','admin':'/admin','patrocinio/apoiadores':'/apoiadores'};
 const crmPathRoutes=Object.fromEntries(Object.entries(crmRoutePaths).map(([route,path])=>[path,route]));
@@ -8775,8 +8772,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  crmSyncAuth();crmSetLanding(true);crmHandleLocation();
  let searchTimer;for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio']){const input=crmById('filtro-'+n);if(!input)continue;input.addEventListener(input.tagName==='SELECT'?'change':'input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(crmSearchJobs,400);});input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(searchTimer);crmSearchJobs();}});}
  crmById('filtro-modalidade').addEventListener('change',crmFilterModality);
- new MutationObserver(()=>{crmFilterModality();crmEnhanceCards();}).observe(crmById('vagasContainerHub'),{childList:true});
- new MutationObserver(crmEnhanceCards).observe(crmById('evGrid'),{childList:true});
+ new MutationObserver(crmFilterModality).observe(crmById('vagasContainerHub'),{childList:true});
+
  crmById('comSubTabDiretorio').onclick=()=>crmOpenMemberTab('diretorio');
  window.addEventListener('hashchange',crmHandleLocation);window.addEventListener('popstate',crmHandleLocation);
  document.addEventListener('click',e=>{
@@ -9638,5 +9635,6 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/portal-hardening.js?v=20261003-2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
 </body>
 </html>
