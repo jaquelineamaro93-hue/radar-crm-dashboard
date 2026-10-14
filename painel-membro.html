@@ -125,9 +125,8 @@
         const { data, error } = await supabase
           .from('vagas_crm')
           .select('*')
-          // Nunca exibir vagas encerradas ou sem prova recente de abertura.
-          .eq('availability_status', 'listed')
-          .gte('availability_checked_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
+          // "Unverified" permanece visivel; excluir somente closed.
+          .neq('availability_status', 'closed')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -223,11 +222,7 @@
       }
 
       estadoApp.vagasMatches = estadoApp.vagas
-        .filter(vaga =>
-          vaga.availability_status === 'listed' &&
-          vaga.availability_checked_at &&
-          new Date(vaga.availability_checked_at).getTime() >= Date.now() - 48 * 60 * 60 * 1000
-        )
+        .filter(vaga => vaga.availability_status !== 'closed')
         .map(vaga => ({
           ...vaga,
           scoreMatching: calcularScoreMatching(estadoApp.perfil, vaga)
@@ -627,10 +622,8 @@
                 if (!vaga) return '';
                 return `
                   <div class="bg-white rounded-lg shadow-md p-6 fade-in" style="animation-delay: ${idx * 50}ms">
-                    ${vaga.availability_status !== 'listed' ||
-                      !vaga.availability_checked_at ||
-                      new Date(vaga.availability_checked_at).getTime() < Date.now() - 48 * 60 * 60 * 1000
-                        ? '<p class="mb-3 text-sm text-slate-600">Esta vaga permanece no histórico salvo, mas não está confirmada como aberta.</p>'
+                    ${vaga.availability_status === 'closed'
+                        ? '<p class="mb-3 text-sm text-slate-600">Vaga encerrada. Mantida somente no histórico salvo.</p>'
                         : ''}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div>
@@ -660,10 +653,7 @@
                       >
                         ✕ Remover dos Salvos
                       </button>
-                      ${vaga.url_candidatura &&
-                        vaga.availability_status === 'listed' &&
-                        vaga.availability_checked_at &&
-                        new Date(vaga.availability_checked_at).getTime() >= Date.now() - 48 * 60 * 60 * 1000 ? `
+                      ${vaga.url_candidatura && vaga.availability_status !== 'closed' ? `
                         <a
                           href="${escapeHtml(vaga.url_candidatura)}"
                           target="_blank"
