@@ -4316,6 +4316,26 @@ async function loadSheet(){
  }catch(e){if(epoch!==crmAuthEpoch)return;dot.className='status-dot err';txt.textContent=e.message;crmById('searchResults').removeAttribute('aria-busy');document.getElementById('searchResults').innerHTML='<p class="empty-state">Não foi possível carregar os profissionais. <button onclick="loadSheet()">Tentar novamente</button></p>';}
 }
 
+// Atualização silenciosa do Open to Work: preserva filtros e não reinicia os cards durante a digitação.
+let crmOTWRefreshBusy=false;
+setInterval(async()=>{
+  if(document.hidden||crmActiveRoute!=='search'||crmOTWRefreshBusy||!searchLoaded)return;
+  const focus=document.activeElement;
+  if(focus?.matches('input,select,textarea,[contenteditable="true"]'))return;
+  crmOTWRefreshBusy=true;
+  const authEpoch=crmAuthEpoch;
+  try{
+    const records=await crmFetchDirectory('talents',crmSignedIn());
+    if(authEpoch!==crmAuthEpoch||crmActiveRoute!=='search')return;
+    const next=records.map(p=>({...p,condicao:crmWorkModel(p.condicao),linkedin:p.linkedin||'',whatsapp:p.whatsapp||'',grupo:'',cidadeNorm:extractCidadeEstado(p.local||'').cidade,estadoNorm:extractCidadeEstado(p.local||'').estado}));
+    if(JSON.stringify(next)!==JSON.stringify(PEOPLE)){
+      PEOPLE=next;
+      document.getElementById('statusText').textContent=PEOPLE.length+' profissionais · Open to Work atualizado';
+      renderSearch();
+    }
+  }catch(err){console.warn('[Open to Work] Atualização indisponível, mantendo últimos perfis válidos');}
+  finally{crmOTWRefreshBusy=false;}
+},60000);
 function crmWorkModel(value){
  const raw=String(value||'').trim(), key=normalizeAccents(raw.toLowerCase());
  if(/^remot[oa]$/.test(key))return 'Remoto';
