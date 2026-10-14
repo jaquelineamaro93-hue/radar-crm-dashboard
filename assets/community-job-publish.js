@@ -239,6 +239,6 @@
   window.openAnunciarVagaModal=open;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);
   else install();
-  const observer=new MutationObserver(()=>install());
-  if(document.body)observer.observe(document.body,{subtree:true,childList:true});
+  // Sem MutationObserver global: install() altera o DOM e um observer em body
+  // reexecutava a rotina em loop infinito, congelando a página inteira.
 })();

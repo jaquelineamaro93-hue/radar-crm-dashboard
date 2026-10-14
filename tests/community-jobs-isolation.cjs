@@ -20,5 +20,6 @@ assert(html.includes("rpc('crm_moderate_community_job'"),'Admin must use isolate
 assert(html.includes('function saveScrapedJob(url, title, company)'),'Existing URL-based saved jobs must be preserved');
 assert(form.includes("crmSecureInsert('crm_submission_requests'"),'Queue and quota verification must remain active');
 assert(form.includes('Importar dados')&&form.includes('Enviar para moderação'),'User must review before moderation');
+assert(!/MutationObserver\s*\(\s*\(\s*\)\s*=>\s*install\(\)/.test(form),'Job form must not run an observer-triggered DOM write loop');
 assert(!migration.includes('drop table public.vagas_'),'No bot table drops');
 console.log('PASS community isolation: separate tables, view+RLS, secure moderation, preservation of bot and saved jobs');
