@@ -1281,7 +1281,8 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 @media(max-width:590px){.crm-conexometro .crm-conexo-feature-value{font-size:clamp(72px,20vw,106px)}.crm-conexometro .crm-conexo-secondary{grid-template-columns:1fr}.crm-conexometro .crm-conexo-card:first-child{grid-column:auto}.crm-conexometro .crm-conexo-card{padding:17px 20px}.crm-conexometro .crm-conexo-card-value{font-size:40px}.crm-conexometro .crm-conexo-ctas a{width:100%}.crm-conexometro .crm-conexo-feature{min-height:220px}}
 @media(prefers-reduced-motion:reduce){.crm-conexometro .crm-conexo-pulse{animation:none}.crm-conexometro .crm-conexo-card,.crm-conexometro .crm-conexo-ctas a{transition:none}}
 </style>
-<script src="/assets/conexometro.js?v=20261014" defer></script>
+<link rel="stylesheet" href="/assets/conexometro.css?v=20261014-2">
+<script src="/assets/conexometro.js?v=20261014-2" defer></script>
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -1328,20 +1329,35 @@ crmShowSurveyReminder();
 <section id="crmPublicWorkspace" hidden><header class="crm-public-pagebar"><a href="/" data-crm-route="inicio"> Início</a><h1 id="crmPublicTitle">Explore a comunidade</h1><a href="/solucoes" data-crm-route="solucoes">Todas as soluções </a></header><nav class="crm-public-tabs" aria-label="Soluções públicas"><a href="/conteudos" data-crm-route="conteudos">Conteúdos</a><a href="/comunidade" data-crm-route="comunidade">Grupos</a><a href="/cursos" data-crm-route="courses">Cursos</a><a href="/vagas" data-crm-route="vagas">Radar de Vagas</a><a href="/open-to-work" data-crm-route="search">Talentos</a><a href="/freelancers" data-crm-route="freelancers">Freelancers</a><a href="/medias-salariais" data-crm-route="cargos">Salários</a><a href="/calculadora-clt-pj" data-crm-route="calc">CLT x PJ</a><a href="/eventos" data-crm-route="eventos">Eventos</a></nav><div id="crmPublicPages"></div></section><div id="publicHero"><section class="crm-hero" id="inicio"><div class="crm-hero-image" role="img" aria-label="Encontro de integrantes da comunidade Conexão CRM" style="background-image:linear-gradient(rgba(0,0,0,.85),rgba(0,0,0,.85)),url(assets/crm-image-0.webp)"></div><div class="crm-hero-content"><div class="crm-eyebrow">CRM ACADEMY + MULHERES DE CRM</div><h1>CONEXÃO<br>CRM<span class="hero-dot">.</span></h1><p class="crm-hero-subtitle">ESTRATÉGIA, DADOS E PESSOAS CONECTADAS.</p><div class="crm-actions"><button class="crm-button" onclick="handleGoogleLogin()">ME INSCREVER COM GOOGLE </button><a class="crm-button crm-outline" href="/quem-somos" data-crm-route="quem-somos">VER QUEM SOMOS</a></div></div><div class="crm-hero-foot"><span>O FUTURO DO CRM SE CONSTRÓI EM COMUNIDADE.</span><a href="/quem-somos" aria-label="Conheça a comunidade" data-crm-route="quem-somos"></a></div></section>
 <section id="crmConexometro" class="crm-conexometro" aria-labelledby="crmConexometroHeading">
  <div class="crm-conexo-wrap">
-  <div class="crm-conexo-kicker"><span class="crm-conexo-pulse" aria-hidden="true"></span> CONEXÃO CRM. / CONEXÔMETRO <span style="color:#aaa;letter-spacing:.05em">· atualização automática</span></div>
-  <h2 id="crmConexometroHeading">Conexões que crescem. <em>Oportunidades que aparecem.</em></h2>
-  <p class="crm-conexo-intro">Acompanhe o crescimento da comunidade e as oportunidades de CRM, CX, CS, Marketing e IA encontradas pelo nosso Radar ou enviadas diretamente pela comunidade.</p>
+  <div class="crm-conexo-kicker crm-conexo-reveal"><span class="crm-conexo-live-dot" aria-hidden="true"></span> CONEXÃO CRM. / CONEXÔMETRO <span class="crm-conexo-kicker-note">ATUALIZAÇÃO AUTOMÁTICA</span></div>
+  <h2 id="crmConexometroHeading" class="crm-conexo-reveal">Conexões que crescem. <em>Oportunidades que aparecem.</em></h2>
+  <p class="crm-conexo-intro crm-conexo-reveal">Uma comunidade de profissionais, talentos e empresas. Acompanhe nossa evolução e descubra novas oportunidades.</p>
   <div class="crm-conexo-stats">
-   <div class="crm-conexo-feature"><div class="crm-conexo-feature-label">Pessoas que fazem parte da conexão</div><div class="crm-conexo-feature-value" data-conexometro="members">—</div><div class="crm-conexo-feature-desc">Membros cadastrados na plataforma</div></div>
+   <article class="crm-conexo-feature crm-conexo-reveal">
+    <span class="crm-conexo-feature-label">Comunidade Conexão CRM</span>
+    <strong class="crm-conexo-feature-value" data-conexometro="members" aria-label="Total de membros">—</strong>
+    <span class="crm-conexo-feature-desc">Membros cadastrados</span>
+   </article>
    <div class="crm-conexo-secondary">
-    <div class="crm-conexo-card"><div class="crm-conexo-card-label">Radar automático</div><div class="crm-conexo-card-value" data-conexometro="radar_mapped">—</div><div class="crm-conexo-card-desc">Vagas mapeadas pelo bot, incluindo as ainda não verificadas</div></div>
-    <div class="crm-conexo-card"><div class="crm-conexo-card-label">Radar verificado</div><div class="crm-conexo-card-value" data-conexometro="radar_verified">—</div><div class="crm-conexo-card-desc">Oportunidades com status de listagem confirmado</div></div>
-    <div class="crm-conexo-card"><div class="crm-conexo-card-label">Vagas da comunidade</div><div class="crm-conexo-card-value" data-conexometro="community_published">—</div><div class="crm-conexo-card-desc">Publicadas diretamente, após aprovação</div></div>
+    <article class="crm-conexo-card crm-conexo-reveal">
+     <span class="crm-conexo-card-label">Radar de vagas</span>
+     <strong class="crm-conexo-card-value" data-conexometro="radar_mapped" aria-label="Total de vagas mapeadas pelo Radar">—</strong>
+     <span class="crm-conexo-card-desc">Vagas no Radar, com disponibilidade em atualização</span>
+    </article>
+    <article class="crm-conexo-card crm-conexo-reveal">
+     <span class="crm-conexo-card-label">Vagas da comunidade</span>
+     <strong class="crm-conexo-card-value" data-conexometro="community_published" aria-label="Total de vagas publicadas pela comunidade">—</strong>
+     <span class="crm-conexo-card-desc">Cadastradas por pessoas e empresas, após aprovação</span>
+    </article>
    </div>
   </div>
-  <div class="crm-conexo-info"><span class="crm-conexo-status" id="crmConexometroStatus" role="status">Conectando com os indicadores…</span><span style="color:#b4aea6;font-size:12px">Atualiza automaticamente a cada 30 segundos</span></div>
-  <p class="crm-conexo-note">Os dois tipos de vagas são contabilizados separadamente. Vagas mapeadas não significam necessariamente vagas abertas; apenas as verificadas recebem essa indicação.</p>
-  <div class="crm-conexo-ctas"><a href="/vagas" data-crm-route="vagas">EXPLORAR O RADAR DE VAGAS ↗</a><a href="/publicar" data-crm-route="publicar">DIVULGAR UMA OPORTUNIDADE ↗</a></div>
+  <div class="crm-conexo-info crm-conexo-reveal"><span class="crm-conexo-status" id="crmConexometroStatus" role="status">Conectando com os indicadores…</span><span class="crm-conexo-refresh">Atualização automática a cada 30 segundos</span></div>
+  <div class="crm-conexo-ctas crm-conexo-reveal">
+   <a href="/vagas" data-crm-route="vagas">Explorar vagas</a>
+   <a href="/publicar" data-crm-route="publicar">Publicar vaga</a>
+   <a href="/match" data-crm-route="public-match">Buscar talentos</a>
+  </div>
+  <p class="crm-conexo-note crm-conexo-reveal">Os dados refletem os registros no banco. Vagas mapeadas pelo bot ainda podem aguardar validação de disponibilidade; não representam necessariamente vagas abertas.</p>
  </div>
 </section>
 </div>
