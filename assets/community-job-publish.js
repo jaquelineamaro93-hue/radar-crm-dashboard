@@ -55,16 +55,7 @@
       ].join('');
       document.head.append(style);
     }
-    const page=document.getElementById('pageVagas');
-    if(page && !page.querySelector('.crm-job-publish-cta')){
-      const anchor=page.querySelector('.section-desc');
-      if(anchor){
-        const box=document.createElement('section');
-        box.className='crm-job-publish-cta';
-        box.innerHTML='<div><h3>Conhece uma oportunidade?</h3><p>Publique uma vaga manualmente ou importe os dados pelo link. A publicação passa por revisão.</p></div><button type="button" class="crm-add-community-job">+ Adicionar vaga</button>';
-        anchor.insertAdjacentElement('afterend',box);
-      }
-    }
+    // O botão Adicionar vaga está fixo no cabeçalho do Radar, inclusive na página pública.
     // O caminho antigo /publicar permanece disponível para agências, mas vagas
     // usam sempre o cadastro completo e a mesma fila segura de moderação.
     const publish=document.getElementById('crmPublish');

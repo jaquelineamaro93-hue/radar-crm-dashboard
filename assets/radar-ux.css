@@ -1,0 +1,32 @@
+/* Radar - ergonomia compacta dos filtros. Sem controle de IA. */
+#pageVagas .crm-job-publish-cta{padding:11px 14px;margin:9px 0 11px;gap:10px}
+#pageVagas .crm-job-publish-cta h3{font-size:15px!important;margin:0 0 3px}
+#pageVagas .crm-job-publish-cta p{font-size:12px}
+#pageVagas .crm-add-community-job{font-size:13px;padding:10px 15px;white-space:nowrap}
+#pageVagas .crm-radar-filterbox{padding:12px 14px!important;margin:10px 0 12px!important;border-radius:11px!important}
+#pageVagas .crm-radar-filterbox>h3{font-size:12px!important;margin:0 0 8px!important;letter-spacing:.05em!important}
+#pageVagas .crm-radar-fields{display:grid!important;grid-template-columns:minmax(150px,1.15fr) minmax(210px,2fr) minmax(145px,1.05fr)!important;gap:8px!important;margin:0 0 9px!important;align-items:end}
+#pageVagas .crm-radar-fields>div{min-width:0}
+#pageVagas .crm-radar-fields label{font-size:11px!important;margin-bottom:4px!important;line-height:1.25}
+#pageVagas .crm-radar-fields input,#pageVagas .crm-radar-fields select{box-sizing:border-box;min-width:0;width:100%;min-height:39px;padding:7px 10px!important;font-size:13px!important}
+#pageVagas .crm-radar-filterbox:not(.is-expanded) .crm-filter-extra{display:none!important}
+#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+#pageVagas .crm-radar-actions{display:flex!important;gap:7px!important;flex-wrap:wrap;align-items:center}
+#pageVagas .crm-radar-actions button{min-height:36px!important;padding:7px 13px!important;font-size:12px!important}
+#pageVagas .crm-radar-more-filters{background:#25211e;border:1px solid #6a4d37;color:#fbbf91;border-radius:8px;cursor:pointer}
+#pageVagas .crm-radar-more-filters:hover{background:#32261e;border-color:#f97316}
+#pageVagas .crm-radar-more-filters:focus-visible{outline:3px solid #fdba74;outline-offset:2px}
+@media(max-width:850px){
+  #pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #pageVagas .crm-radar-fields>div:has(#filtro-cargo){grid-column:span 2}
+}
+@media(max-width:500px){
+  #pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:1fr!important}
+  #pageVagas .crm-radar-fields>div:has(#filtro-cargo){grid-column:auto}
+  #pageVagas .crm-job-publish-cta{align-items:stretch}
+  #pageVagas .crm-job-publish-cta>button{width:100%}
+}
+#pageVagas .crm-radar-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
+#pageVagas .crm-radar-header h2{margin:0}
+#pageVagas .crm-radar-header .crm-add-community-job{padding:10px 17px;min-height:39px;font-size:13px;font-weight:700}
+@media(max-width:500px){#pageVagas .crm-radar-header{align-items:stretch}#pageVagas .crm-radar-header .crm-add-community-job{width:100%}}
