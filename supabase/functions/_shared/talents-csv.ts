@@ -35,7 +35,7 @@ let cached:ReturnType<typeof mapTalentCSV>|null=null,expires=0,inflight:Promise<
 export async function sheetTalents(){
  if(cached&&Date.now()<expires)return cached;
  if(inflight)return inflight;
- inflight=(async()=>{const response=await fetch(TALENTS_CSV,{signal:AbortSignal.timeout(25000)});if(!response.ok)throw Error('SHEET_HTTP_'+response.status);const result=mapTalentCSV(await response.text());if(!result.length)throw Error('Planilha vazia');cached=result;expires=Date.now()+300000;return result;})();
+ inflight=(async()=>{const response=await fetch(TALENTS_CSV,{signal:AbortSignal.timeout(25000)});if(!response.ok)throw Error('SHEET_HTTP_'+response.status);const result=mapTalentCSV(await response.text());if(!result.length)throw Error('Planilha vazia');cached=result;expires=Date.now()+60000;return result;})();
  try{return await inflight;}finally{inflight=null;}
 }
 
