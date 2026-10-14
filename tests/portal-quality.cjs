@@ -63,4 +63,12 @@ assert(index.includes("if(route==='inicio'&&crmSignedIn())route='membros';"),
 assert(index.includes("if(location.hash.includes('access_token'))history.replaceState(null,'','/membros');"),
  'Callback OAuth deve voltar à área Membros');
 
+const meterJS=read('assets/conexometro.js');
+assert(meterJS.includes('crm-odometer-strip') && meterJS.includes('strip.animate('), 'Os dígitos precisam rolar até o valor confirmado');
+assert(meterJS.includes("members_new_7d") && meterJS.includes("radar_new_7d"), 'Tendências devem ser reais do banco');
+assert(index.includes('data-conexo-trend="members"') && index.includes('data-conexo-trend="radar_mapped"'), 'Setas de crescimento requeridas');
+assert(index.includes('Conexões em movimento') && index.includes('Oportunidades em tempo real'), 'Headline sem pontuação em excesso');
+assert(index.includes('conexometro.js?v=20261014-odometer'), 'Versão JS deve quebrar cache');
+assert(index.includes('conexometro.css?v=20261014-odometer'), 'Versão CSS deve quebrar cache');
+new Function(meterJS);
 console.log('PASS portal-quality: fallback sincronizado, JS inline parseia, rotas criticas unicas, cards estaveis, admin protegido, hardening e assets presentes.');
