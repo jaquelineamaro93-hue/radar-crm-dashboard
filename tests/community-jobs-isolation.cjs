@@ -27,10 +27,27 @@ const radarUx=read('assets/radar-ux.js');
 const radarCss=read('assets/radar-ux.css');
 assert(html.includes('class="section-head crm-radar-header"'),'Radar must render its header CTA without JavaScript insertion');
 assert(html.includes('class="crm-add-community-job" aria-label="Adicionar uma vaga ao Radar"'),'Add job action must be visible beside Radar heading');
-assert(html.includes('/assets/radar-ux.js?v=20261014-compact2')&&html.includes('/assets/radar-ux.css?v=20261014-compact2'),'Radar compact assets must load with cache invalidation');
+assert(html.includes('/assets/radar-ux.js?v=20261014-compact2')&&html.includes('/assets/radar-ux.css?v=20261014-cards1'),'Radar compact assets must load with cache invalidation');
 assert(radarUx.includes("const visibleIds=['filtro-categoria','filtro-cargo','filtro-modalidade']"),'Primary filters stay visible');
 assert(radarUx.includes("if(el.id==='filtro-ordem-hub')"),'Default ordering must not expand advanced filters');
 assert(radarCss.includes('.crm-radar-filterbox:not(.is-expanded) .crm-filter-extra'),'Secondary filters must collapse');
 assert(!html.includes('function crmEnhanceCards(){')&&!radarUx.includes('data-analyze-job'),'Radar must not automatically insert AI buttons');
+
+
+// As vagas encerradas nunca aparecem no Radar, mas não são apagadas nem do bot nem dos salvos.
+assert(html.includes("vagas=(vagas||[]).filter(v=>String(v.availability_status||'').toLowerCase()!=='closed')"),
+  'Cards must exclude closed vacancies even when a caller passes unfiltered data');
+assert((html.match(/\.neq\('availability_status',\s*'closed'\)/g)||[]).length>=2,
+  'Both primary Radar fetches must exclude vacancies marked closed');
+assert(html.includes('crm-job-clean-apply')&&html.includes('data-job-apply="1"'),
+  'Application tracking and full-width Candidatar action must be preserved');
+assert(!html.includes("'Encerrada':'A verificar'"),
+  'Unverified jobs must not be mislabeled as confirmed or clutter cards');
+assert(!html.includes('id="crmRadarArchive"'),
+  'Closed vacancies must not be shown in an archive on the Radar page');
+assert(html.includes('Vagas encontradas nos últimos 14 dias'),
+  'Unverified vacancies must not be asserted to be open and confirmed');
+assert(radarCss.includes('.crm-job-clean-apply')&&radarCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),
+  'Lightweight card presentation and bottom CTA must be responsive');
 
 console.log('PASS community isolation: separate tables, view+RLS, secure moderation, preservation of bot and saved jobs');
