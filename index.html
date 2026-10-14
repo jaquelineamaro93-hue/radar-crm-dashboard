@@ -2639,6 +2639,10 @@ crmShowSurveyReminder();
         </div>
       </div>
 
+    <div class="crm-radar-archive" id="crmRadarArchive" style="margin-top:35px;padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--panel)">
+  <h3 style="margin:0 0 8px;font-size:16px">Vagas encerradas nesta área</h3>
+  <p id="crmRadarArchiveList" style="font-size:12px;color:var(--muted)">Consultando registros encerrados, sem excluir oportunidades salvas</p>
+</div>
     </section>
   </div><div class="tab-page" id="pageConteudos">
   <section class="cx-hub">
@@ -3905,6 +3909,7 @@ async function carregarVagasHub() {
       ? (lastSeen ? 'Última vaga reencontrada: ' : 'Última vaga cadastrada: ') + new Date(latestSighting).toLocaleDateString('pt-BR')
       : 'Sem data de coleta confirmada';
     renderizarVagasHub(todasAsVagasHub);
+    crmLoadClosedJobs();
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
@@ -3961,6 +3966,37 @@ function mapearCampoVaga(vaga) {
     modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
     localidade: crmJobLocationInfo(vaga)
   };
+}
+
+async function crmLoadClosedJobs(category='') {
+  const el=document.getElementById('crmRadarArchiveList');
+  if(!el||!vagasSb)return;
+  try {
+    const areaMap={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],
+      revops:['revops','salesops'],designer:['product-design'],data:['data-analytics','ai','tech','qa','product-management']};
+    let request=vagasSb.from('vagas_crm')
+      .select('id,title,company,published_at,categoria_slug')
+      .eq('availability_status','closed')
+      .order('updated_at',{ascending:false}).limit(12);
+    if(category&&areaMap[category])request=request.in('categoria_slug',areaMap[category]);
+    const {data,error}=await request;
+    if(error)throw error;
+    el.textContent='';
+    if(!data?.length){el.textContent='Nenhuma vaga encerrada com confirmação registrada';return;}
+    const list=document.createElement('ul');
+    list.style.cssText='display:grid;gap:8px;list-style:none;margin:10px 0 0;padding:0';
+    for(const item of data){
+      const li=document.createElement('li');
+      li.style.cssText='display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:8px 0';
+      const label=document.createElement('span');
+      label.textContent=(item.title||'Vaga')+' · '+(item.company||'Empresa não informada');
+      const tag=document.createElement('span');
+      tag.textContent='Encerrada';
+      tag.style.cssText='font-size:11px;color:var(--muted);font-weight:700';
+      li.append(label,tag);list.appendChild(li);
+    }
+    el.appendChild(list);
+  }catch(error){el.textContent='Histórico temporariamente indisponível';}
 }
 
 function renderizarVagasHub(vagas) {
@@ -4152,6 +4188,7 @@ async function aplicarFiltrosVagas() {
     }
 
     renderizarVagasHub(filtradas);
+    crmLoadClosedJobs(categoria);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
