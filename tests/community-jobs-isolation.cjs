@@ -22,4 +22,15 @@ assert(form.includes("crmSecureInsert('crm_submission_requests'"),'Queue and quo
 assert(form.includes('Importar dados')&&form.includes('Enviar para moderação'),'User must review before moderation');
 assert(!/MutationObserver\s*\(\s*\(\s*\)\s*=>\s*install\(\)/.test(form),'Job form must not run an observer-triggered DOM write loop');
 assert(!migration.includes('drop table public.vagas_'),'No bot table drops');
+
+const radarUx=read('assets/radar-ux.js');
+const radarCss=read('assets/radar-ux.css');
+assert(html.includes('class="section-head crm-radar-header"'),'Radar must render its header CTA without JavaScript insertion');
+assert(html.includes('class="crm-add-community-job" aria-label="Adicionar uma vaga ao Radar"'),'Add job action must be visible beside Radar heading');
+assert(html.includes('/assets/radar-ux.js?v=20261014-compact2')&&html.includes('/assets/radar-ux.css?v=20261014-compact2'),'Radar compact assets must load with cache invalidation');
+assert(radarUx.includes("const visibleIds=['filtro-categoria','filtro-cargo','filtro-modalidade']"),'Primary filters stay visible');
+assert(radarUx.includes("if(el.id==='filtro-ordem-hub')"),'Default ordering must not expand advanced filters');
+assert(radarCss.includes('.crm-radar-filterbox:not(.is-expanded) .crm-filter-extra'),'Secondary filters must collapse');
+assert(!html.includes('function crmEnhanceCards(){')&&!radarUx.includes('data-analyze-job'),'Radar must not automatically insert AI buttons');
+
 console.log('PASS community isolation: separate tables, view+RLS, secure moderation, preservation of bot and saved jobs');
