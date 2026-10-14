@@ -1,4 +1,4 @@
-/* Radar UX: compactação progressiva dos filtros e IA junto ao CTA da vaga.
+/* Radar UX: filtro compacto sem controles de IA.
  * Não altera consultas, estados, tabelas, scraping ou lógica de Match.
  */
 (function(){
@@ -51,42 +51,7 @@
       if(el.value && el.value!=='Todas'){setExpanded(true);break;}
     }
   }
-  function improveCard(card){
-    if(!card||card.classList.contains('crm-radar-ai-enhanced')||!card.querySelector('h3'))return;
-    const footer=Array.from(card.children).find(el=>el.style?.marginTop==='auto');
-    if(!footer)return;
-    card.dataset.crmJob='true';
-    card.classList.add('crm-radar-ai-enhanced');
-    const actions=document.createElement('div');
-    actions.className='crm-radar-card-actions';
-    const apply=footer.querySelector('[data-job-apply]');
-    const button=card.querySelector('[data-analyze-job]')||document.createElement('button');
-    button.type='button';
-    button.dataset.analyzeJob='true';
-    button.classList.add('crm-radar-ai-button');
-    button.textContent='Analisar com IA';
-    button.setAttribute('aria-label','Analisar esta vaga com IA');
-    button.setAttribute('title','A IA ajuda a interpretar a vaga. Confira sempre o anúncio original.');
-    actions.append(button);
-    if(apply)actions.append(apply);
-    footer.classList.add('crm-radar-card-footer');
-    footer.append(actions);
-  }
-  function initCards(){
-    const container=document.getElementById('vagasContainerHub');
-    if(!container||container.dataset.crmUxObserved==='1')return;
-    container.dataset.crmUxObserved='1';
-    const enhance=()=>Array.from(container.children).forEach(improveCard);
-    // Apenas inserções/remoções de CARD como filho direto. Nada de subtree:
-    // mover botões dentro dos cards jamais reinicia o observer.
-    const observer=new MutationObserver(enhance);
-    observer.observe(container,{childList:true,subtree:false});
-    enhance();
-  }
-  function init(){
-    initFilters();
-    initCards();
-  }
+  function init(){initFilters();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
