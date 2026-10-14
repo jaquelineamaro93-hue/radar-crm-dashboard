@@ -65,6 +65,26 @@
         anchor.insertAdjacentElement('afterend',box);
       }
     }
+    // O caminho antigo /publicar permanece disponível para agências, mas vagas
+    // usam sempre o cadastro completo e a mesma fila segura de moderação.
+    const publish=document.getElementById('crmPublish');
+    const legacyForm=publish?.querySelector('#crmPublishForm');
+    if(legacyForm){
+      const kind=legacyForm.elements.kind;
+      if(kind){
+        kind.querySelector('option[value="job"]')?.remove();
+        kind.value='agency';
+      }
+      if(!publish.querySelector('#cj-publish-route-button')){
+        const notice=document.createElement('section');
+        notice.id='cj-publish-route-button';
+        notice.className='crm-job-publish-cta';
+        notice.innerHTML='<div><h3>Publicar uma vaga</h3><p>Cadastro gratuito com importação por link e aprovação da comunidade.</p></div><button type="button" class="crm-add-community-job">+ Adicionar vaga</button>';
+        legacyForm.insertAdjacentElement('beforebegin',notice);
+      }
+      const subtitle=publish.querySelector('.crm-muted');
+      if(subtitle)subtitle.textContent='Para publicar uma vaga, utilize o botão Adicionar vaga. O formulário abaixo é exclusivo para indicar agências e consultorias.';
+    }
   }
   function html(){
     const categories=allowedCategories.map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('');
