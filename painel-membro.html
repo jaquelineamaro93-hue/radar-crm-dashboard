@@ -68,6 +68,7 @@
       perfil: null,
       vagas: [],
       vagasSalvas: [],
+      vagasSalvasDetalhes: [],
       vagasMatches: [],
       filtroTrilha: 'todas',
       filtroArea: 'todas',
@@ -124,6 +125,9 @@
         const { data, error } = await supabase
           .from('vagas_crm')
           .select('*')
+          // Nunca exibir vagas encerradas ou sem prova recente de abertura.
+          .eq('availability_status', 'listed')
+          .gte('availability_checked_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -145,9 +149,21 @@
 
         if (error) throw error;
         estadoApp.vagasSalvas = data || [];
+        // Histórico salvo é independente do Radar aberto. Não apagar favoritos.
+        const ids = [...new Set(estadoApp.vagasSalvas.map(v => v.vaga_id).filter(Boolean))];
+        estadoApp.vagasSalvasDetalhes = [];
+        if (ids.length) {
+          const { data: detalhes, error: detailsError } = await supabase
+            .from('vagas_crm')
+            .select('*')
+            .in('id', ids);
+          if (detailsError) throw detailsError;
+          estadoApp.vagasSalvasDetalhes = detalhes || [];
+        }
       } catch (erro) {
         console.error('Erro ao carregar vagas salvas:', erro);
         estadoApp.vagasSalvas = [];
+        estadoApp.vagasSalvasDetalhes = [];
       }
     }
 
@@ -207,7 +223,11 @@
       }
 
       estadoApp.vagasMatches = estadoApp.vagas
-        .filter(vaga => vaga.availability_status !== 'closed')
+        .filter(vaga =>
+          vaga.availability_status === 'listed' &&
+          vaga.availability_checked_at &&
+          new Date(vaga.availability_checked_at).getTime() >= Date.now() - 48 * 60 * 60 * 1000
+        )
         .map(vaga => ({
           ...vaga,
           scoreMatching: calcularScoreMatching(estadoApp.perfil, vaga)
@@ -406,8 +426,8 @@
                     <div class="bg-white rounded-lg p-4 border-l-4 border-indigo-600">
                       <div class="flex justify-between items-start mb-2">
                         <div>
-                          <p class="font-semibold text-slate-800">${escapeHtml(vaga.cargo)}</p>
-                          <p class="text-sm text-slate-600">${escapeHtml(vaga.empresa)}</p>
+                          <p class="font-semibold text-slate-800">${escapeHtml(vaga.cargo || vaga.title || '')}</p>
+                          <p class="text-sm text-slate-600">${escapeHtml(vaga.empresa || vaga.company || '')}</p>
                         </div>
                         <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded">
                           ${vaga.scoreMatching}% Match
@@ -436,12 +456,12 @@
             ${estadoApp.vagasSalvas.length > 0 ? `
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 ${estadoApp.vagasSalvas.slice(0, 4).map((vs, idx) => {
-                  const vaga = estadoApp.vagas.find(v => v.id === vs.vaga_id);
+                  const vaga = estadoApp.vagasSalvasDetalhes.find(v => v.id === vs.vaga_id);
                   if (!vaga) return '';
                   return `
                     <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
-                      <p class="font-semibold text-slate-800 text-sm mb-1">${escapeHtml(vaga.cargo)}</p>
-                      <p class="text-xs text-slate-600 mb-3">${escapeHtml(vaga.empresa)}</p>
+                      <p class="font-semibold text-slate-800 text-sm mb-1">${escapeHtml(vaga.cargo || vaga.title || '')}</p>
+                      <p class="text-xs text-slate-600 mb-3">${escapeHtml(vaga.empresa || vaga.company || '')}</p>
                       <button
                         onclick="removerVagaSalva(${vs.vaga_id})"
                         class="w-full text-xs bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded transition"
@@ -510,7 +530,7 @@
                   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                       <p class="text-sm text-slate-600 mb-1">Cargo</p>
-                      <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo)}</p>
+                      <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo || vaga.title || '')}</p>
                       <div class="flex flex-wrap gap-1.5 mt-2">
                         ${vaga.trilha ? `<span class="inline-flex rounded-full bg-indigo-50 text-indigo-700 px-2.5 py-1 text-[11px] font-semibold">${escapeHtml(vaga.trilha)}</span>` : ''}
                         ${vaga.subcategoria ? `<span class="inline-flex rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-[11px]">${escapeHtml(vaga.subcategoria)}</span>` : ''}
@@ -519,7 +539,7 @@
                     </div>
                     <div>
                       <p class="text-sm text-slate-600 mb-1">Empresa</p>
-                      <p class="font-semibold text-slate-800">${escapeHtml(vaga.empresa)}</p>
+                      <p class="font-semibold text-slate-800">${escapeHtml(vaga.empresa || vaga.company || '')}</p>
                     </div>
                     <div>
                       <p class="text-sm text-slate-600 mb-1">Nível</p>
@@ -603,14 +623,19 @@
           ${estadoApp.vagasSalvas.length > 0 ? `
             <div class="space-y-4">
               ${estadoApp.vagasSalvas.map((vs, idx) => {
-                const vaga = estadoApp.vagas.find(v => v.id === vs.vaga_id);
+                const vaga = estadoApp.vagasSalvasDetalhes.find(v => v.id === vs.vaga_id);
                 if (!vaga) return '';
                 return `
                   <div class="bg-white rounded-lg shadow-md p-6 fade-in" style="animation-delay: ${idx * 50}ms">
+                    ${vaga.availability_status !== 'listed' ||
+                      !vaga.availability_checked_at ||
+                      new Date(vaga.availability_checked_at).getTime() < Date.now() - 48 * 60 * 60 * 1000
+                        ? '<p class="mb-3 text-sm text-slate-600">Esta vaga permanece no histórico salvo, mas não está confirmada como aberta.</p>'
+                        : ''}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div>
-                        <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo)}</p>
-                        <p class="text-slate-600">${escapeHtml(vaga.empresa)}</p>
+                        <p class="font-bold text-lg text-slate-800">${escapeHtml(vaga.cargo || vaga.title || '')}</p>
+                        <p class="text-slate-600">${escapeHtml(vaga.empresa || vaga.company || '')}</p>
                       </div>
                       <div>
                         <p class="text-sm text-slate-600 mb-1">Nível</p>
@@ -635,7 +660,10 @@
                       >
                         ✕ Remover dos Salvos
                       </button>
-                      ${vaga.url_candidatura ? `
+                      ${vaga.url_candidatura &&
+                        vaga.availability_status === 'listed' &&
+                        vaga.availability_checked_at &&
+                        new Date(vaga.availability_checked_at).getTime() >= Date.now() - 48 * 60 * 60 * 1000 ? `
                         <a
                           href="${escapeHtml(vaga.url_candidatura)}"
                           target="_blank"
