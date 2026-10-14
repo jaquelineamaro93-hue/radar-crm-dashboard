@@ -132,7 +132,14 @@ create or replace view public.crm_radar_jobs_public with (security_invoker=true)
   union all
   select
     -c.id, c.title, c.company, c.title, c.company,
-    c.description, c.url, 'Comunidade'::text, c.category, c.category,
+    c.description, c.url, 'Comunidade'::text, c.category,
+    case c.category
+      when 'cxcs' then 'customer-success'
+      when 'designer' then 'product-design'
+      when 'data' then 'data-analytics'
+      when 'po_pm' then 'product-management'
+      else c.category
+    end,
     c.published_at, c.published_at, c.created_at, null::timestamptz,
     c.location, c.location, c.work_model,
     case when c.work_model='Não informado' then null else c.work_model end,
