@@ -1246,43 +1246,9 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 @media(prefers-reduced-motion:reduce){#view-logada .crm-nav-clean .crm-nav-glyph svg{transition:none!important;transform:none!important}}
 </style>
 
-<style id="crm-conexometro-styles">
-.crm-conexometro{position:relative;isolation:isolate;background:#11110f;color:#f5f3ee;padding:76px max(5vw,22px) 80px;border-top:1px solid #302b23;overflow:hidden}
-.crm-conexometro:before{content:"";pointer-events:none;position:absolute;top:-240px;right:-210px;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.10),transparent 69%);z-index:-1}
-.crm-conexometro .crm-conexo-wrap{max-width:1360px;margin:auto}
-.crm-conexometro .crm-conexo-kicker{color:#f97316;font-size:12px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.crm-conexometro .crm-conexo-pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,.13);animation:crmConexoPulse 2.6s ease-in-out infinite}
-.crm-conexometro h2{font-family:Arial,Helvetica,sans-serif;font-size:clamp(34px,4.2vw,66px);line-height:1.08;letter-spacing:-.045em;margin:20px 0 14px;color:#f8f6f1;font-weight:800;max-width:900px}
-.crm-conexometro h2 em{font-style:normal;color:#f97316}
-.crm-conexometro .crm-conexo-intro{max-width:770px;color:#c6c1b8;line-height:1.65;font-size:clamp(15px,1.5vw,18px);margin:0 0 34px}
-.crm-conexometro .crm-conexo-stats{display:grid;grid-template-columns:minmax(0,1.17fr) minmax(0,1fr);gap:14px}
-.crm-conexometro .crm-conexo-feature{background:#211d19;border:1px solid #5b3928;border-radius:22px;padding:34px 38px;display:flex;flex-direction:column;min-width:0;justify-content:space-between;min-height:306px}
-.crm-conexometro .crm-conexo-feature-label,.crm-conexometro .crm-conexo-card-label{color:#c3bcb4;font-size:12px;font-weight:750;letter-spacing:.09em;text-transform:uppercase}
-.crm-conexometro .crm-conexo-feature-value{font-size:clamp(92px,11vw,164px);font-weight:900;color:#f97316;line-height:1.1;letter-spacing:-.075em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.crm-conexometro .crm-conexo-feature-desc{color:#c6bdb3;font-size:14px;line-height:1.55}
-.crm-conexometro .crm-conexo-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.crm-conexometro .crm-conexo-card{background:#191919;border:1px solid #363330;border-radius:20px;display:flex;flex-direction:column;gap:7px;padding:24px;min-width:0;justify-content:center;transition:border-color .2s,transform .2s}
-.crm-conexometro .crm-conexo-card:first-child{grid-column:1/-1}
-.crm-conexometro .crm-conexo-card:hover{border-color:#975130;transform:translateY(-2px)}
-.crm-conexometro .crm-conexo-card-value{font-size:clamp(36px,4.8vw,60px);font-weight:850;line-height:1.1;color:#f5f3ee;font-variant-numeric:tabular-nums;letter-spacing:-.055em;overflow-wrap:anywhere}
-.crm-conexometro .crm-conexo-card-desc{font-size:12px;color:#aaa59f;line-height:1.45}
-.crm-conexometro .crm-conexo-info{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin:22px 0 0}
-.crm-conexometro .crm-conexo-status{display:inline-flex;gap:8px;align-items:center;color:#e8b69a;font-weight:650;font-size:12px}
-.crm-conexometro .crm-conexo-status:before{content:"";background:#b7a89e;width:7px;height:7px;border-radius:50%}
-.crm-conexometro .crm-conexo-status.is-online:before{background:#7ec797}
-.crm-conexometro .crm-conexo-note{color:#aba49b;font-size:12px;line-height:1.6;margin:18px 0 0;max-width:900px}
-.crm-conexometro .crm-conexo-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
-.crm-conexometro .crm-conexo-ctas a{display:inline-flex;align-items:center;justify-content:center;border-radius:11px;min-height:48px;text-decoration:none;padding:11px 19px;font-size:13px;font-weight:800;transition:background .2s,transform .2s}
-.crm-conexometro .crm-conexo-ctas a:hover{transform:translateY(-2px)}
-.crm-conexometro .crm-conexo-ctas a:first-child{background:#f97316;color:#16110f}
-.crm-conexometro .crm-conexo-ctas a:last-child{color:#f7f4ec;border:1px solid #595049}
-@keyframes crmConexoPulse{50%{box-shadow:0 0 0 8px rgba(249,115,22,0)}}
-@media(max-width:860px){.crm-conexometro{padding:52px 22px 60px}.crm-conexometro .crm-conexo-stats{grid-template-columns:1fr}.crm-conexometro .crm-conexo-feature{min-height:240px;padding:26px}}
-@media(max-width:590px){.crm-conexometro .crm-conexo-feature-value{font-size:clamp(72px,20vw,106px)}.crm-conexometro .crm-conexo-secondary{grid-template-columns:1fr}.crm-conexometro .crm-conexo-card:first-child{grid-column:auto}.crm-conexometro .crm-conexo-card{padding:17px 20px}.crm-conexometro .crm-conexo-card-value{font-size:40px}.crm-conexometro .crm-conexo-ctas a{width:100%}.crm-conexometro .crm-conexo-feature{min-height:220px}}
-@media(prefers-reduced-motion:reduce){.crm-conexometro .crm-conexo-pulse{animation:none}.crm-conexometro .crm-conexo-card,.crm-conexometro .crm-conexo-ctas a{transition:none}}
-</style>
-<link rel="stylesheet" href="/assets/conexometro.css?v=20261014-2">
-<script src="/assets/conexometro.js?v=20261014-2" defer></script>
+
+<link rel="stylesheet" href="/assets/conexometro.css?v=20261014-3">
+<script src="/assets/conexometro.js?v=20261014-3" defer></script>
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -7954,7 +7920,7 @@ async function authInit(){
    try{window.posthog?.identify(data.user.id,{crm_logged_in:true});}catch{}
    authRenderUI();crmById('loggedUserHeadline').textContent=data.user.email||'';crmSyncAuth();
    if(needsOnboarding)setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);else setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);
-   if(location.hash.includes('access_token'))history.replaceState(null,'','/dashboard');
+   if(location.hash.includes('access_token'))history.replaceState(null,'','/membros');
   }catch{if(epoch!==crmAuthEpoch)return;crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
  };
  authSb.auth.onAuthStateChange((event,session)=>{
@@ -8556,7 +8522,7 @@ function crmSyncAuth(){
    const requested=crmPendingRoute;
    crmPendingRoute=null;
    const current=crmRouteFromLocation();
-   const destination=requested||(current&&crmRoutes[current]?current:'inicio');
+   const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]?current:'membros');
    crmNavigate(destination,!!requested);}
   else{crmToggleMenu(false);crmNavigate('inicio');}
  }
@@ -8572,6 +8538,7 @@ function crmNavigate(route,updateHash=true){
  if(document.body.classList.contains('crm-menu-open'))crmToggleMenu(false);
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
+ if(route==='inicio'&&crmSignedIn())route='membros';
  if(route==='inicio'){
   crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
  }
