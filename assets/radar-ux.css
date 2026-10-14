@@ -87,14 +87,16 @@
 }
 #pageVagas #vagasContainerHub .crm-job-clean-apply{
   width:100%;min-height:40px;display:flex;align-items:center;justify-content:center;gap:7px;
-  padding:9px 12px!important;border:1px solid #f97316!important;border-radius:8px!important;
-  background:#f97316!important;color:#17110b!important;box-sizing:border-box;
-  font-size:12.5px!important;font-weight:750!important;text-decoration:none!important;
-  transition:background .12s ease!important
+  padding:9px 12px!important;border:1px solid #e9dca7!important;border-radius:13px!important;
+  background:#fff1b5!important;color:#4a3526!important;box-sizing:border-box;
+  font-size:12.5px!important;font-weight:700!important;text-decoration:none!important;
+  box-shadow:none!important;transition:background .12s ease,border-color .12s ease!important
 }
-#pageVagas #vagasContainerHub .crm-job-clean-apply:hover{background:#fb923c!important}
+#pageVagas #vagasContainerHub .crm-job-clean-apply:hover{
+  background:#ffe79b!important;border-color:#e1cc83!important;color:#4a3526!important
+}
 #pageVagas #vagasContainerHub .crm-job-clean-apply:focus-visible{
-  outline:3px solid #fdba74!important;outline-offset:3px!important
+  outline:2px solid #f6e8a3!important;outline-offset:3px!important
 }
 @media(max-width:1100px){
   #pageVagas #vagasContainerHub{grid-template-columns:repeat(2,minmax(0,1fr))!important}
