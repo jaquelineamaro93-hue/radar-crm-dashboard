@@ -46,4 +46,21 @@ for(const m of index.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["'](\/assets
 }
 assert(!fs.existsSync(path.join(root,'.index.html.swp')),'arquivo swap nao deve ser publicado');
 
+// Conexômetro mantém o layout restrito ao segundo bloco da home.
+const meterCss=read('assets/conexometro.css');
+assert(!index.includes('id="crm-conexometro-styles"'),'CSS antigo do Conexômetro não pode competir com o stylesheet novo');
+assert(meterCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'3 indicadores devem ter colunas iguais no desktop');
+assert(meterCss.includes('#crmConexometro .crm-conexo-secondary{display:contents}'),'indicadores do Radar/comunidade devem estar na mesma grade');
+assert(index.indexOf('id="crmConexometro"')>index.indexOf('id="publicHero"'),'Conexômetro deve ser segundo bloco da home');
+for(const [label,route] of [['Explorar vagas','vagas'],['Publicar vaga','publicar'],['Buscar talentos','public-match']]){
+ assert(index.includes('data-crm-route="'+route+'">'+label+'</a>'),'CTA ausente ou destino errado: '+label);
+}
+// Usuário autenticado nunca deve ser reenviado à home pública vazia.
+assert(index.includes("const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]?current:'membros');"),
+ 'Restauração da sessão precisa abrir Membros por padrão');
+assert(index.includes("if(route==='inicio'&&crmSignedIn())route='membros';"),
+ 'Navegação para home autenticada deve redirecionar para Membros');
+assert(index.includes("if(location.hash.includes('access_token'))history.replaceState(null,'','/membros');"),
+ 'Callback OAuth deve voltar à área Membros');
+
 console.log('PASS portal-quality: fallback sincronizado, JS inline parseia, rotas criticas unicas, cards estaveis, admin protegido, hardening e assets presentes.');
