@@ -1249,7 +1249,17 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 
 <link rel="stylesheet" href="/assets/conexometro.css?v=20261014-odometer">
 <script src="/assets/conexometro.js?v=20261014-odometer" defer></script>
-</head>
+<style id="crm-radar-filter-ux">
+#vagasContainerHub .crm-job-status-line{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 11px}
+#vagasContainerHub .crm-job-status,#vagasContainerHub .crm-job-contract{font-size:11px;font-weight:700;padding:4px 8px;border:1px solid #7776;border-radius:18px}
+#vagasContainerHub .crm-job-status-open{color:#57d98d;background:#229f4819}
+#vagasContainerHub .crm-job-status-closed{color:#aaa}
+#vagasContainerHub .crm-job-status-unverified{color:#cba677;background:#b3812612}
+#vagasContainerHub .crm-job-snippet{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 9px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
+#vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
+#vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
+</style></head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -2509,6 +2519,10 @@ crmShowSurveyReminder();
         <h3 style="font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 12px;">Filtros</h3>
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:12px;">
+          <div><label for="filtro-categoria" style="display:block;font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Área / Categoria</label>
+          <select id="filtro-categoria" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text)">
+          <option value="">Todas as áreas</option><option value="crm">CRM e Martech</option><option value="cxcs">Customer Success e CX</option><option value="marketing">Marketing e Automação</option>
+          <option value="revops">RevOps e SalesOps</option><option value="designer">Product Design e UX</option><option value="data">Dados, IA e Tecnologia</option></select></div>
           <!-- Busca por Cargo -->
           <div>
             <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;" for="filtro-cargo">Cargo / Título</label>
@@ -2610,12 +2624,13 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas Disponíveis</h3>
+          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas publicadas nos últimos 14 dias</h3>
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
       </div>
 
+      <div id="crmRadarHistorico" class="crm-radar-historico" aria-live="polite" style="font-size:12px;color:var(--muted);margin:14px 0 17px"></div>
       <!-- Grid de Vagas -->
       <div id="vagasContainerHub" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;">
         <div style="grid-column:1/-1; text-align:center; padding:32px 16px;">
@@ -3851,12 +3866,13 @@ async function carregarVagasHub() {
     }
 
     console.log('[VAGAS] Iniciando consulta de vagas...');
+    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
     const { data, error, count } = await vagasSb
       .from('vagas_crm')
       .select('*', { count: 'exact' })
       .neq('availability_status', 'closed')
-      .order('last_seen_at', { ascending: false, nullsFirst: false })
-      .order('found_at', { ascending: false })
+      .gte('published_at',cutoff14)
+      .order('published_at', { ascending: false })
       .limit(1000);
 
     if (error) {
@@ -3934,7 +3950,7 @@ function mapearCampoVaga(vaga) {
     id: vaga.id || vaga.job_id || vaga.url_hash || '',
     cargo: vaga.cargo || vaga.title || vaga.job_title || '',
     empresa: obterEmpresa(vaga),
-    nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
+    nivel: vaga.senioridade_normalizada || vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
     fonte: vaga.fonte || vaga.source || vaga.job_source || '',
     descricao: vaga.descricao || vaga.description || '',
     requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
@@ -3942,7 +3958,7 @@ function mapearCampoVaga(vaga) {
     criado_em: vaga.published_at || vaga.criado_em || vaga.created_at || vaga.posted_at || '',
     disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
-    modalidade: obterModalidade(vaga),
+    modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
     localidade: crmJobLocationInfo(vaga)
   };
 }
@@ -3962,6 +3978,8 @@ function renderizarVagasHub(vagas) {
     <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="border-left:4px solid #be8f63; animation:fadeInVaga 0.3s ease-out; animation-delay:${idx * 30}ms; display:flex; flex-direction:column;">
       <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
       <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
+      <div class="crm-job-status-line"><span class="crm-job-status ${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at?'crm-job-status-open':vaga.disponibilidade==='closed'?'crm-job-status-closed':'crm-job-status-unverified'}">${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at?'Disponibilidade verificada':vaga.disponibilidade==='closed'?'Encerrada':'A verificar'}</span>
+      ${vagaRaw.tipo_contrato?'<span class="crm-job-contract">'+escapeHtmlVagas(vagaRaw.tipo_contrato)+'</span>':''}</div>
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
@@ -3970,7 +3988,8 @@ function renderizarVagasHub(vagas) {
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
 
-      ${vaga.descricao ? `<p style="font-size:12px; color:var(--muted); margin:0 0 8px; line-height:1.4; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${escapeHtmlVagas(vaga.descricao)}</p>` : ''}
+      ${(vagaRaw.descricao_resumo||vaga.descricao) ? `<p class="crm-job-snippet">${escapeHtmlVagas((vagaRaw.descricao_resumo||vaga.descricao).slice(0,250))}</p>` : ''}
+      ${vaga.descricao && vaga.descricao.length>250 ? `<details class="crm-job-details"><summary>Ver descrição completa</summary><p>${escapeHtmlVagas(vaga.descricao)}</p></details>` : ''}
 
       ${vaga.requisitos ? `<div style="font-size:10px; color:var(--muted); background:var(--panel-2); border-left:2px solid var(--accent); padding:6px 8px; margin-bottom:8px; border-radius:4px;"><strong>Requisitos:</strong> ${escapeHtmlVagas(vaga.requisitos.substring(0, 80))}${vaga.requisitos.length > 80 ? '...' : ''}</div>` : ''}
 
@@ -3984,6 +4003,19 @@ function renderizarVagasHub(vagas) {
   `;
   }).join('');
   observarVagasVisiveisHub();
+  // Dados resumidos a partir das vagas efetivamente exibidas, nunca empresas inventadas.
+  const panel=document.getElementById('crmRadarHistorico');
+  if(panel){
+    const jobs=vagas.filter(v=>v.company || v.empresa);
+    const counts=new Map();
+    jobs.forEach(v=>{
+      const name=String(v.company||v.empresa||'').trim();
+      if(!name||/^(não informado|empresa confidencial)$/i.test(name))return;
+      counts.set(name,(counts.get(name)||0)+1);
+    });
+    const top=[...counts].sort((a,b)=>b[1]-a[1]).slice(0,7);
+    panel.textContent=top.length ? 'Empresas com vagas recentes nesta busca: '+top.map(([name,num])=>name+' ('+num+')').join(' · ') : '';
+  }
 }
 
 const crmJobViewedHub = new Set();
@@ -4036,6 +4068,8 @@ async function aplicarFiltrosVagas() {
   try {
     initVagasSupabase();
 
+    const categoria = document.getElementById('filtro-categoria')?.value || '';
+    const modalidade = document.getElementById('filtro-modalidade')?.value || '';
     const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
     const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
     const nivel = document.getElementById('filtro-nivel-hub').value;
@@ -4044,11 +4078,23 @@ async function aplicarFiltrosVagas() {
     const municipio = sanitizeInputVagas(document.getElementById('filtro-municipio')?.value || '', 80);
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
-    let query = vagasSb.from('vagas_crm').select('*').neq('availability_status', 'closed');
+    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
+    let query = vagasSb.from('vagas_crm').select('*',{count:'exact'})
+      .neq('availability_status', 'closed').gte('published_at',cutoff14);
 
-    if (cargo) {
-      query = query.ilike('title', `%${cargo}%`);
+    const areaMap={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],
+      revops:['revops','salesops'],designer:['product-design'],data:['data-analytics','ai','tech','qa','product-management']};
+    if(categoria&&areaMap[categoria])query=query.in('categoria_slug',areaMap[categoria]);
+    if(cargo){
+      const lower=cargo.toLocaleLowerCase('pt-BR').trim();
+      const synonyms={cs:['customer-success','customer-experience'],cx:['customer-experience','customer-success'],
+        crm:['crm'],ux:['product-design'],ia:['ai'],ai:['ai'],revops:['revops']};
+      if(synonyms[lower]){
+        const matches=synonyms[lower].map(slug=>'categoria_slug.eq.'+slug);
+        query=query.or(['title.ilike.%'+lower+'%',...matches].join(','));
+      }else query=query.ilike('title','%'+cargo+'%');
     }
+    if(modalidade)query=query.eq('modalidade_normalizada',modalidade);
 
     if (empresa) {
       query = query.ilike('company', `%${empresa}%`);
@@ -8690,14 +8736,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 async function crmSearchJobs(){
  const seq=++crmJobSearchSequence;
- const searchProps={cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',estado:crmById('filtro-estado')?.value||'',municipio:crmById('filtro-municipio')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
+ const searchProps={categoria:crmById('filtro-categoria')?.value||'',cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',estado:crmById('filtro-estado')?.value||'',municipio:crmById('filtro-municipio')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
  window.posthogTracker?.track('search_performed',{area:'vagas',...searchProps});
 
  for(const n of ['cargo','empresa','nivel','plataforma'])crmById('filtro-'+n+'-hub').value=crmById('filtro-'+n).value;
  const b=crmById('btn-buscar');b.disabled=true;b.textContent='Buscando…';
  try{await aplicarFiltrosVagas();if(seq===crmJobSearchSequence)crmFilterModality();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
 }
-function crmClearJobs(){for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
+function crmClearJobs(){if(crmById('filtro-categoria'))crmById('filtro-categoria').value='';for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
 function crmFilterModality(){
  const container=crmById('vagasContainerHub'),value=crmById('filtro-modalidade').value;
  const cards=Array.from(container.children).filter(c=>c.querySelector('h3'));
