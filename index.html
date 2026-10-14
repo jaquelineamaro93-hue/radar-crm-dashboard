@@ -1259,7 +1259,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-compact2">
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-cards1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2625,7 +2625,7 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas publicadas nos últimos 14 dias</h3>
+          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
@@ -2640,10 +2640,7 @@ crmShowSurveyReminder();
         </div>
       </div>
 
-    <div class="crm-radar-archive" id="crmRadarArchive" style="margin-top:35px;padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--panel)">
-  <h3 style="margin:0 0 8px;font-size:16px">Vagas encerradas nesta área</h3>
-  <p id="crmRadarArchiveList" style="font-size:12px;color:var(--muted)">Consultando registros encerrados, sem excluir oportunidades salvas</p>
-</div>
+
     </section>
   </div><div class="tab-page" id="pageConteudos">
   <section class="cx-hub">
