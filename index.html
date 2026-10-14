@@ -2624,12 +2624,13 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas Disponíveis</h3>
+          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas publicadas nos últimos 14 dias</h3>
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
       </div>
 
+      <div id="crmRadarHistorico" class="crm-radar-historico" aria-live="polite" style="font-size:12px;color:var(--muted);margin:14px 0 17px"></div>
       <!-- Grid de Vagas -->
       <div id="vagasContainerHub" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;">
         <div style="grid-column:1/-1; text-align:center; padding:32px 16px;">
@@ -3865,12 +3866,13 @@ async function carregarVagasHub() {
     }
 
     console.log('[VAGAS] Iniciando consulta de vagas...');
+    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
     const { data, error, count } = await vagasSb
       .from('vagas_crm')
       .select('*', { count: 'exact' })
       .neq('availability_status', 'closed')
-      .order('last_seen_at', { ascending: false, nullsFirst: false })
-      .order('found_at', { ascending: false })
+      .gte('published_at',cutoff14)
+      .order('published_at', { ascending: false })
       .limit(1000);
 
     if (error) {
@@ -3948,7 +3950,7 @@ function mapearCampoVaga(vaga) {
     id: vaga.id || vaga.job_id || vaga.url_hash || '',
     cargo: vaga.cargo || vaga.title || vaga.job_title || '',
     empresa: obterEmpresa(vaga),
-    nivel: vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
+    nivel: vaga.senioridade_normalizada || vaga.nivel || vaga.level || vaga.seniority || vaga.salary_level || '',
     fonte: vaga.fonte || vaga.source || vaga.job_source || '',
     descricao: vaga.descricao || vaga.description || '',
     requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
@@ -3956,7 +3958,7 @@ function mapearCampoVaga(vaga) {
     criado_em: vaga.published_at || vaga.criado_em || vaga.created_at || vaga.posted_at || '',
     disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
-    modalidade: obterModalidade(vaga),
+    modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
     localidade: crmJobLocationInfo(vaga)
   };
 }
@@ -4001,6 +4003,19 @@ function renderizarVagasHub(vagas) {
   `;
   }).join('');
   observarVagasVisiveisHub();
+  // Dados resumidos a partir das vagas efetivamente exibidas, nunca empresas inventadas.
+  const panel=document.getElementById('crmRadarHistorico');
+  if(panel){
+    const jobs=vagas.filter(v=>v.company || v.empresa);
+    const counts=new Map();
+    jobs.forEach(v=>{
+      const name=String(v.company||v.empresa||'').trim();
+      if(!name||/^(não informado|empresa confidencial)$/i.test(name))return;
+      counts.set(name,(counts.get(name)||0)+1);
+    });
+    const top=[...counts].sort((a,b)=>b[1]-a[1]).slice(0,7);
+    panel.textContent=top.length ? 'Empresas com vagas recentes nesta busca: '+top.map(([name,num])=>name+' ('+num+')').join(' · ') : '';
+  }
 }
 
 const crmJobViewedHub = new Set();
@@ -4063,7 +4078,9 @@ async function aplicarFiltrosVagas() {
     const municipio = sanitizeInputVagas(document.getElementById('filtro-municipio')?.value || '', 80);
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
-    let query = vagasSb.from('vagas_crm').select('*').neq('availability_status', 'closed');
+    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
+    let query = vagasSb.from('vagas_crm').select('*',{count:'exact'})
+      .neq('availability_status', 'closed').gte('published_at',cutoff14);
 
     const areaMap={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],
       revops:['revops','salesops'],designer:['product-design'],data:['data-analytics','ai','tech','qa','product-management']};
