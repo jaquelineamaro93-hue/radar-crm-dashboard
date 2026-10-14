@@ -3872,7 +3872,7 @@ async function carregarVagasHub() {
     console.log('[VAGAS] Iniciando consulta de vagas...');
     const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
     const { data, error, count } = await vagasSb
-      .from('vagas_crm')
+      .from('crm_radar_jobs_public')
       .select('*', { count: 'exact' })
       .neq('availability_status', 'closed')
       .gte('published_at',cutoff14)
@@ -4115,7 +4115,7 @@ async function aplicarFiltrosVagas() {
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
     const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
-    let query = vagasSb.from('vagas_crm').select('*',{count:'exact'})
+    let query = vagasSb.from('crm_radar_jobs_public').select('*',{count:'exact'})
       .neq('availability_status', 'closed').gte('published_at',cutoff14);
 
     const areaMap={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],
@@ -6718,7 +6718,7 @@ function loadVagas(){
     return;
   }
   // Otimized query: select only essential columns to avoid timeout
-  vgSb.from('vagas_crm')
+  vgSb.from('crm_radar_jobs_public')
     .select('id,title,company,location,url,found_at,source,category,availability_status')
     .neq('availability_status', 'closed')
     .order('found_at', {ascending:false})
@@ -9059,7 +9059,9 @@ async function crmLoadModeration(){
     b.onclick=async()=>{
      if(!confirm(approve?'Aprovar este item e publicar a alteração?':'Rejeitar este pedido?'))return;
      card.querySelectorAll('button').forEach(x=>x.disabled=true);
-     const {error}=(['crm_partner_communities','crm_freelancer_claims','crm_talent_claims'].includes(table))?await authSb.from(table).update({status:approve?'approved':'rejected'}).eq('id',row.id):await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
+     const {error}=(table==='crm_submission_requests'&&row.kind==='job')
+       ?await authSb.rpc('crm_moderate_community_job',{p_id:row.id,p_approve:approve})
+       :(['crm_partner_communities','crm_freelancer_claims','crm_talent_claims'].includes(table))?await authSb.from(table).update({status:approve?'approved':'rejected'}).eq('id',row.id):await authSb.rpc('crm_moderate_item',{p_table:table,p_id:row.id,p_approve:approve});
      if(epoch!==crmAuthEpoch)return;
      if(error){status.textContent=error.message;card.querySelectorAll('button').forEach(x=>x.disabled=false);return;}
      await crmLoadModeration();evToastMsg(approve?'Aprovado e publicado.':'Pedido rejeitado.','');
