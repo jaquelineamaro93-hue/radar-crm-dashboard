@@ -59,8 +59,8 @@ assert(html.includes('if(!keepCards)container.innerHTML ='),
   'Filtering and refresh should preserve existing cards without loading flash');
 assert(!html.includes("if(tab==='vagas'){ carregarVagasHub();"),
   'Returning to Radar must not start an unconditional fetch');
-assert(html.includes("document.hidden||!document.getElementById('pageVagas')?.classList.contains('active')"),
-  'Background updates should run only when Radar is visible');
+assert(!html.includes('setInterval(carregarVagasHub, 60000)')&&!html.includes('vagasAutoRefreshStarted=true;'),
+  'Do not repaint the Radar while visitors are scrolling: bot updates independently');
 assert(html.includes("if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length"),
   'Freelancer data must not reload on every navigation');
 assert(html.includes("if(e.detail>0)")&&html.includes("if(tapped)tapped.blur();"),
