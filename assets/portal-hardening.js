@@ -43,6 +43,22 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addAvatarStudioLink,{once:true});
   else addAvatarStudioLink();
 
+  // Onboarding in the signed-in workspace, scoped to one viewing per member.
+  if(!document.getElementById('cx-xp-onboarding-style')){
+    const link=document.createElement('link');
+    link.id='cx-xp-onboarding-style';
+    link.rel='stylesheet';
+    link.href='/assets/xp-onboarding.css?v=20261015-1';
+    document.head.appendChild(link);
+  }
+  if(!document.getElementById('cx-xp-onboarding-runtime')){
+    const script=document.createElement('script');
+    script.id='cx-xp-onboarding-runtime';
+    script.src='/assets/xp-onboarding.js?v=20261015-1';
+    script.defer=true;
+    document.head.appendChild(script);
+  }
+
   const state={
     version:'2026-10-03.2',
     lastValidatedAt:0,
