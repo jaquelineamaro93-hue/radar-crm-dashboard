@@ -25,4 +25,25 @@
    window.parent.postMessage({type:'cx-xp-navigation',route:dest},location.origin);
  }
  document.addEventListener('click',navigate);
+ let scheduled=false;
+ function reportHeight(){
+  scheduled=false;
+  const main=document.querySelector('main');
+  if(!main)return;
+  const height=Math.max(580,Math.ceil(main.getBoundingClientRect().top+main.scrollHeight+30));
+  window.parent.postMessage({type:'cx-xp-height',height},location.origin);
+ }
+ function scheduleHeight(){
+  if(scheduled)return;
+  scheduled=true;requestAnimationFrame(reportHeight);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleHeight,{once:true});
+ else scheduleHeight();
+ if(typeof ResizeObserver!=='undefined'){
+  const main=document.querySelector('main');
+  if(main)new ResizeObserver(scheduleHeight).observe(main);
+ }
+ window.addEventListener('load',scheduleHeight,{once:true});
+ document.fonts?.ready?.then(scheduleHeight).catch(()=>{});
+
 })();
