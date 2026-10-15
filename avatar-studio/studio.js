@@ -5,7 +5,7 @@ const c=window.CXAvatarCatalog;
 const $=id=>document.getElementById(id);
 const url='https://rwkbpafpniwzvlkfngag.supabase.co',key='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
 const fields=['hair_style','hair_color','skin','face','eyes','mouth','presentation','shirt','bg','accessory','badge'];
-let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',pending=false;
+let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',pending=false,isAdmin=false;
 const detail={
  hair_style:'Escolha uma textura e depois o penteado',hair_color:'Todas as cores podem ser combinadas com qualquer cabelo',
  skin:'Todos os tons de pele são gratuitos',face:'Escolha o formato que mais combina com você',
@@ -32,7 +32,7 @@ function updateAvatar(){
  $('currentHair').textContent=hair+' · '+color;
 }
 function updateWallet(){
- $('coins').textContent=coins===null?'—':coins.toLocaleString('pt-BR');
+ $('coins').textContent=isAdmin?'∞':coins===null?'—':coins.toLocaleString('pt-BR');
 }
 function tab(title,field,selected){
  const b=document.createElement('button');b.type='button';b.dataset.category=field;
@@ -74,12 +74,12 @@ function render(){
   const status=document.createElement('span');status.className='choice-note';
   if(item.cost===0){status.classList.add('choice-free');status.textContent='Gratuito';}
   else if(owns(category,item)){status.classList.add('choice-free');status.textContent='Adquirido';}
-  else if(item.cost===null){status.classList.add('choice-lock');status.textContent='Desbloqueio por conquista';}
-  else status.textContent=item.cost+' Coins';
+  else if(item.cost===null){status.classList.add('choice-lock');status.textContent=isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor'))?'Livre para admin':'Desbloqueio por conquista';}
+  else status.textContent=isAdmin?'Livre para admin':item.cost+' Coins';
   button.append(status);
   if(draft[category]===item.id){const badge=document.createElement('span');badge.className='choice-status';badge.textContent='Em uso';button.append(badge);}
-  else if(item.cost===null&&!owns(category,item)){button.disabled=true;button.setAttribute('aria-label',item.name+', desbloqueado por conquista');}
-  else if(!owns(category,item)&&coins!==null&&coins<item.cost){button.disabled=true;}
+  else if(item.cost===null&&!owns(category,item)&&!(isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor')))){button.disabled=true;button.setAttribute('aria-label',item.name+', desbloqueado por conquista');}
+  else if(!isAdmin&&!owns(category,item)&&coins!==null&&coins<item.cost){button.disabled=true;}
   fragment.append(button);
  }
  $('choices').replaceChildren(fragment);
@@ -89,10 +89,10 @@ async function choose(field,id){
  const item=c.find(field,id);if(!item)return;
  if(draft[field]===id)return;
  if(!owns(field,item)){
-  if(item.cost===null){toast('Item reservado para uma conquista validada');return;}
+  if(item.cost===null&&!(isAdmin&&(field==='hair_style'||field==='hair_color'||(field==='shirt'&&item.id==='mentor')))){toast('Item reservado para uma conquista validada');return;}
   if(!user){toast('Entre na sua conta para usar Coins');return;}
-  if(coins<item.cost){toast('Você precisa de mais Coins');return;}
-  if(!window.confirm('Resgatar '+item.name+' por '+item.cost+' Coins?'))return;
+  if(!isAdmin&&coins<item.cost){toast('Você precisa de mais Coins');return;}
+  if(!isAdmin&&!window.confirm('Resgatar '+item.name+' por '+item.cost+' Coins?'))return;
   pending=true;message('Confirmando seu resgate');
   try{
    const {data,error}=await db.rpc('crm_avatar_purchase',{p_item:c.itemKey(field,id)});
@@ -143,18 +143,19 @@ async function loadAccount(){
    db.rpc('crm_avatar_bootstrap'),
    db.from('crm_avatar_unlocks').select('item_key').eq('user_id',user.id),
    db.from('crm_avatar_profiles').select('config').eq('user_id',user.id).maybeSingle(),
-   db.rpc('crm_avatar_is_team_member')
+   db.rpc('crm_is_admin')
   ]);
   if(boot.error||ownedItems.error||profile.error||team.error)throw boot.error||ownedItems.error||profile.error||team.error;
   coins=Number(boot.data);
+  isAdmin=team.data===true;
   unlocks=new Set((ownedItems.data||[]).map(x=>x.item_key));
-  if(team.data===true)unlocks.add('badge-admin');
+  if(isAdmin)unlocks.add('badge-admin');
   if(profile.data?.config&&typeof profile.data.config==='object'){
    saved={...c.defaultConfig,...profile.data.config};
    draft={...saved};
    group=draft.hair_style.split('-')[0];
   }
-  $('accountStatus').textContent='Salvo com segurança na sua conta Conexão CRM';
+  $('accountStatus').textContent=isAdmin?'Administração · Coins ilimitadas para personalização, sem alterar o saldo':'Salvo com segurança na sua conta Conexão CRM';
   message('Tudo pronto para personalizar');
   render();
  }catch(err){
