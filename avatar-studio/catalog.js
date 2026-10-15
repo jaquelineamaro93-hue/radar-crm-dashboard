@@ -63,28 +63,25 @@ function hairSvg(group,variant,color){
   if(v===4)out+='<path d="M112 94Q154 130 196 94" stroke="'+dark+'" stroke-width="17" fill="none"/>';
   if(v===5||v===6)out+='<ellipse cx="150" cy="68" rx="'+(v===5?35:43)+'" ry="21" fill="'+dark+'"/>';
  }else if(group==='cacheado'||group==='crespo'||group==='afro'){
-  const afro=group==='afro',coily=group==='crespo';
-  const rowCount=afro?6:coily?5:4;
-  const radius=afro?24:coily?14:19;
-  const hairWidth=afro?(v===3?103:v===1?77:90):coily?(v===1?62:76):v===4?85:70;
-  const height=(v===1?65:v===3?110:v===4?87:80);
-  for(let row=0;row<rowCount;row++){
-   const y=115-row*16;
-   const width=hairWidth*Math.sqrt(Math.max(.08,1-((y-118)/height)**2));
-   const count=Math.max(4,Math.ceil(width*2/(radius*1.45)));
-   for(let n=0;n<count;n++){const x=150-width+(count===1?0:(n*2*width/(count-1)));out+=cluster(Math.round(x),y,Math.round(radius*(.85+(row%2)*.1)));}
+  const afro=group==='afro',tight=group==='crespo';
+  const width=afro?[80,91,105,91,94,95][v-1]:tight?[68,79,84,76,81,91][v-1]:[72,77,82,91,72,86][v-1];
+  const top=afro?49:tight?58:63,radius=afro?17:tight?10:15;
+  out+='<path d="M'+(150-width)+' 164 Q'+(150-width-17)+' 103 '+(150-width+12)+' 76 Q113 '+top+' 150 '+top+' Q197 '+top+' '+(150+width-12)+' 76 Q'+(150+width+17)+' 106 '+(150+width)+' 164 L'+(150+width-7)+' '+(v===3?270:213)+' L206 '+(v===3?268:208)+' Q214 135 187 113 Q149 94 113 116 Q89 142 96 '+(v===3?270:208)+' L'+(150-width+7)+' '+(v===3?270:213)+'Z" fill="'+dark+'"/>';
+  for(let i=0;i<18;i++){
+   const angle=Math.PI*1.02+Math.PI*.97*i/17;
+   const x=150+Math.cos(angle)*(width-4),y=131+Math.sin(angle)*(131-top);
+   out+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="'+(radius+i%3)+'" ry="'+(radius*.88+i%2).toFixed(1)+'" fill="'+dark+'"/>';
   }
-  if(v===2||v===3||v===4||v===6){
-   const length=v===3?245:v===4?169:v===6?199:180;
-   const count=v===3?7:5;
-   for(let side of [-1,1])for(let n=0;n<count;n++){
-    const x=150+side*(57+n*5),y=125+(n%2)*10;
-    for(let j=0;j<(length-y)/16;j++)out+=cluster(x+side*((j%2)*2),y+j*16,coily?13:afro?19:16);
+  if(v===2||v===3||v===6){
+   const length=v===3?272:v===6?238:215;
+   for(const side of [-1,1])for(let i=0;i<3;i++){
+    const x=150+side*(width-6-i*7);
+    out+='<path d="M'+x+' 132 Q'+(x+side*13)+' 159 '+x+' 180 T'+x+' '+length+'" fill="none" stroke="'+dark+'" stroke-width="'+(tight?13:20)+'" stroke-linecap="round"/>';
    }
   }
-  if(v===4)out+='<ellipse cx="150" cy="44" rx="39" ry="26" fill="'+dark+'"/>';
-  if(v===5)out+='<ellipse cx="150" cy="54" rx="38" ry="29" fill="'+dark+'"/>';
-  if(afro&&v===5)out+='<path d="M50 102Q150 52 251 102" fill="none" stroke="#e6ab74" stroke-width="8"/>';
+  if(v===4||v===5)out+='<ellipse cx="150" cy="51" rx="'+(v===4?31:39)+'" ry="25" fill="'+dark+'"/>';
+  if(afro&&v===5)out+='<path d="M'+(150-width)+' 114 Q150 77 '+(150+width)+' 114" fill="none" stroke="#d9ab89" stroke-width="7"/>';
+  out+='<path d="M116 82Q150 67 179 83" fill="none" stroke="#ffffff26" stroke-width="2" stroke-linecap="round"/>';
  }else if(group==='trancado'){
   out=roots;
   if(v===5)out+='<ellipse cx="154" cy="57" rx="32" ry="24" fill="'+dark+'"/>';
@@ -115,20 +112,27 @@ function renderSvg(input={},small=false){
  const shirt={crm:['#f97316',['CRM não é','disparo']],cx:['#f4d7c8',['Cliente','no centro']],ti:['#496c82',['API é','vida']],mentor:['#755092',['Mentoria','transforma']]}[c.shirt]||['#f97316',['CRM não é','disparo']];
  const face=Number(c.face.slice(-2))||1,eye=Number(c.eyes.slice(-2))||1,mouth=Number(c.mouth.slice(-2))||1;
  const rx=[0,55,61,48,52,57,51][face],ry=[0,68,64,76,65,70,68][face];
- const eyecolor='#3a251e',eyeY=147+(face===3?5:0);
- const eyeShape=eye===1?'<circle cx="128" cy="'+eyeY+'" r="4"/><circle cx="174" cy="'+eyeY+'" r="4"/>':
- eye===2?'<ellipse cx="128" cy="'+eyeY+'" rx="6" ry="4"/><ellipse cx="174" cy="'+eyeY+'" rx="6" ry="4"/>':
- eye===3?'<path d="M121 '+eyeY+'q7-7 14 0m32 0q7-7 14 0" fill="none" stroke="'+eyecolor+'" stroke-width="4"/>':
- eye===4?'<circle cx="128" cy="'+eyeY+'" r="5"/><circle cx="174" cy="'+eyeY+'" r="5"/>':
- eye===5?'<path d="M122 '+eyeY+'q6 6 12 0m34 0q6 6 12 0" fill="none" stroke="'+eyecolor+'" stroke-width="3"/>':
- '<ellipse cx="128" cy="'+eyeY+'" rx="3" ry="5"/><ellipse cx="174" cy="'+eyeY+'" rx="3" ry="5"/>';
+ const eyecolor='#39221e',eyeY=148+(face===3?4:0);
+ const eyeTypes=[[10,8,5.4],[12,6.5,5],[11,5,4],[12,10,6],[9,6,4.5],[11,7.5,5.5]];
+ const dims=eyeTypes[eye-1]||eyeTypes[0],iris=['#724b37','#46899d','#5b8063','#8c577e','#a08255','#594a73'][eye-1];
+ const dollEye=x=>{
+  const rx=dims[0],ry=dims[1],y=eyeY;
+  return '<path d="M'+(x-rx-2)+' '+y+'Q'+x+' '+(y-ry*1.65)+' '+(x+rx+2)+' '+y+'Q'+x+' '+(y+ry*.85)+' '+(x-rx-2)+' '+y+'Z" fill="#fff9ef" stroke="'+eyecolor+'" stroke-width="2.3"/>'+
+  '<circle cx="'+x+'" cy="'+(y-.6)+'" r="'+dims[2]+'" fill="'+iris+'"/>'+
+  '<circle cx="'+x+'" cy="'+(y-.6)+'" r="'+(dims[2]*.56)+'" fill="#292022"/>'+
+  '<circle cx="'+(x-2)+'" cy="'+(y-3.4)+'" r="2" fill="#fff"/>'+
+  '<path d="M'+(x-rx)+' '+y+'l-4 -5 M'+(x-rx+4)+' '+(y-ry*.8)+'l-2 -5 M'+(x+rx)+' '+y+'l4 -5" fill="none" stroke="'+eyecolor+'" stroke-width="2" stroke-linecap="round"/>';
+ };
+ const eyeShape=dollEye(127)+dollEye(175);
  const smiles=[
- '<path d="M135 187q17 11 33 0"/>',
- '<path d="M133 184q18 21 37 0Z" fill="#9b4d52" stroke="#9b4d52"/><path d="M139 187h24" stroke="#f6e9dd" stroke-width="3"/>',
- '<path d="M141 188h20"/>',
- '<path d="M136 185q14 7 29 0"/>',
- '<path d="M135 181q16 17 33 0"/>',
- '<path d="M138 188q12 3 25 0"/>'][mouth-1];
+ '<path d="M137 184Q151 194 166 184Q151 202 137 184Z" fill="#bf6b76" stroke="#a35463" stroke-width="1.1"/>',
+ '<path d="M134 182Q151 206 169 182Q151 191 134 182Z" fill="#a6475c"/><path d="M140 186Q151 192 163 186" fill="none" stroke="#fff2e5" stroke-width="4"/>',
+ '<path d="M142 187Q152 185 161 187" fill="none" stroke="#a75e65" stroke-width="3" stroke-linecap="round"/>',
+ '<path d="M139 183Q155 190 167 181Q151 200 139 183Z" fill="#bf6d7d"/>',
+ '<ellipse cx="151" cy="187" rx="9" ry="11" fill="#a6485c"/><ellipse cx="151" cy="185" rx="6" ry="3" fill="#ffdfd5"/>',
+ '<path d="M135 186Q143 176 151 183Q160 177 168 186Q151 204 135 186Z" fill="#b85c74" stroke="#9c4056" stroke-width="1.4"/>'
+ ][mouth-1];
+ const blush='<ellipse cx="113" cy="174" rx="12" ry="6" fill="#d47a78" opacity=".22"/><ellipse cx="190" cy="174" rx="12" ry="6" fill="#d47a78" opacity=".22"/>';
  const id='cxavatar-'+(++serial),badge={star:'★',mic:'♫',flame:'✦',crown:'♛',admin:'◆'}[c.badge]||'★';
  const neck='<path d="M133 200v33q17 16 34 0v-33" fill="'+skin+'"/>';
  const overlay=c.accessory==='glasses'?'<rect x="114" y="136" width="30" height="22" rx="8"/><rect x="159" y="136" width="30" height="22" rx="8"/><path d="M144 143h15"/>':
@@ -143,7 +147,7 @@ function renderSvg(input={},small=false){
  '<ellipse cx="151" cy="152" rx="'+rx+'" ry="'+ry+'" fill="'+skin+'"/>'+
  '<path d="M96 155q-14-12-12 10t16 11M205 155q14-12 12 10t-16 11" fill="'+skin+'"/>'+
  '<path d="M118 136q10-6 21 0m24 0q10-6 21 0" stroke="#553b31" stroke-width="3.2" fill="none" stroke-linecap="round"/>'+
- '<g fill="'+eyecolor+'" stroke="'+eyecolor+'">'+eyeShape+'</g>'+
+ '<g>'+eyeShape+'</g>'+blush+
  '<path d="M150 151l-4 20 7 2" stroke="#99694e" stroke-width="2.4" fill="none"/>'+
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
  hairSvg(group,Number(index),hairColor)+
