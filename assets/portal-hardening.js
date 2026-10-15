@@ -115,7 +115,7 @@
   if(!document.getElementById('cx-xp-onboarding-runtime')){
     const script=document.createElement('script');
     script.id='cx-xp-onboarding-runtime';
-    script.src='/assets/xp-onboarding.js?v=20261015-4';
+    script.src='/assets/xp-onboarding.js?v=20261015-5';
     script.defer=true;
     document.head.appendChild(script);
   }
