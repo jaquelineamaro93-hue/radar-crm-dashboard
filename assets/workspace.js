@@ -168,11 +168,15 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   }
   function normalize(route){route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;return route==='dashboard'?(crmSignedIn()?'membro':'mercado'):route;}
   function currentRoute(){try{return normalize(crmActiveRoute||crmRouteFromLocation?.()||'');}catch{return '';}}
-  let syncTimer=0;
+  let syncFrame=0;
   function sync(route=currentRoute()){
-    clearTimeout(syncTimer);const target=normalize(route);
-    requestAnimationFrame(()=>render(target));
-    syncTimer=setTimeout(()=>render(target||currentRoute()),100);
+    // One paint per navigation, avoiding the extra 100 ms repaint.
+    const target=normalize(route);
+    if(syncFrame)cancelAnimationFrame(syncFrame);
+    syncFrame=requestAnimationFrame(()=>{
+      syncFrame=0;
+      render(target||currentRoute());
+    });
   }
   const originalNavigate=window.crmNavigate;
   if(typeof originalNavigate==='function'){
