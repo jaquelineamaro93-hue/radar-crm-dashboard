@@ -1,16 +1,18 @@
 /* When Conexão XP is embedded in the member workspace, the existing sidebar owns navigation */
-html:has(body.cx-xp-embedded),body.cx-xp-embedded{background:#141210!important}
-body.cx-xp-embedded .top,body.cx-xp-embedded .navhead,
-body.cx-xp-embedded .cx-return-bar,body.cx-xp-embedded .breadcrumbs,
-body.cx-xp-embedded .bread,body.cx-xp-embedded .studio-shortcuts,
-body.cx-xp-embedded footer{display:none!important}
-body.cx-xp-embedded main{max-width:1250px!important;padding:18px 12px 30px!important;margin:0 auto!important}
-body.cx-xp-embedded #content,body.cx-xp-embedded #studio{min-height:560px}
-body.cx-xp-embedded .hero{margin-top:0}
-body.cx-xp-embedded .intro{margin-top:0}
+html:has(body.cx-xp-embedded,html.cx-xp-embedded-mode body),body.cx-xp-embedded,html.cx-xp-embedded-mode body{background:#141210!important}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body .top,body.cx-xp-embedded,html.cx-xp-embedded-mode body .navhead,
+body.cx-xp-embedded,html.cx-xp-embedded-mode body .cx-return-bar,body.cx-xp-embedded,html.cx-xp-embedded-mode body .breadcrumbs,
+body.cx-xp-embedded,html.cx-xp-embedded-mode body .bread,body.cx-xp-embedded,html.cx-xp-embedded-mode body .studio-shortcuts,
+body.cx-xp-embedded,html.cx-xp-embedded-mode body footer{display:none!important}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body main{max-width:1250px!important;padding:18px 12px 30px!important;margin:0 auto!important}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body #content,body.cx-xp-embedded,html.cx-xp-embedded-mode body #studio{min-height:560px}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body .hero{margin-top:0}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body .intro{margin-top:0}
 @media(max-width:700px){
- body.cx-xp-embedded main{padding:14px 9px 35px!important}
- body.cx-xp-embedded .intro h1,body.cx-xp-embedded .hero h1{font-size:30px}
+ body.cx-xp-embedded,html.cx-xp-embedded-mode body main{padding:14px 9px 35px!important}
+ body.cx-xp-embedded,html.cx-xp-embedded-mode body .intro h1,body.cx-xp-embedded,html.cx-xp-embedded-mode body .hero h1{font-size:30px}
 }
 
-body.cx-xp-embedded{overflow-x:hidden!important}body.cx-xp-embedded .skip{display:none!important}
+body.cx-xp-embedded,html.cx-xp-embedded-mode body{overflow-x:hidden!important}body.cx-xp-embedded,html.cx-xp-embedded-mode body .skip{display:none!important}
+
+html.cx-xp-embedded-mode body .navhead,html.cx-xp-embedded-mode body .top,html.cx-xp-embedded-mode body .cx-return-bar,html.cx-xp-embedded-mode body .breadcrumbs,html.cx-xp-embedded-mode body .bread,html.cx-xp-embedded-mode body .studio-shortcuts{display:none!important}
