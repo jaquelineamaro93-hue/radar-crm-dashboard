@@ -3796,14 +3796,20 @@ function escapeHtmlVagas(str) {
   return div.innerHTML;
 }
 
+// Data de publicação não é a data em que o bot reencontrou a vaga.
+// Fontes que enviam só o dia gravam 00:00 UTC. Preservar o DIA declarado
+// evita mostrar 14/10 para um anúncio marcado como 15/10 na origem.
+function crmJobPublicationDate(v) {
+  if(!v)return null;
+  const raw=String(v).trim();
+  const dt=new Date(raw);
+  if(!Number.isFinite(dt.getTime()))return null;
+  const dateOnlyUTC=/^\\d{4}-\\d{2}-\\d{2}T00:00:00(?:\\.0+)?(?:Z|\\+00(?::?00)?)$/.test(raw);
+  return {date:dt,zone:dateOnlyUTC?'UTC':'America/Sao_Paulo',sourceDayOnly:dateOnlyUTC};
+}
 function formatarDataVagas(dataString) {
-  if (!dataString) return '';
-  try {
-    const data = new Date(dataString);
-    return data.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
-  } catch {
-    return '';
-  }
+  const info=crmJobPublicationDate(dataString);
+  return info?info.date.toLocaleDateString('pt-BR',{year:'numeric',month:'short',day:'numeric',timeZone:info.zone}):'';
 }
 
 const CRM_JOB_STATE_LABELS = {
@@ -3944,11 +3950,15 @@ async function carregarVagasHub() {
       const date = Date.parse(v.found_at || v.created_at || '');
       return Number.isFinite(date) ? Math.max(max, date) : max;
     }, 0);
-    const latestSighting = lastSeen || lastFound;
+    const latestSighting = Math.max(lastSeen,lastFound);
     const lastRunEl = document.getElementById('vagasUltimaColetaHub');
-    if (lastRunEl) lastRunEl.textContent = latestSighting
-      ? (lastSeen ? 'Última vaga reencontrada: ' : 'Última vaga cadastrada: ') + new Date(latestSighting).toLocaleDateString('pt-BR')
-      : 'Sem data de coleta confirmada';
+    if(lastRunEl){
+      lastRunEl.textContent=latestSighting
+        ? 'Última verificação pelo bot: '+new Date(latestSighting).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})+
+          ' · Verificação não significa vaga nova'
+        : 'Sem data de verificação confirmada';
+      lastRunEl.title='A data exibida é a última consulta às vagas, não a publicação de novos anúncios';
+    }
     crmRadarLastLoadedAt=Date.now();
     renderizarVagasHub(todasAsVagasHub);
     crmLoadClosedJobs();
@@ -4004,6 +4014,7 @@ function mapearCampoVaga(vaga) {
     requisitos: vaga.requisitos || vaga.requirements || vaga.skills || '',
     salario: vaga.salario || vaga.salary || vaga.salary_range || '',
     criado_em: vaga.published_at || vaga.criado_em || vaga.created_at || vaga.posted_at || '',
+    publicacao: vaga.published_at || '',
     disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
     modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
@@ -4077,7 +4088,7 @@ function renderizarVagasHub(vagas) {
       ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
 
       <div class="crm-job-clean-footer">
-        <span class="crm-job-posted-date">${formatarDataVagas(vaga.criado_em) ? formatarDataVagas(vaga.criado_em) : "Data não informada"}</span>
+        <span class="crm-job-posted-date">${vaga.publicacao&&formatarDataVagas(vaga.publicacao) ? 'Publicação informada pela fonte: '+formatarDataVagas(vaga.publicacao) : 'Data de publicação não informada'}</span>
         ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ""}
       </div>
     </div>
@@ -9751,6 +9762,6 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 </script><script src="/assets/xp-shell.js?v=1"></script>
 <script src="/assets/portal-hardening.js?v=20261015-xp-shell1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
-<script defer src="/assets/share-everything.js?v=20261015-og1"></script>
+<script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 </body>
 </html>
