@@ -23,7 +23,10 @@ function register(){
   const label=document.createElement('div');label.className='cx-xp-loading';label.setAttribute('role','status');
   label.textContent='Abrindo '+sp.label+' no Conexão CRM';
   const frame=document.createElement('iframe');
-  frame.className='cx-xp-embedded-frame';frame.dataset.src=sp.path;
+  frame.className='cx-xp-embedded-frame';
+  const target=new URLSearchParams(location.search).get('xp_recommend')||'';
+  const validTarget=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(target);
+  frame.dataset.src=sp.path+(route==='xp-rankings'&&validTarget?'&recommend='+encodeURIComponent(target):'');
   frame.title='Conexão XP: '+sp.label;
   frame.loading='eager';frame.referrerPolicy='same-origin';
   frame.style.cssText='display:block;width:100%;height:900px;min-height:600px;border:0;background:transparent;overflow:hidden';
