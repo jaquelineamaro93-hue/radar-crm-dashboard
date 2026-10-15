@@ -26,6 +26,23 @@
     document.head.appendChild(script);
   }
 
+  // Conexão XP: member avatar editor lives on its own route
+  function addAvatarStudioLink(){
+    const nav=document.querySelector('.crm-nav-items');
+    if(!nav||document.getElementById('crmAvatarStudioLink'))return;
+    const section=document.createElement('span');
+    section.className='crm-nav-section';section.textContent='Conexão XP';
+    const link=document.createElement('a');
+    link.id='crmAvatarStudioLink';
+    link.href='/avatar-studio/';
+    link.className='tab-btn';
+    link.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+    link.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="m17 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></span>Meu Avatar';
+    nav.append(section,link);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addAvatarStudioLink,{once:true});
+  else addAvatarStudioLink();
+
   const state={
     version:'2026-10-03.2',
     lastValidatedAt:0,
