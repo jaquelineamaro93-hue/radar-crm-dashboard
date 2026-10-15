@@ -214,6 +214,11 @@ function renderSvg(input={},small=false){
  const shirt={crm:['#f97316',['CRM não é','disparo']],cx:['#fffaf3',['Cliente','no centro']],ti:['#496c82',['API é','vida']],mentor:['#755092',['Mentoria','transforma']]}[c.shirt]||['#f97316',['CRM não é','disparo']];
  const face=Number(c.face.slice(-2))||1,eye=Number(c.eyes.slice(-2))||1,mouth=Number(c.mouth.slice(-2))||1;
  const rx=[0,55,61,48,52,57,51][face],ry=[0,68,64,76,65,70,68][face];
+ const faceShape=c.presentation==='masculino'
+  ?'<path d="M'+(151-rx+9)+' '+(152-ry+11)+' Q151 '+(152-ry-11)+' '+(151+rx-9)+' '+(152-ry+11)+
+   ' Q'+(151+rx+7)+' 125 '+(151+rx)+' 155 L'+(151+rx-6)+' 190 Q'+(151+rx-13)+' 214 165 '+(152+ry)+
+   ' L137 '+(152+ry)+' Q'+(151-rx+14)+' 214 '+(151-rx+6)+' 190 L'+(151-rx)+' 155 Q'+(151-rx-7)+' 125 '+(151-rx+9)+' '+(152-ry+11)+'Z" fill="'+skin+'"/>'
+  :'<ellipse cx="151" cy="152" rx="'+rx+'" ry="'+ry+'" fill="'+skin+'"/>';
  const eyecolor='#39221e',eyeY=148+(face===3?4:0);
  const eyeTypes=[[10,8,5.4],[12,6.5,5],[11,5,4],[12,10,6],[9,6,4.5],[11,7.5,5.5]];
  const dims=eyeTypes[eye-1]||eyeTypes[0],iris=find('eye_color',c.eye_color)?.color||'#785239';
@@ -248,7 +253,7 @@ function renderSvg(input={},small=false){
  '<path d="M27 340Q37 246 112 235Q150 225 188 235Q263 245 273 340Z" fill="'+shirt[0]+'" stroke="'+(c.shirt==='cx'?'#958578':'#231c18')+'" stroke-width="3"/>'+
  '<path d="M114 237Q151 257 188 237Q173 254 151 259Q128 254 114 237Z" fill="'+(c.shirt==='cx'?'#c9bbb0':'#30251d')+'" opacity=".76"/>'+neck+
  hairSvg(group,Number(index),hairColor)+
- '<ellipse cx="151" cy="152" rx="'+rx+'" ry="'+ry+'" fill="'+skin+'"/>'+
+ faceShape+
  '<path d="M96 155q-14-12-12 10t16 11M205 155q14-12 12 10t-16 11" fill="'+skin+'"/>'+
  '<path d="M118 136q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0m24 0q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0" stroke="#553b31" stroke-width="'+(c.presentation==='masculino'?'4':'3')+'" fill="none" stroke-linecap="round"/>'+
  '<g>'+eyeShape+'</g>'+blush+
