@@ -4,13 +4,13 @@
 const c=window.CXAvatarCatalog;
 const $=id=>document.getElementById(id);
 const url='https://rwkbpafpniwzvlkfngag.supabase.co',key='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
-const fields=['hair_style','hair_color','skin','face','eyes','eye_color','mouth','presentation','shirt','bg','accessory','badge'];
+const fields=['hair_style','hair_color','skin','face','eyes','eye_color','lashes','mouth','presentation','shirt','bg','accessory','badge'];
 let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',pending=false,isAdmin=false;
 const detail={
  hair_style:'Escolha uma textura e depois o penteado',hair_color:'Todas as cores podem ser combinadas com qualquer cabelo',
  skin:'Todos os tons de pele são gratuitos',face:'Escolha o formato que mais combina com você',
- eyes:'Seis formas de representar o olhar',eye_color:'Escolha a cor dos olhos separadamente do formato',mouth:'Seu sorriso, sua expressão',
- presentation:'Opção visual independente de todos os traços físicos',
+ eyes:'Seis formas de representar o olhar',eye_color:'Escolha a cor dos olhos',lashes:'Escolha como mostrar os cílios',mouth:'Seu sorriso, sua expressão',
+ presentation:'Escolha seu estilo',
  shirt:'As frases aparecem na camiseta do personagem',bg:'Personalize o fundo do avatar',
  accessory:'Adicione seu toque pessoal',badge:'Conquistas aparecem no canto do avatar'
 };
@@ -52,6 +52,8 @@ function render(){
  }
  const items=catalogItems();
  $('categoryCount').textContent=items.length+' opções';
+ const hairStats=document.getElementById('hairStats');
+ if(hairStats){hairStats.hidden=category!=='hair_style';if(category==='hair_style')hairStats.textContent='6 grátis · 9 por Coins · 3 conquistas';}
  const fragment=document.createDocumentFragment();
  for(const item of items){
   const button=document.createElement('button');
@@ -60,11 +62,14 @@ function render(){
   button.setAttribute('aria-pressed',draft[category]===item.id?'true':'false');
   if(category==='hair_color'||category==='eye_color'||category==='skin'){
    const sw=document.createElement('span');sw.className='swatch';sw.style.backgroundColor=item.color;button.append(sw);
-  }else if(category==='hair_style'){
-   const preview=document.createElement('span');preview.className='choice-portrait';
-   preview.innerHTML=c.renderSvg({...draft,hair_style:item.id},true);
-   preview.querySelector('svg')?.setAttribute('aria-hidden','true');
-   button.append(preview);
+  }else if(['hair_style','eyes','lashes','mouth','presentation'].includes(category)){
+   const portrait=document.createElement('span');
+   portrait.className='choice-portrait'+(category==='hair_style'?'':' face-portrait');
+   portrait.innerHTML=c.renderSvg({...draft,[category]:item.id},true);
+   const svg=portrait.querySelector('svg');
+   svg?.setAttribute('aria-hidden','true');
+   if(category!=='hair_style')svg?.setAttribute('viewBox','89 91 125 125');
+   button.append(portrait);
   }else{
    const mini=document.createElement('span');mini.className='mini-label';
    mini.textContent=({face:'◇',eyes:'◉',mouth:'⌣',presentation:'◇',shirt:'▤',bg:'▧',accessory:'◎',badge:'✦'})[category]||'•';
@@ -74,7 +79,7 @@ function render(){
   const status=document.createElement('span');status.className='choice-note';
   if(item.cost===0){status.classList.add('choice-free');status.textContent='Gratuito';}
   else if(owns(category,item)){status.classList.add('choice-free');status.textContent='Adquirido';}
-  else if(item.cost===null){status.classList.add('choice-lock');status.textContent=isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor'))?'Livre para admin':'Desbloqueio por conquista';}
+  else if(item.cost===null){status.classList.add('choice-lock');status.textContent=isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor'))?'Livre para admin':'Por conquista';}
   else status.textContent=isAdmin?'Livre para admin':item.cost+' Coins';
   button.append(status);
   if(draft[category]===item.id){const badge=document.createElement('span');badge.className='choice-status';badge.textContent='Em uso';button.append(badge);}
