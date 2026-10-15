@@ -11,6 +11,21 @@
     document.head.appendChild(style);
   }
 
+  // Lightweight sharing actions for public pages and individual resources.
+  if(!document.getElementById('cx-share-css')){
+    const link=document.createElement('link');
+    link.id='cx-share-css';link.rel='stylesheet';
+    link.href='/assets/share-everything.css?v=20261014-1';
+    document.head.appendChild(link);
+  }
+  if(!document.getElementById('cx-share-runtime')){
+    const script=document.createElement('script');
+    script.id='cx-share-runtime';
+    script.src='/assets/share-everything.js?v=20261014-2';
+    script.defer=true;
+    document.head.appendChild(script);
+  }
+
   const state={
     version:'2026-10-03.2',
     lastValidatedAt:0,
