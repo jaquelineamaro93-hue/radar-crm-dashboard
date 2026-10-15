@@ -30,7 +30,7 @@ const presentation=[{id:'neutro',name:'Neutro',cost:0},{id:'feminino',name:'Femi
 const shirts=[{id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},{id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null}];
 const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:45},{id:'orbit',name:'Universo CRM',cost:75},{id:'grid',name:'Laboratório',cost:95}];
 const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:45},{id:'headphones',name:'Fones',cost:95},{id:'coffee',name:'Café',cost:65}];
-const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
+const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'admin',name:'Equipe Conexão CRM',cost:null},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
 const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
 const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
 const labels={hair_style:'Penteados',hair_color:'Cor do cabelo',skin:'Tom de pele',face:'Formato de rosto',eyes:'Olhos',mouth:'Expressão',presentation:'Apresentação',shirt:'Camisetas',bg:'Fundos',accessory:'Acessórios',badge:'Emblemas'};
@@ -129,7 +129,7 @@ function renderSvg(input={},small=false){
  '<path d="M136 185q14 7 29 0"/>',
  '<path d="M135 181q16 17 33 0"/>',
  '<path d="M138 188q12 3 25 0"/>'][mouth-1];
- const id='cxavatar-'+(++serial),badge={star:'★',mic:'♫',flame:'✦',crown:'♛'}[c.badge]||'★';
+ const id='cxavatar-'+(++serial),badge={star:'★',mic:'♫',flame:'✦',crown:'♛',admin:'◆'}[c.badge]||'★';
  const neck='<path d="M133 200v33q17 16 34 0v-33" fill="'+skin+'"/>';
  const overlay=c.accessory==='glasses'?'<rect x="114" y="136" width="30" height="22" rx="8"/><rect x="159" y="136" width="30" height="22" rx="8"/><path d="M144 143h15"/>':
  c.accessory==='headphones'?'<path d="M91 152v-19q0-70 59-70t59 70v19"/><rect x="87" y="137" width="13" height="34" rx="6" fill="#292d35"/><rect x="204" y="137" width="13" height="34" rx="6" fill="#292d35"/>':
