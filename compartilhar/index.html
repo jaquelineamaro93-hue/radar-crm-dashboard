@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oportunidades e talentos | Conexão CRM</title>
+<meta name="description" content="Conheça vagas e talentos da comunidade Conexão CRM. Compartilhe oportunidades e faça novas conexões profissionais.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Conexão CRM">
+<meta property="og:title" content="Oportunidades e talentos | Conexão CRM">
+<meta property="og:description" content="Conheça oportunidades, profissionais Open to Work e conexões na comunidade Conexão CRM.">
+<meta property="og:image" content="https://conexaocrm.com/og-image.png">
+<meta property="og:image:alt" content="Conexão CRM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oportunidades e talentos | Conexão CRM">
+<meta name="twitter:description" content="Conheça vagas e profissionais da comunidade Conexão CRM.">
+<meta name="twitter:image" content="https://conexaocrm.com/og-image.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{background:#0d0d0d;color:#f4f1ed;font:16px/1.5 system-ui,-apple-system,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}main{width:min(100%,580px);border:1px solid #5a3826;border-radius:18px;background:#191613;padding:clamp(22px,6vw,38px)}.brand{font-weight:800;letter-spacing:.045em}.brand span{color:#f97316}h1{font-size:clamp(24px,6vw,36px);line-height:1.12;margin:24px 0 15px}p{color:#bdb5ae;margin-bottom:25px}a{display:inline-flex;align-items:center;justify-content:center;background:#fff1b5;color:#4a3526;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none}a:focus-visible{outline:3px solid #f97316;outline-offset:4px}
+</style>
+</head>
+<body>
+<main>
+<div class="brand">CONEXÃO <span>CRM.</span></div>
+<h1>Conexões que geram oportunidades</h1>
+<p>Você recebeu um link para conhecer uma oportunidade ou um talento da nossa comunidade.</p>
+<a id="continuar" href="https://conexaocrm.com/vagas">Ver no Conexão CRM</a>
+</main>
+<script>
+(function(){
+  const params=new URLSearchParams(location.search);
+  const kind=params.get('tipo');
+  const title=(params.get('titulo')||'').trim().slice(0,115);
+  const destinations={vaga:'/vagas',talento:'/open-to-work',freelancer:'/freelancers'};
+  const dest=new URL(destinations[kind]||'/',location.origin);
+  if(title&&['vaga','talento','freelancer'].includes(kind))dest.searchParams.set('cx_share',title);
+  const a=document.getElementById('continuar');
+  a.href=dest.href;
+  a.textContent=kind==='talento'?'Ver profissional no Open to Work':kind==='vaga'?'Ver oportunidade no Radar':'Ver no Conexão CRM';
+  // A prévia social lê os metadados acima. Só visitantes humanos são encaminhados ao site.
+  if(!/bot|crawler|spider|LinkedInBot/i.test(navigator.userAgent))location.replace(dest.href);
+})();
+</script>
+</body>
+</html>

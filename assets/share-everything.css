@@ -50,3 +50,15 @@
 @media(prefers-reduced-motion:reduce){
  .cx-share-card,.cx-share-nav,.cx-share-mobile{transition:none!important}
 }
+/* Links de compartilhar ficam discretos e sem caixa destacada. */
+#pageVagas #vagasContainerHub .cx-share-holder{justify-content:flex-end;margin-top:0;padding-top:0}
+#pageVagas #vagasContainerHub .cx-share-card{width:auto!important;background:transparent!important;border:0!important;border-radius:7px!important;min-height:28px;padding:4px 5px!important;font-size:11px;font-weight:500;color:#bcb0a5}
+#pageVagas #vagasContainerHub .cx-share-card:hover{background:#f973160c!important;color:#f5a76f!important}
+#pageSearch #searchResults .cx-share-holder{margin:8px 0 0;justify-content:flex-end}
+#pageSearch #searchResults .cx-share-talent{border:0!important;background:transparent!important;border-radius:7px!important;padding:3px 4px!important;min-height:27px;color:#bcb5af;gap:5px;opacity:.8}
+#pageSearch #searchResults .cx-share-talent:hover{color:#f6ad79!important;background:rgba(249,115,22,.06)!important;opacity:1}
+#pageSearch #searchResults .cx-share-talent svg{width:14px;height:14px}
+#pageSearch #searchResults .cx-share-talent .cx-share-label{font-size:11px;font-weight:500}
+#pageVagas #vagasContainerHub .crm-job-clean-apply svg{width:15px;height:15px;flex:0 0 15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#pageSearch .crm-otw-signup a svg{width:15px;height:15px;vertical-align:middle;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:760px){#pageSearch #searchResults .cx-share-talent{min-height:30px}#pageVagas #vagasContainerHub .cx-share-holder{padding-top:0}}

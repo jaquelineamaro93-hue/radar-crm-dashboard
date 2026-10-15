@@ -27,3 +27,4 @@ jobs:
         run: |
           node tests/portal-quality.cjs
           node tests/community-jobs-isolation.cjs
+          node tests/share-preview-ui.cjs

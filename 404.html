@@ -1261,6 +1261,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
 </style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-no-flash1">
 <link rel="stylesheet" href="/assets/freelancers-subnav.css?v=20261014-1">
+<link rel="stylesheet" href="/assets/share-everything.css?v=20261015-og1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2003,10 +2004,10 @@ crmShowSurveyReminder();
         <section class="crm-otw-signup" aria-labelledby="crmOtwSignupTitle" style="margin:20px 0 24px;padding:24px;border:1px solid #f97316;border-radius:14px;background:linear-gradient(115deg,rgba(249,115,22,.19),rgba(249,115,22,.04));display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
           <div style="flex:1 1 260px">
             <span style="display:block;color:#fb923c;font-size:12px;font-weight:800;letter-spacing:.1em;margin-bottom:8px">OPEN TO WORK · CADASTRO GRATUITO</span>
-            <h3 id="crmOtwSignupTitle" style="font-size:clamp(20px,3vw,27px);line-height:1.25;margin:0 0 8px;color:#fff">Buscando uma oportunidade? Faça parte da nossa vitrine de talentos!</h3>
+            <h3 id="crmOtwSignupTitle" style="font-size:clamp(20px,3vw,27px);line-height:1.25;margin:0 0 8px;color:#fff">Buscando uma oportunidade? Faça parte da nossa vitrine de talentos</h3>
             <p style="margin:0;color:#e0d8d1;font-size:14px;line-height:1.6">Apresente seu perfil à comunidade e facilite o contato de recrutadores. Preencha uma única vez.</p>
           </div>
-          <a href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:14px 24px;border-radius:9px;background:#f97316;color:#14100c;font-size:15px;font-weight:800;text-decoration:none;white-space:normal;text-align:center">Cadastrar meu perfil gratuitamente ↗</a>
+          <a href="https://forms.gle/Mvvx9uv2JaCYaW6fA" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:14px 24px;border-radius:9px;background:#f97316;color:#14100c;font-size:15px;font-weight:800;text-decoration:none;white-space:normal;text-align:center">Cadastrar meu perfil gratuitamente <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </section>
 
         <div class="search-bar">
@@ -4068,7 +4069,7 @@ function renderizarVagasHub(vagas) {
 
       <div class="crm-job-clean-footer">
         <span class="crm-job-posted-date">${formatarDataVagas(vaga.criado_em) ? formatarDataVagas(vaga.criado_em) : "Data não informada"}</span>
-        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <span aria-hidden="true">↗</span></a>` : ""}
+        ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ""}
       </div>
     </div>
   `;
@@ -9696,5 +9697,6 @@ window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/portal-hardening.js?v=20261003-2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
+<script defer src="/assets/share-everything.js?v=20261015-og1"></script>
 </body>
 </html>
