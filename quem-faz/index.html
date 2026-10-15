@@ -20,9 +20,11 @@ main{max-width:1440px;margin:auto;padding:64px 5vw 90px}.eyebrow{font-size:12px;
 dialog{width:min(700px,calc(100vw - 28px));max-height:90vh;overflow:auto;background:#181716;color:var(--text);border:1px solid #4b4540;border-radius:14px;padding:24px}dialog::backdrop{background:#000c;backdrop-filter:blur(4px)}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:grid;gap:6px;color:#c5c0b8;font-size:13px}input,textarea{width:100%;background:#211f1d;color:var(--text);border:1px solid #48433e;border-radius:7px;padding:11px;font:inherit}textarea{min-height:110px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.close{background:none;border:0;color:var(--text);font-size:25px;cursor:pointer}.status{min-height:22px;color:var(--muted)}
 @media(max-width:760px){.top{padding:18px 22px;align-items:flex-start}.nav{gap:12px;flex-wrap:wrap;justify-content:flex-end}.nav a:not(.home){display:none}main{padding:42px 22px 70px}.hero{display:block}.adminbar{margin-top:22px}.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="/assets/cx-return-nav.css?v=1">
+<script src="/assets/cx-return-nav.js?v=1" defer></script>
 </head>
 <body>
-<header class="top"><a class="brand" href="/">CONEXÃO <span>CRM.</span></a><nav class="nav"><a class="home" href="/">INÍCIO</a><a href="/#quem-somos">QUEM SOMOS</a><a href="/#solucoes">SOLUÇÕES</a><a href="/#patrocinio">SEJA PATROCINADOR</a></nav></header>
+<header class="top"><a class="brand" href="/">CONEXÃO <span>CRM.</span></a><nav class="nav"><a class="home" href="/membros/">MEU PAINEL</a><a class="home" href="/">PORTAL</a><a href="/#quem-somos">QUEM SOMOS</a><a href="/#solucoes">SOLUÇÕES</a><a href="/#patrocinio">SEJA PATROCINADOR</a></nav></header>
 <main>
 <div class="eyebrow">POR TRÁS DA CONEXÃO · QUEM FAZ ACONTECER</div>
 <section class="hero"><div><h1>Quem constrói a<br><em>Conexão CRM.</em></h1><p>Conheça as pessoas responsáveis por transformar estratégia, comunidade, conteúdo e produto em experiências para o ecossistema de CRM.</p></div><div id="adminBar" class="adminbar"><button class="btn" onclick="openEditor()">+ Adicionar pessoa</button><span style="font-size:12px;color:var(--muted)">Controles visíveis apenas para administradores.</span></div></section>
