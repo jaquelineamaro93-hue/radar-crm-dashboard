@@ -1266,7 +1266,12 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 .crm-xp-native-pane{padding:0!important;background:transparent!important;max-width:none!important}
 .crm-xp-native-pane .cx-xp-loading{padding:18px 20px;color:var(--muted);font-size:13px}
 .crm-xp-native-pane .cx-xp-embedded-frame{display:block;width:100%;border:0;background:transparent}
-</style></head>
+</style><style id="cx-xp-otw-recommendation">
+.crm-xp-directory-recommend{min-height:36px;border-radius:10px;border:1px solid #f3a76c;background:#f4bb8d;color:#342012;padding:8px 12px;font-weight:760;font-size:12px;margin:9px 0 0;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.crm-xp-directory-recommend:hover{background:#ffd0a6}
+.crm-xp-directory-recommend:focus-visible{outline:2px solid #f97316;outline-offset:3px}
+</style>
+</head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -4356,7 +4361,7 @@ function parseSheet(csvText){
 async function loadSheet(){
  const epoch=crmAuthEpoch;const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');dot.className='status-dot';txt.textContent='Carregando profissionais…';crmSkeleton(crmById('searchResults'));
  try{const people=await crmFetchDirectory('talents',crmSignedIn());if(epoch!==crmAuthEpoch)return;
-  PEOPLE=people.map(p=>({...p,condicao:crmWorkModel(p.condicao),linkedin:p.linkedin||'',whatsapp:p.whatsapp||'',grupo:'',cidadeNorm:extractCidadeEstado(p.local||'').cidade,estadoNorm:extractCidadeEstado(p.local||'').estado}));searchLoaded=true;dot.className='status-dot ok';txt.textContent=PEOPLE.length+' profissionais · '+'Open to Work, contatos públicos';populateSearchFilters();renderSearch();crmById('searchResults').removeAttribute('aria-busy');
+  PEOPLE=people.map(p=>({...p,condicao:crmWorkModel(p.condicao),linkedin:p.linkedin||'',whatsapp:p.whatsapp||'',grupo:'',cidadeNorm:extractCidadeEstado(p.local||'').cidade,estadoNorm:extractCidadeEstado(p.local||'').estado}));searchLoaded=true;dot.className='status-dot ok';txt.textContent=PEOPLE.length+' profissionais · '+'Open to Work, contatos públicos';populateSearchFilters();renderSearch();void crmRefreshXpRecommendable();crmById('searchResults').removeAttribute('aria-busy');
  }catch(e){if(epoch!==crmAuthEpoch)return;dot.className='status-dot err';txt.textContent=e.message;crmById('searchResults').removeAttribute('aria-busy');document.getElementById('searchResults').innerHTML='<p class="empty-state">Não foi possível carregar os profissionais. <button onclick="loadSheet()">Tentar novamente</button></p>';}
 }
 
@@ -4593,6 +4598,48 @@ function extractIdiomas(s){
   return [...new Set(extractIdiomaNivelPairs(s).map(p=>p.lang))];
 }
 
+// Open to Work recommendations only for identity-verified members with selected skills.
+let crmXpRecommendable=new Map();
+let crmXpRecommendableLoading=false;
+function crmXpDirectoryKey(nome,linkedin){
+ return [String(nome||'').trim().toLocaleLowerCase('pt-BR'),String(linkedin||'').trim().toLocaleLowerCase('pt-BR')].join('|');
+}
+function crmXpSearchAction(person){
+ const target=crmXpRecommendable.get(crmXpDirectoryKey(person.nome,person.linkedin));
+ if(!target)return '';
+ const own=target===CURRENT_USER?.id;
+ return '<button class="crm-xp-directory-recommend" type="button" data-xp-target="'+escapeHtml(target)+'">'+
+  (own?'Compartilhar para receber recomendações':'Recomendar habilidade')+'</button>';
+}
+async function crmRefreshXpRecommendable(){
+ if(crmXpRecommendableLoading||!crmSignedIn())return;
+ crmXpRecommendableLoading=true;
+ const epoch=crmAuthEpoch;
+ try{
+  const session=await crmRequireSession();
+  if(!session||epoch!==crmAuthEpoch)return;
+  const response=await fetch(AUTH_SUPABASE_URL+'/rest/v1/rpc/crm_xp_directory_recommendable',{
+   method:'POST',headers:{apikey:AUTH_SUPABASE_KEY,Authorization:'Bearer '+session.access_token,
+     'Content-Type':'application/json'},body:'{}'
+  });
+  if(!response.ok)throw new Error('Recomendações indisponíveis');
+  const data=await response.json();
+  if(epoch!==crmAuthEpoch)return;
+  crmXpRecommendable=new Map((Array.isArray(data)?data:[])
+   .filter(x=>/^[0-9a-f-]{36}$/i.test(String(x.target_id||'')))
+   .map(x=>[crmXpDirectoryKey(x.nome,x.linkedin),x.target_id]));
+  if(crmActiveRoute==='search')renderSearch();
+ }catch(e){console.warn('[Conexão XP] Recomendações indisponíveis no momento');}
+ finally{crmXpRecommendableLoading=false}
+}
+document.getElementById('searchResults')?.addEventListener('click',event=>{
+ const action=event.target.closest('[data-xp-target]');
+ if(!action)return;
+ event.preventDefault();
+ const target=action.dataset.xpTarget;
+ if(window.CXXPShell?.recommend)window.CXXPShell.recommend(target);
+ else location.href='/?xp_recommend='+encodeURIComponent(target)+'#xp-rankings';
+});
 function renderSearch(){
  const q=(crmById('searchText').value||'').toLowerCase().trim(),sen=crmById('sSeniority').value,cond=crmById('sCondicao').value,cid=crmById('sCidade').value,estado=crmById('sEstado').value,muda=crmById('sMuda').value,idioma=crmById('sIdioma').value,nivel=crmById('sNivel').value;
  const rows=PEOPLE.map(p=>({p,langs:extractIdiomaNivelPairs(p.idioma)}));
@@ -4601,7 +4648,7 @@ function renderSearch(){
  crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
    const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
    const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!=='Não especificado'?' · '+x.level:'')).join(' | '))+'</p>':'';
-   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+'</article>';
+   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+crmXpSearchAction(p)+'</article>';
  }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
 function escapeHtml(s){
