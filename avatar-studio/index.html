@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#171412">
 <meta name="description" content="Personalize seu avatar no Conexão CRM, combine características e crie um visual com a sua cara">
 <title>Meu Avatar | Conexão XP</title>
-<link rel="stylesheet" href="./style.css?v=6">
+<link rel="stylesheet" href="./style.css?v=7">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
-<script src="./catalog.js?v=10" defer></script>
-<script src="./studio.js?v=7" defer></script>
+<script src="./catalog.js?v=12" defer></script>
+<script src="./studio.js?v=8" defer></script>
 <link rel="stylesheet" href="/assets/cx-return-nav.css?v=1">
 <script src="/assets/cx-return-nav.js?v=3" defer></script>
 <script>if(new URLSearchParams(location.search).get('embedded')==='1')document.documentElement.classList.add('cx-xp-embedded-mode');</script>
@@ -41,6 +41,12 @@
 <nav class="category-tabs" id="categories" aria-label="Categorias do avatar"></nav>
 <div class="options-head"><div><h3 id="categoryTitle">Penteados</h3><p id="categoryIntro">Escolha a textura e o corte</p></div><span class="count" id="categoryCount"></span></div>
 <div class="hair-groups" id="hairGroups" aria-label="Texturas de cabelo"></div>
+<div class="hair-filter-tabs" id="hairFilters" role="group" aria-label="Categorias de penteados">
+<button type="button" data-hair-tier="all" class="active" aria-pressed="true">Todos</button>
+<button type="button" data-hair-tier="free" aria-pressed="false">Grátis</button>
+<button type="button" data-hair-tier="coins" aria-pressed="false">Coins</button>
+<button type="button" data-hair-tier="special" aria-pressed="false">Conquistas</button>
+</div>
 <p id="hairStats" class="catalog-stats">6 grátis · 9 por Coins · 3 conquistas</p>
 <div class="choices" id="choices"></div>
 
