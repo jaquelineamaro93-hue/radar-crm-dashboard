@@ -107,20 +107,26 @@ function avatarSvg(config={},compact=false){
   blue:{base:'#213c55',front:'M46 89 Q45 28 92 28 Q152 23 150 94 L146 133 Q137 138 130 124 L128 77 Q107 52 74 80 L69 132 Q51 134 46 89Z'}
  };
  const h=hair[c.hair]||hair.bob;
- const tshirt={crm:['#f97316','CRM'],cx:['#e4c6bd','CX'],ti:['#4e7082','TI'],mentor:['#754d8e','MENTOR']};
+ const tshirt={
+  crm:{color:'#f97316',lines:['CRM não é','disparo']},
+  cx:{color:'#e4c6bd',lines:['Cliente','no centro']},
+  ti:{color:'#4e7082',lines:['API é','vida']},
+  mentor:{color:'#754d8e',lines:['Mentoria','transforma']}
+ };
  const sh=tshirt[c.shirt]||tshirt.crm;
  const acc=c.accessory==='glasses'?'<rect x="65" y="92" width="29" height="19" rx="8" fill="none" stroke="#262423" stroke-width="3"/><rect x="103" y="92" width="29" height="19" rx="8" fill="none" stroke="#262423" stroke-width="3"/><path d="M94 98h9" stroke="#262423" stroke-width="3"/>':
  c.accessory==='headphones'?'<path d="M56 105V83 Q56 37 100 37 Q144 37 144 83V105" stroke="#292929" stroke-width="8" fill="none"/><rect x="51" y="85" width="13" height="34" rx="6" fill="#1c2029"/><rect x="136" y="85" width="13" height="34" rx="6" fill="#1c2029"/>':
  c.accessory==='coffee'?'<path d="M154 164h22v21q-11 9-22 0z M176 169q16-2 7 13h-7" fill="#fcf2e6" stroke="#724f3b" stroke-width="2"/>':'';
  const badge={star:'★',mic:'♫',flame:'✦',crown:'♛'}[c.badge]||'★';
- const cx=100;
- return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" role="img" aria-label="Avatar ilustrado personalizável">'+
- '<defs><linearGradient id="g-'+id+'" x1="0" x2="1" y1="0" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="clip-'+id+'"><circle cx="100" cy="105" r="87"/></clipPath></defs>'+
- '<circle cx="'+cx+'" cy="105" r="89" fill="#ffdaa9"/><circle cx="100" cy="105" r="87" fill="url(#g-'+id+')"/>'+
+ const viewBox=compact?'20 18 200 210':'0 0 240 270';
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+viewBox+'" role="img" aria-label="Avatar ilustrado com camiseta personalizada">'+
+ '<defs><linearGradient id="g-'+id+'" x1="0" x2="1" y1="0" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="clip-'+id+'"><circle cx="120" cy="130" r="110"/></clipPath></defs>'+
+ '<circle cx="120" cy="130" r="113" fill="#ffdaa9"/><circle cx="120" cy="130" r="110" fill="url(#g-'+id+')"/>'+
  '<g clip-path="url(#clip-'+id+')">'+
  (c.bg==='orbit'?'<circle cx="52" cy="59" r="3" fill="#ddd7ff"/><circle cx="148" cy="83" r="2" fill="#fff"/><path d="M13 112Q100 8 184 105" stroke="#8c8bca" fill="none" stroke-width="2"/>':'')+
- (c.bg==='grid'?'<path d="M0 65h200M0 105h200M0 145h200M48 0v210M100 0v210M150 0v210" fill="none" stroke="#94aaa8" opacity=".28"/>':'')+
- '<path d="M23 210 Q27 158 78 153 Q98 143 122 153 Q171 158 176 210Z" fill="'+sh[0]+'"/>'+
+ (c.bg==='grid'?'<path d="M0 65h240M0 115h240M0 165h240M0 215h240M60 0v270M120 0v270M180 0v270" fill="none" stroke="#94aaa8" opacity=".23"/>':'')+
+ '<g transform="translate(20 8)">'+
+ '<path d="M20 264 Q25 170 78 153 Q98 143 122 153 Q174 170 180 264Z" fill="'+sh.color+'"/>'+
  '<path d="M78 155L99 178 122 155" fill="none" stroke="#ffffff" stroke-width="4" opacity=".4"/>'+
  '<path d="M87 143v23q13 14 26 0v-23" fill="#bd7a5b"/>'+
  '<ellipse cx="100" cy="104" rx="44" ry="54" fill="#d69a79"/>'+
@@ -130,10 +136,12 @@ function avatarSvg(config={},compact=false){
  '<circle cx="83" cy="102" r="2.7" fill="#342720"/><circle cx="116" cy="102" r="2.7" fill="#342720"/>'+
  '<path d="M99 103l-2 13h6" fill="none" stroke="#b77456" stroke-width="2"/>'+
  '<path d="M91 125q9 7 19 0" fill="none" stroke="#9a574c" stroke-width="2.5" stroke-linecap="round"/>'+
- '<text x="99" y="199" fill="'+(c.shirt==='cx'?'#4f2d31':'#fff2d6')+'" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="'+(sh[1].length>3?'14':'22')+'">'+sh[1]+'</text>'+acc+
- '</g>'+
- '<circle cx="160" cy="36" r="22" fill="#211914" stroke="#ffc88b" stroke-width="4"/>'+
- '<text x="160" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="25" fill="#ffc387">'+badge+'</text>'+
+ '<text x="100" y="192" fill="'+(c.shirt==='cx'?'#4f2d31':'#fff2d6')+'" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="850" font-size="12.5" letter-spacing="-.2">'+
+ '<tspan x="100" dy="0">'+sh.lines[0]+'</tspan>'+
+ '<tspan x="100" dy="16">'+sh.lines[1]+'</tspan></text>'+acc+
+ '</g></g>'+
+ '<circle cx="202" cy="52" r="22" fill="#211914" stroke="#ffc88b" stroke-width="4"/>'+
+ '<text x="202" y="61" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="25" fill="#ffc387">'+badge+'</text>'+
  '</svg>';
 }
 function renderWallet(){
