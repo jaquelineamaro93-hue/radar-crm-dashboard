@@ -30,10 +30,41 @@ function portrait(item){
  }
  return base;
 }
+function shareUrl(item){
+ return location.origin+'/?xp_recommend='+encodeURIComponent(item.id)+'#xp-rankings';
+}
+async function inviteRecommendations(item){
+ const link=shareUrl(item);
+ const text='Reconheça minhas habilidades profissionais no Conexão CRM';
+ if(navigator.share){
+  try{
+   await navigator.share({title:'Recomende minhas habilidades no Conexão CRM',text,url:link});
+   notice('Convite compartilhado');
+   return;
+  }catch(e){if(e?.name==='AbortError')return;}
+ }
+ try{
+  await navigator.clipboard.writeText(link);
+  notice('Link copiado. Compartilhe com outro membro para receber recomendações');
+ }catch{
+  const input=$('shareRecommendationLink');
+  if(input){input.value=link;$('shareDialog').showModal();input.select();}
+  else notice('Compartilhe este link: '+link);
+ }
+}
 function actionFor(item){
- if(kind!=='profissionais'||!item.skills?.length||item.id===user?.id)return null;
+ if(kind!=='profissionais'||!Array.isArray(item.skills)||!item.skills.length)return null;
  const b=document.createElement('button');b.type='button';b.className='recommend-btn';
- b.textContent='Recomendar';b.addEventListener('click',()=>openSkills(item));return b;
+ if(item.id===user?.id){
+  b.textContent='Compartilhar perfil';
+  b.title='Convide outras pessoas para recomendarem suas habilidades';
+  b.addEventListener('click',()=>void inviteRecommendations(item));
+ }else{
+  b.textContent='Recomendar';
+  b.title='Reconhecer uma das cinco habilidades profissionais';
+  b.addEventListener('click',()=>openSkills(item));
+ }
+ return b;
 }
 function rankCard(item,i){
  const card=document.createElement('article');card.className='podium-card'+(i===0?' first':'');
@@ -71,7 +102,8 @@ function render(){
  }
  const ranked=entries.filter(x=>x.score>0);
  const newcomers=entries.filter(x=>!x.score);
- $('status').textContent=ranked.length?ranked.length+' participantes com pontuação registrada':'Profissionais disponíveis para receber as primeiras recomendações';
+ const onlyMyProfile=kind==='profissionais'&&entries.length===1&&entries[0].id===user?.id;
+ $('status').textContent=onlyMyProfile?'Seu perfil está pronto para receber recomendações. Compartilhe com outros membros para começar':ranked.length?ranked.length+' participantes com pontuação registrada':'Profissionais disponíveis para receber as primeiras recomendações';
  const podium=ranked.slice(0,3),rest=ranked.slice(3);
  // Show podium only for members with actual positive scores.
  const order=podium.length===3?[podium[1],podium[0],podium[2]]:podium;
@@ -97,6 +129,7 @@ function openSkills(item){
  current=item;
  const d=$('skillDialog');$('skillPerson').textContent=item.name;
  const holder=$('skillOptions');holder.replaceChildren();
+ if(user?.id===item.id){notice('Você não pode recomendar a si mesmo. Compartilhe seu perfil para receber recomendações');return;}
  item.skills.forEach(skill=>{
   const b=document.createElement('button');b.type='button';b.textContent=skill;
   b.addEventListener('click',async()=>{
@@ -145,6 +178,12 @@ async function boot(){
 }
 document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{kind=b.dataset.kind;void refresh();}));
 $('refresh').addEventListener('click',()=>void refresh());
+$('shareDialogClose')?.addEventListener('click',()=>$('shareDialog').close());
+$('shareRecommendationCopy')?.addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText($('shareRecommendationLink').value);notice('Link copiado');$('shareDialog').close();}
+ catch{$('shareRecommendationLink').focus();$('shareRecommendationLink').select();}
+});
+
 $('skillForm').addEventListener('submit',async ev=>{
  ev.preventDefault();
  const chosen=$('mySkills').value.split(',').map(s=>s.trim()).filter(Boolean);
