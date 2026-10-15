@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/rankings/style.css?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script defer src="/avatar-studio/catalog.js?v=12"></script>
-<script defer src="/rankings/app.js?v=3"></script><link rel="stylesheet" href="/assets/cx-return-nav.css?v=1">
+<script defer src="/rankings/app.js?v=4"></script><link rel="stylesheet" href="/assets/cx-return-nav.css?v=1">
 <script src="/assets/cx-return-nav.js?v=3" defer></script>
 <script>if(new URLSearchParams(location.search).get('embedded')==='1')document.documentElement.classList.add('cx-xp-embedded-mode');</script>
 <link rel="stylesheet" href="/assets/xp-embed.css?v=4">
@@ -24,4 +24,5 @@
 <footer><span>CONEXÃO CRM.</span><span>Rankings baseados em dados reais e participação voluntária</span><a href="/#membro">Voltar ao portal</a></footer>
 </main><div id="notice" class="notice" role="status" hidden></div>
 <dialog id="skillDialog"><form method="dialog" class="dialog-content"><button class="close-dialog" value="cancel" aria-label="Fechar">×</button><span class="eyebrow">RECOMENDAR UMA HABILIDADE</span><h2 id="skillPerson">Profissional</h2><p>Recomende apenas uma competência que você conhece. Não é possível recomendar a si mesmo</p><div id="skillOptions" class="skill-options"></div><button value="cancel" class="subtle-btn">Agora não</button></form></dialog>
+<dialog id="shareDialog" aria-label="Compartilhar perfil para receber recomendações"><div class="dialog-content"><span class="eyebrow">RECOMENDAÇÕES</span><h2>Compartilhe suas habilidades</h2><p>Envie este link a outros membros do Conexão CRM. Eles poderão escolher uma das suas cinco habilidades para recomendar</p><label for="shareRecommendationLink">Link para recomendar</label><input id="shareRecommendationLink" type="text" readonly aria-label="Link para compartilhar seu perfil"><div class="share-actions"><button type="button" id="shareRecommendationCopy">Copiar link</button><button type="button" class="subtle-btn" id="shareDialogClose">Fechar</button></div></div></dialog>
 </body></html>
