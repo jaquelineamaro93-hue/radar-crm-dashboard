@@ -1259,7 +1259,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-baby-yellow1">
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-no-flash1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2625,7 +2625,7 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>
+          
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
@@ -3728,14 +3728,28 @@ function switchTab(tab){
   if(tab==='agencias' && !agenciasInitialized){ initAgenciasTab(); }
   if(tab==='ferramentas' && !ferramentasInitialized){ initFerramentasTab(); }
   if(tab==='ferramentas' && !compareCRMsInitialized){ initCompareCRMsTab(); }
-  if(tab==='vagas'){ carregarVagasHub(); if(!vagasAutoRefreshStarted){ setInterval(carregarVagasHub, 60000); vagasAutoRefreshStarted = true; } }
+  if(tab==='vagas'){
+    const advanced=['filtro-categoria','filtro-cargo','filtro-empresa','filtro-nivel','filtro-plataforma','filtro-estado','filtro-municipio','filtro-modalidade'];
+    const filtered=advanced.some(id=>document.getElementById(id)?.value)
+      || (document.getElementById('filtro-ordem-hub')?.value||'recente')!=='recente';
+    if(!filtered&&!crmRadarRequestInFlight&&(!todasAsVagasHub.length||Date.now()-crmRadarLastLoadedAt>120000))carregarVagasHub();
+    if(!vagasAutoRefreshStarted){
+      setInterval(()=>{
+        if(document.hidden||!document.getElementById('pageVagas')?.classList.contains('active'))return;
+        const hasFilters=advanced.some(id=>document.getElementById(id)?.value)
+          || (document.getElementById('filtro-ordem-hub')?.value||'recente')!=='recente';
+        if(!hasFilters&&!crmRadarRequestInFlight&&Date.now()-crmRadarLastLoadedAt>120000)carregarVagasHub();
+      },60000);
+      vagasAutoRefreshStarted=true;
+    }
+  }
   if(tab==='calc' && !calcInitialized){ initCalcTab(); }
 
   // Rola a página para o topo do conteúdo ao trocar de aba, para não deixar
   // a pessoa no meio da rolagem da aba anterior.
   const tabBar = document.querySelector('.tab-btn.active');
   if(tabBar && tabBar.scrollIntoView){
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo(0, 0);
   } else {
     window.scrollTo(0, 0);
   }
@@ -3746,6 +3760,10 @@ function switchSearchTab(tab){crmNavigate(tab==='ai'?'public-match':'search');}
 
 // ============ VAGAS DE CRM (Integrado no Hub) ============
 let todasAsVagasHub = [];
+let crmRadarLastLoadedAt=0;
+let crmRadarRequestInFlight=false;
+let crmVagasRenderSeq=0;
+
 
 function sanitizeInputVagas(str, maxLen = 200) {
   if (!str || typeof str !== 'string') return '';
@@ -3856,8 +3874,12 @@ function initVagasSupabase() {
 }
 
 async function carregarVagasHub() {
+  if(crmRadarRequestInFlight)return;
+  crmRadarRequestInFlight=true;
+  const renderSeq=++crmVagasRenderSeq;
   const container = document.getElementById('vagasContainerHub');
-  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
+  const keepCards=!!container.querySelector('.crm-job-card');
+  if(!keepCards)container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
 
   try {
     // Garantir que o cliente Supabase está inicializado
@@ -3877,8 +3899,10 @@ async function carregarVagasHub() {
       .order('published_at', { ascending: false })
       .limit(1000);
 
+    if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
       console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
+      if(keepCards){const status=document.getElementById('vagasUltimaColetaHub');if(status)status.textContent='Não foi possível atualizar agora';return;}
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
@@ -3906,12 +3930,14 @@ async function carregarVagasHub() {
     if (lastRunEl) lastRunEl.textContent = latestSighting
       ? (lastSeen ? 'Última vaga reencontrada: ' : 'Última vaga cadastrada: ') + new Date(latestSighting).toLocaleDateString('pt-BR')
       : 'Sem data de coleta confirmada';
+    crmRadarLastLoadedAt=Date.now();
     renderizarVagasHub(todasAsVagasHub);
     crmLoadClosedJobs();
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
+    if(keepCards)return;
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
-  }
+  } finally {crmRadarRequestInFlight=false;}
 }
 
 function obterModalidade(vaga) {
@@ -4098,8 +4124,10 @@ document.addEventListener('click', event => {
 });
 
 async function aplicarFiltrosVagas() {
+  const renderSeq=++crmVagasRenderSeq;
   const container = document.getElementById('vagasContainerHub');
-  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
+  const keepCards=!!container.querySelector('.crm-job-card');
+  if(!keepCards)container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
 
   try {
     initVagasSupabase();
@@ -4173,8 +4201,9 @@ async function aplicarFiltrosVagas() {
     query = query.limit(1000);
 
     const { data, error } = await query;
-
+    if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
+      if(keepCards)return;
       console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
@@ -4191,6 +4220,7 @@ async function aplicarFiltrosVagas() {
     crmLoadClosedJobs(categoria);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
+    if(keepCards)return;
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
@@ -5994,13 +6024,17 @@ async function flSubmitReview(nome){
  finally{crmReviewPending.delete(key);if(button){button.disabled=false;button.textContent='Enviar avaliação';}}
 }
 async function loadFreelancers(){
- const epoch=crmAuthEpoch;crmById('freelancerCount').textContent='Carregando…';
+ if(window.crmFreelancersLoading)return;
+ window.crmFreelancersLoading=true;
+ const epoch=crmAuthEpoch;
+ if(!FREELANCERS.length)crmById('freelancerCount').textContent='Carregando…';
  try{
   if(!flSb&&!flInitSB())throw Error('Conexão indisponível.');
   const [data,reviews]=await Promise.all([crmFetchDirectory('freelancers'),flSb.from('avaliacoes_freelancers').select('freelancer_nome,nota,comentario,avaliador').order('created_at',{ascending:false})]);
   if(epoch!==crmAuthEpoch)return;FREELANCERS=data;
-  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();
- }catch(e){if(epoch!==crmAuthEpoch)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
+  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();window.crmFreelancersLastLoadedAt=Date.now();
+ }catch(e){if(epoch!==crmAuthEpoch)return;if(FREELANCERS.length)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
+ finally{window.crmFreelancersLoading=false;}
 }
 function flSubRT(){
   if(!flSb) return;
@@ -8661,7 +8695,7 @@ function crmNavigate(route,updateHash=true){
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
- if(route==='freelancers')loadFreelancers();
+ if(route==='freelancers' && (!FREELANCERS.length || Date.now()-(window.crmFreelancersLastLoadedAt||0)>120000))loadFreelancers();
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
  if(route==='membros')crmOpenMemberTab('diretorio');
  if(route==='comunidade'){switchComunidadeTab('grupos');window.CXConnections?.partners();}
@@ -8672,7 +8706,7 @@ function crmNavigate(route,updateHash=true){
  if(window.Chart?.instances)Object.values(Chart.instances).forEach(c=>{try{c.resize();}catch{}});
  crmById('crmBreadcrumb').textContent='CONEXÃO CRM / '+crmRoutes[route][1].toUpperCase();
  if(updateHash)history.pushState(null,'',crmRoutePath(route));
- crmToggleMenu(false);window.scrollTo({top:0,behavior:'smooth'});
+ crmToggleMenu(false);window.scrollTo(0,0);
 }
 function crmInitPublicTools(){if(typeof initCalcTab==='function'&&!calcInitialized)initCalcTab();if(typeof initEventosTab==='function'&&!eventosInitialized)Promise.resolve(initEventosTab()).catch(()=>{});}
 function crmJoin(message){
@@ -8776,6 +8810,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  crmById('comSubTabDiretorio').onclick=()=>crmOpenMemberTab('diretorio');
  window.addEventListener('hashchange',crmHandleLocation);window.addEventListener('popstate',crmHandleLocation);
  document.addEventListener('click',e=>{
+  if(e.detail>0){
+    const tapped=e.target.closest('.crm-nav-items .tab-btn,.crm-topic-card');
+    if(tapped)tapped.blur();
+  }
   const route=e.target.closest('[data-crm-route]');if(route){e.preventDefault();document.querySelector('.crm-solutions-menu')?.removeAttribute('open');crmNavigate(route.dataset.crmRoute);return;}
   if(!e.target.closest('.crm-solutions-menu'))document.querySelector('.crm-solutions-menu')?.removeAttribute('open');
   const contact=e.target.closest('[data-crm-contact]');if(contact){e.preventDefault();crmOpenContact(contact);return;}
