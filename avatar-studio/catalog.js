@@ -44,8 +44,8 @@ const shirts=[
 {id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},
 {id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null},
 {id:'dados',name:'Dados conectam',cost:0},{id:'comunidade',name:'Comunidade é conexão',cost:0},
-{id:'jornada',name:'Jornada importa',cost:65},{id:'humano',name:'Pessoas primeiro',cost:65},
-{id:'growth',name:'Growth com propósito',cost:75},{id:'martech',name:'Martech na prática',cost:75},
+{id:'jornada',name:'Jornada importa',cost:0},{id:'humano',name:'Pessoas primeiro',cost:0},
+{id:'growth',name:'Growth com propósito',cost:0},{id:'martech',name:'Martech na prática',cost:75},
 {id:'cxlover',name:'Eu amo CX',cost:85},{id:'ia',name:'IA + criatividade',cost:85}
 ];
 const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:0},{id:'orbit',name:'Universo CRM',cost:0},{id:'grid',name:'Laboratório',cost:0},{id:'ocean',name:'Oceano',cost:0},{id:'forest',name:'Floresta',cost:0},{id:'dusk',name:'Pôr do sol',cost:55},{id:'rose',name:'Rosa antigo',cost:55},{id:'mint',name:'Menta',cost:65},{id:'night',name:'Noite estrelada',cost:65}];
