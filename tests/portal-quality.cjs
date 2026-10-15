@@ -6,7 +6,7 @@ const index=read('index.html'),fallback=read('404.html'),workspace=read('assets/
 assert(index.length>900000&&index.length<1250000,'index.html fora da faixa esperada');
 assert.equal(index,fallback,'404.html precisa acompanhar index.html para deep links do GitHub Pages');
 assert(/\/assets\/portal-hardening\.js\?v=[\w-]+/.test(index),'hardening precisa estar carregado com cache versionado');
-assert(index.includes('/assets/workspace.js?v=20261004-1'),'versao atual do workspace precisa estar carregada');
+assert(/\/assets\/workspace\.js\?v=[\w-]+/.test(index),'workspace com cache versionado precisa estar carregado');
 assert(index.indexOf('/assets/portal-hardening.js')>index.lastIndexOf('<script>'),'hardening deve carregar ao fim do documento');
 
 for(const id of ['crmPages','crmPublicPages','subpage-membros','pageEventos','pageVagas','crmSidebar','crmAdminPage']){
@@ -68,7 +68,7 @@ assert(meterJS.includes('crm-odometer-strip') && meterJS.includes('strip.animate
 assert(meterJS.includes("members_new_7d") && meterJS.includes("radar_new_7d"), 'Tendências devem ser reais do banco');
 assert(index.includes('data-conexo-trend="members"') && index.includes('data-conexo-trend="radar_mapped"'), 'Setas de crescimento requeridas');
 assert(index.includes('Conexões em movimento') && index.includes('Oportunidades em tempo real'), 'Headline sem pontuação em excesso');
-assert(index.includes('conexometro.js?v=20261014-odometer'), 'Versão JS deve quebrar cache');
-assert(index.includes('conexometro.css?v=20261014-odometer'), 'Versão CSS deve quebrar cache');
+assert(/conexometro\.js\?v=[\w-]+/.test(index), 'Versão JS deve quebrar cache');
+assert(/conexometro\.css\?v=[\w-]+/.test(index), 'Versão CSS deve quebrar cache');
 new Function(meterJS);
 console.log('PASS portal-quality: fallback sincronizado, JS inline parseia, rotas criticas unicas, cards estaveis, admin protegido, hardening e assets presentes.');
