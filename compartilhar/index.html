@@ -32,9 +32,11 @@
   const params=new URLSearchParams(location.search);
   const kind=params.get('tipo');
   const title=(params.get('titulo')||'').trim().slice(0,115);
+  const publicId=(params.get('id')||'').trim().slice(0,80);
   const destinations={vaga:'/vagas',talento:'/open-to-work',freelancer:'/freelancers'};
   const dest=new URL(destinations[kind]||'/',location.origin);
   if(title&&['vaga','talento','freelancer'].includes(kind))dest.searchParams.set('cx_share',title);
+  if(publicId&&/^[\w-]{1,80}$/.test(publicId))dest.searchParams.set('cx_id',publicId);
   const a=document.getElementById('continuar');
   a.href=dest.href;
   a.textContent=kind==='talento'?'Ver profissional no Open to Work':kind==='vaga'?'Ver oportunidade no Radar':'Ver no Conexão CRM';
