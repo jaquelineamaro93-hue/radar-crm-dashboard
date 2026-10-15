@@ -30,7 +30,7 @@ function register(){
   frame.title='Conexão XP: '+sp.label;
   frame.loading='eager';frame.referrerPolicy='same-origin';
   frame.style.cssText='display:block;width:100%;height:900px;min-height:600px;border:0;background:transparent;overflow:hidden';
-  frame.addEventListener('load',()=>{label.hidden=true;pane.dataset.loaded='true';});
+  frame.addEventListener('load',()=>{label.hidden=true;pane.dataset.loaded='true';frame.dataset.loaded='true';});
   pane.append(label,frame);
   pages.append(pane);
  }
