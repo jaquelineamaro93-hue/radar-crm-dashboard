@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171412">
+<meta name="description" content="Personalize seu avatar no Conexão CRM, combine características e crie um visual com a sua cara">
+<title>Meu Avatar | Conexão XP</title>
+<link rel="stylesheet" href="./style.css?v=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="./catalog.js?v=1" defer></script>
+<script src="./studio.js?v=1" defer></script>
+</head>
+<body>
+<a class="skip" href="#studio">Pular para o Avatar Studio</a>
+<header class="navhead"><a class="logo" href="/"><span class="cube" aria-hidden="true">⬡</span> CONEXÃO <b>CRM.</b></a>
+<div class="nav-actions"><span class="label">CONEXÃO XP</span><a class="back" href="/">Voltar ao portal ↗</a></div></header>
+<main id="studio">
+<section class="intro"><div><p class="overline">MEU AVATAR <span aria-hidden="true">/</span> PERSONALIZAÇÃO</p><h1>Seu avatar, <em>suas escolhas</em></h1><p>Combine cabelos, cores e traços do seu jeito. Itens básicos são gratuitos, e as peças especiais podem ser desbloqueadas com Coins ou conquistas</p></div>
+<div class="wallet" aria-live="polite"><span>Minhas Coins</span><strong id="coins">—</strong><small>360 Coins iniciais ao entrar pela primeira vez</small></div></section>
+<p class="notice" id="status" role="status">Carregando seu Avatar Studio</p>
+<div class="studio-grid">
+<section class="preview card" aria-labelledby="previewTitle">
+<div class="card-top"><span class="small-heading" id="previewTitle">PRÉVIA DO PERSONAGEM</span><span class="tag">Conexão XP</span></div>
+<div class="avatar-wrap" id="avatarPreview" role="img" aria-label="Prévia do seu avatar"></div>
+<div class="avatar-summary"><div><strong>Meu personagem</strong><small id="currentHair">Liso curto · castanho escuro</small></div><span class="badge">★</span></div>
+<div class="preview-actions"><button id="save" type="button" class="primary">Salvar meu avatar</button><button id="reset" type="button" class="secondary">Restaurar visual básico</button></div>
+<p class="subtle" id="accountStatus">Sua personalização é privada e fica vinculada à sua conta</p>
+</section>
+<section class="customize card" aria-labelledby="editTitle">
+<div class="card-top"><div><span class="small-heading">PERSONALIZAÇÃO</span><h2 id="editTitle">Monte seu estilo</h2></div><span class="tag muted">Sem padrões de gênero</span></div>
+<nav class="category-tabs" id="categories" aria-label="Categorias do avatar"></nav>
+<div class="options-head"><div><h3 id="categoryTitle">Penteados</h3><p id="categoryIntro">Escolha a textura e o corte</p></div><span class="count" id="categoryCount"></span></div>
+<div class="hair-groups" id="hairGroups" aria-label="Texturas de cabelo"></div>
+<div class="choices" id="choices"></div>
+<div class="hint"><span aria-hidden="true">◉</span> Cabelos e cores são escolhas independentes. Todas as texturas podem ser combinadas com qualquer tom de pele ou apresentação</div>
+</section>
+</div>
+<section class="explain">
+<div><h3>Gratuito para começar</h3><p>Tons de pele, traços faciais e opções de cabelo para todas as texturas</p></div>
+<div><h3>Coins para personalizar</h3><p>Itens especiais são adquiridos uma única vez. O saldo fica protegido no Supabase</p></div>
+<div><h3>Conquistas de verdade</h3><p>Itens exclusivos só aparecem quando a participação correspondente é validada</p></div>
+</section>
+<footer>CONEXÃO CRM. <span>Avatar Studio · suas escolhas ficam salvas somente na sua conta</span></footer>
+</main>
+<div class="toast" role="status" id="toast" hidden></div>
+</body></html>
