@@ -118,6 +118,25 @@ function render(){
   newcomers.forEach((x,i)=>$('rows').append(rankRow(x,i)));
  }
 }
+function showRequestedRecommendation(){
+ if(kind!=='profissionais'||!requestedRecommendation||!user)return;
+ const target=entries.find(person=>person.id===requestedRecommendation);
+ if(!target){requestedRecommendation=null;notice('Esse profissional ainda precisa configurar suas habilidades para receber recomendações');return;}
+ requestedRecommendation=null;
+ if(target.id===user.id){notice('Você não pode recomendar a si mesmo. Use Compartilhar perfil');return;}
+ if(Array.isArray(target.skills)&&target.skills.length)openSkills(target);
+}
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.source!==window.parent||event.data?.type!=='cx-xp-open-recommend')return;
+ const target=String(event.data.target||'');
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(target))return;
+ requestedRecommendation=target;
+ if(kind!=='profissionais'){
+  kind='profissionais';
+  if(db&&user)void refresh();
+ }else if(entries.length)showRequestedRecommendation();
+ else if(db&&user)void refresh();
+});
 async function refresh(){
  $('status').textContent='Carregando dados reais…';
  try{
@@ -125,19 +144,7 @@ async function refresh(){
   if(error)throw error;
   entries=Array.isArray(data)?data:[];
   render();
-  if(kind==='profissionais'&&requestedRecommendation){
-    const target=entries.find(person=>person.id===requestedRecommendation);
-    if(target&&user?.id!==target.id&&Array.isArray(target.skills)&&target.skills.length){
-      requestedRecommendation=null;
-      openSkills(target);
-    }else if(target&&user?.id===target.id){
-      requestedRecommendation=null;
-      notice('Você não pode recomendar a si mesmo. Compartilhe o link com outro membro');
-    }else if(!target){
-      requestedRecommendation=null;
-      notice('Esse profissional ainda não está disponível para recomendações');
-    }
-  }
+  showRequestedRecommendation();
  }catch(e){$('status').textContent='Não foi possível carregar agora. Tente atualizar';$('podium').replaceChildren();$('rows').replaceChildren();}
 }
 function openSkills(item){
