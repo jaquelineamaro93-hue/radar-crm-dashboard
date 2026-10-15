@@ -17,6 +17,7 @@ const STEPS=[
  {title:'Personalize com Coins',text:'Use Coins para escolher acessórios e peças especiais. Administradores têm personalização ilimitada',tag:'Sua identidade na comunidade',icon:'badge'},
  {title:'Bora conhecer?',text:'Comece pelo avatar ou conheça o Hall da Comunidade. Tudo fica disponível no bloco Conexão XP do menu',tag:'Escolha sua primeira experiência',icon:'avatar'}
 ];
+function track(action,properties={}){try{window.posthog?.capture('cx_xp_tour_'+action,{step:step+1,total_steps:STEPS.length,...properties});}catch{}}
 function signedUser(){
  try{
   if(typeof crmSignedIn!=='function'||!crmSignedIn())return '';
@@ -45,11 +46,11 @@ function create(){
  '<button type="button" class="cx-xp-secondary">Agora não</button></div>';
  document.body.append(dialog);
  dialog.querySelector('[data-close]').addEventListener('click',()=>close());
- dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){close();location.assign('/rankings/');}else close();});
+ dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){track('cta',{destination:'rankings'});close();location.assign('/rankings/');}else{track('dismissed');close();}});
  dialog.querySelector('.cx-xp-back').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
  dialog.querySelector('.cx-xp-primary').addEventListener('click',()=>{
-  if(step===STEPS.length-1){close();location.assign('/avatar-studio/');return;}
-  step++;render();
+  if(step===STEPS.length-1){track('cta',{destination:'avatar'});close();location.assign('/avatar-studio/');return;}
+  step++;render();track('step_viewed');
  });
  dialog.addEventListener('close',()=>{markSeen();document.body.classList.remove('cx-xp-tour-open');});
  dialog.addEventListener('cancel',()=>{markSeen();document.body.classList.remove('cx-xp-tour-open');});
@@ -72,7 +73,7 @@ function open(force=false){
  if(!force&&alreadySeen(signedUser()))return;
  if(document.querySelector('dialog[open]:not(#cxXpTour)'))return;
  step=0;render();
- if(!dialog.open){dialog.showModal();document.body.classList.add('cx-xp-tour-open');}
+ if(!dialog.open){dialog.showModal();document.body.classList.add('cx-xp-tour-open');track('opened',{replay:force});}
  dialog.querySelector('.cx-xp-primary').focus();
 }
 async function maybeShow(){
