@@ -7,3 +7,10 @@
 @media(max-width:880px){.studio-grid{grid-template-columns:1fr}.card{padding:18px}.avatar-wrap{height:300px}.choices{max-height:none}.wallet{min-width:160px}.intro{align-items:flex-start}}
 @media(max-width:600px){.navhead{padding:12px 14px;min-height:61px}.logo{font-size:13px}.nav-actions .label{display:none}main{padding:18px 12px 30px}.intro{display:block;margin:10px 0 19px}.intro h1{font-size:34px}.wallet{display:flex;gap:8px;align-items:center;margin-top:16px;width:100%;flex-wrap:wrap}.wallet strong{font-size:18px}.wallet small{margin-left:auto;max-width:135px}.studio-grid{gap:13px}.avatar-wrap{height:310px}.choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{min-height:99px;padding:11px}.category-tabs{gap:6px}.category-tabs button{padding:8px 9px;font-size:10px}.hair-groups button{font-size:10px}.explain{grid-template-columns:1fr}footer{flex-direction:column}.tag.muted{max-width:120px;text-align:center}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.choice-portrait{display:flex;justify-content:center;align-items:center;height:96px;max-width:100%;background:#2d2722;border-radius:11px;overflow:hidden}
+.choice-portrait svg{width:82px;height:96px;display:block}
+.choice:has(.choice-portrait){min-height:170px}
+.mini-label{display:grid;place-items:center;height:32px;width:32px;border-radius:10px;border:1px solid #85573b;color:#ffc295;font-size:20px}
+.subtle a{color:#ffb383;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:600px){.choice-portrait{height:92px}.choice:has(.choice-portrait){min-height:161px}}
