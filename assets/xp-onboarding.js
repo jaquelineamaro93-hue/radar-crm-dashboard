@@ -2,7 +2,7 @@
 (()=>{
 'use strict';
 if(window.CXXPTour)return;
-const KEY='cx-xp-tour-20261015-v2';
+const KEY='cx-xp-tour-20261015-v3';
 let dialog=null,step=0,busy=false,lastUser=null,mut=null;
 const I={
  avatar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="m17 2 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg>',
@@ -11,11 +11,11 @@ const I={
  rocket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c4-1 8-5 10-10l5-1-1 5c-2 5-6 9-10 10l-1-5-3 1Z"/><path d="M7 17 4 20M12 12l1 1"/></svg>'
 };
 const STEPS=[
- {title:'Seu avatar, do seu jeito',text:'36 penteados, 12 cores de cabelo, tons de pele e expressões mais marcantes. As camisetas com frases continuam por aqui',tag:'Já disponível',icon:'avatar'},
- {title:'Personalize com Coins',text:'Ganhe Coins em experiências futuras e use as que já estão disponíveis para desbloquear peças. Administradores têm personalização ilimitada e emblema próprio',tag:'Avatar Studio',icon:'badge'},
- {title:'Um espaço para os destaques',text:'Conheça os três rankings que estamos desenhando: profissionais recomendados, comunidade engajada e empresas parceiras',tag:'Ranking em prévia, com dados fictícios',icon:'rocket'},
- {title:'Reconhecer talentos de verdade',text:'Em breve, os profissionais Open to Work poderão destacar cinco habilidades e receber recomendações verificadas de outros membros',tag:'Recomendações em desenvolvimento',icon:'skill'},
- {title:'Bora conhecer?',text:'Seu Avatar Studio está pronto para testar. Acesse pelo novo bloco Conexão XP no menu e volte quando quiser',tag:'Explore seu avatar',icon:'avatar'}
+ {title:'Seu avatar, do seu jeito',text:'Cabelo, olhos e expressões com escolhas independentes, além das camisetas com frases da comunidade',tag:'Avatar Studio disponível',icon:'avatar'},
+ {title:'Personalize com Coins',text:'Use suas Coins para escolher peças e criar seu personagem. A equipe administrativa tem personalização ilimitada e emblema próprio',tag:'Personalização disponível',icon:'badge'},
+ {title:'Rankings com pessoas de verdade',text:'O Hall reconhece recomendações de habilidades, participação voluntária e contribuições verificadas das empresas. As posições surgem conforme os membros participam',tag:'Rankings reais',icon:'rocket'},
+ {title:'Recomende um profissional Open to Work',text:'Profissionais podem escolher até cinco habilidades e receber reconhecimento de outros membros. Uma recomendação por habilidade e por pessoa',tag:'Recomendações disponíveis',icon:'skill'},
+ {title:'Que tal experimentar?',text:'Comece montando seu avatar e depois explore os Rankings no mesmo bloco do menu',tag:'Explorar Conexão XP',icon:'avatar'}
 ];
 function signedUser(){
  try{
