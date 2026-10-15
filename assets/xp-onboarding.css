@@ -1,0 +1,32 @@
+/* Guided Conexão XP introduction for signed-in members only */
+dialog.cx-xp-tour{position:fixed;inset:0;box-sizing:border-box;margin:auto;width:min(440px,calc(100vw - 28px));max-width:440px;max-height:min(680px,calc(100dvh - 32px));border:1px solid #72513e;border-radius:23px;padding:0;background:#201a16;color:#f8f1e9;box-shadow:0 25px 100px #0009;overflow:auto;overscroll-behavior:contain;font-family:Inter,system-ui,-apple-system,sans-serif;color-scheme:dark}
+dialog.cx-xp-tour::backdrop{background:rgba(8,7,6,.76);backdrop-filter:blur(4px)}
+.cx-xp-tour *{box-sizing:border-box}
+.cx-xp-tour .cx-xp-head{display:flex;align-items:center;justify-content:space-between;padding:19px 21px 11px;gap:12px}
+.cx-xp-tour .cx-xp-brand{font-size:11px;letter-spacing:.1em;font-weight:800;color:#f6ac7a}
+.cx-xp-tour .cx-xp-dismiss{display:grid;place-items:center;width:34px;height:34px;background:transparent;border:1px solid #544034;border-radius:10px;color:#d2c0b2;cursor:pointer}
+.cx-xp-tour .cx-xp-dismiss svg{width:17px;height:17px}
+.cx-xp-tour .cx-xp-stage{padding:8px 23px 5px;outline:0}
+.cx-xp-tour .cx-xp-visual{display:grid;place-items:center;position:relative;margin:3px 0 21px;height:164px;border-radius:17px;border:1px solid #4e3525;background:radial-gradient(circle at 65% 18%,#86503455,transparent 53%),linear-gradient(130deg,#38271c,#241c18);overflow:hidden}
+.cx-xp-tour .cx-xp-visual svg{width:78px;height:78px;color:#ffbb8a;stroke-width:1.4}
+.cx-xp-tour .cx-xp-spark{position:absolute;top:24px;right:52px;width:27px;height:27px;border:1px solid #ae7150;border-radius:50%;display:grid;place-items:center;color:#ffd3ab;font-size:15px}
+.cx-xp-tour .cx-xp-kicker{font-size:10px;color:#efaa80;font-weight:800;letter-spacing:.14em}
+.cx-xp-tour h2{font-size:clamp(23px,5.4vw,29px);line-height:1.14;letter-spacing:-.045em;margin:9px 0 12px;color:#fff9f3}
+.cx-xp-tour .cx-xp-description{font-size:13.5px;line-height:1.62;color:#c8b8ad;min-height:70px;margin:0 0 13px}
+.cx-xp-tour .cx-xp-state{display:inline-flex;border:1px solid #715240;border-radius:8px;padding:5px 9px;color:#edb18b;font-size:10px;font-weight:750;margin:1px 0 8px}
+.cx-xp-tour .cx-xp-footer{margin:0 23px 21px;padding-top:20px;border-top:1px solid #4a3a30;display:grid;gap:15px}
+.cx-xp-tour .cx-xp-progress{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.cx-xp-tour .cx-xp-dots{display:flex;gap:6px}
+.cx-xp-tour .cx-xp-dot{width:24px;height:4px;border-radius:5px;background:#655044;transition:background .18s}
+.cx-xp-tour .cx-xp-dot.active{background:#fda76f}
+.cx-xp-tour .cx-xp-count{font-size:11px;color:#bbaa9e;font-variant-numeric:tabular-nums}
+.cx-xp-tour .cx-xp-actions{display:flex;align-items:center;gap:8px}
+.cx-xp-tour button{font-family:inherit}
+.cx-xp-tour .cx-xp-primary{flex:1;min-height:44px;border:1px solid #ffb47d;border-radius:12px;background:#ffba85;color:#352014;font-size:13px;font-weight:800;cursor:pointer}
+.cx-xp-tour .cx-xp-primary:hover{background:#ffd0a9}
+.cx-xp-tour .cx-xp-back{min-height:44px;border:1px solid #665144;background:transparent;border-radius:12px;color:#e3cbbb;padding:9px 15px;font-size:12px;font-weight:600;cursor:pointer}
+.cx-xp-tour .cx-xp-secondary{background:transparent;border:0;color:#bfb0a6;text-align:center;font-size:11px;padding:5px;cursor:pointer}
+.cx-xp-tour button:focus-visible{outline:2px solid #f9b078;outline-offset:3px}
+.cx-xp-tour .cx-xp-primary:active{transform:scale(.99)}
+@media(max-width:520px){dialog.cx-xp-tour{max-height:calc(100dvh - 22px);border-radius:19px}.cx-xp-tour .cx-xp-head{padding:15px 17px 7px}.cx-xp-tour .cx-xp-stage{padding:5px 17px}.cx-xp-tour .cx-xp-footer{margin:0 17px 17px;padding-top:17px}.cx-xp-tour .cx-xp-visual{height:145px;margin-bottom:17px}.cx-xp-tour .cx-xp-description{min-height:60px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.cx-xp-tour *,dialog.cx-xp-tour::backdrop{transition:none!important;animation:none!important;backdrop-filter:none}}
