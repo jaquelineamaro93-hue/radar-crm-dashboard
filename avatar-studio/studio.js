@@ -67,13 +67,14 @@ function render(){
   button.setAttribute('aria-pressed',draft[category]===item.id?'true':'false');
   if(category==='hair_color'||category==='eye_color'||category==='skin'){
    const sw=document.createElement('span');sw.className='swatch';sw.style.backgroundColor=item.color;button.append(sw);
-  }else if(['hair_style','eyes','lashes','mouth','presentation'].includes(category)){
+  }else if(['hair_style','eyes','lashes','mouth','presentation','shirt'].includes(category)){
    const portrait=document.createElement('span');
-   portrait.className='choice-portrait'+(category==='hair_style'?'':' face-portrait');
+   portrait.className='choice-portrait'+(['hair_style','shirt'].includes(category)?'':' face-portrait');
    portrait.innerHTML=c.renderSvg({...draft,[category]:item.id},true);
    const svg=portrait.querySelector('svg');
    svg?.setAttribute('aria-hidden','true');
-   if(category!=='hair_style')svg?.setAttribute('viewBox','89 91 125 125');
+   if(!['hair_style','shirt'].includes(category))svg?.setAttribute('viewBox','89 91 125 125');
+   if(category==='shirt')svg?.setAttribute('viewBox','65 218 170 106');
    button.append(portrait);
   }else{
    const mini=document.createElement('span');mini.className='mini-label';
