@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15120f">
+<title>Hall da Comunidade | Conexão XP</title>
+<meta name="description" content="Reconheça profissionais, descubra membros engajados e acompanhe empresas que contribuem para o Conexão CRM">
+<link rel="stylesheet" href="./style.css?v=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="./app.js?v=1" defer></script>
+</head>
+<body>
+<a class="skip" href="#content">Pular para os rankings</a>
+<header class="top"><a class="logo" href="/"><span class="brand-symbol" aria-hidden="true">⬡</span>CONEXÃO <b>CRM.</b></a>
+<nav aria-label="Navegação Conexão XP"><a href="/avatar-studio/"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Meu Avatar</a><a href="/"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>Voltar ao portal</a></nav></header>
+<main id="content">
+<div class="hero"><div><span class="eyebrow">CONEXÃO XP / COMUNIDADE</span><h1>Quem compartilha, <em>faz a diferença</em></h1><p>Reconhecimento construído por pessoas e contribuições reais. Veja os destaques e participe no seu ritmo</p></div><div class="hero-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></div></div>
+<div class="panel info" id="status" role="status">Conectando ao Conexão CRM</div>
+<div class="ranktabs" role="group" aria-label="Categorias do ranking">
+<button type="button" data-kind="profissionais" class="active" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M12 3a5 5 0 0 1 5 5 5 5 0 1 1-10 0 5 5 0 0 1 5-5ZM4 21v-2a8 8 0 0 1 16 0v2"/></svg>Profissionais recomendados</button>
+<button type="button" data-kind="comunidade" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Comunidade engajada</button>
+<button type="button" data-kind="empresas" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h2M14 7h2M9 11h2M14 11h2M9 15h6"/></svg>Empresas parceiras</button>
+</div>
+<section class="rank-area panel" aria-labelledby="rankTitle"><div class="heading"><div><span class="eyebrow">HALL DA COMUNIDADE</span><h2 id="rankTitle">Profissionais recomendados</h2><p id="rankDescription">Pessoas com habilidades reconhecidas por outros membros</p></div><span class="light-tag">Dados reais</span></div><div id="podium" class="podium" aria-label="Pódio"></div><div id="rows" class="ranking-list"></div><div id="empty" class="empty" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><strong id="emptyTitle">Ainda não há destaques nesta categoria</strong><p id="emptyText">As primeiras participações verificadas aparecerão aqui</p></div></section>
+<section class="actions-grid">
+<div class="panel skill-panel" id="skillPanel"><span class="eyebrow">OPEN TO WORK</span><h2>Minhas cinco habilidades</h2><p>Selecione as competências que melhor representam seu trabalho. Assim, outras pessoas poderão recomendar o que conhecem sobre você</p>
+<div class="skill-inputs" id="skillInputs"><label>Habilidade 1<input maxlength="55" autocomplete="off" placeholder="Ex.: CRM estratégico"></label><label>Habilidade 2<input maxlength="55" autocomplete="off" placeholder="Ex.: Salesforce"></label><label>Habilidade 3<input maxlength="55" autocomplete="off" placeholder="Ex.: Customer Experience"></label><label>Habilidade 4<input maxlength="55" autocomplete="off" placeholder="Ex.: Dados e Analytics"></label><label>Habilidade 5<input maxlength="55" autocomplete="off" placeholder="Ex.: Marketing Cloud"></label></div>
+<button id="saveSkills" type="button" class="primary">Salvar habilidades</button><small id="skillsHint">Disponível para perfis Open to Work visíveis no diretório</small></div>
+<div class="panel participate"><span class="eyebrow">PARTICIPAÇÃO</span><h2>Quero aparecer no ranking</h2><p>O ranking da comunidade considera dias ativos e sessões, sem recompensar tempo excessivo de navegação. A escolha é sua</p>
+<label class="checkrow"><input id="rankOptin" type="checkbox"><span>Permitir que meu perfil apareça no ranking de engajamento</span></label>
+<button id="saveVisibility" type="button" class="outline">Salvar preferência</button><small>Sua escolha pode ser alterada quando quiser</small>
+<div class="connect"><span class="eyebrow">PERSONALIZAÇÃO</span><h3>Seu avatar também tem espaço aqui</h3><p>Personalize seu personagem e escolha o emblema que quer mostrar</p><a href="/avatar-studio/" class="avatar-link">Personalizar meu avatar <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+</div>
+</section>
+<footer>CONEXÃO CRM. <span>Reconhecimento baseado em dados reais e participação voluntária</span></footer>
+</main>
+<dialog id="endorseDialog" class="recommend-dialog" aria-labelledby="endorseTitle"><button type="button" id="closeDialog" class="close" aria-label="Fechar">×</button><span class="eyebrow">RECOMENDE UM PROFISSIONAL</span><h2 id="endorseTitle">Reconheça uma habilidade</h2><p id="endorseText">Recomende apenas competências que você conhece</p><div id="endorseSkills"></div><p class="explain">Uma recomendação por habilidade e por conta. Você não pode recomendar a si mesmo</p></dialog>
+</body></html>
