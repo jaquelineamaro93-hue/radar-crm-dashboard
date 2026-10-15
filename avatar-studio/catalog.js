@@ -157,8 +157,8 @@ function renderSvg(input={},small=false){
  hairSvg(group,Number(index),hairColor)+
  '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
  '<text x="150" y="280" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="'+(c.shirt==='cx'?'#4b3027':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="19">'+shirt[1][1]+'</tspan></text>'+
- '</g><circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>'+
- '<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text></svg>';
+ '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
+ (c.badge==='admin'?'':'<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text>')+'</svg>';
 }
 window.CXAvatarCatalog={groups,hairs,colors,skins,faces,eyes,mouths,presentation,shirts,backgrounds,accessories,badges,catalogs,labels,defaultConfig,itemKey,find,renderSvg};
 })();
