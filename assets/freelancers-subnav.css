@@ -1,0 +1,47 @@
+/* Conexão CRM — subnavegação leve de Freelancers e ícones administrativos.
+ * Sem alterações na busca de IA, dados de perfil, catálogo ou permissões.
+ */
+#pageFreelancers .crm-freelancer-subnav{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+  border-bottom:1px solid var(--line);padding:4px 0 11px;margin:13px 0 19px
+}
+#pageFreelancers .crm-freelancer-tab{
+  appearance:none;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;color:var(--muted);border:1px solid transparent;
+  border-radius:9px;padding:9px 14px;min-height:40px;font-size:13px;
+  font-weight:600;cursor:pointer;line-height:1.35;white-space:nowrap
+}
+#pageFreelancers .crm-freelancer-tab:hover{
+  background:#f9731610;color:var(--text);border-color:#604631
+}
+#pageFreelancers .crm-freelancer-tab.is-active{
+  color:#f6a46a;background:#f9731614;border-color:#a65a2c
+}
+#pageFreelancers .crm-freelancer-tab:focus-visible{
+  outline:2px solid #f6b985;outline-offset:3px
+}
+#pageFreelancers #crmFreelancerDirectoryView[hidden],
+#pageFreelancers #crmFreelancerAIView[hidden]{display:none!important}
+#pageFreelancers #crmFreelancerAIView{
+  max-width:900px;min-width:0;margin:0 auto;padding:0 0 20px
+}
+#pageFreelancers .crm-freelancer-ai-intro{margin-bottom:16px}
+#pageFreelancers .crm-freelancer-ai-intro h3{
+  color:var(--text);font-weight:700;font-size:19px;margin:0 0 6px
+}
+#pageFreelancers .crm-freelancer-ai-intro p{
+  color:var(--muted);font-size:13px;line-height:1.55;margin:0
+}
+#pageFreelancers #crmFreelancerAIView .ai-match-form{
+  margin-bottom:14px!important;padding:16px!important;border-radius:11px!important
+}
+#pageFreelancers #crmFreelancerAIView textarea{max-width:100%;box-sizing:border-box}
+#view-logada #crmAdminNav .crm-nav-glyph svg,
+#view-logada #crmTeamAdminNav .crm-nav-glyph svg{
+  display:block;width:19px;height:19px;stroke:currentColor;stroke-width:1.65;
+  stroke-linecap:round;stroke-linejoin:round;fill:none
+}
+@media(max-width:520px){
+  #pageFreelancers .crm-freelancer-tab{flex:1 1 auto;padding:9px 12px}
+  #pageFreelancers #crmFreelancerAIView .ai-match-form{padding:13px!important}
+}

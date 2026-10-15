@@ -1259,7 +1259,8 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-baby-yellow1">
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-no-flash1">
+<link rel="stylesheet" href="/assets/freelancers-subnav.css?v=20261014-1">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2329,22 +2330,18 @@ crmShowSurveyReminder();
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Freelancers de CRM</h2></div>
       <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+      <nav class="crm-freelancer-subnav" aria-label="Navegação de Freelancers">
+        <button type="button" id="crmFreelancerTabDirectory" class="crm-freelancer-tab is-active" aria-controls="crmFreelancerDirectoryView" aria-pressed="true" onclick="crmSelectFreelancerView('directory')">Profissionais</button>
+        <button type="button" id="crmFreelancerTabAI" class="crm-freelancer-tab" aria-controls="crmFreelancerAIView" aria-pressed="false" onclick="crmSelectFreelancerView('ai')">Encontrar com IA</button>
+      </nav>
+      <div id="crmFreelancerDirectoryView" aria-labelledby="crmFreelancerTabDirectory">
       <div class="note">As avaliações "Recomendo" e "Não recomendo" são anônimas: o nome de quem vota não é salvo em nenhum lugar.</div>
 
       <div class="ev-header-row" style="justify-content:flex-end;">
         <button class="ev-btn-suggest" id="btnOpenFreelancerModal"> Anunciar meu perfil</button>
       </div>
 
-      <div class="ai-match-form" style="background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
-        <label for="freelancerChallenge" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:14px;">Não sabe por onde começar? Descreva seu desafio</label>
-        <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Ex: "preciso de alguém pra montar jornadas no RD Station" ou "quero um freelancer de design pra criar templates de e-mail". A IA sugere os freelancers mais aderentes da lista abaixo.</p>
-        <textarea id="freelancerChallenge" placeholder="Descreva o que você precisa..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:14px; resize:vertical; min-height:80px; margin-bottom:12px; color:var(--text);"></textarea>
-        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-          <button class="form-submit-btn" id="btnSubmitFreelancerChallenge" onclick="submitFreelancerChallenge()" style="background:var(--text); color:#fffff3; border:none; padding:11px 20px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">Encontrar Freelancer Ideal</button>
-          <span id="freelancerChallengeLoading" style="display:none; color:var(--muted); font-size:14px;">Buscando...</span>
-        </div>
-      </div>
-      <div id="freelancerChallengeResults"></div>
+
 
       <div class="search-bar">
         <input type="text" class="search-input" id="freelancerSearchText" placeholder="Buscar por nome ou especialidade...">
@@ -2396,6 +2393,24 @@ crmShowSurveyReminder();
           </details>
         </div>
       </div>
+
+      </div>
+      <section id="crmFreelancerAIView" aria-labelledby="crmFreelancerTabAI" hidden>
+        <div class="crm-freelancer-ai-intro">
+          <h3>Encontre o freelancer ideal</h3>
+          <p>Descreva seu projeto e receba sugestões de profissionais da comunidade.</p>
+        </div>
+      <div class="ai-match-form" style="background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
+        <label for="freelancerChallenge" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:14px;">Não sabe por onde começar? Descreva seu desafio</label>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Ex: "preciso de alguém pra montar jornadas no RD Station" ou "quero um freelancer de design pra criar templates de e-mail". A IA sugere os freelancers mais aderentes da lista abaixo.</p>
+        <textarea id="freelancerChallenge" placeholder="Descreva o que você precisa..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:14px; resize:vertical; min-height:80px; margin-bottom:12px; color:var(--text);"></textarea>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <button class="form-submit-btn" id="btnSubmitFreelancerChallenge" onclick="submitFreelancerChallenge()" style="background:var(--text); color:#fffff3; border:none; padding:11px 20px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">Encontrar Freelancer Ideal</button>
+          <span id="freelancerChallengeLoading" style="display:none; color:var(--muted); font-size:14px;">Buscando...</span>
+        </div>
+      </div>
+      <div id="freelancerChallengeResults"></div>
+      </section>
     </section>
   </div><div class="tab-page" id="pageAgencias">
     <section>
@@ -2625,7 +2640,7 @@ crmShowSurveyReminder();
       <!-- Status e Contagem -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <div>
-          <h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>
+          
           <p style="font-size:14px; color:var(--muted); margin:4px 0 0;">Mostrando <span id="vagasCountHub">0</span> de <span id="totalVagasHub">0</span> vagas. <span id="vagasUltimaColetaHub" role="status" aria-live="polite"></span></p>
         </div>
         <button onclick="carregarVagasHub()" style="background:var(--accent-tint); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;"> Atualizar</button>
@@ -3724,18 +3739,26 @@ function switchTab(tab){
   if(tab==='courses' && !coursesInitialized){ initCoursesTab(); }
   if(tab==='cargos' && !cargosInitialized){ initCargosTab(); }
   if(tab==='eventos' && !eventosInitialized){ initEventosTab(); }
-  if(tab==='freelancers' && !freelancersInitialized){ initFreelancersTab(); }
+  if(tab==='freelancers'){crmSelectFreelancerView('directory');if(!freelancersInitialized)initFreelancersTab();}
   if(tab==='agencias' && !agenciasInitialized){ initAgenciasTab(); }
   if(tab==='ferramentas' && !ferramentasInitialized){ initFerramentasTab(); }
   if(tab==='ferramentas' && !compareCRMsInitialized){ initCompareCRMsTab(); }
-  if(tab==='vagas'){ carregarVagasHub(); if(!vagasAutoRefreshStarted){ setInterval(carregarVagasHub, 60000); vagasAutoRefreshStarted = true; } }
+  if(tab==='vagas'){
+    const advanced=['filtro-categoria','filtro-cargo','filtro-empresa','filtro-nivel','filtro-plataforma','filtro-estado','filtro-municipio','filtro-modalidade'];
+    const filtered=advanced.some(id=>document.getElementById(id)?.value)
+      || (document.getElementById('filtro-ordem-hub')?.value||'recente')!=='recente';
+    if(!filtered&&!crmRadarRequestInFlight&&(!todasAsVagasHub.length||Date.now()-crmRadarLastLoadedAt>120000))carregarVagasHub();
+    // O bot mantém a coleta no servidor. A interface só busca ao abrir/voltar
+    // ao Radar (se desatualizada) ou quando a pessoa aciona Atualizar/Buscar.
+    // Não recriar cards enquanto a pessoa percorre os resultados.
+  }
   if(tab==='calc' && !calcInitialized){ initCalcTab(); }
 
   // Rola a página para o topo do conteúdo ao trocar de aba, para não deixar
   // a pessoa no meio da rolagem da aba anterior.
   const tabBar = document.querySelector('.tab-btn.active');
   if(tabBar && tabBar.scrollIntoView){
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo(0, 0);
   } else {
     window.scrollTo(0, 0);
   }
@@ -3746,6 +3769,10 @@ function switchSearchTab(tab){crmNavigate(tab==='ai'?'public-match':'search');}
 
 // ============ VAGAS DE CRM (Integrado no Hub) ============
 let todasAsVagasHub = [];
+let crmRadarLastLoadedAt=0;
+let crmRadarRequestInFlight=false;
+let crmVagasRenderSeq=0;
+
 
 function sanitizeInputVagas(str, maxLen = 200) {
   if (!str || typeof str !== 'string') return '';
@@ -3856,8 +3883,12 @@ function initVagasSupabase() {
 }
 
 async function carregarVagasHub() {
+  if(crmRadarRequestInFlight)return;
+  crmRadarRequestInFlight=true;
+  const renderSeq=++crmVagasRenderSeq;
   const container = document.getElementById('vagasContainerHub');
-  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
+  const keepCards=!!container.querySelector('.crm-job-card');
+  if(!keepCards)container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><p style="font-size:12px; color:var(--muted);">Carregando vagas...</p></div>';
 
   try {
     // Garantir que o cliente Supabase está inicializado
@@ -3877,8 +3908,10 @@ async function carregarVagasHub() {
       .order('published_at', { ascending: false })
       .limit(1000);
 
+    if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
       console.error('[VAGAS] Erro ao carregar vagas:', error.message, error.code, error.details);
+      if(keepCards){const status=document.getElementById('vagasUltimaColetaHub');if(status)status.textContent='Não foi possível atualizar agora';return;}
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
@@ -3906,12 +3939,14 @@ async function carregarVagasHub() {
     if (lastRunEl) lastRunEl.textContent = latestSighting
       ? (lastSeen ? 'Última vaga reencontrada: ' : 'Última vaga cadastrada: ') + new Date(latestSighting).toLocaleDateString('pt-BR')
       : 'Sem data de coleta confirmada';
+    crmRadarLastLoadedAt=Date.now();
     renderizarVagasHub(todasAsVagasHub);
     crmLoadClosedJobs();
   } catch (err) {
     console.error('[VAGAS] Erro inesperado ao carregar vagas:', err.message, err);
+    if(keepCards)return;
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao carregar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
-  }
+  } finally {crmRadarRequestInFlight=false;}
 }
 
 function obterModalidade(vaga) {
@@ -4098,8 +4133,10 @@ document.addEventListener('click', event => {
 });
 
 async function aplicarFiltrosVagas() {
+  const renderSeq=++crmVagasRenderSeq;
   const container = document.getElementById('vagasContainerHub');
-  container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:32px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
+  const keepCards=!!container.querySelector('.crm-job-card');
+  if(!keepCards)container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><p style="font-size:12px; color:var(--muted);">Buscando vagas...</p></div>';
 
   try {
     initVagasSupabase();
@@ -4173,8 +4210,9 @@ async function aplicarFiltrosVagas() {
     query = query.limit(1000);
 
     const { data, error } = await query;
-
+    if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
+      if(keepCards)return;
       console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
@@ -4191,6 +4229,7 @@ async function aplicarFiltrosVagas() {
     crmLoadClosedJobs(categoria);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
+    if(keepCards)return;
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
@@ -5720,6 +5759,20 @@ function flInitSB(){
   catch(e) { console.error(e); return false; }
 }
 
+function crmSelectFreelancerView(view){
+ const isAI=view==='ai';
+ const directory=document.getElementById('crmFreelancerDirectoryView');
+ const panel=document.getElementById('crmFreelancerAIView');
+ if(!directory||!panel)return;
+ directory.hidden=isAI;
+ panel.hidden=!isAI;
+ for(const [id,selected] of [['crmFreelancerTabDirectory',!isAI],['crmFreelancerTabAI',isAI]]){
+  const button=document.getElementById(id);
+  if(!button)continue;
+  button.setAttribute('aria-pressed',String(selected));
+  button.classList.toggle('is-active',selected);
+ }
+}
 function initFreelancersTab(){
   freelancersInitialized = true;
   flInitSB();
@@ -5994,13 +6047,17 @@ async function flSubmitReview(nome){
  finally{crmReviewPending.delete(key);if(button){button.disabled=false;button.textContent='Enviar avaliação';}}
 }
 async function loadFreelancers(){
- const epoch=crmAuthEpoch;crmById('freelancerCount').textContent='Carregando…';
+ if(window.crmFreelancersLoading)return;
+ window.crmFreelancersLoading=true;
+ const epoch=crmAuthEpoch;
+ if(!FREELANCERS.length)crmById('freelancerCount').textContent='Carregando…';
  try{
   if(!flSb&&!flInitSB())throw Error('Conexão indisponível.');
   const [data,reviews]=await Promise.all([crmFetchDirectory('freelancers'),flSb.from('avaliacoes_freelancers').select('freelancer_nome,nota,comentario,avaliador').order('created_at',{ascending:false})]);
   if(epoch!==crmAuthEpoch)return;FREELANCERS=data;
-  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();
- }catch(e){if(epoch!==crmAuthEpoch)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
+  if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();window.crmFreelancersLastLoadedAt=Date.now();
+ }catch(e){if(epoch!==crmAuthEpoch)return;if(FREELANCERS.length)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
+ finally{window.crmFreelancersLoading=false;}
 }
 function flSubRT(){
   if(!flSb) return;
@@ -8661,7 +8718,7 @@ function crmNavigate(route,updateHash=true){
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
- if(route==='freelancers')loadFreelancers();
+ if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length || Date.now()-(window.crmFreelancersLastLoadedAt||0)>120000)loadFreelancers();}
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
  if(route==='membros')crmOpenMemberTab('diretorio');
  if(route==='comunidade'){switchComunidadeTab('grupos');window.CXConnections?.partners();}
@@ -8672,7 +8729,7 @@ function crmNavigate(route,updateHash=true){
  if(window.Chart?.instances)Object.values(Chart.instances).forEach(c=>{try{c.resize();}catch{}});
  crmById('crmBreadcrumb').textContent='CONEXÃO CRM / '+crmRoutes[route][1].toUpperCase();
  if(updateHash)history.pushState(null,'',crmRoutePath(route));
- crmToggleMenu(false);window.scrollTo({top:0,behavior:'smooth'});
+ crmToggleMenu(false);window.scrollTo(0,0);
 }
 function crmInitPublicTools(){if(typeof initCalcTab==='function'&&!calcInitialized)initCalcTab();if(typeof initEventosTab==='function'&&!eventosInitialized)Promise.resolve(initEventosTab()).catch(()=>{});}
 function crmJoin(message){
@@ -8776,6 +8833,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  crmById('comSubTabDiretorio').onclick=()=>crmOpenMemberTab('diretorio');
  window.addEventListener('hashchange',crmHandleLocation);window.addEventListener('popstate',crmHandleLocation);
  document.addEventListener('click',e=>{
+  if(e.detail>0){
+    const tapped=e.target.closest('.crm-nav-items .tab-btn,.crm-topic-card');
+    if(tapped)tapped.blur();
+  }
   const route=e.target.closest('[data-crm-route]');if(route){e.preventDefault();document.querySelector('.crm-solutions-menu')?.removeAttribute('open');crmNavigate(route.dataset.crmRoute);return;}
   if(!e.target.closest('.crm-solutions-menu'))document.querySelector('.crm-solutions-menu')?.removeAttribute('open');
   const contact=e.target.closest('[data-crm-contact]');if(contact){e.preventDefault();crmOpenContact(contact);return;}
@@ -9073,8 +9134,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
  page.innerHTML='<h1>Administração</h1><p>Gerencie aprovações e acompanhe o uso do Conexão CRM.</p><div class="crm-admin-tabs" id="crmAdminTabs" role="tablist" aria-label="Áreas da Administração"><button type="button" class="crm-admin-tab active" data-a="analytics" role="tab" aria-selected="true">▥ Analytics</button><button type="button" class="crm-admin-tab" data-a="journey" role="tab" aria-selected="false">↝ Jornada</button><button type="button" class="crm-admin-tab" data-a="members" role="tab" aria-selected="false">◎ Membros</button><button type="button" class="crm-admin-tab" data-a="approvals" role="tab" aria-selected="false">⌁ Aprovações</button><button type="button" class="crm-admin-tab" data-a="surveys" role="tab" aria-selected="false">◉ Pesquisas</button><button type="button" class="crm-admin-tab" data-a="newsletter" role="tab" aria-selected="false">✉ Newsletter</button></div><section id="crmAdminAnalytics"></section><section id="crmAdminJourney" hidden></section><section id="crmAdminMembers" hidden></section><section id="crmAdminSurveys" hidden></section><section id="crmAdminApprovals" hidden><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button id="crmModerationRefresh" type="button">↻ Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div></section><section id="crmAdminNewsletter" hidden></section>';
  crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
- const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;
- const team=document.createElement('button');team.id='crmTeamAdminNav';team.className='tab-btn';team.hidden=true;team.innerHTML='<span class="crm-nav-glyph">◎</span>Equipe / Quem Faz';team.onclick=()=>{window.location.href='/quem-faz/';};
+ const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3l1.5 2.7 3-.1.9 3 2.8 1.4-1.2 2.8 1.2 2.8-2.8 1.4-.9 3-3-.1L12 22l-1.5-2.7-3 .1-.9-3-2.8-1.4 1.2-2.8-1.2-2.8 2.8-1.4.9-3 3 .1z"/><circle cx="12" cy="12.3" r="3"/></svg></span>Administração';b.onclick=crmOpenAdmin;
+ const team=document.createElement('button');team.id='crmTeamAdminNav';team.className='tab-btn';team.hidden=true;team.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M17 9a3 3 0 1 0-2-5.2M17 14a5 5 0 0 1 4 5v1"/></svg></span>Equipe / Quem Faz';team.onclick=()=>{window.location.href='/quem-faz/';};
  const home=crmById('navMembro');const nav=home?.parentElement;
  if(nav&&home){nav.insertBefore(b,home.nextSibling);nav.insertBefore(team,b.nextSibling);}else{crmById('crmNavSlot').append(b,team);}
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
