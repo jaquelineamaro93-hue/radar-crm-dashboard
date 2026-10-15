@@ -1,0 +1,44 @@
+/* Conexão CRM — refinamento visual progressivo. Sem alterar regras de negócio. */
+:root{--cx-soft-radius:16px;--cx-soft-stroke:rgba(145,145,145,.19);--cx-soft-shadow:0 5px 22px rgba(0,0,0,.055)}
+/* Contornos discretos e superfícies calmas */
+.crm-topic-card,.crm-panel,.cx-sheet,.cx-stat,.cx-row,.cx-deal,.card,.stat,.crm-chart-data,.cx-column{
+ border-width:1px!important;border-radius:var(--cx-soft-radius)!important;
+ box-shadow:var(--cx-soft-shadow)!important
+}
+.crm-topic-card{min-width:0;transition:border-color .18s ease,background-color .18s ease,transform .18s ease!important}
+.crm-topic-card:hover{transform:translateY(-1px)}
+.crm-topic-card__icon{border-radius:12px!important}
+.crm-topic-nav{margin-block:18px 22px!important}
+.crm-topic-nav__head{margin-bottom:12px!important}
+.crm-topic-nav__title{font-size:clamp(15px,1.45vw,18px)!important;line-height:1.35!important}
+.crm-topic-card__state{opacity:.64;font-size:11px!important}
+.crm-topic-card.is-current{outline:none!important;border-color:#f97316!important;box-shadow:0 0 0 1px rgba(249,115,22,.19)!important}
+/* Botões com transição e foco acessível, sem contorno estourado */
+.crm-button,.tab-btn,.cx-tabs button,.cx-row-actions button,.cx-work button{
+ border-radius:12px!important;transition:background-color .18s ease,border-color .18s ease,color .18s ease!important;
+}
+.crm-button:focus-visible,.tab-btn:focus-visible,.cx-tabs button:focus-visible,.crm-topic-card:focus-visible,.cx-work button:focus-visible{
+ outline:2px solid #f97316!important;outline-offset:2px!important
+}
+.crm-nav-items .tab-btn,.cx-tools-nav .tab-btn{display:flex;align-items:center;gap:10px;max-width:100%;box-sizing:border-box}
+.crm-nav-items .tab-btn .crm-nav-glyph,.cx-tools-nav .crm-nav-glyph{flex:0 0 20px;display:inline-grid;place-items:center;font-size:17px;font-weight:400;line-height:1}
+/* Conteúdo com mais respiro, mas sem duplicar descrições */
+.cx-work .cx-top{padding-bottom:14px}
+.cx-work .cx-intro{max-width:68ch;line-height:1.55}
+.cx-work .cx-note{line-height:1.5;opacity:.8}
+.cx-work .cx-stats{gap:12px}
+.cx-work .cx-sheet,.cx-work .cx-column{padding:clamp(16px,2vw,24px)}
+/* Controle de largura, leitura e cartões */
+.crm-topic-card__copy,.cx-row>div,.cx-sheet,.card{min-width:0}
+.crm-topic-card__name,.cx-row strong{overflow-wrap:anywhere}
+@media(max-width:700px){
+ .crm-topic-nav{margin-block:14px 18px!important}
+ .crm-topic-nav__grid{gap:9px!important}
+ .crm-topic-card{padding:12px!important}
+ .cx-work .cx-top{padding-bottom:10px}
+ .cx-work .cx-tabs{gap:8px;flex-wrap:wrap}
+ .cx-work .cx-sheet,.cx-work .cx-column{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .crm-topic-card,.crm-button,.tab-btn,.cx-tabs button,.cx-work button{transition:none!important;transform:none!important}
+}
