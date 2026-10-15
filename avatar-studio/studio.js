@@ -22,8 +22,10 @@ function owns(field,item){
  return unlocks.has(c.itemKey(field,item.id));
 }
 function catalogItems(){
- const items=c.catalogs[category]||[];
- return category==='hair_style'?items.filter(item=>item.group===group&&(hairTier==='all'||(hairTier==='free'&&item.cost===0)||(hairTier==='coins'&&typeof item.cost==='number'&&item.cost>0)||(hairTier==='special'&&item.cost===null))):items;
+ const all=c.catalogs[category]||[];
+ // An administrator always sees the complete catalog. Members receive six choices per category.
+ const eligible=isAdmin?all:(category==='hair_style'?all.filter(item=>Number(item.id.split('-').pop())<=6):all.slice(0,6));
+ return category==='hair_style'?eligible.filter(item=>item.group===group&&(hairTier==='all'||(hairTier==='free'&&item.cost===0)||(hairTier==='coins'&&typeof item.cost==='number'&&item.cost>0)||(hairTier==='special'&&item.cost===null))):eligible;
 }
 function updateAvatar(){
  $('avatarPreview').innerHTML=c.renderSvg(draft);
@@ -44,9 +46,10 @@ function render(){
  $('categories').replaceChildren(...fields.map(field=>tab(c.labels[field],field,category===field)));
  $('categoryTitle').textContent=c.labels[category];
  $('categoryIntro').textContent=detail[category];
+ if(category==='hair_style'&&group==='masculino'&&draft.presentation!=='masculino') $('categoryIntro').textContent='Cortes curtos e masculinos disponíveis para qualquer apresentação';
  $('hairGroups').hidden=category!=='hair_style';
  const hairFilters=document.getElementById('hairFilters');
- if(hairFilters){hairFilters.hidden=category!=='hair_style';if(category==='hair_style')hairFilters.querySelectorAll('button').forEach(b=>{const on=b.dataset.hairTier===hairTier;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
+ if(hairFilters){hairFilters.hidden=category!=='hair_style'||!isAdmin;if(category==='hair_style')hairFilters.querySelectorAll('button').forEach(b=>{const on=b.dataset.hairTier===hairTier;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
  if(category==='hair_style'){
   $('hairGroups').replaceChildren(...c.groups.map(([id,label])=>{
    const b=tab(label,id,group===id);b.dataset.hairGroup=id;delete b.dataset.category;return b;
@@ -55,7 +58,7 @@ function render(){
  const items=catalogItems();
  $('categoryCount').textContent=items.length+' opções';
  const hairStats=document.getElementById('hairStats');
- if(hairStats){hairStats.hidden=category!=='hair_style';if(category==='hair_style')hairStats.textContent='Por textura: 6 grátis · 9 por Coins · 3 conquistas';}
+ if(hairStats){hairStats.hidden=category!=='hair_style'||!isAdmin;if(category==='hair_style')hairStats.textContent='Por textura: 6 grátis · 9 por Coins · 3 conquistas';}
  const fragment=document.createDocumentFragment();
  for(const item of items){
   const button=document.createElement('button');
@@ -79,7 +82,8 @@ function render(){
   }
   const name=document.createElement('strong');name.className='choice-name';name.textContent=item.name;button.append(name);
   const status=document.createElement('span');status.className='choice-note';
-  if(item.cost===0){status.classList.add('choice-free');status.textContent='Gratuito';}
+  if(isAdmin){status.classList.add('choice-free');status.textContent='Disponível para admin';}
+  else if(item.cost===0){status.classList.add('choice-free');status.textContent='Gratuito';}
   else if(owns(category,item)){status.classList.add('choice-free');status.textContent='Adquirido';}
   else if(item.cost===null){status.classList.add('choice-lock');status.textContent=isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor'))?'Livre para admin':'Por conquista';}
   else status.textContent=isAdmin?'Livre para admin':item.cost+' Coins';
@@ -95,7 +99,7 @@ async function choose(field,id){
  if(pending)return;
  const item=c.find(field,id);if(!item)return;
  if(draft[field]===id)return;
- if(!owns(field,item)){
+ if(!owns(field,item)&&!isAdmin){
   if(item.cost===null&&!(isAdmin&&(field==='hair_style'||field==='hair_color'||(field==='shirt'&&item.id==='mentor')))){toast('Item reservado para uma conquista validada');return;}
   if(!user){toast('Entre na sua conta para usar Coins');return;}
   if(!isAdmin&&coins<item.cost){toast('Você precisa de mais Coins');return;}
@@ -155,6 +159,7 @@ async function loadAccount(){
   if(boot.error||ownedItems.error||profile.error||team.error)throw boot.error||ownedItems.error||profile.error||team.error;
   coins=Number(boot.data);
   isAdmin=team.data===true;
+  if(!isAdmin){hairTier='all';}
   unlocks=new Set((ownedItems.data||[]).map(x=>x.item_key));
   if(isAdmin)unlocks.add('badge-admin');
   if(profile.data?.config&&typeof profile.data.config==='object'){
