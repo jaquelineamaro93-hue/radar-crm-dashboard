@@ -48,6 +48,13 @@
     }
   }
 
+  // Sidebar glyphs must never protrude into adjacent menu items.
+  if(!document.getElementById('cx-xp-nav-icon-boundaries')){
+    const style=document.createElement('style');
+    style.id='cx-xp-nav-icon-boundaries';
+    style.textContent='#crmAvatarStudioLink,#crmXpRankingLink,#cxXpReplay{min-width:0;overflow:hidden;position:relative;box-sizing:border-box;align-items:center!important}#crmAvatarStudioLink .crm-nav-glyph,#crmXpRankingLink .crm-nav-glyph,#cxXpReplay .crm-nav-glyph{display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;width:20px;height:20px;overflow:hidden}#crmAvatarStudioLink svg,#crmXpRankingLink svg,#cxXpReplay svg{display:block;width:18px!important;height:18px!important;max-width:18px;max-height:18px;overflow:hidden}';
+    document.head.appendChild(style);
+  }
   // Conexão XP is for the member's Avatar, Rankings and XP features, never institutional team editing.
   function syncXpLinks(){
     const nav=document.querySelector('#view-logada .crm-nav-items')||document.querySelector('.crm-nav-items');
