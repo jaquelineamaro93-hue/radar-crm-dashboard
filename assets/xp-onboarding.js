@@ -11,11 +11,11 @@ const I={
  rocket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c4-1 8-5 10-10l5-1-1 5c-2 5-6 9-10 10l-1-5-3 1Z"/><path d="M7 17 4 20M12 12l1 1"/></svg>'
 };
 const STEPS=[
- {title:'Seu avatar, do seu jeito',text:'Cabelo, olhos e expressões com escolhas independentes, além das camisetas com frases da comunidade',tag:'Avatar Studio disponível',icon:'avatar'},
- {title:'Personalize com Coins',text:'Use suas Coins para escolher peças e criar seu personagem. A equipe administrativa tem personalização ilimitada e emblema próprio',tag:'Personalização disponível',icon:'badge'},
- {title:'Rankings com pessoas de verdade',text:'O Hall reconhece recomendações de habilidades, participação voluntária e contribuições verificadas das empresas. As posições surgem conforme os membros participam',tag:'Rankings reais',icon:'rocket'},
- {title:'Recomende um profissional Open to Work',text:'Profissionais podem escolher até cinco habilidades e receber reconhecimento de outros membros. Uma recomendação por habilidade e por pessoa',tag:'Recomendações disponíveis',icon:'skill'},
- {title:'Que tal experimentar?',text:'Comece montando seu avatar e depois explore os Rankings no mesmo bloco do menu',tag:'Explorar Conexão XP',icon:'avatar'}
+ {title:'Seu espaço no Conexão XP',text:'Crie um avatar com roupas, cabelos e emblemas que tenham a sua cara',tag:'Meu Avatar',icon:'avatar'},
+ {title:'Compartilhe o que você sabe',text:'No Open to Work, escolha até cinco habilidades para receber recomendações de quem conhece seu trabalho',tag:'Recomendações disponíveis',icon:'skill'},
+ {title:'Reconhecimento de verdade',text:'O Hall mostra profissionais recomendados, membros engajados e empresas que contribuíram com a comunidade',tag:'Rankings com dados reais',icon:'rocket'},
+ {title:'Personalize com Coins',text:'Use Coins para escolher acessórios e peças especiais. Administradores têm personalização ilimitada',tag:'Sua identidade na comunidade',icon:'badge'},
+ {title:'Bora conhecer?',text:'Comece pelo avatar ou conheça o Hall da Comunidade. Tudo fica disponível no bloco Conexão XP do menu',tag:'Escolha sua primeira experiência',icon:'avatar'}
 ];
 function signedUser(){
  try{
@@ -45,7 +45,7 @@ function create(){
  '<button type="button" class="cx-xp-secondary">Agora não</button></div>';
  document.body.append(dialog);
  dialog.querySelector('[data-close]').addEventListener('click',()=>close());
- dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>close());
+ dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){close();location.assign('/conexao-xp/');}else close();});
  dialog.querySelector('.cx-xp-back').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
  dialog.querySelector('.cx-xp-primary').addEventListener('click',()=>{
   if(step===STEPS.length-1){close();location.assign('/avatar-studio/');return;}
@@ -65,7 +65,7 @@ function render(){
  d.querySelector('.cx-xp-count').textContent=String(step+1).padStart(2,'0')+' / '+String(STEPS.length).padStart(2,'0');
  const back=d.querySelector('.cx-xp-back');back.hidden=step===0;
  d.querySelector('.cx-xp-primary').textContent=step===STEPS.length-1?'Criar meu avatar':'Continuar';
- d.querySelector('.cx-xp-secondary').textContent=step===STEPS.length-1?'Explorar depois':'Pular apresentação';
+ d.querySelector('.cx-xp-secondary').textContent=step===STEPS.length-1?'Ver rankings':'Pular apresentação';
 }
 function open(force=false){
  if(!signedUser())return;
