@@ -7,7 +7,8 @@ const groups=[
 ['cacheado','Cacheados',['Cachos curtos','Cachos médios','Cachos longos','Cacheado volumoso','Coque cacheado','Cachos definidos com franja']],
 ['crespo','Crespos',['Crespo curtinho','Crespo arredondado','Crespo longo','Puff alto','Coque crespo','Crespo definido']],
 ['afro','Afro',['Black power curto','Afro médio','Afro volumoso','Afro arredondado','Afro com faixa','Afro lateral']],
-['trancado','Tranças e protetivos',['Duas tranças','Trança lateral','Box braids longas','Box braids curtas','Coque com tranças','Bantu knots']]
+['trancado','Tranças e protetivos',['Duas tranças','Trança lateral','Box braids longas','Box braids curtas','Coque com tranças','Bantu knots']],
+['masculino','Masculinos e curtos',['Buzz cut','Crew cut','French crop','Risca lateral','Degradê baixo','Cabelo social']]
 ];
 
 const extendedHairNames={
@@ -16,6 +17,7 @@ const extendedHairNames={
  cacheado:['Curto com risca','Cachos médios em camadas','Cachos longos com franja','Cacheado lateral','Coque cacheado baixo','Curly puff','Curto arredondado','Cachos bob com franja','Cachos longos semi presos','Cachos definidos laterais','Coque alto com cachos','Dois puffs cacheados'],
  crespo:['Crespo com risca lateral','Crespo médio definido','Crespo longo em camadas','Puff lateral','Coque crespo baixo','Crespo emoldurando o rosto','Taper crespo','Crespo com franja','Crespo longo semi preso','Puff alto com volume','Coque crespo duplo','Crespo volumoso definido'],
  afro:['Afro com divisão lateral','Afro médio em camadas','Afro grande volumoso','Afro com franja','Afro preso atrás','Afro em camadas','Afro curto definido','Afro com detalhe frontal','Afro longo','Afro assimétrico','Afro alto','Afro duplo'],
+ masculino:['Fade médio','Fade alto','Undercut','Quiff','Pompadour','Side part','Slick back','Mullet curto','Caesar cut','Texturizado médio','Cacheado curto','Afro taper'],
  trancado:['Tranças com divisão lateral','Tranças médias','Box braids em camadas','Tranças com franja','Coque baixo de tranças','Twists médios','Tranças finas laterais','Tranças com risca central','Box braids longas em camadas','Tranças laterais presas','Coque alto com tranças','Twists com volume']
 };
 const hairs=groups.flatMap(([group,label,names])=>[...names,...extendedHairNames[group]].map((name,i)=>({id:group+'-'+String(i+1).padStart(2,'0'),name,group,groupLabel:label,cost:i<6?0:i>=15?null:60+(i-6)*10,unlock:i>=15?'Conquista':null})));
@@ -62,7 +64,11 @@ function hairSvg(group,variant,color){
  const p=d=>'<path d="'+d+'" fill="'+color+'" stroke="'+ink+'" stroke-width="1.2" stroke-linejoin="round"/>';
  const line=(d,alpha=.55,w=2)=>'<path d="'+d+'" fill="none" stroke="'+light+'" stroke-width="'+w+'" opacity="'+alpha+'" stroke-linecap="round"/>';
  let out='';
- if(group==='liso'){
+ if(group==='masculino'){
+  const styles=[68,75,86,90,77,92][v-1];
+  out+=p('M95 143 Q91 '+(styles-25)+' 121 '+styles+' Q155 '+(styles-21)+' 185 '+styles+' Q212 '+(styles-10)+' 208 144 L199 137 Q179 '+(styles+17)+' 155 '+(styles+12)+' Q122 '+(styles+9)+' 105 141Z');
+  out+=line('M116 '+(styles+6)+' Q150 '+(styles-6)+' 189 '+(styles+10),.35,2);
+ }else if(group==='liso'){
   const lengths=[156,206,311,229,164,159];
   const L=lengths[v-1];
   const left=v===4?87:91,right=v===4?218:209;
@@ -134,6 +140,14 @@ function hairSvg(group,variant,color){
 function hairFrontSvg(group,variant,color){
  const v=((Math.max(1,Math.min(18,Number(variant)||1))-1)%6)+1,light=hairShade(color,.28);
  const front={
+ masculino:[
+ 'M96 136Q87 100 113 83Q152 61 188 82Q210 99 204 138Q182 108 154 114Q128 107 104 140Z',
+ 'M96 136Q91 89 126 75Q168 59 199 94Q209 115 204 138Q177 114 151 117Q122 112 104 143Z',
+ 'M96 136Q90 92 124 78Q163 67 193 85L196 104Q161 102 138 116L103 142Z',
+ 'M96 137Q89 92 126 80Q156 64 202 87Q193 108 157 111Q129 111 104 142Z',
+ 'M96 136Q87 101 116 82Q157 62 193 81Q213 100 205 141Q177 113 153 117Q124 112 104 140Z',
+ 'M96 136Q92 92 121 80Q162 67 195 86Q205 104 204 136Q177 109 153 112Q123 109 104 141Z'
+ ],
  liso:[
   'M99 137Q94 103 114 78Q138 57 166 71Q195 77 204 115Q193 108 178 105Q162 103 146 117Q123 112 109 133Z',
   'M96 140Q91 96 119 72Q151 53 186 76Q207 92 206 137Q184 109 164 106Q143 103 128 117Q108 115 96 140Z',
@@ -161,7 +175,7 @@ function hairFrontSvg(group,variant,color){
   'M92 133Q85 85 114 69Q152 48 190 70Q216 91 208 134Q197 120 185 115Q164 95 148 109Q127 98 110 133Z';
  }
  let out='<path d="'+d+'" fill="'+color+'" stroke="'+hairShade(color,-.18)+'" stroke-width="1.15" stroke-linejoin="round"/>';
- if(group==='liso'||group==='ondulado'){
+ if(group==='liso'||group==='ondulado'||group==='masculino'){
   out+='<path d="M115 92Q148 75 181 94" stroke="'+light+'" opacity=".32" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
  }
  if(['cacheado','crespo','afro'].includes(group)){
@@ -182,6 +196,11 @@ function hairStyleDetail(group,variant,color){
  const stroke=(d,w=3)=>'<path d="'+d+'" fill="none" stroke="'+highlight+'" stroke-width="'+w+'" stroke-linecap="round" opacity=".62"/>';
  const fill=d=>'<path d="'+d+'" fill="'+color+'" stroke="'+ink+'" stroke-width="1.2" stroke-linejoin="round"/>';
  const offset=(n-7)%6;
+ if(group==='masculino'){
+   const offsets=['M105 104Q149 74 200 104','M106 110Q145 79 199 96','M112 98Q156 88 195 109','M109 112Q151 67 201 103','M101 111Q150 83 195 95','M112 97Q156 78 198 111'];
+   const i=(n-7)%6;
+   return stroke(offsets[i],tier===1?4:6)+(tier===2?fill('M105 132Q113 90 149 91Q185 88 199 124Q173 108 149 118Q124 110 105 132Z'):'');
+ }
  if(group==='trancado'){
    if(tier===1)return stroke('M120 83 Q144 99 157 76 M133 89 Q153 106 172 84',2)+stroke('M113 108 Q147 123 184 106',1.8);
    return fill('M117 75 Q119 48 153 49 Q186 53 186 77 Q155 97 117 75Z')+
@@ -254,6 +273,7 @@ function renderSvg(input={},small=false){
  '<path d="M114 237Q151 257 188 237Q173 254 151 259Q128 254 114 237Z" fill="'+(c.shirt==='cx'?'#c9bbb0':'#30251d')+'" opacity=".76"/>'+neck+
  hairSvg(group,Number(index),hairColor)+
  faceShape+
+ // Ears stay below hair. Hair-front layer naturally covers the ear when the style falls over it.
  '<path d="M96 155q-14-12-12 10t16 11M205 155q14-12 12 10t-16 11" fill="'+skin+'"/>'+
  '<path d="M118 136q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0m24 0q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0" stroke="#553b31" stroke-width="'+(c.presentation==='masculino'?'4':'3')+'" fill="none" stroke-linecap="round"/>'+
  '<g>'+eyeShape+'</g>'+blush+
@@ -261,7 +281,8 @@ function renderSvg(input={},small=false){
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
  hairFrontSvg(group,Number(index),hairColor)+hairStyleDetail(group,Number(index),hairColor)+
  '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
- '<text x="150" y="280" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="'+(c.shirt==='cx'?'#25201e':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="19">'+shirt[1][1]+'</tspan></text>'+
+ '<rect x="107" y="265" width="86" height="44" rx="8" fill="'+shirt[0]+'" opacity=".96"/>'+ 
+ '<text x="150" y="282" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="850" fill="'+(c.shirt==='cx'?'#25201e':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="15">'+shirt[1][1]+'</tspan></text>'+
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
  (c.badge==='admin'?'':'<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text>')+'</svg>';
 }
