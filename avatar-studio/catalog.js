@@ -25,7 +25,7 @@ const colors=[
  ['color-01','Preto','#1d1a21'],['color-02','Castanho escuro','#39231f'],
  ['color-03','Castanho médio','#714735'],['color-04','Castanho claro','#9d6a46'],
  ['color-05','Loiro escuro','#a8834e'],['color-06','Loiro claro','#e5bf7b'],
- ['color-07','Ruivo cobre','#bc5a2e'],['color-08','Grisalho','#8c8f99'],
+ ['color-07','Ruivo cobre','#bc5a2e',35],['color-08','Grisalho','#8c8f99',35],
  ['color-09','Platinado','#dedbd7',35],['color-10','Rosa','#d3689b',45],
  ['color-11','Azul','#3d77ba',null],['color-12','Roxo','#8055ad',null]
  ].map(([id,name,color,cost=0])=>({id,name,color,cost}));
@@ -45,11 +45,11 @@ const shirts=[
 {id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null},
 {id:'dados',name:'Dados conectam',cost:0},{id:'comunidade',name:'Comunidade é conexão',cost:0},
 {id:'jornada',name:'Jornada importa',cost:0},{id:'humano',name:'Pessoas primeiro',cost:0},
-{id:'growth',name:'Growth com propósito',cost:0},{id:'martech',name:'Martech na prática',cost:0},
-{id:'cxlover',name:'Eu amo CX',cost:0},{id:'ia',name:'IA + criatividade',cost:0}
+{id:'growth',name:'Growth com propósito',cost:0},{id:'martech',name:'Martech na prática',cost:75},
+{id:'cxlover',name:'Eu amo CX',cost:85},{id:'ia',name:'IA + criatividade',cost:85}
 ];
-const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:45},{id:'orbit',name:'Universo CRM',cost:75},{id:'grid',name:'Laboratório',cost:95}];
-const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:45},{id:'headphones',name:'Fones',cost:95},{id:'coffee',name:'Café',cost:65}];
+const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:0},{id:'orbit',name:'Universo CRM',cost:0},{id:'grid',name:'Laboratório',cost:0},{id:'ocean',name:'Oceano',cost:0},{id:'forest',name:'Floresta',cost:0},{id:'dusk',name:'Pôr do sol',cost:55},{id:'rose',name:'Rosa antigo',cost:55},{id:'mint',name:'Menta',cost:65},{id:'night',name:'Noite estrelada',cost:65}];
+const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:0},{id:'headphones',name:'Fones',cost:0},{id:'coffee',name:'Café',cost:0},{id:'sunglasses',name:'Óculos de sol',cost:0},{id:'roundglasses',name:'Óculos redondos',cost:0},{id:'earrings',name:'Brincos',cost:45},{id:'hoops',name:'Argolas',cost:45},{id:'cap',name:'Boné',cost:65},{id:'beanie',name:'Gorro',cost:65},{id:'bow',name:'Laço de cabelo',cost:75},{id:'necklace',name:'Colar',cost:75}];
 const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'admin',name:'Equipe Conexão CRM',cost:null},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
 const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',eye_color:'eye-color-02',lashes:'none',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
 const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,eye_color:eyeColors,lashes,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
@@ -236,7 +236,7 @@ function renderSvg(input={},small=false){
  const skin=find('skin',c.skin)?.color||skins[2].color;
  const hairColor=find('hair_color',c.hair_color)?.color||colors[1].color;
  const [group,index]=String(c.hair_style).split('-');
- const bg={sunset:['#eabb92','#925839'],lilac:['#c7b6e4','#7e698d'],orbit:['#7579b1','#252c50'],grid:['#5f8a8e','#223437']}[c.bg]||['#eabb92','#925839'];
+ const bg={sunset:['#eabb92','#925839'],lilac:['#c7b6e4','#7e698d'],orbit:['#7579b1','#252c50'],grid:['#5f8a8e','#223437'],ocean:['#67abc7','#174965'],forest:['#88a985','#244634'],dusk:['#f8b581','#884b75'],rose:['#e5b3c5','#99596e'],mint:['#b3e4ca','#377b6c'],night:['#4b5b98','#101a33']}[c.bg]||['#eabb92','#925839'];
  const shirt={crm:['#f97316',['CRM não é','disparo']],cx:['#fffaf3',['Cliente','no centro']],ti:['#496c82',['API é','vida']],mentor:['#755092',['Mentoria','transforma']],dados:['#314e71',['Dados','conectam']],comunidade:['#89457c',['Comunidade','é conexão']],jornada:['#327965',['Jornada','importa']],humano:['#b95e53',['Pessoas','primeiro']],growth:['#5368a1',['Growth com','propósito']],martech:['#3f656d',['Martech na','prática']],cxlover:['#a94b70',['Eu amo','CX']],ia:['#604e96',['IA +','criatividade']]}[c.shirt]||['#f97316',['CRM não é','disparo']];
  const face=Number(c.face.slice(-2))||1,eye=Number(c.eyes.slice(-2))||1,mouth=Number(c.mouth.slice(-2))||1;
  const rx=[0,55,61,48,52,57,51][face],ry=[0,68,64,76,65,70,68][face];
@@ -271,6 +271,16 @@ function renderSvg(input={},small=false){
  const overlay=c.accessory==='glasses'?'<rect x="114" y="136" width="30" height="22" rx="8"/><rect x="159" y="136" width="30" height="22" rx="8"/><path d="M144 143h15"/>':
  c.accessory==='headphones'?'<path d="M91 152v-19q0-70 59-70t59 70v19"/><rect x="87" y="137" width="13" height="34" rx="6" fill="#292d35"/><rect x="204" y="137" width="13" height="34" rx="6" fill="#292d35"/>':
  c.accessory==='coffee'?'<path d="M225 264h25v27q-12 10-25 0zM250 267q15-1 9 16h-9" fill="#f9eada"/>':'';
+ const extraAccessory={
+  sunglasses:'<rect x="111" y="137" width="35" height="23" rx="8" fill="#302a32" stroke="#d7a97a" stroke-width="3"/><rect x="157" y="137" width="35" height="23" rx="8" fill="#302a32" stroke="#d7a97a" stroke-width="3"/><path d="M146 144h11" stroke="#d7a97a" stroke-width="4"/>',
+  roundglasses:'<g stroke="#665147" stroke-width="3" fill="none"><circle cx="128" cy="149" r="17"/><circle cx="175" cy="149" r="17"/><path d="M145 149h13M111 145l-16-7M192 145l15-7"/></g>',
+  earrings:'<circle cx="94" cy="185" r="5" fill="#ffdc9c"/><circle cx="209" cy="185" r="5" fill="#ffdc9c"/>',
+  hoops:'<g stroke="#fbd289" stroke-width="4" fill="none"><ellipse cx="94" cy="185" rx="7" ry="12"/><ellipse cx="209" cy="185" rx="7" ry="12"/></g>',
+  cap:'<path d="M94 114Q88 73 145 66Q197 62 211 109L197 126Q147 107 94 114Z" fill="#f97316" stroke="#693a29" stroke-width="3"/><path d="M118 117Q175 103 229 121Q185 139 124 129Z" fill="#e76318"/>',
+  beanie:'<path d="M94 123Q88 63 149 54Q213 59 211 123Z" fill="#78549a"/><path d="M94 119Q151 109 211 119V136Q150 124 94 136Z" fill="#634581"/>',
+  bow:'<path d="M139 81Q101 48 112 98L143 94Q167 58 195 75Q207 107 151 99Z" fill="#ef9bb1" stroke="#a95172" stroke-width="2"/><circle cx="148" cy="91" r="9" fill="#bd607f"/>',
+  necklace:'<path d="M122 226Q150 257 182 226" fill="none" stroke="#ffd38c" stroke-width="4"/><path d="M151 243l9 12-9 12-9-12Z" fill="#ffd38c"/>'
+ }[c.accessory]||'';
  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+(small?'45 35 210 230':'0 0 300 340')+'" role="img" aria-label="Avatar com características combinadas" style="width:100%;height:100%">'+
  '<defs><linearGradient id="grad-'+id+'" x2="1" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="mask-'+id+'"><circle cx="150" cy="170" r="158"/></clipPath></defs>'+
  '<circle cx="150" cy="170" r="160" fill="#ffe0b4"/><circle cx="150" cy="170" r="157" fill="url(#grad-'+id+')"/>'+
@@ -287,7 +297,7 @@ function renderSvg(input={},small=false){
  '<path d="M150 151l-4 20 7 2" stroke="#99694e" stroke-width="2.4" fill="none"/>'+
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
  hairFrontSvg(group,Number(index),hairColor)+hairStyleDetail(group,Number(index),hairColor)+
- '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
+ '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+extraAccessory+
 
  '<text x="150" y="282" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="850" fill="'+(c.shirt==='cx'?'#25201e':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="15">'+shirt[1][1]+'</tspan></text>'+
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+

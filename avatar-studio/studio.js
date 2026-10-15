@@ -24,7 +24,7 @@ function owns(field,item){
 function catalogItems(){
  const all=c.catalogs[category]||[];
  // An administrator always sees the complete catalog. Members receive six choices per category.
- const eligible=isAdmin?all:(category==='hair_style'?all.filter(item=>Number(item.id.split('-').pop())<=6):all.slice(0,6));
+ const eligible=all; // All entries remain visible. Access is determined by Coins, unlocks and achievements.
  return category==='hair_style'?eligible.filter(item=>item.group===group&&(hairTier==='all'||(hairTier==='free'&&item.cost===0)||(hairTier==='coins'&&typeof item.cost==='number'&&item.cost>0)||(hairTier==='special'&&item.cost===null))):eligible;
 }
 function updateAvatar(){
@@ -50,7 +50,7 @@ function render(){
  if(category==='hair_style'&&group==='masculino'&&draft.presentation!=='masculino') $('categoryIntro').textContent='Cortes curtos e masculinos disponíveis para qualquer apresentação';
  $('hairGroups').hidden=category!=='hair_style';
  const hairFilters=document.getElementById('hairFilters');
- if(hairFilters){hairFilters.hidden=category!=='hair_style'||!isAdmin;if(category==='hair_style')hairFilters.querySelectorAll('button').forEach(b=>{const on=b.dataset.hairTier===hairTier;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
+ if(hairFilters){hairFilters.hidden=category!=='hair_style';if(category==='hair_style')hairFilters.querySelectorAll('button').forEach(b=>{const on=b.dataset.hairTier===hairTier;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
  if(category==='hair_style'){
   $('hairGroups').replaceChildren(...c.groups.map(([id,label])=>{
    const b=tab(label,id,group===id);b.dataset.hairGroup=id;delete b.dataset.category;return b;
@@ -61,7 +61,7 @@ function render(){
  const items=catalogItems();
  $('categoryCount').textContent=items.length+' opções';
  const hairStats=document.getElementById('hairStats');
- if(hairStats){hairStats.hidden=category!=='hair_style'||!isAdmin;if(category==='hair_style')hairStats.textContent='Por textura: 6 grátis · 9 por Coins · 3 conquistas';}
+ if(hairStats){hairStats.hidden=category!=='hair_style';if(category==='hair_style')hairStats.textContent='Por textura: 6 grátis · 9 por Coins · 3 conquistas';}
  const fragment=document.createDocumentFragment();
  for(const item of items){
   const button=document.createElement('button');
