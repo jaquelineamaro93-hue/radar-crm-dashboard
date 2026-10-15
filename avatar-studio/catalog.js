@@ -107,6 +107,47 @@ function hairSvg(group,variant,color){
  }
  return out;
 }
+// Foreground is limited to the hairline so no wig piece covers the eyes or mouth.
+function hairFrontSvg(group,variant,color){
+ const v=Math.max(1,Math.min(6,Number(variant)||1));
+ const top={
+  liso:[
+   'M97 128Q99 76 140 78Q185 74 203 125Q184 104 169 104Q148 102 129 114Q112 120 97 128Z',
+   'M94 137Q92 78 144 75Q196 75 207 140Q196 111 180 106Q154 99 138 111Q112 130 94 137Z',
+   'M91 128Q97 68 150 68Q199 68 209 129Q189 107 169 103Q133 101 111 123Z',
+   'M98 124Q96 79 143 75Q195 71 208 131Q177 106 155 109Q132 102 108 140Z',
+   'M94 129Q93 75 143 74Q190 74 208 128Q168 93 137 111Q110 130 94 129Z',
+   'M95 135Q91 77 151 74Q198 76 207 130Q184 112 160 114Q138 91 114 113Z'
+  ],
+  ondulado:[
+   'M94 136Q87 90 118 77Q160 56 192 82Q211 103 209 141Q193 111 177 112Q161 96 149 109Q119 92 94 136Z',
+   'M90 139Q87 89 116 70Q154 54 191 74Q211 97 209 136Q189 107 169 112Q149 94 135 113Q113 108 90 139Z',
+   'M89 131Q85 80 119 65Q166 49 195 79Q211 94 211 140Q186 108 172 114Q149 95 131 112Q113 111 89 131Z',
+   'M92 137Q91 83 125 72Q168 55 202 88Q185 114 164 109Q151 97 138 110Q109 125 92 137Z',
+   'M94 130Q86 86 124 75Q159 60 191 83Q202 94 209 137Q177 106 159 112Q132 95 111 127Z',
+   'M91 135Q85 76 140 68Q187 67 211 132Q189 105 174 112Q146 95 130 114Q105 119 91 135Z'
+  ],
+  cacheado:[],
+  crespo:[],
+  afro:[],
+  trancado:[]
+ };
+ const line=(top[group]||[])[v-1]||
+ 'M93 135Q85 81 115 73Q155 53 190 75Q215 96 207 145Q194 119 181 115Q162 93 142 106Q121 101 106 136Z';
+ let out='<path d="'+line+'" fill="'+color+'"/>';
+ if(['cacheado','crespo','afro'].includes(group)){
+  const tight=group==='crespo',rad=tight?7:group==='afro'?13:10;
+  const xs=[98,113,130,149,168,185,201];
+  for(let i=0;i<xs.length;i++){
+   const x=xs[i],y=[121,107,102,96,103,109,123][i];
+   out+='<path d="M'+(x-rad)+' '+y+'q0 -'+rad+' '+rad+' -'+rad+'q'+rad+' 0 '+rad+' '+rad+'" fill="none" stroke="'+color+'" stroke-width="'+(rad*.95)+'" stroke-linecap="round"/>';
+  }
+ }else{
+  out+='<path d="M110 97Q145 79 178 98" fill="none" stroke="#ffffff22" stroke-width="2.3" stroke-linecap="round"/>';
+ }
+ if(group==='trancado')out+='<path d="M149 79Q151 99 149 108" stroke="#ffffff45" stroke-width="2" fill="none"/>';
+ return out;
+}
 let serial=0;
 function renderSvg(input={},small=false){
  const c={...defaultConfig,...input};
@@ -143,19 +184,20 @@ function renderSvg(input={},small=false){
  const overlay=c.accessory==='glasses'?'<rect x="114" y="136" width="30" height="22" rx="8"/><rect x="159" y="136" width="30" height="22" rx="8"/><path d="M144 143h15"/>':
  c.accessory==='headphones'?'<path d="M91 152v-19q0-70 59-70t59 70v19"/><rect x="87" y="137" width="13" height="34" rx="6" fill="#292d35"/><rect x="204" y="137" width="13" height="34" rx="6" fill="#292d35"/>':
  c.accessory==='coffee'?'<path d="M225 264h25v27q-12 10-25 0zM250 267q15-1 9 16h-9" fill="#f9eada"/>':'';
- return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 340" role="img" aria-label="Avatar com características combinadas" style="width:100%;height:100%">'+
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+(small?'45 35 210 230':'0 0 300 340')+'" role="img" aria-label="Avatar com características combinadas" style="width:100%;height:100%">'+
  '<defs><linearGradient id="grad-'+id+'" x2="1" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="mask-'+id+'"><circle cx="150" cy="167" r="144"/></clipPath></defs>'+
  '<circle cx="150" cy="167" r="146" fill="#ffe0b4"/><circle cx="150" cy="167" r="143" fill="url(#grad-'+id+')"/>'+
  '<g clip-path="url(#mask-'+id+')">'+
  (c.bg==='grid'?'<path d="M0 110h300M0 164h300M0 218h300M60 0v340M120 0v340M180 0v340M240 0v340" fill="none" stroke="#eff" opacity=".19"/>':'')+
  '<path d="M27 340Q37 246 112 235Q150 225 188 235Q263 245 273 340Z" fill="'+shirt[0]+'"/>'+neck+
+ hairSvg(group,Number(index),hairColor)+
  '<ellipse cx="151" cy="152" rx="'+rx+'" ry="'+ry+'" fill="'+skin+'"/>'+
  '<path d="M96 155q-14-12-12 10t16 11M205 155q14-12 12 10t-16 11" fill="'+skin+'"/>'+
  '<path d="M118 136q10-6 21 0m24 0q10-6 21 0" stroke="#553b31" stroke-width="3.2" fill="none" stroke-linecap="round"/>'+
  '<g>'+eyeShape+'</g>'+blush+
  '<path d="M150 151l-4 20 7 2" stroke="#99694e" stroke-width="2.4" fill="none"/>'+
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
- hairSvg(group,Number(index),hairColor)+
+ hairFrontSvg(group,Number(index),hairColor)+
  '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
  '<text x="150" y="280" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="'+(c.shirt==='cx'?'#4b3027':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="19">'+shirt[1][1]+'</tspan></text>'+
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
