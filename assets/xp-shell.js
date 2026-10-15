@@ -67,7 +67,17 @@ function handleMessage(e){
  }
 }
 window.addEventListener('message',handleMessage);
-window.CXXPShell={activate,register};
+function recommend(target){
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(target||'')))return;
+ if(typeof crmNavigate==='function')crmNavigate('xp-rankings');
+ else location.hash='xp-rankings';
+ const frame=document.querySelector('#pageXpRankings iframe');
+ if(!frame)return;
+ const send=()=>frame.contentWindow?.postMessage({type:'cx-xp-open-recommend',target},location.origin);
+ if(frame.dataset.loaded==='true')send();
+ else frame.addEventListener('load',send,{once:true});
+}
+window.CXXPShell={activate,register,recommend};
 register();
 // Keep iframe panels synchronized with hash navigation from sidebar and embedded pages.
 function syncRoute(){
