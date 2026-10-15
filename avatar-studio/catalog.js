@@ -25,15 +25,16 @@ const skins=[
 ].map(([id,name,color])=>({id,name,color,cost:0}));
 const faces=['Oval','Redondo','Alongado','Coração','Quadrado','Diamante'].map((name,i)=>({id:'face-'+String(i+1).padStart(2,'0'),name,cost:0}));
 const eyes=['Naturais','Arredondados','Amendoados','Expressivos','Delicados','Definidos'].map((name,i)=>({id:'eyes-'+String(i+1).padStart(2,'0'),name,cost:0}));
+const eyeColors=[['eye-color-01','Castanho escuro','#39261b'],['eye-color-02','Castanho mel','#785239'],['eye-color-03','Verde oliva','#688357'],['eye-color-04','Verde claro','#89aa7b'],['eye-color-05','Azul claro','#83a9ca'],['eye-color-06','Azul intenso','#437eaf'],['eye-color-07','Cinza','#9199a8'],['eye-color-08','Âmbar','#ad7840']].map(([id,name,color])=>({id,name,color,cost:0}));
 const mouths=['Sorriso suave','Sorriso aberto','Neutro','Sorriso discreto','Expressivo','Lábios definidos'].map((name,i)=>({id:'mouth-'+String(i+1).padStart(2,'0'),name,cost:0}));
 const presentation=[{id:'neutro',name:'Neutro',cost:0},{id:'feminino',name:'Feminino',cost:0},{id:'masculino',name:'Masculino',cost:0}];
 const shirts=[{id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},{id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null}];
 const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:45},{id:'orbit',name:'Universo CRM',cost:75},{id:'grid',name:'Laboratório',cost:95}];
 const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:45},{id:'headphones',name:'Fones',cost:95},{id:'coffee',name:'Café',cost:65}];
 const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'admin',name:'Equipe Conexão CRM',cost:null},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
-const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
-const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
-const labels={hair_style:'Penteados',hair_color:'Cor do cabelo',skin:'Tom de pele',face:'Formato de rosto',eyes:'Olhos',mouth:'Expressão',presentation:'Apresentação',shirt:'Camisetas',bg:'Fundos',accessory:'Acessórios',badge:'Emblemas'};
+const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',eye_color:'eye-color-02',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
+const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,eye_color:eyeColors,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
+const labels={hair_style:'Penteados',hair_color:'Cor do cabelo',skin:'Tom de pele',face:'Formato de rosto',eyes:'Formato dos olhos',eye_color:'Cor dos olhos',mouth:'Expressão',presentation:'Apresentação',shirt:'Camisetas',bg:'Fundos',accessory:'Acessórios',badge:'Emblemas'};
 const itemKey=(field,id)=>({hair_style:'hair-'+id,hair_color:id,skin:'skin-'+id,face:'face-'+id,eyes:'eyes-'+id,mouth:'mouth-'+id,presentation:'presentation-'+id,shirt:'shirt-'+id,bg:'bg-'+id,accessory:'accessory-'+id,badge:'badge-'+id})[field];
 const find=(field,id)=>catalogs[field]?.find(x=>x.id===id);
 const attr=(x)=>String(x).replace(/[&"<>]/g,'');
@@ -118,7 +119,7 @@ function renderSvg(input={},small=false){
  const rx=[0,55,61,48,52,57,51][face],ry=[0,68,64,76,65,70,68][face];
  const eyecolor='#39221e',eyeY=148+(face===3?4:0);
  const eyeTypes=[[10,8,5.4],[12,6.5,5],[11,5,4],[12,10,6],[9,6,4.5],[11,7.5,5.5]];
- const dims=eyeTypes[eye-1]||eyeTypes[0],iris=['#724b37','#46899d','#5b8063','#8c577e','#a08255','#594a73'][eye-1];
+ const dims=eyeTypes[eye-1]||eyeTypes[0],iris=find('eye_color',c.eye_color)?.color||'#785239';
  const dollEye=x=>{
   const rx=dims[0],ry=dims[1],y=eyeY;
   return '<path d="M'+(x-rx-2)+' '+y+'Q'+x+' '+(y-ry*1.65)+' '+(x+rx+2)+' '+y+'Q'+x+' '+(y+ry*.85)+' '+(x-rx-2)+' '+y+'Z" fill="#fff9ef" stroke="'+eyecolor+'" stroke-width="2.3"/>'+
@@ -160,5 +161,5 @@ function renderSvg(input={},small=false){
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
  (c.badge==='admin'?'':'<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text>')+'</svg>';
 }
-window.CXAvatarCatalog={groups,hairs,colors,skins,faces,eyes,mouths,presentation,shirts,backgrounds,accessories,badges,catalogs,labels,defaultConfig,itemKey,find,renderSvg};
+window.CXAvatarCatalog={groups,hairs,colors,skins,faces,eyes,eyeColors,mouths,presentation,shirts,backgrounds,accessories,badges,catalogs,labels,defaultConfig,itemKey,find,renderSvg};
 })();
