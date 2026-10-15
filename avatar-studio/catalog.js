@@ -50,18 +50,20 @@ function hairSvg(group,variant,color){
    'M89 128Q84 73 154 72Q223 75 203 138L227 206Q194 221 182 181L189 131Q185 93 155 97Q127 91 105 117L105 184Q88 194 80 176Z',
    'M94 130Q78 74 153 73Q208 75 205 129Q201 111 183 95Q140 94 118 114L112 154Q95 160 94 130Z',
    'M95 130Q89 75 150 71Q214 76 204 131L211 161Q182 154 187 127Q169 101 145 104Q121 101 110 129L110 151Q93 152 95 130Z'];
-  out='<path d="'+paths[v-1]+'" fill="'+dark+'"/>';
+  out='<path d="'+paths[v-1]+'" fill="'+dark+'"/><path d="M111 85Q151 60 190 89" stroke="#ffffff24" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
   if(v===5)out+='<path d="M196 113Q239 93 233 159Q228 204 215 217L207 209Q228 151 201 132Z" fill="'+dark+'"/>';
   if(v===6)out+='<ellipse cx="155" cy="66" rx="29" ry="27" fill="'+dark+'"/>';
  }else if(group==='ondulado'){
-  out='<path d="M94 130Q80 65 149 69Q223 61 210 135Q196 107 176 99Q143 85 119 108L110 134Z" fill="'+dark+'"/>';
-  const n=v===1?3:v===2?5:v===3?8:v===4?5:v===5?4:6;
-  for(let i=0;i<n;i++){
-   const y=115+i*22;
-   for(const side of [-1,1]){let x=150+side*(v===2?54:65);out+='<path d="M'+x+' '+y+'q'+(side*20)+' 9 0 20q'+(-side*9)+' 3 '+(side*2)+' 11" fill="none" stroke="'+dark+'" stroke-width="'+(v===3?20:17)+'" stroke-linecap="round"/>';}
+  out='<path d="M91 138Q75 86 111 68Q151 43 190 67Q221 86 210 142Q191 108 176 101Q139 91 114 115L109 144Z" fill="'+dark+'"/>';
+  const length=[166,204,278,228,179,242][v-1];
+  for(const side of [-1,1]){
+    const x=150+side*58;
+    out+='<path d="M'+x+' 110C'+(x+side*29)+' 127 '+(x-side*12)+' 142 '+(x+side*17)+' 160S'+(x-side*7)+' 197 '+(x+side*14)+' 212S'+(x-side*7)+' 240 '+(x+side*10)+' '+length+'" stroke="'+dark+'" stroke-width="'+(v===3?29:23)+'" fill="none" stroke-linecap="round"/>';
+    out+='<path d="M'+(x+side*3)+' 128Q'+(x+side*15)+' 143 '+(x+side*5)+' 166" fill="none" stroke="#ffffff28" stroke-width="2.3" stroke-linecap="round"/>';
   }
-  if(v===4)out+='<path d="M112 94Q154 130 196 94" stroke="'+dark+'" stroke-width="17" fill="none"/>';
-  if(v===5||v===6)out+='<ellipse cx="150" cy="68" rx="'+(v===5?35:43)+'" ry="21" fill="'+dark+'"/>';
+  if(v===4)out+='<path d="M103 101Q146 74 197 101Q158 112 129 136Z" fill="'+dark+'"/>';
+  if(v===5)out+='<ellipse cx="151" cy="65" rx="37" ry="23" fill="'+dark+'"/>';
+  if(v===6)out+='<path d="M111 89Q154 64 195 89Q165 115 142 106Z" fill="'+dark+'"/>';
  }else if(group==='cacheado'||group==='crespo'||group==='afro'){
   const afro=group==='afro',tight=group==='crespo';
   const width=afro?[80,91,105,91,94,95][v-1]:tight?[68,79,84,76,81,91][v-1]:[72,77,82,91,72,86][v-1];
@@ -84,21 +86,23 @@ function hairSvg(group,variant,color){
   out+='<path d="M116 82Q150 67 179 83" fill="none" stroke="#ffffff26" stroke-width="2" stroke-linecap="round"/>';
  }else if(group==='trancado'){
   out=roots;
-  if(v===5)out+='<ellipse cx="154" cy="57" rx="32" ry="24" fill="'+dark+'"/>';
-  else if(v===6){
-   for(let i=0;i<6;i++){const x=99+(i%3)*47,y=67+Math.floor(i/3)*32;out+=cluster(x,y,19);}
-  }else{
-   const n=v===1?2:v===2?1:v===3?11:v===4?9:7;
-   for(let i=0;i<n;i++){
-    const x=v===1?100+i*101:v===2?197:85+(i*130/Math.max(n-1,1));
-    const y=124+(i%2)*7;
-    const end=v===4?174:v===2?263:280;
-    for(let j=0;j<(end-y)/13;j++){
-     const yy=y+j*13,xx=x+Math.sin(j*2.8)*4;
-     out+=cluster(Math.round(xx),yy,v===3||v===4?6:11);
-    }
+  if(v===6){
+   for(let i=0;i<6;i++){
+    const x=98+(i%3)*52,y=62+Math.floor(i/3)*35;
+    out+='<ellipse cx="'+x+'" cy="'+y+'" rx="22" ry="19" fill="'+dark+'" stroke="#ffffff20" stroke-width="2"/>';
    }
+  }else{
+   const n=v===1?2:v===2?1:v===3?10:v===4?9:7;
+   const bottom=v===4?210:v===2?270:286;
+   for(let i=0;i<n;i++){
+    const x=v===1?103+i*96:v===2?211:98+i*108/Math.max(1,n-1),y=125+(i%3)*4;
+    const swing=n<=2?10:3;
+    out+='<path d="M'+x+' '+y+'C'+(x+swing)+' '+(y+22)+' '+(x-swing)+' '+(y+30)+' '+x+' '+(y+45)+'S'+(x+swing)+' '+(bottom-21)+' '+x+' '+bottom+'" stroke="'+dark+'" stroke-width="'+(n<=2?21:10)+'" stroke-linecap="round" fill="none"/>';
+    out+='<path d="M'+(x-3)+' '+(y+9)+'q8 8 0 16m0 5q8 8 0 16" stroke="#ffffff27" stroke-width="1.7" fill="none"/>';
+   }
+   if(v===5)out+='<ellipse cx="152" cy="65" rx="35" ry="24" fill="'+dark+'"/>';
   }
+
  }
  return out;
 }
