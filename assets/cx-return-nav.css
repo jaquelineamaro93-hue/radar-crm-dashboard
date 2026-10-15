@@ -1,0 +1,13 @@
+/* Cross-page navigation for Conexão CRM standalone subpages */
+.cx-return-bar{max-width:1150px;margin:10px auto 0;padding:0 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:600 12px/1.3 system-ui,-apple-system,sans-serif;position:relative;z-index:22}
+.cx-return-bar a{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#ded2c6;text-decoration:none;background:#211b17;border:1px solid #5a4536;border-radius:12px;min-height:39px;padding:9px 12px;transition:background .15s,border-color .15s}
+.cx-return-bar a:focus-visible{outline:2px solid #f97316;outline-offset:2px}
+.cx-return-bar a:hover{border-color:#f97316;background:#39271c;color:#ffe1c2}
+.cx-return-bar a[aria-current=page]{color:#ffbf90;border-color:#9e6039;background:#3a291f}
+.cx-return-bar svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+@media(max-width:700px){.cx-return-bar{padding:10px 12px;margin:0;position:sticky;top:0;z-index:40;background:#14110ff2;backdrop-filter:blur(16px);border-bottom:1px solid #352a22;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.cx-return-bar a{padding:8px 5px;gap:5px;min-width:0;font-size:11px;min-height:42px;text-align:center;white-space:nowrap}
+.cx-return-bar svg{width:16px;height:16px}
+body:has(.cx-return-bar) .navhead,body:has(.cx-return-bar) .top{position:relative!important}
+}
+@media(prefers-reduced-motion:reduce){.cx-return-bar a{transition:none}}
