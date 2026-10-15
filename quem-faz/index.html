@@ -21,7 +21,7 @@ dialog{width:min(700px,calc(100vw - 28px));max-height:90vh;overflow:auto;backgro
 @media(max-width:760px){.top{padding:18px 22px;align-items:flex-start}.nav{gap:12px;flex-wrap:wrap;justify-content:flex-end}.nav a:not(.home){display:none}main{padding:42px 22px 70px}.hero{display:block}.adminbar{margin-top:22px}.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="/assets/cx-return-nav.css?v=1">
-<script src="/assets/cx-return-nav.js?v=1" defer></script>
+<script src="/assets/cx-return-nav.js?v=2" defer></script>
 </head>
 <body>
 <header class="top"><a class="brand" href="/">CONEXÃO <span>CRM.</span></a><nav class="nav"><a class="home" href="/membros/">MEU PAINEL</a><a class="home" href="/">PORTAL</a><a href="/#quem-somos">QUEM SOMOS</a><a href="/#solucoes">SOLUÇÕES</a><a href="/#patrocinio">SEJA PATROCINADOR</a></nav></header>
@@ -36,6 +36,7 @@ const SUPABASE_URL='https://rwkbpafpniwzvlkfngag.supabase.co';
 const SUPABASE_KEY='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let members=[],isAdmin=false,currentSession=null;
+const editingRequested=new URLSearchParams(location.search).get('gestao')==='1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function safeUrl(v){try{const u=new URL(String(v||''));return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}}
 async function detectAdmin(){
@@ -46,7 +47,7 @@ async function detectAdmin(){
     const {data,error}=await sb.rpc('crm_is_admin');
     isAdmin=!error&&data===true;
   }catch{currentSession=null;isAdmin=false}
-  document.getElementById('adminBar').classList.toggle('show',isAdmin);
+  document.getElementById('adminBar').classList.toggle('show',isAdmin&&editingRequested);
 }
 async function load(){
   await detectAdmin();
@@ -60,7 +61,7 @@ async function load(){
   // Usa a foto do Google apenas quando o membro ainda não tem photo_url.
   const googleAvatar=currentSession?.user?.user_metadata?.avatar_url||currentSession?.user?.user_metadata?.picture||'';
   const currentUserId=currentSession?.user?.id||null;
-  if(isAdmin&&googleAvatar&&currentUserId){
+  if(isAdmin&&editingRequested&&googleAvatar&&currentUserId){
     const mine=members.find(x=>x.profile_id===currentUserId);
     if(mine&&!safeUrl(mine.photo_url)){
       mine.photo_url=googleAvatar;
@@ -69,21 +70,21 @@ async function load(){
     }
   }
 
-  const list=isAdmin?members:members.filter(x=>x.is_active!==false);
+  const list=isAdmin&&editingRequested?members:members.filter(x=>x.is_active!==false);
   if(!list.length){grid.innerHTML='<div class="empty">Em breve você conhecerá quem faz a Conexão CRM acontecer.</div>';return}
   grid.innerHTML=list.map(m=>{
     const photo=safeUrl(m.photo_url),linkedin=safeUrl(m.linkedin_url);
     const initials=esc((m.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
     const tags=(m.responsibilities||[]).map(x=>'<span>'+esc(x)+'</span>').join('');
-    return '<article class="card">'+(isAdmin?'<button class="btn secondary edit" onclick="openEditor('+Number(m.id)+')">Editar</button>':'')+
+    return '<article class="card">'+(isAdmin&&editingRequested?'<button class="btn secondary edit" onclick="openEditor('+Number(m.id)+')">Editar</button>':'')+
       '<div class="cardtop"><div class="avatar">'+(photo?'<img src="'+esc(photo)+'" alt="Foto de '+esc(m.full_name)+'" referrerpolicy="no-referrer" onerror="this.remove()">':initials)+'</div><div><h2>'+esc(m.full_name)+'</h2><div class="role">'+esc(m.role_title||'Conexão CRM')+'</div></div></div>'+
       '<p class="desc">'+esc(m.description||'')+'</p>'+(tags?'<div class="tags">'+tags+'</div>':'')+
       (linkedin?'<div class="links"><a href="'+esc(linkedin)+'" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>':'')+
-      (isAdmin&&m.is_active===false?'<div class="hiddenflag">OCULTO DO PÚBLICO</div>':'')+'</article>';
+      (isAdmin&&editingRequested&&m.is_active===false?'<div class="hiddenflag">OCULTO DO PÚBLICO</div>':'')+'</article>';
   }).join('');
 }
 function openEditor(id){
-  if(!isAdmin)return;
+  if(!isAdmin||!editingRequested)return;
   const m=id?members.find(x=>Number(x.id)===Number(id)):null,d=document.getElementById('editor');
   d.innerHTML='<form id="form"><div style="display:flex;justify-content:space-between;gap:15px"><div><div class="eyebrow" style="margin-bottom:7px">ADMIN · QUEM FAZ</div><h2 style="margin:0 0 20px">'+(m?'Editar pessoa':'Adicionar pessoa')+'</h2></div><button type="button" class="close" onclick="editor.close()">×</button></div>'+
   '<div class="formgrid"><label>Nome<input name="full_name" required value="'+esc(m?.full_name||'')+'"></label><label>Função / título<input name="role_title" value="'+esc(m?.role_title||'')+'"></label>'+
@@ -94,7 +95,7 @@ function openEditor(id){
   d.showModal();d.querySelector('#form').onsubmit=e=>save(e,m?.id);
 }
 async function save(e,id){
-  e.preventDefault();if(!isAdmin)return;
+  e.preventDefault();if(!isAdmin||!editingRequested)return;
   const f=e.currentTarget,fd=new FormData(f),st=document.getElementById('status'),b=f.querySelector('[type=submit]');
   const payload={full_name:String(fd.get('full_name')||'').trim(),role_title:String(fd.get('role_title')||'').trim()||null,description:String(fd.get('description')||'').trim()||null,responsibilities:String(fd.get('responsibilities')||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,12),photo_url:String(fd.get('photo_url')||'').trim()||null,linkedin_url:String(fd.get('linkedin_url')||'').trim()||null,sort_order:Number(fd.get('sort_order')||100),is_active:fd.get('is_active')==='on',updated_at:new Date().toISOString()};
   b.disabled=true;st.textContent='Salvando…';
