@@ -91,6 +91,7 @@ function equip(item){
  }else notify(item.name+' equipado!');
  state.equipped[item.type]=item.value;save();render();
 }
+let svgSerial=0;
 function avatarSvg(config={},compact=false){
  const c={...DEFAULT.equipped,...config};
  const backgrounds={
@@ -98,6 +99,7 @@ function avatarSvg(config={},compact=false){
   grid:['#475d62','#202e35'],lilac:['#bba4db','#78648e']
  };
  const bg=backgrounds[c.bg]||backgrounds.sunset;
+ const id='cx-xp-svg-'+(++svgSerial);
  const hair={
   bob:{base:'#29211e',front:'M51 98 Q48 29 97 29 Q151 24 151 93 L151 118 Q138 130 130 121 L126 75 Q101 57 74 78 L70 121 Q50 127 51 98Z'},
   curly:{base:'#4a2920',front:'M48 94 Q40 76 50 60 Q43 46 65 45 Q68 26 84 35 Q99 18 114 33 Q140 25 146 48 Q163 58 151 76 Q158 96 143 112 Q137 105 137 82 Q126 63 107 69 Q80 63 63 88 L62 113 Q46 112 48 94Z'},
@@ -111,11 +113,11 @@ function avatarSvg(config={},compact=false){
  c.accessory==='headphones'?'<path d="M56 105V83 Q56 37 100 37 Q144 37 144 83V105" stroke="#292929" stroke-width="8" fill="none"/><rect x="51" y="85" width="13" height="34" rx="6" fill="#1c2029"/><rect x="136" y="85" width="13" height="34" rx="6" fill="#1c2029"/>':
  c.accessory==='coffee'?'<path d="M154 164h22v21q-11 9-22 0z M176 169q16-2 7 13h-7" fill="#fcf2e6" stroke="#724f3b" stroke-width="2"/>':'';
  const badge={star:'★',mic:'♫',flame:'✦',crown:'♛'}[c.badge]||'★';
- const cx=compact?100:100;
+ const cx=100;
  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" role="img" aria-label="Avatar ilustrado personalizável">'+
- '<defs><linearGradient id="g-'+c.bg+'" x1="0" x2="1" y1="0" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="clip-'+c.bg+'"><circle cx="100" cy="105" r="87"/></clipPath></defs>'+
- '<circle cx="'+cx+'" cy="105" r="89" fill="#ffdaa9"/><circle cx="100" cy="105" r="87" fill="url(#g-'+c.bg+')"/>'+
- '<g clip-path="url(#clip-'+c.bg+')">'+
+ '<defs><linearGradient id="g-'+id+'" x1="0" x2="1" y1="0" y2="1"><stop stop-color="'+bg[0]+'"/><stop offset="1" stop-color="'+bg[1]+'"/></linearGradient><clipPath id="clip-'+id+'"><circle cx="100" cy="105" r="87"/></clipPath></defs>'+
+ '<circle cx="'+cx+'" cy="105" r="89" fill="#ffdaa9"/><circle cx="100" cy="105" r="87" fill="url(#g-'+id+')"/>'+
+ '<g clip-path="url(#clip-'+id+')">'+
  (c.bg==='orbit'?'<circle cx="52" cy="59" r="3" fill="#ddd7ff"/><circle cx="148" cy="83" r="2" fill="#fff"/><path d="M13 112Q100 8 184 105" stroke="#8c8bca" fill="none" stroke-width="2"/>':'')+
  (c.bg==='grid'?'<path d="M0 65h200M0 105h200M0 145h200M48 0v210M100 0v210M150 0v210" fill="none" stroke="#94aaa8" opacity=".28"/>':'')+
  '<path d="M23 210 Q27 158 78 153 Q98 143 122 153 Q171 158 176 210Z" fill="'+sh[0]+'"/>'+
@@ -146,7 +148,7 @@ function renderRankings(){
  const metric=(p)=>Math.round(p*(period==='geral'?2.5:1)).toLocaleString('pt-BR')+' '+data.unit;
  const face=(entry,cls)=>{
   if(entry.logo)return '<div class="'+cls.replace('face','logo')+'" aria-label="Logo ilustrativo">'+entry.logo+'</div>';
-  return '<div class="'+cls+'">'+avatarSvg(entry,true)+'<span class="face-badge" aria-hidden="true">★</span></div>';
+  return '<div class="'+cls+'">'+avatarSvg(entry,true)+'</div>';
  };
  const podiumOrder=[1,0,2];
  $('podium').innerHTML=podiumOrder.map(i=>{
