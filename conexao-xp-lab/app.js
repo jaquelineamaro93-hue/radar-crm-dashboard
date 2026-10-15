@@ -59,8 +59,8 @@ empresas:{description:'Parceiras reconhecidas pelo impacto comprovado na comunid
  {name:'Empresa Nexo',role:'Conteúdo educacional',points:530,logo:'N'},
  {name:'Empresa Farol',role:'Apoio à comunidade',points:470,logo:'F'}]}
 };
-let state=load(),activeTab='hall',rankType='profissionais',period='mes',category='shirt',toastTimer=0;
 const num=n=>Math.max(0,Math.floor(Number(n)||0));
+let state=load(),activeTab='hall',rankType='profissionais',period='mes',category='shirt',toastTimer=0;
 function load(){
  try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
