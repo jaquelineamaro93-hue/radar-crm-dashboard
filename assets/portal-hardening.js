@@ -15,7 +15,7 @@
   if(!document.getElementById('cx-share-css')){
     const link=document.createElement('link');
     link.id='cx-share-css';link.rel='stylesheet';
-    link.href='/assets/share-everything.css?v=20261014-1';
+    link.href='/assets/share-everything.css?v=20261014-2';
     document.head.appendChild(link);
   }
   if(!document.getElementById('cx-share-runtime')){
