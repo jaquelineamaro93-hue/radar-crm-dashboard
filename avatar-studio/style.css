@@ -33,3 +33,20 @@
  .choice:has(.choice-portrait){min-height:176px}
  .nav-actions{flex-wrap:wrap;justify-content:flex-end;gap:7px}
 }
+
+/* Extra avatar options, with a compact catalog and clear visual comparisons */
+.hair-filter-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:0 0 13px;margin:0 0 12px;border-bottom:1px solid #3b3029}
+.hair-filter-tabs button{background:transparent;border:1px solid #4d3c31;color:#c9b8aa;border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700}
+.hair-filter-tabs button.active,.hair-filter-tabs button[aria-pressed="true"]{border-color:#e99358;color:#ffc69c;background:#f973161b}
+.hair-filter-tabs button:hover{border-color:#e99358}
+.catalog-stats{color:#a9978a;font-size:11px;line-height:1.5;margin:0 0 12px}
+.choice-portrait.face-portrait{height:102px;display:flex;align-items:center;justify-content:center;background:#29231f;border-radius:10px}
+.choice-portrait.face-portrait svg{width:106px;height:102px;max-width:100%;max-height:100%}
+.choice:has(.face-portrait){min-height:169px}
+@media(max-width:600px){
+ .hair-filter-tabs{gap:6px}
+ .hair-filter-tabs button{font-size:10px;padding:7px 9px}
+ .choice-portrait.face-portrait{height:98px}
+ .choice:has(.face-portrait){min-height:157px}
+ .catalog-stats{font-size:10px}
+}
