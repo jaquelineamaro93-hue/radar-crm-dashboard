@@ -43,9 +43,9 @@
     let ranking=document.getElementById('crmXpRankingLink');
     if(!ranking){
       ranking=document.createElement('a');ranking.id='crmXpRankingLink';
-      ranking.href='/conexao-xp-lab/#hall';ranking.className='tab-btn';
+      ranking.href='/rankings/';ranking.className='tab-btn';
       ranking.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
-      ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings <small style="opacity:.65;font-size:10px">prévia</small>';
+      ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings';
     }
     const replay=document.getElementById('cxXpReplay');
     const adminNav=document.getElementById('crmAdminNav');
@@ -66,6 +66,43 @@
   // Auth settles asynchronously; do not attach an unbounded MutationObserver to the sidebar.
   let xpNavChecks=0;
   const xpNavInterval=setInterval(()=>{syncXpLinks();if(++xpNavChecks>=20)clearInterval(xpNavInterval);},900);
+
+  // Reports stay discoverable and every sidebar destination has a consistent icon.
+  function syncReportsAndIcons(){
+    const nav=document.querySelector('#view-logada .crm-nav-items');
+    if(!nav)return;
+    const salary=document.getElementById('navCargos');
+    if(salary&&!document.getElementById('crmOpenToWorkReportNav')){
+      const button=document.createElement('button');button.id='crmOpenToWorkReportNav';
+      button.type='button';button.className='tab-btn';
+      button.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 17v-5M12 17V7M16 17v-7"/></svg></span>Report Open to Work';
+      button.addEventListener('click',()=>typeof crmNavigate==='function'&&crmNavigate('mercado'));
+      salary.after(button);
+    }
+    const defaultIcon='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 4h14v16H5zM9 9h6M9 13h6M9 17h4"/></svg>';
+    nav.querySelectorAll('.tab-btn').forEach(button=>{
+      if(button.querySelector('.crm-nav-glyph'))return;
+      const span=document.createElement('span');span.className='crm-nav-glyph';span.setAttribute('aria-hidden','true');
+      span.innerHTML=defaultIcon;button.prepend(span);
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncReportsAndIcons,{once:true});else syncReportsAndIcons();
+  document.addEventListener('crm:admin-ready',syncReportsAndIcons);
+  window.addEventListener('focus',syncReportsAndIcons);
+  let iconCheck=0;const iconInterval=setInterval(()=>{syncReportsAndIcons();if(++iconCheck>=20)clearInterval(iconInterval);},900);
+
+  function openToWorkRankShortcut(){
+    const page=document.getElementById('pageSearch');
+    if(!page||document.getElementById('crmSkillRecommendationLink'))return;
+    const desc=page.querySelector('.section-desc');
+    if(!desc)return;
+    const link=document.createElement('a');link.id='crmSkillRecommendationLink';
+    link.href='/rankings/';link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
+    link.style.cssText='display:inline-flex;margin:6px 0 16px;padding:9px 12px;border:1px solid #544034;border-radius:11px;color:#f2b889;font-size:12px;text-decoration:none';
+    desc.after(link);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openToWorkRankShortcut,{once:true});
+  else openToWorkRankShortcut();
 
   // Onboarding in the signed-in workspace, scoped to one viewing per member.
   if(!document.getElementById('cx-xp-onboarding-style')){
