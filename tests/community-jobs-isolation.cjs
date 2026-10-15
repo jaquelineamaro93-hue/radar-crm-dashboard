@@ -70,4 +70,27 @@ assert(html.includes("crmToggleMenu(false);window.scrollTo(0,0);"),
 assert(html.includes('if(renderSeq!==crmVagasRenderSeq)return;'),
   'Old job requests must not overwrite newer results');
 
+
+// Freelancer IA must be an internal section, not a giant panel above the directory.
+const freelancersCSS=read('assets/freelancers-subnav.css');
+const freelancerPage=html.slice(html.indexOf('id="pageFreelancers"'),html.indexOf('id="pageAgencias"'));
+assert(html.includes('freelancers-subnav.css?v=20261014-1'),'Freelancers internal navigation CSS must be loaded');
+assert(freelancerPage.includes('id="crmFreelancerDirectoryView"')&&freelancerPage.includes('id="crmFreelancerAIView"'),
+  'Freelancers must have separate directory and AI internal views');
+assert(freelancerPage.indexOf('id="crmFreelancerDirectoryView"')<freelancerPage.indexOf('id="freelancerSearchText"'),
+  'Profile search must stay in directory view');
+assert(freelancerPage.indexOf('id="crmFreelancerAIView"')<freelancerPage.indexOf('id="freelancerChallenge"'),
+  'AI challenge must appear only in AI view');
+assert(freelancerPage.includes('id="crmFreelancerAIView" aria-labelledby="crmFreelancerTabAI" hidden'),
+  'AI panel must be hidden by default');
+assert(html.includes("function crmSelectFreelancerView(view)")&&html.includes("if(route==='freelancers'){crmSelectFreelancerView('directory');"),
+  'Switching to freelancers must restore the directory by default');
+assert(freelancersCSS.includes('#crmFreelancerAIView[hidden]')&&freelancersCSS.includes(':focus-visible'),
+  'Subnavigation must be responsive, keyboard accessible and hidden when inactive');
+// Two admin-only navigation actions also require graphical icons.
+assert(html.includes('b.innerHTML=')&&html.includes('<svg viewBox="0 0 24 24" focusable="false">'),
+  'Dynamically inserted admin/team links need SVG icons');
+assert(!html.includes('crm-nav-glyph">⚙')&&!html.includes('crm-nav-glyph">◎'),
+  'Do not insert invisible text-symbol icons under zero-font-size glyph styles');
+
 console.log('PASS community isolation: separate tables, view+RLS, secure moderation, preservation of bot and saved jobs');
