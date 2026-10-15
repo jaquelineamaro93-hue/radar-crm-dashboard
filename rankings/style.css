@@ -6,3 +6,18 @@
 .cx-sheet-bridge a{display:inline-flex;align-items:center;gap:6px;color:#ffc397;font-size:12px;font-weight:750;white-space:nowrap;text-decoration:none}
 .cx-sheet-bridge a svg{flex:none}
 @media(max-width:680px){.cx-sheet-bridge{padding:11px;gap:8px}.cx-sheet-bridge a{min-height:30px}}
+
+/* Recomendações: o próprio perfil convida compartilhamento, nunca autoavaliação */
+.rank-row .recommend-btn{flex:none;margin-left:3px}
+.rank-row .rank-text{overflow:hidden}
+#shareDialog{width:min(470px,calc(100vw - 28px));border-radius:17px;border:1px solid #82543a;background:#221b17;color:#fff;padding:24px}
+#shareDialog::backdrop{background:#000b}
+#shareDialog .dialog-content{display:flex;flex-direction:column;gap:10px}
+#shareDialog h2{font-size:21px;letter-spacing:-.025em;margin:0}
+#shareDialog p{font-size:12px;line-height:1.55;margin:0 0 4px}
+#shareDialog label{font-size:11px;color:#c6afa0}
+#shareRecommendationLink{width:100%;padding:12px;border-radius:9px;background:#161310;color:#f8e4d7;border:1px solid #745139;font-size:12px}
+#shareDialog .share-actions{display:flex;gap:10px;flex-wrap:wrap}
+#shareDialog .share-actions button{border-radius:10px;padding:10px 16px;min-height:40px}
+#shareRecommendationCopy{background:#f4b584;color:#332011;border:1px solid #f4b584;font-weight:800}
+@media(max-width:650px){.rank-row{gap:8px;flex-wrap:wrap}.rank-row .rank-score{font-size:10px;max-width:140px}.rank-row .recommend-btn{margin:2px 0 0 auto}.rank-row .rank-text{min-width:40%}}
