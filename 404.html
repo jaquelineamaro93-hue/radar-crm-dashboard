@@ -1262,7 +1262,11 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 </style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-no-flash1">
 <link rel="stylesheet" href="/assets/freelancers-subnav.css?v=20261014-1">
 <link rel="stylesheet" href="/assets/share-everything.css?v=20261015-og1">
-</head>
+<style id="cx-xp-shell-style">
+.crm-xp-native-pane{padding:0!important;background:transparent!important;max-width:none!important}
+.crm-xp-native-pane .cx-xp-loading{padding:18px 20px;color:var(--muted);font-size:13px}
+.crm-xp-native-pane .cx-xp-embedded-frame{display:block;width:100%;border:0;background:transparent}
+</style></head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
  <span class="crm-survey-label">PESQUISA ABERTA</span>
@@ -8680,7 +8684,7 @@ function crmTrackMemberActivity(route){
 function crmSyncAuth(){
  const signed=crmSignedIn();crmById('view-publica').hidden=signed;crmById('view-logada').hidden=!signed;
  if(signed!==crmWasSignedIn){crmWasSignedIn=signed;
-  if(signed){crmById('crmJoinDialog')?.close();for(const [id] of Object.values(crmRoutes)){const p=crmById(id);if(p)crmById('crmPages').append(p);}crmSetLanding(false);
+  if(signed){crmById('crmJoinDialog')?.close();for(const [id] of Object.values(crmRoutes)){const p=crmById(id),host=crmById('crmPages');if(p&&p.parentElement!==host)host.append(p);}crmSetLanding(false);
    // Keep the visitor on the requested page after session restoration.
    // Only an explicitly requested private route should trigger navigation.
    const requested=crmPendingRoute;
@@ -8712,11 +8716,12 @@ function crmNavigate(route,updateHash=true){
  crmActiveRoute=route;window.posthogTracker?.pageView(route);crmTrackMemberActivity(route);const id=crmRoutes[route][0];
  document.querySelectorAll('.crm-public-tabs [data-crm-route], .crm-navlinks > [data-crm-route]').forEach(link=>{if(link.dataset.crmRoute===route||(route==='patrocinio/apoiadores'&&link.dataset.crmRoute==='patrocinio')||(route==='public-match'&&link.dataset.crmRoute==='search'))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
  const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
- if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{crmById('crmPages').append(crmById(id));}
+ if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{const dest=crmById(id),host=crmById('crmPages');if(dest&&dest.parentElement!==host)host.append(dest);}
  const base=route==='mercado'?'dashboard':route==='vagas-salvas'?'membro':route==='membros'?'comunidade':route;
  if(!window.CXWorkspace?.handles(route)&&!['admin','membros','patrocinio/apoiadores','quem-somos','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
  document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.id===id));
- document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+ window.CXXPShell?.activate(route);
+ document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'")||b.dataset.crmRoute===route;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
  if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length || Date.now()-(window.crmFreelancersLastLoadedAt||0)>120000)loadFreelancers();}
@@ -9015,6 +9020,7 @@ async function crmRefreshAdmin(){
  crmAdminVerified=!error&&data===true;isAdminLoggedIn=crmAdminVerified;
  if(button)button.hidden=!crmAdminVerified;
  if(teamButton)teamButton.hidden=!crmAdminVerified;
+ document.dispatchEvent(new Event('crm:role-resolved'));
 }
 async function crmVerificationAPI(body,session){
  const response=await fetch(AUTH_SUPABASE_URL+'/functions/v1/crm-submit-check',{method:'POST',headers:{apikey:AUTH_SUPABASE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -9186,7 +9192,7 @@ async function crmSubmitReviewForm(event){
 
 </script>
 <script src="/assets/google-login.js?v=20261001-1"></script>
-<script src="/assets/workspace.js?v=20261004-1"></script>
+<script src="/assets/workspace.js?v=20261015-business2"></script>
 <script src="/assets/connections.js?v=20261003-1"></script>
 <script src="/assets/talent-links.js?v=20260923-2"></script>
 <script>
@@ -9695,7 +9701,8 @@ async function crmSubmitExperienceRating(rating){
 }
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
-</script><script src="/assets/portal-hardening.js?v=20261003-2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+</script><script src="/assets/xp-shell.js?v=1"></script>
+<script src="/assets/portal-hardening.js?v=20261015-xp-shell1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-og1"></script>
 </body>
