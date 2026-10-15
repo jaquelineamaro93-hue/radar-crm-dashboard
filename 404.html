@@ -2329,22 +2329,18 @@ crmShowSurveyReminder();
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Freelancers de CRM</h2></div>
       <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+      <nav class="crm-freelancer-subnav" aria-label="Navegação de Freelancers">
+        <button type="button" id="crmFreelancerTabDirectory" class="crm-freelancer-tab is-active" aria-controls="crmFreelancerDirectoryView" aria-pressed="true" onclick="crmSelectFreelancerView('directory')">Profissionais</button>
+        <button type="button" id="crmFreelancerTabAI" class="crm-freelancer-tab" aria-controls="crmFreelancerAIView" aria-pressed="false" onclick="crmSelectFreelancerView('ai')">Encontrar com IA</button>
+      </nav>
+      <div id="crmFreelancerDirectoryView" aria-labelledby="crmFreelancerTabDirectory">
       <div class="note">As avaliações "Recomendo" e "Não recomendo" são anônimas: o nome de quem vota não é salvo em nenhum lugar.</div>
 
       <div class="ev-header-row" style="justify-content:flex-end;">
         <button class="ev-btn-suggest" id="btnOpenFreelancerModal"> Anunciar meu perfil</button>
       </div>
 
-      <div class="ai-match-form" style="background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
-        <label for="freelancerChallenge" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:14px;">Não sabe por onde começar? Descreva seu desafio</label>
-        <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Ex: "preciso de alguém pra montar jornadas no RD Station" ou "quero um freelancer de design pra criar templates de e-mail". A IA sugere os freelancers mais aderentes da lista abaixo.</p>
-        <textarea id="freelancerChallenge" placeholder="Descreva o que você precisa..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:14px; resize:vertical; min-height:80px; margin-bottom:12px; color:var(--text);"></textarea>
-        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-          <button class="form-submit-btn" id="btnSubmitFreelancerChallenge" onclick="submitFreelancerChallenge()" style="background:var(--text); color:#fffff3; border:none; padding:11px 20px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">Encontrar Freelancer Ideal</button>
-          <span id="freelancerChallengeLoading" style="display:none; color:var(--muted); font-size:14px;">Buscando...</span>
-        </div>
-      </div>
-      <div id="freelancerChallengeResults"></div>
+
 
       <div class="search-bar">
         <input type="text" class="search-input" id="freelancerSearchText" placeholder="Buscar por nome ou especialidade...">
@@ -2396,6 +2392,24 @@ crmShowSurveyReminder();
           </details>
         </div>
       </div>
+
+      </div>
+      <section id="crmFreelancerAIView" aria-labelledby="crmFreelancerTabAI" hidden>
+        <div class="crm-freelancer-ai-intro">
+          <h3>Encontre o freelancer ideal</h3>
+          <p>Descreva seu projeto e receba sugestões de profissionais da comunidade.</p>
+        </div>
+      <div class="ai-match-form" style="background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
+        <label for="freelancerChallenge" style="display:block; font-weight:600; margin-bottom:8px; color:var(--text); font-size:14px;">Não sabe por onde começar? Descreva seu desafio</label>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Ex: "preciso de alguém pra montar jornadas no RD Station" ou "quero um freelancer de design pra criar templates de e-mail". A IA sugere os freelancers mais aderentes da lista abaixo.</p>
+        <textarea id="freelancerChallenge" placeholder="Descreva o que você precisa..." style="width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; font-family:inherit; font-size:14px; resize:vertical; min-height:80px; margin-bottom:12px; color:var(--text);"></textarea>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <button class="form-submit-btn" id="btnSubmitFreelancerChallenge" onclick="submitFreelancerChallenge()" style="background:var(--text); color:#fffff3; border:none; padding:11px 20px; font-weight:700; border-radius:9px; cursor:pointer; font-family:inherit; white-space:nowrap;">Encontrar Freelancer Ideal</button>
+          <span id="freelancerChallengeLoading" style="display:none; color:var(--muted); font-size:14px;">Buscando...</span>
+        </div>
+      </div>
+      <div id="freelancerChallengeResults"></div>
+      </section>
     </section>
   </div><div class="tab-page" id="pageAgencias">
     <section>
@@ -3724,7 +3738,7 @@ function switchTab(tab){
   if(tab==='courses' && !coursesInitialized){ initCoursesTab(); }
   if(tab==='cargos' && !cargosInitialized){ initCargosTab(); }
   if(tab==='eventos' && !eventosInitialized){ initEventosTab(); }
-  if(tab==='freelancers' && !freelancersInitialized){ initFreelancersTab(); }
+  if(tab==='freelancers'){crmSelectFreelancerView('directory');if(!freelancersInitialized)initFreelancersTab();}
   if(tab==='agencias' && !agenciasInitialized){ initAgenciasTab(); }
   if(tab==='ferramentas' && !ferramentasInitialized){ initFerramentasTab(); }
   if(tab==='ferramentas' && !compareCRMsInitialized){ initCompareCRMsTab(); }
@@ -5750,6 +5764,20 @@ function flInitSB(){
   catch(e) { console.error(e); return false; }
 }
 
+function crmSelectFreelancerView(view){
+ const isAI=view==='ai';
+ const directory=document.getElementById('crmFreelancerDirectoryView');
+ const panel=document.getElementById('crmFreelancerAIView');
+ if(!directory||!panel)return;
+ directory.hidden=isAI;
+ panel.hidden=!isAI;
+ for(const [id,selected] of [['crmFreelancerTabDirectory',!isAI],['crmFreelancerTabAI',isAI]]){
+  const button=document.getElementById(id);
+  if(!button)continue;
+  button.setAttribute('aria-pressed',String(selected));
+  button.classList.toggle('is-active',selected);
+ }
+}
 function initFreelancersTab(){
   freelancersInitialized = true;
   flInitSB();
@@ -8695,7 +8723,7 @@ function crmNavigate(route,updateHash=true){
  document.querySelectorAll('.crm-nav-items .tab-btn').forEach(b=>{const active=(b.getAttribute('onclick')||'').includes("'"+route+"'");b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  if(window.CXWorkspace?.handles(route))window.CXWorkspace.open(route);
  if(route==='search'){crmById('searchDirPanel').style.display='block';loadSheet();}
- if(route==='freelancers' && (!FREELANCERS.length || Date.now()-(window.crmFreelancersLastLoadedAt||0)>120000))loadFreelancers();
+ if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length || Date.now()-(window.crmFreelancersLastLoadedAt||0)>120000)loadFreelancers();}
  if(route==='match-recrutador')crmById('searchAIPanel').style.display='block';
  if(route==='membros')crmOpenMemberTab('diretorio');
  if(route==='comunidade'){switchComunidadeTab('grupos');window.CXConnections?.partners();}
@@ -9111,8 +9139,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  const page=document.createElement('section');page.id='crmAdminPage';page.className='tab-page';
  page.innerHTML='<h1>Administração</h1><p>Gerencie aprovações e acompanhe o uso do Conexão CRM.</p><div class="crm-admin-tabs" id="crmAdminTabs" role="tablist" aria-label="Áreas da Administração"><button type="button" class="crm-admin-tab active" data-a="analytics" role="tab" aria-selected="true">▥ Analytics</button><button type="button" class="crm-admin-tab" data-a="journey" role="tab" aria-selected="false">↝ Jornada</button><button type="button" class="crm-admin-tab" data-a="members" role="tab" aria-selected="false">◎ Membros</button><button type="button" class="crm-admin-tab" data-a="approvals" role="tab" aria-selected="false">⌁ Aprovações</button><button type="button" class="crm-admin-tab" data-a="surveys" role="tab" aria-selected="false">◉ Pesquisas</button><button type="button" class="crm-admin-tab" data-a="newsletter" role="tab" aria-selected="false">✉ Newsletter</button></div><section id="crmAdminAnalytics"></section><section id="crmAdminJourney" hidden></section><section id="crmAdminMembers" hidden></section><section id="crmAdminSurveys" hidden></section><section id="crmAdminApprovals" hidden><div class="crm-actions"><label class="crm-field">Categoria<select id="crmModerationFilter"><option value="">Todas</option>'+Object.entries(crmModerationTables).map(([key,label])=>'<option value="'+key+'">'+label+'</option>').join('')+'</select></label><label class="crm-field">Situação<select id="crmModerationState"><option value="pending">Pendentes</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><button id="crmModerationRefresh" type="button">↻ Atualizar</button></div><p id="crmModerationStatus" role="status"></p><div id="crmModerationList"></div></section><section id="crmAdminNewsletter" hidden></section>';
  crmById('crmPages').append(page);crmRoutes.admin=['crmAdminPage','Administração'];
- const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph">⚙</span>Administração';b.onclick=crmOpenAdmin;
- const team=document.createElement('button');team.id='crmTeamAdminNav';team.className='tab-btn';team.hidden=true;team.innerHTML='<span class="crm-nav-glyph">◎</span>Equipe / Quem Faz';team.onclick=()=>{window.location.href='/quem-faz/';};
+ const b=document.createElement('button');b.id='crmAdminNav';b.className='tab-btn';b.hidden=true;b.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3l1.5 2.7 3-.1.9 3 2.8 1.4-1.2 2.8 1.2 2.8-2.8 1.4-.9 3-3-.1L12 22l-1.5-2.7-3 .1-.9-3-2.8-1.4 1.2-2.8-1.2-2.8 2.8-1.4.9-3 3 .1z"/><circle cx="12" cy="12.3" r="3"/></svg></span>Administração';b.onclick=crmOpenAdmin;
+ const team=document.createElement('button');team.id='crmTeamAdminNav';team.className='tab-btn';team.hidden=true;team.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M17 9a3 3 0 1 0-2-5.2M17 14a5 5 0 0 1 4 5v1"/></svg></span>Equipe / Quem Faz';team.onclick=()=>{window.location.href='/quem-faz/';};
  const home=crmById('navMembro');const nav=home?.parentElement;
  if(nav&&home){nav.insertBefore(b,home.nextSibling);nav.insertBefore(team,b.nextSibling);}else{crmById('crmNavSlot').append(b,team);}
  crmById('crmModerationRefresh').onclick=crmLoadModeration;crmById('crmModerationFilter').onchange=crmLoadModeration;crmById('crmModerationState').onchange=crmLoadModeration;
