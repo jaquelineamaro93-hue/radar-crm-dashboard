@@ -1203,7 +1203,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
  .crm-float-prompt{padding:15px}
 }
 </style>  <!-- Inngage Web Push -->
-  <script type="text/javascript" src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js"></script>
+  <!-- O Web Push é iniciado somente após a escolha explícita de um assunto. -->
 
 <!-- Conexao CRM visual refinement: components only; navigation hierarchy unchanged -->
 <style id="crm-component-refinement-20261013">
@@ -4053,9 +4053,11 @@ async function crmLoadClosedJobs(category='') {
   }catch(error){el.textContent='Histórico temporariamente indisponível';}
 }
 
-function renderizarVagasHub(vagas) {
+function renderizarVagasHub(vagas, sortMode='recente') {
   // Apenas exibição: registros encerrados continuam no banco e nos salvos.
   vagas=(vagas||[]).filter(v=>String(v.availability_status||'').toLowerCase()!=='closed');
+  // A data de verificação/coleta não representa uma nova publicação.
+  if(sortMode==='recente')vagas.sort((a,b)=>(Date.parse(b.published_at||'')||0)-(Date.parse(a.published_at||'')||0));
   const container = document.getElementById('vagasContainerHub');
   if (!vagas || vagas.length === 0) {
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px;"><div style="font-size:24px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada.</p></div>';
@@ -4225,7 +4227,7 @@ async function aplicarFiltrosVagas() {
     } else if (ordem === 'cargo') {
       query = query.order('title', { ascending: true });
     } else {
-      query = query.order('last_seen_at', { ascending: false, nullsFirst: false });
+      query = query.order('published_at', { ascending: false, nullsFirst: false });
     }
 
     query = query.limit(1000);
@@ -4246,7 +4248,7 @@ async function aplicarFiltrosVagas() {
       return;
     }
 
-    renderizarVagasHub(filtradas);
+    renderizarVagasHub(filtradas, ordem);
     crmLoadClosedJobs(categoria);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
@@ -9763,5 +9765,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script src="/assets/portal-hardening.js?v=20261015-xp-shell1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
+<link rel="stylesheet" href="/assets/push-preferences.css?v=20261015-1">
+<script defer src="/assets/push-preferences.js?v=20261015-1"></script>
 </body>
 </html>

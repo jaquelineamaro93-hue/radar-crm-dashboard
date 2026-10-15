@@ -9,12 +9,7 @@ function addScript(src,id){
 }
 addScript(INTEGRATION_URL,'crm-inngage-integration-runtime');
 
-function registerPushWorker(){
-  if(!('serviceWorker' in navigator))return;
-  navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(e=>console.warn('[Inngage] service worker:',e));
-}
-if(document.readyState==='complete')registerPushWorker();
-else window.addEventListener('load',registerPushWorker,{once:true});
+// O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.
 
 let lastIdentity='',experienceUser='',experienceCheckedAt=0,experienceBusy=false;
 function globalUser(){try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null}catch{return null}}

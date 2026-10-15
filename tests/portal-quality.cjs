@@ -46,6 +46,18 @@ for(const m of index.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["'](\/assets
 }
 assert(!fs.existsSync(path.join(root,'.index.html.swp')),'arquivo swap nao deve ser publicado');
 
+// Avisos são contextuais e não pedem permissão só por navegar.
+assert(!index.includes('<script type="text/javascript" src="https://cdn.inngage.com.br/midia/js/wsdk/inngage.js"></script>'),
+  'SDK de push não deve inicializar em todas as páginas');
+assert(index.includes('/assets/push-preferences.js?v=')&&index.includes('/assets/push-preferences.css?v='),
+  'controles de notificações por seção devem estar incluídos');
+assert(index.includes("query = query.order('published_at', { ascending: false, nullsFirst: false });"),
+  'filtro de vagas deve ordenar pela publicação');
+assert(hardening.includes("Date.parse(b.published_at||'')"),
+  'filtro local não deve reordenar pela data de coleta');
+assert(!read('assets/crm-runtime-integrations.js').includes("navigator.serviceWorker.register('/sw.js'"),
+  'registro de push deve respeitar a escolha do visitante');
+
 // Conexômetro mantém o layout restrito ao segundo bloco da home.
 const meterCss=read('assets/conexometro.css');
 assert(!index.includes('id="crm-conexometro-styles"'),'CSS antigo do Conexômetro não pode competir com o stylesheet novo');

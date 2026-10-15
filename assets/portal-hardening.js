@@ -272,7 +272,7 @@
         });
         if(ordem==='empresa')rows.sort((a,b)=>String(a.company||a.empresa||'').localeCompare(String(b.company||b.empresa||''),'pt-BR'));
         else if(ordem==='cargo')rows.sort((a,b)=>String(a.title||a.cargo||'').localeCompare(String(b.title||b.cargo||''),'pt-BR'));
-        else rows.sort((a,b)=>new Date(b.created_at||b.criado_em||0)-new Date(a.created_at||a.criado_em||0));
+        else rows.sort((a,b)=>(Date.parse(b.published_at||'')||0)-(Date.parse(a.published_at||'')||0));
 
         const container=document.getElementById('vagasContainerHub');
         if(!rows.length){
@@ -280,7 +280,7 @@
           const count=document.getElementById('vagasCountHub');if(count)count.textContent='0';
           return;
         }
-        window.renderizarVagasHub(rows);
+        window.renderizarVagasHub(rows,ordem);
       }catch(error){
         capture('jobs_local_filter_fallback',{message:String(error?.message||error).slice(0,160)});
         return originalApply();
