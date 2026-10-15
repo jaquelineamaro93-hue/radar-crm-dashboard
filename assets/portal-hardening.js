@@ -2,6 +2,15 @@
 (function(){
   if(window.CXPortalHardening)return;
 
+  // Progressive UI refinement, loaded only once.
+  if(!document.getElementById('cx-soft-ui-20261014')){
+    const style=document.createElement('link');
+    style.id='cx-soft-ui-20261014';
+    style.rel='stylesheet';
+    style.href='/assets/soft-ui-20261014.css?v=2';
+    document.head.appendChild(style);
+  }
+
   const state={
     version:'2026-10-03.2',
     lastValidatedAt:0,
