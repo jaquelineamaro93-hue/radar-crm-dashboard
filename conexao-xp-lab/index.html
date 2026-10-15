@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+ <meta name="theme-color" content="#171412">
+ <meta name="robots" content="noindex,nofollow">
+ <title>Conexão XP · Laboratório interativo | Conexão CRM</title>
+ <meta name="description" content="Prévia interativa de avatares, coins, conquistas e rankings da comunidade Conexão CRM. Dados demonstrativos.">
+ <link rel="icon" href="../favicon.ico">
+ <link rel="stylesheet" href="./styles.css?v=1">
+ <script src="./app.js?v=1" defer></script>
+</head>
+<body>
+ <a class="skip" href="#main">Pular para o conteúdo</a>
+ <header class="topbar">
+  <a class="brand" href="../" aria-label="Voltar ao Conexão CRM"><span class="brand-symbol" aria-hidden="true">⬡</span> <span>CONEXÃO <b>CRM.</b></span></a>
+  <div class="top-right">
+   <span class="preview-chip"><span class="dot"></span> LAB · DEMO</span>
+   <div class="wallet" aria-label="Saldo demonstrativo de coins"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9 9.5c1-1.4 5-1.4 6 0s-.2 2.5-2.5 2.5-3.5 1.3-2.5 2.5 5 1.4 6 0M12 6.5v11"/></svg><strong id="topCoins">360</strong><span>coins</span></div>
+  </div>
+ </header>
+ <main id="main" class="layout">
+  <section class="intro" aria-labelledby="heading">
+   <div><span class="kicker">CONEXÃO XP <span class="kicker-rule"></span> PRÉVIA INTERATIVA</span>
+   <h1 id="heading">Sua comunidade. <em>Suas conquistas.</em></h1>
+   <p>Descubra talentos, valorize quem contribui e crie um avatar com a sua cara. Teste esta primeira experiência antes de levarmos a gamificação para os membros.</p></div>
+   <div class="intro-aside"><span>O que é isto?</span><strong>Um playground sem dados reais</strong><small>Tudo o que você fizer aqui é uma simulação no seu navegador.</small></div>
+  </section>
+  <nav class="tabs" aria-label="Áreas do Conexão XP">
+   <button class="tab active" type="button" data-tab="hall" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg><span>Hall da Comunidade</span></button>
+   <button class="tab" type="button" data-tab="avatar" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg><span>Meu Avatar</span></button>
+   <button class="tab" type="button" data-tab="loja" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 9h18l-2 12H5L3 9ZM2 9l3-6h14l3 6M9 13v4m6-4v4"/></svg><span>Loja de Coins</span></button>
+   <button class="tab" type="button" data-tab="conquistas" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="m8 13-1 8 5-3 5 3-1-8"/></svg><span>Conquistas</span></button>
+  </nav>
+  <section class="pane" id="pane-hall" aria-labelledby="hall-title">
+   <div class="section-head"><div><span class="eyebrow">CONEXÕES QUE INSPIRAM</span><h2 id="hall-title">Hall da Comunidade</h2><p>Três formas de reconhecer quem fortalece o ecossistema.</p></div><button id="shareLab" class="soft-btn" type="button" aria-label="Compartilhar o laboratório Conexão XP">↗ Compartilhar</button></div>
+   <div class="segmented" role="group" aria-label="Tipo de ranking">
+    <button type="button" class="segment active" data-ranking="profissionais">Profissionais recomendados</button>
+    <button type="button" class="segment" data-ranking="comunidade">Comunidade engajada</button>
+    <button type="button" class="segment" data-ranking="empresas">Empresas parceiras</button>
+   </div>
+   <div class="rank-context"><p id="rankingDescription">Recomendações válidas nas cinco habilidades principais.</p><div class="period"><span>Período</span><select id="rankingPeriod" aria-label="Período do ranking"><option value="mes">Este mês</option><option value="geral">Geral</option></select></div></div>
+   <div id="podium" class="podium" aria-label="Pódio dos três primeiros"></div>
+   <div class="rank-list"><div class="list-head"><h3>Mais destaques</h3><span>Ranking demonstrativo</span></div><div id="rankingRows"></div></div>
+   <div class="tip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg><span>Os perfis, nomes e pontuações apresentados são fictícios. No lançamento, o ranking poderá exibir fotos autorizadas, avatares e emblemas reais.</span></div>
+   <section class="skills-card" aria-labelledby="skillsTitle"><div class="skills-top"><div><span class="eyebrow">RECONHECIMENTO DE VERDADE</span><h3 id="skillsTitle">Recomende uma habilidade</h3><p>Teste como seriam as cinco competências de um profissional Open to Work.</p></div><span class="demo-badge">Simulação</span></div><div id="skillsList" class="skills-list"></div><p class="subtext">Uma recomendação por habilidade e por conta, com validação no servidor quando a funcionalidade for lançada. Esta demonstração só altera os números locais.</p></section>
+  </section>
+  <section class="pane" id="pane-avatar" aria-labelledby="avatar-title" hidden>
+   <div class="section-head"><div><span class="eyebrow">IDENTIDADE QUE EVOLUI</span><h2 id="avatar-title">Meu Avatar</h2><p>Escolha suas peças e mostre a conquista mais importante.</p></div></div>
+   <div class="avatar-layout">
+    <div class="preview-card"><div class="preview-heading"><span>PRÉVIA EM TEMPO REAL</span><span class="demo-badge">Avatar fictício</span></div><div id="bigAvatar" class="big-avatar" role="img" aria-label="Prévia do avatar personalizado"></div><div class="level-row"><div><strong>Meu personagem</strong><span id="levelLabel">Nível 6 · Conector</span></div><span class="mini-level" id="levelMini">LV 6</span></div><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><p id="xpText" class="xp-caption"></p><button id="resetDemo" class="reset-btn" type="button">Recomeçar demonstração</button></div>
+    <div class="customize-card"><h3>Personalize seu estilo</h3><p>Itens gratuitos, comprados com Coins e desbloqueados por conquista.</p>
+      <div id="avatarCategories" class="category-tabs" role="group" aria-label="Categoria de personalização"></div><div id="avatarItems" class="inventory"></div><div class="tip compact"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg><span>O emblema principal fica no canto do avatar. O avatar é opcional: fotos profissionais continuam disponíveis na versão final.</span></div>
+    </div>
+   </div>
+  </section>
+  <section class="pane" id="pane-loja" aria-labelledby="store-title" hidden>
+   <div class="section-head"><div><span class="eyebrow">SEU ESTILO, SUAS CONQUISTAS</span><h2 id="store-title">Loja de Coins</h2><p>Ganhe Coins participando e troque por itens especiais. Sem pagamento real.</p></div><div class="store-balance"><span>Seu saldo</span><strong id="storeCoins">360 Coins</strong></div></div>
+   <div class="store-grid" id="storeCards"></div><div class="tip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg><span>Coins não são dinheiro, não têm valor de saque e não podem comprar posição no ranking, recomendações ou avaliações. Itens de conquista só são obtidos realizando ações válidas.</span></div>
+  </section>
+  <section class="pane" id="pane-conquistas" aria-labelledby="achievements-title" hidden>
+   <div class="section-head"><div><span class="eyebrow">APRENDER. PARTICIPAR. CONQUISTAR.</span><h2 id="achievements-title">Minhas conquistas</h2><p>Experimente missões de demonstração e veja seu avatar evoluir.</p></div><div class="store-balance"><span>Experiência total</span><strong id="achieveXP">580 XP</strong></div></div>
+   <div id="achievementCards" class="achievements-grid"></div>
+   <div class="missions"><div class="section-head small"><div><h3>Missões de demonstração</h3><p>Ações simuladas. Nenhuma atividade externa é registrada.</p></div></div><div id="missionsList" class="mission-list"></div></div>
+   <div class="milestone-card"><div><span class="eyebrow">CELEBRANDO JUNTOS</span><h3>300 conexões. Um só movimento.</h3><p>Veja como será a comemoração dos marcos da comunidade.</p></div><button id="celebrate" class="primary-btn" type="button">Simular celebração <span>✦</span></button></div>
+  </section>
+  <footer class="footer"><span>CONEXÃO CRM. <span class="muted">·</span> XP LAB</span><span>Protótipo experimental, sem dados reais e sem integrações de produção</span><a href="../">Voltar ao portal ↗</a></footer>
+ </main>
+ <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+ <div id="celebration" class="celebration" role="dialog" aria-modal="true" aria-labelledby="celebrateTitle" hidden>
+  <div class="celebrate-box"><button class="close-celebrate" id="closeCelebrate" type="button" aria-label="Fechar celebração">×</button><div class="confetti" aria-hidden="true">✦ &nbsp; ✶ &nbsp; ✦</div><div class="milestone-count">300</div><h2 id="celebrateTitle">Somos 300 conexões!</h2><p>300 histórias, muitas possibilidades. Você faz parte dessa jornada.</p><button id="celebrateOk" class="primary-btn" type="button">Continuar explorando</button></div>
+ </div>
+</body>
+</html>
