@@ -34,8 +34,13 @@ const routeNow=()=>{
   return ({cursos:'courses','open-to-work':'search','cargos-e-salarios':'cargos'})[r]||r;
 };
 function publicUrl(route){
- const path=ROUTES[route]||'/';
- return new URL(path,ORIGIN).href;
+ let path=ROUTES[route]||'/';
+ try{
+  const mapped=typeof crmRoutePath==='function'?crmRoutePath(route):'';
+  if(typeof mapped==='string'&&/^\/[\w\-\/%.?=&]+$/.test(mapped))path=mapped;
+ }catch{}
+ const u=new URL(path,ORIGIN);u.search='';u.hash='';
+ return u.href;
 }
 function itemInfo(card,route){
  const headline=card.querySelector(':scope > h3, :scope > h2, h3, h2, [data-job-title]');
@@ -144,7 +149,7 @@ function installCards(){
   const cards=[...root.querySelectorAll(list.selectors.join(','))];
   for(const card of cards.slice(0,250)){
    if(card.matches('.crm-topic-card,.cx-share-panel')||card.closest('.cx-share-panel'))continue;
-   if(card.querySelector(':scope > .cx-share-card, :scope > .cx-share-holder > .cx-share-card'))continue;
+   if(card.querySelector('.cx-share-holder > .cx-share-card'))continue;
    if(!card.querySelector('h3,h2,[data-job-title]'))continue;
    const btn=createButton('Compartilhar '+(NAMES[list.route]||'item'),()=>itemInfo(card,list.route),'cx-share-card');
    const holder=document.createElement('div');holder.className='cx-share-holder';holder.append(btn);
@@ -176,7 +181,12 @@ function locateSharedItem(){
    }
  }
 }
-function update(){installSidebar();installCards();locateSharedItem();}
+function installMobile(){
+ if(document.getElementById('cx-share-mobile'))return;
+ const btn=createButton('Compartilhar esta página',pageInfo,'cx-share-mobile');
+ btn.id='cx-share-mobile';document.body.append(btn);
+}
+function update(){installSidebar();installMobile();installCards();locateSharedItem();}
 function schedule(){if(timer)return;timer=setTimeout(()=>{timer=0;update();},170);}
 function install(){
  update();
