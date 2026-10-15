@@ -40,7 +40,14 @@ const eyeColors=[['eye-color-01','Castanho escuro','#39261b'],['eye-color-02','C
 const mouths=['Sorriso suave','Sorriso aberto','Neutro','Sorriso discreto','Expressivo','Lábios definidos'].map((name,i)=>({id:'mouth-'+String(i+1).padStart(2,'0'),name,cost:0}));
 const presentation=[{id:'neutro',name:'Neutro',cost:0},{id:'feminino',name:'Feminino',cost:0},{id:'masculino',name:'Masculino',cost:0}];
 const lashes=[{id:'none',name:'Sem cílios marcados',cost:0},{id:'light',name:'Cílios discretos',cost:0},{id:'defined',name:'Cílios definidos',cost:0}];
-const shirts=[{id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},{id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null}];
+const shirts=[
+{id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},
+{id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null},
+{id:'dados',name:'Dados conectam',cost:0},{id:'comunidade',name:'Comunidade é conexão',cost:0},
+{id:'jornada',name:'Jornada importa',cost:0},{id:'humano',name:'Pessoas primeiro',cost:0},
+{id:'growth',name:'Growth com propósito',cost:0},{id:'martech',name:'Martech na prática',cost:0},
+{id:'cxlover',name:'Eu amo CX',cost:0},{id:'ia',name:'IA + criatividade',cost:0}
+];
 const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:45},{id:'orbit',name:'Universo CRM',cost:75},{id:'grid',name:'Laboratório',cost:95}];
 const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:45},{id:'headphones',name:'Fones',cost:95},{id:'coffee',name:'Café',cost:65}];
 const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'admin',name:'Equipe Conexão CRM',cost:null},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
@@ -117,22 +124,22 @@ function hairSvg(group,variant,color){
   if(tight)out+=line('M112 79 Q146 60 180 81',.32,2);
   else out+=line('M114 76 Q144 55 186 80',.44,2.4);
  }else{
-  out+=p('M92 144C81 103 91 69 122 60C165 43 202 61 212 100Q219 131 204 149L193 137Q184 102 151 101Q121 101 110 139Z');
-  if(v===6){
-   for(const [x,y] of [[110,70],[151,53],[194,72],[121,105],[177,105]]){
-    out+=p('M'+(x-16)+' '+y+'Q'+(x-18)+' '+(y-19)+' '+x+' '+(y-21)+'Q'+(x+18)+' '+(y-16)+' '+(x+17)+' '+y+'Q'+x+' '+(y+12)+' '+(x-16)+' '+y+'Z');
+  // Tranças: construção posterior apenas nas laterais do rosto. Nenhuma mecha
+  // atravessa olhos, boca, pescoço ou a área reservada à tipografia da camiseta.
+  out+=p('M96 145 Q85 98 115 74 Q153 53 190 76 Q217 101 207 147 L196 139 Q188 106 151 104 Q115 106 106 141Z');
+  if(v!==6){
+   const pairs=v===1?[[104,202],[111,195]]:v===2?[[198,207]]:v===3?[[97,201],[105,193],[113,185]]:v===4?[[99,203],[107,195]]:[[105,195],[113,187]];
+   const length=v===4?242:v===2?278:255;
+   for(const [left,right] of pairs){
+    for(const x of [left,right]){
+     const dir=x<150?-1:1;
+     const d='M'+x+' 132 C'+(x+dir*11)+' 162 '+(x+dir*6)+' 190 '+(x+dir*10)+' '+length;
+     out+='<path d="'+d+'" fill="none" stroke="'+ink+'" stroke-width="11" stroke-linecap="round"/>';
+     out+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="8" stroke-linecap="round"/>';
+    }
    }
   }else{
-   const n=v===1?2:v===2?1:v===3?9:v===4?8:6;
-   const len=v===4?227:v===2?295:303;
-   for(let i=0;i<n;i++){
-    const x=v===1?95+110*i:v===2?200:100+100*i/Math.max(n-1,1);
-    const lenAdjust=i%3*8;
-    const thickness=n<3?17:9;
-    out+='<path d="M'+x+' 120 Q'+(x-10)+' 157 '+x+' 183T'+x+' '+(len-lenAdjust)+'" fill="none" stroke="'+color+'" stroke-width="'+thickness+'" stroke-linecap="round"/>';
-    out+=line('M'+(x-2)+' 161 Q'+(x+5)+' 176 '+(x-2)+' 192',.3,1.4);
-   }
-   if(v===5)out+=p('M120 77C115 48 136 30 158 33C189 31 196 52 184 76Z');
+   for(const x of [113,150,187])out+=p('M'+(x-15)+' 81Q'+(x-17)+' 51 '+x+' 48Q'+(x+19)+' 52 '+(x+15)+' 81Q'+x+' 96 '+(x-15)+' 81Z');
   }
  }
  return out;
@@ -202,9 +209,9 @@ function hairStyleDetail(group,variant,color){
    return stroke(offsets[i],tier===1?4:6)+(tier===2?fill('M105 132Q113 90 149 91Q185 88 199 124Q173 108 149 118Q124 110 105 132Z'):'');
  }
  if(group==='trancado'){
-   if(tier===1)return stroke('M120 83 Q144 99 157 76 M133 89 Q153 106 172 84',2)+stroke('M113 108 Q147 123 184 106',1.8);
-   return fill('M117 75 Q119 48 153 49 Q186 53 186 77 Q155 97 117 75Z')+
-      stroke('M125 70 Q154 54 178 72',2.8)+stroke('M104 128 Q118 157 111 186 M200 129 Q188 164 198 190',2.5);
+   // Acabamento exclusivo na coroa. As mechas laterais ficam na camada posterior.
+   if(tier===1)return stroke('M119 85Q150 105 183 88',2.2);
+   return fill('M124 77Q124 49 151 49Q182 48 181 78Q151 93 124 77Z')+stroke('M130 68Q151 57 173 69',2.2);
  }
  if(['cacheado','crespo','afro'].includes(group)){
    if(tier===1){
@@ -230,7 +237,7 @@ function renderSvg(input={},small=false){
  const hairColor=find('hair_color',c.hair_color)?.color||colors[1].color;
  const [group,index]=String(c.hair_style).split('-');
  const bg={sunset:['#eabb92','#925839'],lilac:['#c7b6e4','#7e698d'],orbit:['#7579b1','#252c50'],grid:['#5f8a8e','#223437']}[c.bg]||['#eabb92','#925839'];
- const shirt={crm:['#f97316',['CRM não é','disparo']],cx:['#fffaf3',['Cliente','no centro']],ti:['#496c82',['API é','vida']],mentor:['#755092',['Mentoria','transforma']]}[c.shirt]||['#f97316',['CRM não é','disparo']];
+ const shirt={crm:['#f97316',['CRM não é','disparo']],cx:['#fffaf3',['Cliente','no centro']],ti:['#496c82',['API é','vida']],mentor:['#755092',['Mentoria','transforma']],dados:['#314e71',['Dados','conectam']],comunidade:['#89457c',['Comunidade','é conexão']],jornada:['#327965',['Jornada','importa']],humano:['#b95e53',['Pessoas','primeiro']],growth:['#5368a1',['Growth com','propósito']],martech:['#3f656d',['Martech na','prática']],cxlover:['#a94b70',['Eu amo','CX']],ia:['#604e96',['IA +','criatividade']]}[c.shirt]||['#f97316',['CRM não é','disparo']];
  const face=Number(c.face.slice(-2))||1,eye=Number(c.eyes.slice(-2))||1,mouth=Number(c.mouth.slice(-2))||1;
  const rx=[0,55,61,48,52,57,51][face],ry=[0,68,64,76,65,70,68][face];
  const faceShape=c.presentation==='masculino'
@@ -281,7 +288,7 @@ function renderSvg(input={},small=false){
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
  hairFrontSvg(group,Number(index),hairColor)+hairStyleDetail(group,Number(index),hairColor)+
  '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
- '<rect x="107" y="265" width="86" height="44" rx="8" fill="'+shirt[0]+'" opacity=".96"/>'+ 
+
  '<text x="150" y="282" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="850" fill="'+(c.shirt==='cx'?'#25201e':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="15">'+shirt[1][1]+'</tspan></text>'+
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
  (c.badge==='admin'?'':'<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text>')+'</svg>';
