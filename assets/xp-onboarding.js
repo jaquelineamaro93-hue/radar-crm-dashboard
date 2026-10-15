@@ -45,7 +45,7 @@ function create(){
  '<button type="button" class="cx-xp-secondary">Agora não</button></div>';
  document.body.append(dialog);
  dialog.querySelector('[data-close]').addEventListener('click',()=>close());
- dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){close();location.assign('/conexao-xp/');}else close();});
+ dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){close();location.assign('/rankings/');}else close();});
  dialog.querySelector('.cx-xp-back').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
  dialog.querySelector('.cx-xp-primary').addEventListener('click',()=>{
   if(step===STEPS.length-1){close();location.assign('/avatar-studio/');return;}
