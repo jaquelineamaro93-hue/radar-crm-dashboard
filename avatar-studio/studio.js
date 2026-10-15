@@ -4,13 +4,13 @@
 const c=window.CXAvatarCatalog;
 const $=id=>document.getElementById(id);
 const url='https://rwkbpafpniwzvlkfngag.supabase.co',key='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
-const fields=['hair_style','hair_color','skin','face','eyes','eye_color','lashes','mouth','presentation','shirt','bg','accessory','badge'];
-let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',hairTier='all',pending=false,isAdmin=false;
+const fields=['presentation','skin','face','hair_style','hair_color','eyes','eye_color','lashes','mouth','shirt','bg','accessory','badge'];
+let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='presentation',group='liso',hairTier='all',pending=false,isAdmin=false;
 const detail={
  hair_style:'Escolha uma textura e depois o penteado',hair_color:'Todas as cores podem ser combinadas com qualquer cabelo',
  skin:'Todos os tons de pele são gratuitos',face:'Escolha o formato que mais combina com você',
  eyes:'Seis formas de representar o olhar',eye_color:'Escolha a cor dos olhos',lashes:'Escolha como mostrar os cílios',mouth:'Seu sorriso, sua expressão',
- presentation:'Escolha seu estilo',
+ presentation:'Comece escolhendo uma apresentação. Depois, personalize cabelos e traços livremente',
  shirt:'As frases aparecem na camiseta do personagem',bg:'Personalize o fundo do avatar',
  accessory:'Adicione seu toque pessoal',badge:'Conquistas aparecem no canto do avatar'
 };
@@ -43,9 +43,10 @@ function tab(title,field,selected){
 }
 function render(){
  updateAvatar();updateWallet();
- $('categories').replaceChildren(...fields.map(field=>tab(c.labels[field],field,category===field)));
+ $('categories').replaceChildren(...fields.map((field,i)=>{const b=tab((i+1)+'. '+c.labels[field],field,category===field);return b;}));
  $('categoryTitle').textContent=c.labels[category];
  $('categoryIntro').textContent=detail[category];
+ $('categories').setAttribute('aria-label','Etapas da criação do avatar; escolha qualquer etapa para editar');
  if(category==='hair_style'&&group==='masculino'&&draft.presentation!=='masculino') $('categoryIntro').textContent='Cortes curtos e masculinos disponíveis para qualquer apresentação';
  $('hairGroups').hidden=category!=='hair_style';
  const hairFilters=document.getElementById('hairFilters');
@@ -54,6 +55,8 @@ function render(){
   $('hairGroups').replaceChildren(...c.groups.map(([id,label])=>{
    const b=tab(label,id,group===id);b.dataset.hairGroup=id;delete b.dataset.category;return b;
   }));
+  // Mostrar a escolha masculina no começo ao selecionar apresentação masculina.
+  if(group==='masculino')$('hairGroups').scrollIntoView?.({block:'nearest'});
  }
  const items=catalogItems();
  $('categoryCount').textContent=items.length+' opções';
@@ -90,7 +93,7 @@ function render(){
   else status.textContent=isAdmin?'Livre para admin':item.cost+' Coins';
   button.append(status);
   if(draft[category]===item.id){const badge=document.createElement('span');badge.className='choice-status';badge.textContent='Em uso';button.append(badge);}
-  else if(item.cost===null&&!owns(category,item)&&!(isAdmin&&(category==='hair_style'||category==='hair_color'||(category==='shirt'&&item.id==='mentor')))){button.disabled=true;button.setAttribute('aria-label',item.name+', desbloqueado por conquista');}
+  else if(item.cost===null&&!owns(category,item)&&!isAdmin){button.disabled=true;button.setAttribute('aria-label',item.name+', desbloqueado por conquista');}
   else if(!isAdmin&&!owns(category,item)&&coins!==null&&coins<item.cost){button.disabled=true;}
   fragment.append(button);
  }
@@ -115,6 +118,11 @@ async function choose(field,id){
   pending=false;
  }
  draft[field]=id;
+ if(field==='presentation'){
+   group=id==='masculino'?'masculino':'liso';
+   hairTier='all';
+   category='hair_style';
+ }
  if(field==='hair_style')group=item.group;
  render();
  message('Alterações prontas para salvar');
@@ -133,7 +141,7 @@ async function save(){
  finally{pending=false;$('save').disabled=false;}
 }
 function reset(){
- draft={...c.defaultConfig};group='liso';render();message('Visual básico selecionado. Salve para confirmar');
+ draft={...c.defaultConfig};group='liso';category='presentation';render();message('Visual básico selecionado. Salve para confirmar');
 }
 async function loadAccount(){
  if(!window.supabase?.createClient){
@@ -166,10 +174,11 @@ async function loadAccount(){
   if(profile.data?.config&&typeof profile.data.config==='object'){
    saved={...c.defaultConfig,...profile.data.config};
    draft={...saved};
-   group=draft.hair_style.split('-')[0];
+   group=draft.presentation==='masculino'?'masculino':draft.hair_style.split('-')[0];
   }
   $('accountStatus').textContent=isAdmin?'Administração · Coins ilimitadas para personalização, sem alterar o saldo':'Salvo com segurança na sua conta Conexão CRM';
-  message('Tudo pronto para personalizar');
+  message('Comece pela apresentação e avance pelo seu estilo');
+  category='presentation';
   render();
  }catch(err){
   message('Não conseguimos carregar seu avatar agora. Tente atualizar a página');
