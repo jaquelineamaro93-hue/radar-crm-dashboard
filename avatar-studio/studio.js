@@ -139,14 +139,16 @@ async function loadAccount(){
     return;
   }
   user=data.user;
-  const [boot,ownedItems,profile]=await Promise.all([
+  const [boot,ownedItems,profile,team]=await Promise.all([
    db.rpc('crm_avatar_bootstrap'),
    db.from('crm_avatar_unlocks').select('item_key').eq('user_id',user.id),
-   db.from('crm_avatar_profiles').select('config').eq('user_id',user.id).maybeSingle()
+   db.from('crm_avatar_profiles').select('config').eq('user_id',user.id).maybeSingle(),
+   db.rpc('crm_avatar_is_team_member')
   ]);
-  if(boot.error||ownedItems.error||profile.error)throw boot.error||ownedItems.error||profile.error;
+  if(boot.error||ownedItems.error||profile.error||team.error)throw boot.error||ownedItems.error||profile.error||team.error;
   coins=Number(boot.data);
   unlocks=new Set((ownedItems.data||[]).map(x=>x.item_key));
+  if(team.data===true)unlocks.add('badge-admin');
   if(profile.data?.config&&typeof profile.data.config==='object'){
    saved={...c.defaultConfig,...profile.data.config};
    draft={...saved};
