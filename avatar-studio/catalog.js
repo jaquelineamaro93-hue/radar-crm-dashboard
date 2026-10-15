@@ -9,7 +9,16 @@ const groups=[
 ['afro','Afro',['Black power curto','Afro médio','Afro volumoso','Afro arredondado','Afro com faixa','Afro lateral']],
 ['trancado','Tranças e protetivos',['Duas tranças','Trança lateral','Box braids longas','Box braids curtas','Coque com tranças','Bantu knots']]
 ];
-const hairs=groups.flatMap(([group,label,names])=>names.map((name,i)=>({id:group+'-'+String(i+1).padStart(2,'0'),name,group,groupLabel:label,cost:i<2?0:i===5?null:[60,85,100][i-2],unlock:i===5?'Conquista':null})));
+
+const extendedHairNames={
+ liso:['Curto com risca lateral','Bob com franja leve','Longo em camadas','Assimétrico com volume','Rabo de cavalo lateral','Coque baixo','Curto repicado','Bob com franja cortina','Longo meio preso','Corte lateral definido','Rabo alto','Coque duplo'],
+ ondulado:['Ondas com risca lateral','Bob com movimento','Ondas longas em camadas','Franja ondulada','Ondas presas de lado','Coque baixo ondulado','Curto com textura','Bob com franja cortina','Longo semi preso','Ondulado com volume','Rabo alto ondulado','Coque ondulado duplo'],
+ cacheado:['Curto com risca','Cachos médios em camadas','Cachos longos com franja','Cacheado lateral','Coque cacheado baixo','Curly puff','Curto arredondado','Cachos bob com franja','Cachos longos semi presos','Cachos definidos laterais','Coque alto com cachos','Dois puffs cacheados'],
+ crespo:['Crespo com risca lateral','Crespo médio definido','Crespo longo em camadas','Puff lateral','Coque crespo baixo','Crespo emoldurando o rosto','Taper crespo','Crespo com franja','Crespo longo semi preso','Puff alto com volume','Coque crespo duplo','Crespo volumoso definido'],
+ afro:['Afro com divisão lateral','Afro médio em camadas','Afro grande volumoso','Afro com franja','Afro preso atrás','Afro em camadas','Afro curto definido','Afro com detalhe frontal','Afro longo','Afro assimétrico','Afro alto','Afro duplo'],
+ trancado:['Tranças com divisão lateral','Tranças médias','Box braids em camadas','Tranças com franja','Coque baixo de tranças','Twists médios','Tranças finas laterais','Tranças com risca central','Box braids longas em camadas','Tranças laterais presas','Coque alto com tranças','Twists com volume']
+};
+const hairs=groups.flatMap(([group,label,names])=>[...names,...extendedHairNames[group]].map((name,i)=>({id:group+'-'+String(i+1).padStart(2,'0'),name,group,groupLabel:label,cost:i<6?0:i>=15?null:60+(i-6)*10,unlock:i>=15?'Conquista':null})));
 const colors=[
  ['color-01','Preto','#1d1a21'],['color-02','Castanho escuro','#39231f'],
  ['color-03','Castanho médio','#714735'],['color-04','Castanho claro','#9d6a46'],
@@ -28,14 +37,15 @@ const eyes=['Naturais','Arredondados','Amendoados','Expressivos','Delicados','De
 const eyeColors=[['eye-color-01','Castanho escuro','#39261b'],['eye-color-02','Castanho mel','#785239'],['eye-color-03','Verde oliva','#688357'],['eye-color-04','Verde claro','#89aa7b'],['eye-color-05','Azul claro','#83a9ca'],['eye-color-06','Azul intenso','#437eaf'],['eye-color-07','Cinza','#9199a8'],['eye-color-08','Âmbar','#ad7840']].map(([id,name,color])=>({id,name,color,cost:0}));
 const mouths=['Sorriso suave','Sorriso aberto','Neutro','Sorriso discreto','Expressivo','Lábios definidos'].map((name,i)=>({id:'mouth-'+String(i+1).padStart(2,'0'),name,cost:0}));
 const presentation=[{id:'neutro',name:'Neutro',cost:0},{id:'feminino',name:'Feminino',cost:0},{id:'masculino',name:'Masculino',cost:0}];
+const lashes=[{id:'none',name:'Sem cílios marcados',cost:0},{id:'light',name:'Cílios discretos',cost:0},{id:'defined',name:'Cílios definidos',cost:0}];
 const shirts=[{id:'crm',name:'CRM não é disparo',cost:0},{id:'cx',name:'Cliente no centro',cost:55},{id:'ti',name:'API é vida',cost:85},{id:'mentor',name:'Mentoria transforma',cost:null}];
 const backgrounds=[{id:'sunset',name:'Laranja Conexão',cost:0},{id:'lilac',name:'Lavanda',cost:45},{id:'orbit',name:'Universo CRM',cost:75},{id:'grid',name:'Laboratório',cost:95}];
 const accessories=[{id:'none',name:'Sem acessório',cost:0},{id:'glasses',name:'Óculos',cost:45},{id:'headphones',name:'Fones',cost:95},{id:'coffee',name:'Café',cost:65}];
 const badges=[{id:'star',name:'Primeira conexão',cost:0},{id:'admin',name:'Equipe Conexão CRM',cost:null},{id:'mic',name:'Host de webinar',cost:null},{id:'flame',name:'Criador de conteúdo',cost:null},{id:'crown',name:'Destaque da comunidade',cost:null}];
-const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',eye_color:'eye-color-02',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
-const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,eye_color:eyeColors,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
-const labels={hair_style:'Penteados',hair_color:'Cor do cabelo',skin:'Tom de pele',face:'Formato de rosto',eyes:'Formato dos olhos',eye_color:'Cor dos olhos',mouth:'Expressão',presentation:'Apresentação',shirt:'Camisetas',bg:'Fundos',accessory:'Acessórios',badge:'Emblemas'};
-const itemKey=(field,id)=>({hair_style:'hair-'+id,hair_color:id,skin:'skin-'+id,face:'face-'+id,eyes:'eyes-'+id,mouth:'mouth-'+id,presentation:'presentation-'+id,shirt:'shirt-'+id,bg:'bg-'+id,accessory:'accessory-'+id,badge:'badge-'+id})[field];
+const defaultConfig={hair_style:'liso-01',hair_color:'color-02',skin:'skin-03',face:'face-01',eyes:'eyes-02',eye_color:'eye-color-02',lashes:'none',mouth:'mouth-01',presentation:'neutro',shirt:'crm',bg:'sunset',accessory:'none',badge:'star'};
+const catalogs={hair_style:hairs,hair_color:colors,skin:skins,face:faces,eyes,eye_color:eyeColors,lashes,mouth:mouths,presentation,shirt:shirts,bg:backgrounds,accessory:accessories,badge:badges};
+const labels={hair_style:'Penteados',hair_color:'Cor do cabelo',skin:'Tom de pele',face:'Formato de rosto',eyes:'Formato dos olhos',eye_color:'Cor dos olhos',lashes:'Cílios',mouth:'Expressão',presentation:'Apresentação',shirt:'Camisetas',bg:'Fundos',accessory:'Acessórios',badge:'Emblemas'};
+const itemKey=(field,id)=>({hair_style:'hair-'+id,hair_color:id,skin:'skin-'+id,face:'face-'+id,eyes:'eyes-'+id,lashes:'lashes-'+id,mouth:'mouth-'+id,presentation:'presentation-'+id,shirt:'shirt-'+id,bg:'bg-'+id,accessory:'accessory-'+id,badge:'badge-'+id})[field];
 const find=(field,id)=>catalogs[field]?.find(x=>x.id===id);
 const attr=(x)=>String(x).replace(/[&"<>]/g,'');
 // Single continuous silhouettes with soft highlights; no sticker-like detached pieces.
@@ -47,7 +57,7 @@ function hairShade(hex,shift){
  return '#'+channels.map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
 }
 function hairSvg(group,variant,color){
- const v=Math.max(1,Math.min(6,Number(variant)||1));
+ const v=((Math.max(1,Math.min(18,Number(variant)||1))-1)%6)+1;
  const ink=hairShade(color,-.24),light=hairShade(color,.26);
  const p=d=>'<path d="'+d+'" fill="'+color+'" stroke="'+ink+'" stroke-width="1.2" stroke-linejoin="round"/>';
  const line=(d,alpha=.55,w=2)=>'<path d="'+d+'" fill="none" stroke="'+light+'" stroke-width="'+w+'" opacity="'+alpha+'" stroke-linecap="round"/>';
@@ -122,7 +132,7 @@ function hairSvg(group,variant,color){
  return out;
 }
 function hairFrontSvg(group,variant,color){
- const v=Math.max(1,Math.min(6,Number(variant)||1)),light=hairShade(color,.28);
+ const v=((Math.max(1,Math.min(18,Number(variant)||1))-1)%6)+1,light=hairShade(color,.28);
  const front={
  liso:[
   'M99 137Q94 103 114 78Q138 57 166 71Q195 77 204 115Q193 108 178 105Q162 103 146 117Q123 112 109 133Z',
@@ -163,6 +173,37 @@ function hairFrontSvg(group,variant,color){
  }
  return out;
 }
+
+function hairStyleDetail(group,variant,color){
+ const n=Number(variant)||1;
+ if(n<=6)return '';
+ const tier=n<=12?1:2;
+ const ink=hairShade(color,-.22),highlight=hairShade(color,.32);
+ const stroke=(d,w=3)=>'<path d="'+d+'" fill="none" stroke="'+highlight+'" stroke-width="'+w+'" stroke-linecap="round" opacity=".62"/>';
+ const fill=d=>'<path d="'+d+'" fill="'+color+'" stroke="'+ink+'" stroke-width="1.2" stroke-linejoin="round"/>';
+ const offset=(n-7)%6;
+ if(group==='trancado'){
+   if(tier===1)return stroke('M120 83 Q144 99 157 76 M133 89 Q153 106 172 84',2)+stroke('M113 108 Q147 123 184 106',1.8);
+   return fill('M117 75 Q119 48 153 49 Q186 53 186 77 Q155 97 117 75Z')+
+      stroke('M125 70 Q154 54 178 72',2.8)+stroke('M104 128 Q118 157 111 186 M200 129 Q188 164 198 190',2.5);
+ }
+ if(['cacheado','crespo','afro'].includes(group)){
+   if(tier===1){
+     return fill('M95 121 Q103 98 125 105 Q143 90 158 103 Q176 92 190 110 Q196 128 192 138 Q172 115 155 126 Q137 115 117 137Z')+
+       stroke('M111 112 Q124 104 133 113 M149 108 Q161 102 174 114',2);
+   }
+   return fill('M118 72 Q109 42 132 39 Q148 22 167 38 Q192 38 189 68 Q165 90 118 72Z')+
+     stroke('M124 64 Q148 44 178 63',3.2)+stroke('M98 140 Q90 160 100 176 M202 137 Q211 163 201 183',2.2);
+ }
+ if(tier===1){
+   const side=offset%2===0?'M100 123 Q115 79 153 84 Q181 83 202 107 Q175 98 154 110 Q125 104 110 142Z':
+                       'M201 124 Q185 78 148 84 Q120 84 98 111 Q128 98 152 111 Q178 103 190 142Z';
+   return fill(side)+stroke('M118 93 Q146 83 182 98',2.8);
+ }
+ return fill('M124 79 Q117 57 139 52 Q156 44 171 53 Q190 61 181 81 Q152 95 124 79Z')+
+   stroke('M128 75 Q152 60 177 75',2.6)+
+   (group==='liso'?fill('M199 116 Q215 119 225 141 Q219 164 208 187 L204 176 Q215 144 195 137Z'):stroke('M100 137 Q92 157 105 184 M203 138 Q211 166 198 185',2));
+}
 let serial=0;
 function renderSvg(input={},small=false){
  const c={...defaultConfig,...input};
@@ -182,7 +223,7 @@ function renderSvg(input={},small=false){
   '<circle cx="'+x+'" cy="'+(y-.6)+'" r="'+dims[2]+'" fill="'+iris+'"/>'+
   '<circle cx="'+x+'" cy="'+(y-.6)+'" r="'+(dims[2]*.56)+'" fill="#292022"/>'+
   '<circle cx="'+(x-2)+'" cy="'+(y-3.4)+'" r="2" fill="#fff"/>'+
-  '<path d="M'+(x-rx)+' '+y+'l-4 -5 M'+(x-rx+4)+' '+(y-ry*.8)+'l-2 -5 M'+(x+rx)+' '+y+'l4 -5" fill="none" stroke="'+eyecolor+'" stroke-width="2" stroke-linecap="round"/>';
+  (c.lashes==='defined'?'<path d="M'+(x-rx)+' '+y+'l-4 -6 M'+(x-rx+4)+' '+(y-ry*.85)+'l-3 -6 M'+(x+rx)+' '+y+'l4 -6" fill="none" stroke="'+eyecolor+'" stroke-width="2.2" stroke-linecap="round"/>':c.lashes==='light'?'<path d="M'+(x-rx)+' '+y+'l-2.4 -3 M'+(x+rx)+' '+y+'l2.4 -3" fill="none" stroke="'+eyecolor+'" stroke-width="1.5" stroke-linecap="round"/>':'');
  };
  const eyeShape=dollEye(127)+dollEye(175);
  const smiles=[
@@ -209,15 +250,15 @@ function renderSvg(input={},small=false){
  hairSvg(group,Number(index),hairColor)+
  '<ellipse cx="151" cy="152" rx="'+rx+'" ry="'+ry+'" fill="'+skin+'"/>'+
  '<path d="M96 155q-14-12-12 10t16 11M205 155q14-12 12 10t-16 11" fill="'+skin+'"/>'+
- '<path d="M118 136q10-6 21 0m24 0q10-6 21 0" stroke="#553b31" stroke-width="3.2" fill="none" stroke-linecap="round"/>'+
+ '<path d="M118 136q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0m24 0q10 '+(c.presentation==='masculino'?'-3':'-6')+' 21 0" stroke="#553b31" stroke-width="'+(c.presentation==='masculino'?'4':'3')+'" fill="none" stroke-linecap="round"/>'+
  '<g>'+eyeShape+'</g>'+blush+
  '<path d="M150 151l-4 20 7 2" stroke="#99694e" stroke-width="2.4" fill="none"/>'+
  '<g stroke="#9f635d" stroke-width="2.8" fill="none" stroke-linecap="round">'+smiles+'</g>'+
- hairFrontSvg(group,Number(index),hairColor)+
+ hairFrontSvg(group,Number(index),hairColor)+hairStyleDetail(group,Number(index),hairColor)+
  '<g fill="none" stroke="#352d2b" stroke-width="3">'+overlay+'</g>'+
  '<text x="150" y="280" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="900" fill="'+(c.shirt==='cx'?'#25201e':'#fff8eb')+'"><tspan x="150">'+shirt[1][0]+'</tspan><tspan x="150" dy="19">'+shirt[1][1]+'</tspan></text>'+
  '</g>'+(c.badge==='admin'?'<path d="M252 31L278 43V65Q272 84 252 91Q231 84 226 65V43Z" fill="#f97316" stroke="#ffe0b1" stroke-width="3.4"/><path d="M252 39L269 47V63Q265 78 252 83Q239 78 235 63V47Z" fill="#7d3614"/><text x="252" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="900" fill="#fff4e5">CRM</text>':'<circle cx="252" cy="60" r="25" fill="#251c17" stroke="#ffd2a2" stroke-width="4"/>')+
  (c.badge==='admin'?'':'<text x="252" y="70" text-anchor="middle" font-size="31" fill="#ffc282">'+badge+'</text>')+'</svg>';
 }
-window.CXAvatarCatalog={groups,hairs,colors,skins,faces,eyes,eyeColors,mouths,presentation,shirts,backgrounds,accessories,badges,catalogs,labels,defaultConfig,itemKey,find,renderSvg};
+window.CXAvatarCatalog={groups,hairs,colors,skins,faces,eyes,eyeColors,lashes,mouths,presentation,shirts,backgrounds,accessories,badges,catalogs,labels,defaultConfig,itemKey,find,renderSvg};
 })();
