@@ -61,7 +61,7 @@ assert(!html.includes("if(tab==='vagas'){ carregarVagasHub();"),
   'Returning to Radar must not start an unconditional fetch');
 assert(html.includes("document.hidden||!document.getElementById('pageVagas')?.classList.contains('active')"),
   'Background updates should run only when Radar is visible');
-assert(html.includes("if(route==='freelancers' && (!FREELANCERS.length"),
+assert(html.includes("if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length),
   'Freelancer data must not reload on every navigation');
 assert(html.includes("if(e.detail>0)")&&html.includes("if(tapped)tapped.blur();"),
   'Pointer navigation must clear stale focus while preserving keyboard focus');
