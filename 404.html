@@ -3748,15 +3748,9 @@ function switchTab(tab){
     const filtered=advanced.some(id=>document.getElementById(id)?.value)
       || (document.getElementById('filtro-ordem-hub')?.value||'recente')!=='recente';
     if(!filtered&&!crmRadarRequestInFlight&&(!todasAsVagasHub.length||Date.now()-crmRadarLastLoadedAt>120000))carregarVagasHub();
-    if(!vagasAutoRefreshStarted){
-      setInterval(()=>{
-        if(document.hidden||!document.getElementById('pageVagas')?.classList.contains('active'))return;
-        const hasFilters=advanced.some(id=>document.getElementById(id)?.value)
-          || (document.getElementById('filtro-ordem-hub')?.value||'recente')!=='recente';
-        if(!hasFilters&&!crmRadarRequestInFlight&&Date.now()-crmRadarLastLoadedAt>120000)carregarVagasHub();
-      },60000);
-      vagasAutoRefreshStarted=true;
-    }
+    // O bot mantém a coleta no servidor. A interface só busca ao abrir/voltar
+    // ao Radar (se desatualizada) ou quando a pessoa aciona Atualizar/Buscar.
+    // Não recriar cards enquanto a pessoa percorre os resultados.
   }
   if(tab==='calc' && !calcInitialized){ initCalcTab(); }
 
