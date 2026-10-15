@@ -66,4 +66,36 @@ function handleMessage(e){
 window.addEventListener('message',handleMessage);
 window.CXXPShell={activate,register};
 register();
+// Keep iframe panels synchronized with hash navigation from sidebar and embedded pages.
+function syncRoute(){
+ const route=decodeURIComponent(location.hash.slice(1).split('?')[0]);
+ if(!specs[route])return;
+ if(!document.getElementById(specs[route].id))register();
+ activate(route);
+ for(const [name,spec] of Object.entries(specs)){
+  const pane=document.getElementById(spec.id);
+  if(!pane)continue;
+  const selected=name===route;
+  pane.classList.toggle('active',selected);
+  pane.hidden=!selected;
+  pane.style.display=selected?'block':'none';
+ }
+ const selected=document.getElementById(specs[route].id);
+ if(selected){
+  selected.hidden=false;
+  selected.style.display='block';
+ }
+}
+window.addEventListener('hashchange',()=>requestAnimationFrame(syncRoute));
+document.addEventListener('click',e=>{
+ const link=e.target.closest?.('a[data-crm-route="xp-avatar"],a[data-crm-route="xp-rankings"]');
+ if(!link)return;
+ const route=link.dataset.crmRoute;
+ e.preventDefault();
+ if(location.hash!=='#'+route)location.hash=route;
+ if(typeof crmNavigate==='function')crmNavigate(route);
+ requestAnimationFrame(syncRoute);
+});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncRoute,{once:true});
+else syncRoute();
 })();
