@@ -59,14 +59,14 @@
     section.id='crmXpSection';
     let avatar=document.getElementById('crmAvatarStudioLink');
     if(!avatar){
-      avatar=document.createElement('a');avatar.id='crmAvatarStudioLink';avatar.href='/avatar-studio/';
-      avatar.className='tab-btn';avatar.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+      avatar=document.createElement('a');avatar.id='crmAvatarStudioLink';avatar.href='/#xp-avatar';
+      avatar.dataset.crmRoute='xp-avatar';avatar.className='tab-btn';avatar.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
       avatar.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Meu Avatar';
     }
     let ranking=document.getElementById('crmXpRankingLink');
     if(!ranking){
       ranking=document.createElement('a');ranking.id='crmXpRankingLink';
-      ranking.href='/rankings/';ranking.className='tab-btn';
+      ranking.href='/#xp-rankings';ranking.dataset.crmRoute='xp-rankings';ranking.className='tab-btn';
       ranking.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
       ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings';
     }
@@ -88,11 +88,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncXpLinks,{once:true});
   else syncXpLinks();
   document.addEventListener('crm:admin-ready',syncXpLinks);
-  window.addEventListener('focus',syncXpLinks);
+  document.addEventListener('crm:role-resolved',syncXpLinks);
   document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
-  // Auth settles asynchronously; do not attach an unbounded MutationObserver to the sidebar.
-  let xpNavChecks=0;
-  const xpNavInterval=setInterval(()=>{syncXpLinks();if(++xpNavChecks>=20)clearInterval(xpNavInterval);},900);
+  // Role-resolved event handles authentication changes without moving menu items repeatedly.
 
   // Reports stay discoverable and every sidebar destination has a consistent icon.
   function syncReportsAndIcons(){
@@ -115,8 +113,7 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncReportsAndIcons,{once:true});else syncReportsAndIcons();
   document.addEventListener('crm:admin-ready',syncReportsAndIcons);
-  window.addEventListener('focus',syncReportsAndIcons);
-  let iconCheck=0;const iconInterval=setInterval(()=>{syncReportsAndIcons();if(++iconCheck>=20)clearInterval(iconInterval);},900);
+  document.addEventListener('crm:role-resolved',syncReportsAndIcons);
 
   function openToWorkRankShortcut(){
     const page=document.getElementById('pageSearch');
@@ -124,7 +121,7 @@
     const desc=page.querySelector('.section-desc');
     if(!desc)return;
     const link=document.createElement('a');link.id='crmSkillRecommendationLink';
-    link.href='/rankings/';link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
+    link.href='/#xp-rankings';link.dataset.crmRoute='xp-rankings';link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
     link.style.cssText='display:inline-flex;margin:6px 0 16px;padding:9px 12px;border:1px solid #544034;border-radius:11px;color:#f2b889;font-size:12px;text-decoration:none';
     desc.after(link);
   }
