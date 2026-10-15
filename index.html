@@ -3804,7 +3804,7 @@ function crmJobPublicationDate(v) {
   const raw=String(v).trim();
   const dt=new Date(raw);
   if(!Number.isFinite(dt.getTime()))return null;
-  const dateOnlyUTC=/^\\d{4}-\\d{2}-\\d{2}T00:00:00(?:\\.0+)?(?:Z|\\+00(?::?00)?)$/.test(raw);
+  const dateOnlyUTC=/^\d{4}-\d{2}-\d{2}T00:00:00(?:\.0+)?(?:Z|\+00(?::?00)?)$/.test(raw);
   return {date:dt,zone:dateOnlyUTC?'UTC':'America/Sao_Paulo',sourceDayOnly:dateOnlyUTC};
 }
 function formatarDataVagas(dataString) {
