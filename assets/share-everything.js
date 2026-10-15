@@ -17,6 +17,7 @@ const NAMES={vagas:'Radar de Vagas',freelancers:'Freelancers',courses:'Cursos',
   membros:'Membros',comunidade:'Comunidade',calc:'Calculadora CLT x PJ'};
 const LISTS=[
   {route:'vagas',pages:['pageVagas'],selectors:['#vagasContainerHub > .crm-job-card']},
+  {route:'search',pages:['pageSearch'],selectors:['#searchResults .p-card']},
   {route:'freelancers',pages:['pageFreelancers'],selectors:['#crmFreelancerDirectoryView article','#crmFreelancerDirectoryView .card','#crmFreelancerDirectoryView .freelancer-card','#crmFreelancerDirectoryView .fl-card']},
   {route:'courses',pages:['pageCourses','pageCursos'],selectors:['article','.course-card','.curso-card','.card']},
   {route:'conteudos',pages:['pageConteudos','pageContent'],selectors:['article','.content-card','.conteudo-card','.card']},
@@ -43,14 +44,22 @@ function publicUrl(route){
  return u.href;
 }
 function itemInfo(card,route){
- const headline=card.querySelector(':scope > h3, :scope > h2, h3, h2, [data-job-title]');
+ const headline=card.querySelector(':scope > h3, :scope > h2, h3, h2, [data-job-title], .p-name');
  const name=trim(headline?.textContent||card.getAttribute('data-title')||NAMES[route]||'Conexão CRM',115);
  const url=new URL(publicUrl(route));
  if(name&&name!==NAMES[route])url.searchParams.set('cx_share',name);
  const id=trim(card.dataset.shareId||card.dataset.jobId||card.dataset.id||'',80);
  if(/^[\w-]{1,80}$/.test(id))url.searchParams.set('cx_id',id);
  // Dados privados nunca são serializados na URL; somente título público e ID público.
- return {title:name+' | Conexão CRM',text:'Encontrei '+name+' no Conexão CRM',url:url.href,
+ const kind=route==='vagas'?'vaga':route==='search'?'talento':route==='freelancers'?'freelancer':'pagina';
+ const shareUrl=new URL('/compartilhar/',ORIGIN);
+ if(kind!=='pagina'){
+   shareUrl.searchParams.set('tipo',kind);
+   shareUrl.searchParams.set('titulo',name);
+ }
+ // O link público não contém telefone, e-mail, URL de rede social nem dados privados.
+ return {title:name+' | Conexão CRM',text:(route==='search'?'Conheça o perfil Open to Work de ':'Encontrei ')+name+' no Conexão CRM',
+   url:url.href,previewUrl:kind==='pagina'?url.href:shareUrl.href,
    apply:route==='vagas'?safeExternal(card.querySelector('.crm-job-clean-apply[href]')?.href):''};
 }
 function safeExternal(value){
@@ -61,7 +70,7 @@ function pageInfo(){
  if(!ROUTES[route]||['vagas-salvas','meus-eventos'].includes(route))
    return {title:'Conheça o Conexão CRM',text:'Vem conhecer a comunidade Conexão CRM',url:ORIGIN+'/'};
  return {title:(NAMES[route]||'Conexão CRM')+' | Conexão CRM',
-   text:'Conheça '+(NAMES[route]||'a comunidade')+' no Conexão CRM',url:publicUrl(route)};
+   text:'Conheça '+(NAMES[route]||'a comunidade')+' no Conexão CRM',url:publicUrl(route),previewUrl:publicUrl(route)};
 }
 function closePanel(){
  if(!panel)return;
@@ -110,8 +119,13 @@ function showPanel(button,info){
  panel.append(h,small);
  panel.append(
   makeAction('WhatsApp',()=>{openSafe('https://wa.me/?text='+encodeURIComponent(sharingText(info)));closePanel();}),
-  makeAction('LinkedIn',()=>{openSafe('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(info.url));closePanel();}),
-  makeAction('Copiar link',()=>{void copyText(info.url);closePanel();})
+  makeAction('LinkedIn',()=>{
+    // LinkedIn lê Open Graph do HTML estático e leve, não do app pesado client-side.
+    openSafe('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(info.previewUrl||info.url));
+    closePanel();
+  }),
+  makeAction('Copiar link',()=>{void copyText(info.url);closePanel();}),
+  makeAction('Copiar texto da publicação',()=>{void copyText(sharingText(info));closePanel();})
  );
  if(typeof navigator.share==='function')
    panel.append(makeAction('Mais opções',async()=>{closePanel();try{await navigator.share({title:info.title,text:info.text,url:info.url});}catch(e){if(e?.name!=='AbortError')notice('Não foi possível compartilhar');}}));
@@ -128,7 +142,7 @@ function createButton(label,info,cls){
  const btn=document.createElement('button');
  btn.type='button';btn.className=cls;btn.setAttribute('aria-label',label);
  btn.setAttribute('aria-haspopup','dialog');btn.setAttribute('aria-expanded','false');
- btn.innerHTML=ICON+'<span>Compartilhar</span>';
+ btn.innerHTML=ICON+'<span class="cx-share-label">Compartilhar</span>';
  btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();showPanel(btn,info());});
  return btn;
 }
@@ -150,8 +164,8 @@ function installCards(){
   for(const card of cards.slice(0,250)){
    if(card.matches('.crm-topic-card,.cx-share-panel')||card.closest('.cx-share-panel'))continue;
    if(card.querySelector('.cx-share-holder > .cx-share-card'))continue;
-   if(!card.querySelector('h3,h2,[data-job-title]'))continue;
-   const btn=createButton('Compartilhar '+(NAMES[list.route]||'item'),()=>itemInfo(card,list.route),'cx-share-card');
+   if(!card.querySelector('h3,h2,[data-job-title],.p-name'))continue;
+   const btn=createButton('Compartilhar '+(NAMES[list.route]||'item'),()=>itemInfo(card,list.route),list.route==='search'?'cx-share-card cx-share-talent':'cx-share-card');
    const holder=document.createElement('div');holder.className='cx-share-holder';holder.append(btn);
    if(list.route==='vagas'){
     (card.querySelector('.crm-job-clean-footer')||card).append(holder);
@@ -170,7 +184,7 @@ function locateSharedItem(){
  if(!list)return;
  const root=rootFor(r,list.pages);if(!root)return;
  for(const card of root.querySelectorAll(list.selectors.join(','))){
-   const h=card.querySelector('h3,h2,[data-job-title]');
+   const h=card.querySelector('h3,h2,[data-job-title],.p-name');
    if(h&&trim(h.textContent,140).toLocaleLowerCase('pt-BR')===normalized){
     if(card.dataset.cxShareLocated)return;
     card.dataset.cxShareLocated='1';
@@ -186,11 +200,16 @@ function installMobile(){
  const btn=createButton('Compartilhar esta página',pageInfo,'cx-share-mobile');
  btn.id='cx-share-mobile';document.body.append(btn);
 }
-function update(){installSidebar();installMobile();installCards();locateSharedItem();}
+function update(){installSidebar();installCards();locateSharedItem();}
 function schedule(){if(timer)return;timer=setTimeout(()=>{timer=0;update();},170);}
 function install(){
  update();
- new MutationObserver(schedule).observe(document.body,{subtree:true,childList:true});
+ // Observar apenas LISTAS que substituem cards. Nunca observar o body inteiro,
+ // pois a inserção de botões de share cria novas mutações e pode travar a UI.
+ for(const id of ['vagasContainerHub','searchResults','freelancerResults']){
+   const list=document.getElementById(id);
+   if(list)new MutationObserver(schedule).observe(list,{childList:true,subtree:false});
+ }
  document.addEventListener('click',event=>{if(panel&&!panel.contains(event.target)&&!event.target.closest?.('.cx-share-card,.cx-share-nav'))closePanel();},true);
  document.addEventListener('keydown',event=>{if(event.key==='Escape')closePanel();},true);
  window.addEventListener('popstate',()=>{closePanel();schedule();});
