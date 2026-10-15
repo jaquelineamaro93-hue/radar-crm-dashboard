@@ -56,6 +56,7 @@ function itemInfo(card,route){
  if(kind!=='pagina'){
    shareUrl.searchParams.set('tipo',kind);
    shareUrl.searchParams.set('titulo',name);
+   if(id&&/^[\w-]{1,80}$/.test(id))shareUrl.searchParams.set('id',id);
  }
  // O link público não contém telefone, e-mail, URL de rede social nem dados privados.
  return {title:name+' | Conexão CRM',text:(route==='search'?'Conheça o perfil Open to Work de ':'Encontrei ')+name+' no Conexão CRM',
@@ -84,9 +85,9 @@ function notice(message){
  el.textContent=message;
  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.remove(),2500);
 }
-async function copyText(value){
+async function copyText(value,successMessage='Link copiado'){
  try{
-  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);notice('Link copiado');return;}
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);notice(successMessage);return;}
  }catch{}
  const input=document.createElement('textarea');
  input.value=value;input.style.cssText='position:fixed;left:-9999px;top:0';
@@ -94,7 +95,7 @@ async function copyText(value){
  let copied=false;
  try{copied=document.execCommand('copy');}catch{}
  input.remove();
- notice(copied?'Link copiado':'Não foi possível copiar. Use o endereço exibido.');
+ notice(copied?successMessage:'Não foi possível copiar. Use o endereço exibido.');
  if(!copied)window.prompt('Copie o link:',value);
 }
 function openSafe(url){window.open(url,'_blank','noopener,noreferrer');}
@@ -119,8 +120,10 @@ function showPanel(button,info){
  panel.append(h,small);
  panel.append(
   makeAction('WhatsApp',()=>{openSafe('https://wa.me/?text='+encodeURIComponent(sharingText(info)));closePanel();}),
-  makeAction('LinkedIn',()=>{
-    // LinkedIn lê Open Graph do HTML estático e leve, não do app pesado client-side.
+  makeAction('LinkedIn · copiar texto e abrir',()=>{
+    // O compartilhador oficial do LinkedIn não pré-preenche texto livre na publicação.
+    // Copiar na mesma interação mantém título, candidatura e link prontos para colar.
+    void copyText(sharingText(info),'Texto da vaga copiado. Cole na publicação do LinkedIn');
     openSafe('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(info.previewUrl||info.url));
     closePanel();
   }),
