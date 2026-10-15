@@ -46,10 +46,10 @@ function create(){
  '<button type="button" class="cx-xp-secondary">Agora não</button></div>';
  document.body.append(dialog);
  dialog.querySelector('[data-close]').addEventListener('click',()=>close());
- dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){track('cta',{destination:'rankings'});close();location.assign('/rankings/');}else{track('dismissed');close();}});
+ dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){track('cta',{destination:'rankings'});close();if(typeof crmNavigate==='function')crmNavigate('xp-rankings');else location.assign('/#xp-rankings');}else{track('dismissed');close();}});
  dialog.querySelector('.cx-xp-back').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
  dialog.querySelector('.cx-xp-primary').addEventListener('click',()=>{
-  if(step===STEPS.length-1){track('cta',{destination:'avatar'});close();location.assign('/avatar-studio/');return;}
+  if(step===STEPS.length-1){track('cta',{destination:'avatar'});close();if(typeof crmNavigate==='function')crmNavigate('xp-avatar');else location.assign('/#xp-avatar');return;}
   step++;render();track('step_viewed');
  });
  dialog.addEventListener('close',()=>{markSeen();document.body.classList.remove('cx-xp-tour-open');});
@@ -108,8 +108,7 @@ function init(){
   mut=new MutationObserver(()=>{if(!logged.hidden){setTimeout(()=>void maybeShow(),850);}});
   mut.observe(logged,{attributes:true,attributeFilter:['hidden']});
  }
- window.addEventListener('focus',()=>{if(signedUser())void maybeShow();});
- window.addEventListener('pageshow',()=>{if(signedUser())void maybeShow();});
+ // Avoid refetching authentication on every focus, page return or tab switch.
  setTimeout(()=>void maybeShow(),1350);
 }
 window.CXXPTour={show:()=>open(true),maybeShow};
