@@ -75,7 +75,7 @@
   if(!document.getElementById('cx-xp-onboarding-runtime')){
     const script=document.createElement('script');
     script.id='cx-xp-onboarding-runtime';
-    script.src='/assets/xp-onboarding.js?v=20261015-2';
+    script.src='/assets/xp-onboarding.js?v=20261015-3';
     script.defer=true;
     document.head.appendChild(script);
   }
