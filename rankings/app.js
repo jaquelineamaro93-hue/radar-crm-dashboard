@@ -119,6 +119,20 @@ async function loadUserSettings(){
  if(!data.open_to_work)$('skillForm').querySelector('p').textContent='Ative seu perfil Open to Work e torne-o visível no diretório para escolher suas habilidades';
  $('engagementOptin').checked=!!data.ranking_enabled;
 }
+async function loadSheetOverview(){
+ const label=$('cxSheetBridgeStatus');
+ if(!label||!db)return;
+ try{
+  const {data,error}=await db.rpc('crm_xp_otw_overview');
+  if(error||!data)throw error||new Error('no data');
+  const total=Math.max(0,Number(data.registered)||0);
+  const synced=Math.max(0,Number(data.synced)||0);
+  const linked=Math.max(0,Number(data.verified_links)||0);
+  label.textContent='Diretório Open to Work conectado: '+total.toLocaleString('pt-BR')+
+     ' profissionais · '+synced.toLocaleString('pt-BR')+' sincronizados · '+
+     linked.toLocaleString('pt-BR')+' vínculos verificados';
+ }catch{label.textContent='Conheça também os profissionais do diretório Open to Work';}
+}
 async function boot(){
  if(!window.supabase?.createClient){$('status').textContent='Não foi possível carregar a conexão';return;}
  db=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -127,7 +141,7 @@ async function boot(){
  user=auth.data.user;
  const verify=await db.rpc('crm_is_admin');admin=!verify.error&&verify.data===true;
  $('adminPanel').hidden=!admin;
- void loadUserSettings();void refresh();
+ void loadUserSettings();void loadSheetOverview();void refresh();
 }
 document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{kind=b.dataset.kind;void refresh();}));
 $('refresh').addEventListener('click',()=>void refresh());
