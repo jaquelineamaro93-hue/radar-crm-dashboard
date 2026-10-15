@@ -47,19 +47,22 @@
       ranking.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
       ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings <small style="opacity:.65;font-size:10px">prévia</small>';
     }
+    const replay=document.getElementById('cxXpReplay');
     const adminNav=document.getElementById('crmAdminNav');
     const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
     const admin=verified&&adminNav&&!adminNav.hidden&&adminNav.parentElement===nav;
     if(admin){
-      if(section.previousElementSibling!==adminNav||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking)
-        adminNav.after(section,avatar,ranking);
-    }else if(nav.firstElementChild!==section||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking){
-      nav.prepend(section,avatar,ranking);
+      if(section.previousElementSibling!==adminNav||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay))
+        adminNav.after(section,avatar,ranking,...(replay?[replay]:[]));
+    }else if(nav.firstElementChild!==section||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay)){
+      nav.prepend(section,avatar,ranking,...(replay?[replay]:[]));
     }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncXpLinks,{once:true});
   else syncXpLinks();
   document.addEventListener('crm:admin-ready',syncXpLinks);
+  window.addEventListener('focus',syncXpLinks);
+  document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
   // Auth settles asynchronously; do not attach an unbounded MutationObserver to the sidebar.
   let xpNavChecks=0;
   const xpNavInterval=setInterval(()=>{syncXpLinks();if(++xpNavChecks>=20)clearInterval(xpNavInterval);},900);
