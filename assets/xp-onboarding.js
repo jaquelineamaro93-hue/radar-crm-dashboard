@@ -94,7 +94,7 @@ function replayLink(){
  const btn=document.createElement('button');
  btn.type='button';btn.id='cxXpReplay';btn.className='tab-btn';
  btn.style.cssText='display:flex;align-items:center;gap:9px;box-sizing:border-box;width:100%;font-size:12px;opacity:.76';
- btn.innerHTML='<span aria-hidden="true" style="font-size:17px;color:#fda56d">✧</span> Conhecer o Conexão XP';
+ btn.innerHTML='<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fda56d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 17 .6 1.5L21 19l-1.4.5L19 21l-.6-1.5L17 19l1.4-.5L19 17Z"/></svg> Conhecer o Conexão XP';
  btn.addEventListener('click',()=>{if(signedUser())open(true);});
  const link=document.getElementById('crmAvatarStudioLink');
  if(link)link.after(btn);else nav.append(btn);
