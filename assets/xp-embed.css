@@ -5,10 +5,12 @@ body.cx-xp-embedded .cx-return-bar,body.cx-xp-embedded .breadcrumbs,
 body.cx-xp-embedded .bread,body.cx-xp-embedded .studio-shortcuts,
 body.cx-xp-embedded footer{display:none!important}
 body.cx-xp-embedded main{max-width:1250px!important;padding:18px 12px 30px!important;margin:0 auto!important}
-body.cx-xp-embedded #content,body.cx-xp-embedded #studio{min-height:70vh}
+body.cx-xp-embedded #content,body.cx-xp-embedded #studio{min-height:560px}
 body.cx-xp-embedded .hero{margin-top:0}
 body.cx-xp-embedded .intro{margin-top:0}
 @media(max-width:700px){
  body.cx-xp-embedded main{padding:14px 9px 35px!important}
  body.cx-xp-embedded .intro h1,body.cx-xp-embedded .hero h1{font-size:30px}
 }
+
+body.cx-xp-embedded{overflow-x:hidden!important}body.cx-xp-embedded .skip{display:none!important}
