@@ -26,10 +26,33 @@
     document.head.appendChild(script);
   }
 
-  // Conexão XP: two neighboring destinations; member first, admin below Administração.
+  // Public-facing team belongs to Comunidade. Editing is exclusive to Administração.
+  function syncTeamNavigation(nav){
+    const groups=document.getElementById('navComunidade');
+    if(groups&&groups.parentElement===nav){
+      let publicLink=document.getElementById('crmTeamPublicNav');
+      if(!publicLink){
+        publicLink=document.createElement('a');
+        publicLink.id='crmTeamPublicNav';publicLink.className='tab-btn';
+        publicLink.href='/quem-faz/';
+        publicLink.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+        publicLink.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M2 20v-2a6 6 0 0 1 12 0v2M17 9a3 3 0 1 0-2-5M17 14a5 5 0 0 1 5 5v1"/></svg></span>Quem Faz';
+      }
+      if(groups.nextElementSibling!==publicLink)groups.after(publicLink);
+    }
+    const teamAdmin=document.getElementById('crmTeamAdminNav');
+    if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
+      teamAdmin.dataset.cxTeamAdminEdited='1';
+      teamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></span>Gerenciar equipe';
+      teamAdmin.onclick=()=>{window.location.href='/quem-faz/?gestao=1';};
+    }
+  }
+
+  // Conexão XP is for the member's Avatar, Rankings and XP features, never institutional team editing.
   function syncXpLinks(){
     const nav=document.querySelector('#view-logada .crm-nav-items')||document.querySelector('.crm-nav-items');
     if(!nav)return;
+    syncTeamNavigation(nav);
     let section=document.getElementById('crmXpSection')||
       [...nav.children].find(x=>x.classList?.contains('crm-nav-section')&&x.textContent.trim()==='Conexão XP');
     if(!section){section=document.createElement('span');section.className='crm-nav-section';section.textContent='Conexão XP';}
@@ -52,8 +75,12 @@
     const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
     const admin=verified&&adminNav&&!adminNav.hidden&&adminNav.parentElement===nav;
     if(admin){
-      if(section.previousElementSibling!==adminNav||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay))
-        adminNav.after(section,avatar,ranking,...(replay?[replay]:[]));
+      const teamNav=document.getElementById('crmTeamAdminNav');
+      const hasTeam=teamNav&&teamNav.parentElement===nav&&!teamNav.hidden;
+      if(hasTeam&&adminNav.nextElementSibling!==teamNav)adminNav.after(teamNav);
+      const afterAdmin=hasTeam?teamNav:adminNav;
+      if(section.previousElementSibling!==afterAdmin||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay))
+        afterAdmin.after(section,avatar,ranking,...(replay?[replay]:[]));
     }else if(nav.firstElementChild!==section||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay)){
       nav.prepend(section,avatar,ranking,...(replay?[replay]:[]));
     }
