@@ -27,7 +27,7 @@ const radarUx=read('assets/radar-ux.js');
 const radarCss=read('assets/radar-ux.css');
 assert(html.includes('class="section-head crm-radar-header"'),'Radar must render its header CTA without JavaScript insertion');
 assert(html.includes('class="crm-add-community-job" aria-label="Adicionar uma vaga ao Radar"'),'Add job action must be visible beside Radar heading');
-assert(html.includes('/assets/radar-ux.js?v=20261014-compact2')&&html.includes('/assets/radar-ux.css?v=20261014-baby-yellow1'),'Radar compact assets must load with cache invalidation');
+assert(html.includes('/assets/radar-ux.js?v=20261014-compact2')&&html.includes('/assets/radar-ux.css?v=20261014-no-flash1'),'Radar compact assets must load with cache invalidation');
 assert(radarUx.includes("const visibleIds=['filtro-categoria','filtro-cargo','filtro-modalidade']"),'Primary filters stay visible');
 assert(radarUx.includes("if(el.id==='filtro-ordem-hub')"),'Default ordering must not expand advanced filters');
 assert(radarCss.includes('.crm-radar-filterbox:not(.is-expanded) .crm-filter-extra'),'Secondary filters must collapse');
@@ -45,11 +45,29 @@ assert(!html.includes("'Encerrada':'A verificar'"),
   'Unverified jobs must not be mislabeled as confirmed or clutter cards');
 assert(!html.includes('id="crmRadarArchive"'),
   'Closed vacancies must not be shown in an archive on the Radar page');
-assert(html.includes('Vagas encontradas nos últimos 14 dias'),
-  'Unverified vacancies must not be asserted to be open and confirmed');
+assert(!html.includes('<h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>'),
+  'Redundant 14-day jobs heading must not occupy screen space');
 assert(radarCss.includes('background:#fff1b5!important')&&radarCss.includes('color:#4a3526!important')&&radarCss.includes('border-radius:13px!important'),
   'Candidatar must retain baby-yellow, dark brown text and rounded corners');
 assert(radarCss.includes('.crm-job-clean-apply')&&radarCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),
   'Lightweight card presentation and bottom CTA must be responsive');
+
+
+assert(html.includes('let crmRadarRequestInFlight=false;')&&html.includes('let crmRadarLastLoadedAt=0;'),
+  'Radar must dedupe requests and keep recent results cached');
+assert(html.includes('if(!keepCards)container.innerHTML ='),
+  'Filtering and refresh should preserve existing cards without loading flash');
+assert(!html.includes("if(tab==='vagas'){ carregarVagasHub();"),
+  'Returning to Radar must not start an unconditional fetch');
+assert(html.includes("document.hidden||!document.getElementById('pageVagas')?.classList.contains('active')"),
+  'Background updates should run only when Radar is visible');
+assert(html.includes("if(route==='freelancers' && (!FREELANCERS.length"),
+  'Freelancer data must not reload on every navigation');
+assert(html.includes("if(e.detail>0)")&&html.includes("if(tapped)tapped.blur();"),
+  'Pointer navigation must clear stale focus while preserving keyboard focus');
+assert(html.includes("crmToggleMenu(false);window.scrollTo(0,0);"),
+  'Route switch should not animate the previous page into view');
+assert(html.includes('if(renderSeq!==crmVagasRenderSeq)return;'),
+  'Old job requests must not overwrite newer results');
 
 console.log('PASS community isolation: separate tables, view+RLS, secure moderation, preservation of bot and saved jobs');
