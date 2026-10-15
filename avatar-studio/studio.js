@@ -5,7 +5,7 @@ const c=window.CXAvatarCatalog;
 const $=id=>document.getElementById(id);
 const url='https://rwkbpafpniwzvlkfngag.supabase.co',key='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
 const fields=['hair_style','hair_color','skin','face','eyes','eye_color','lashes','mouth','presentation','shirt','bg','accessory','badge'];
-let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',pending=false,isAdmin=false;
+let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',hairTier='all',pending=false,isAdmin=false;
 const detail={
  hair_style:'Escolha uma textura e depois o penteado',hair_color:'Todas as cores podem ser combinadas com qualquer cabelo',
  skin:'Todos os tons de pele são gratuitos',face:'Escolha o formato que mais combina com você',
@@ -23,7 +23,7 @@ function owns(field,item){
 }
 function catalogItems(){
  const items=c.catalogs[category]||[];
- return category==='hair_style'?items.filter(item=>item.group===group):items;
+ return category==='hair_style'?items.filter(item=>item.group===group&&(hairTier==='all'||(hairTier==='free'&&item.cost===0)||(hairTier==='coins'&&typeof item.cost==='number'&&item.cost>0)||(hairTier==='special'&&item.cost===null))):items;
 }
 function updateAvatar(){
  $('avatarPreview').innerHTML=c.renderSvg(draft);
@@ -45,6 +45,8 @@ function render(){
  $('categoryTitle').textContent=c.labels[category];
  $('categoryIntro').textContent=detail[category];
  $('hairGroups').hidden=category!=='hair_style';
+ const hairFilters=document.getElementById('hairFilters');
+ if(hairFilters){hairFilters.hidden=category!=='hair_style';if(category==='hair_style')hairFilters.querySelectorAll('button').forEach(b=>{const on=b.dataset.hairTier===hairTier;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
  if(category==='hair_style'){
   $('hairGroups').replaceChildren(...c.groups.map(([id,label])=>{
    const b=tab(label,id,group===id);b.dataset.hairGroup=id;delete b.dataset.category;return b;
@@ -53,7 +55,7 @@ function render(){
  const items=catalogItems();
  $('categoryCount').textContent=items.length+' opções';
  const hairStats=document.getElementById('hairStats');
- if(hairStats){hairStats.hidden=category!=='hair_style';if(category==='hair_style')hairStats.textContent='6 grátis · 9 por Coins · 3 conquistas';}
+ if(hairStats){hairStats.hidden=category!=='hair_style';if(category==='hair_style')hairStats.textContent='Por textura: 6 grátis · 9 por Coins · 3 conquistas';}
  const fragment=document.createDocumentFragment();
  for(const item of items){
   const button=document.createElement('button');
@@ -176,6 +178,7 @@ $('hairGroups').addEventListener('click',event=>{
  const button=event.target.closest('[data-hair-group]');if(!button)return;
  group=button.dataset.hairGroup;render();
 });
+document.getElementById('hairFilters')?.addEventListener('click',event=>{const b=event.target.closest('[data-hair-tier]');if(!b)return;hairTier=b.dataset.hairTier;render();});
 $('choices').addEventListener('click',event=>{
  const b=event.target.closest('[data-option]');if(!b||b.disabled)return;
  void choose(b.dataset.field,b.dataset.option);
