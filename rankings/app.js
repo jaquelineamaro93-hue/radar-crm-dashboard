@@ -5,6 +5,8 @@ const $=id=>document.getElementById(id);
 const URL='https://rwkbpafpniwzvlkfngag.supabase.co';
 const KEY='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
 let db=null,user=null,admin=false,kind='profissionais',entries=[],current=null;
+let requestedRecommendation=new URLSearchParams(location.search).get('recommend');
+if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestedRecommendation||''))requestedRecommendation=null;
 const details={
  profissionais:['Profissionais recomendados','Reconhecimento nas cinco habilidades escolhidas pelos próprios profissionais','recomendações','Profissionais ainda não receberam recomendações','Assim que alguém escolher suas habilidades no Open to Work, poderá receber recomendações reais aqui'],
  comunidade:['Comunidade engajada','Dias ativos e sessões registradas, com participação voluntária','pontos de participação','A comunidade ainda está formando o ranking','Ative sua participação abaixo para aparecer quando houver atividade contabilizada'],
@@ -123,6 +125,19 @@ async function refresh(){
   if(error)throw error;
   entries=Array.isArray(data)?data:[];
   render();
+  if(kind==='profissionais'&&requestedRecommendation){
+    const target=entries.find(person=>person.id===requestedRecommendation);
+    if(target&&user?.id!==target.id&&Array.isArray(target.skills)&&target.skills.length){
+      requestedRecommendation=null;
+      openSkills(target);
+    }else if(target&&user?.id===target.id){
+      requestedRecommendation=null;
+      notice('Você não pode recomendar a si mesmo. Compartilhe o link com outro membro');
+    }else if(!target){
+      requestedRecommendation=null;
+      notice('Esse profissional ainda não está disponível para recomendações');
+    }
+  }
  }catch(e){$('status').textContent='Não foi possível carregar agora. Tente atualizar';$('podium').replaceChildren();$('rows').replaceChildren();}
 }
 function openSkills(item){
