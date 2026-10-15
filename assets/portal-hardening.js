@@ -26,22 +26,43 @@
     document.head.appendChild(script);
   }
 
-  // Conexão XP: member avatar editor lives on its own route
-  function addAvatarStudioLink(){
-    const nav=document.querySelector('.crm-nav-items');
-    if(!nav||document.getElementById('crmAvatarStudioLink'))return;
-    const section=document.createElement('span');
-    section.className='crm-nav-section';section.textContent='Conexão XP';
-    const link=document.createElement('a');
-    link.id='crmAvatarStudioLink';
-    link.href='/avatar-studio/';
-    link.className='tab-btn';
-    link.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
-    link.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="m17 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></span>Meu Avatar';
-    nav.append(section,link);
+  // Conexão XP: two neighboring destinations; member first, admin below Administração.
+  function syncXpLinks(){
+    const nav=document.querySelector('#view-logada .crm-nav-items')||document.querySelector('.crm-nav-items');
+    if(!nav)return;
+    let section=document.getElementById('crmXpSection')||
+      [...nav.children].find(x=>x.classList?.contains('crm-nav-section')&&x.textContent.trim()==='Conexão XP');
+    if(!section){section=document.createElement('span');section.className='crm-nav-section';section.textContent='Conexão XP';}
+    section.id='crmXpSection';
+    let avatar=document.getElementById('crmAvatarStudioLink');
+    if(!avatar){
+      avatar=document.createElement('a');avatar.id='crmAvatarStudioLink';avatar.href='/avatar-studio/';
+      avatar.className='tab-btn';avatar.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+      avatar.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Meu Avatar';
+    }
+    let ranking=document.getElementById('crmXpRankingLink');
+    if(!ranking){
+      ranking=document.createElement('a');ranking.id='crmXpRankingLink';
+      ranking.href='/conexao-xp-lab/#hall';ranking.className='tab-btn';
+      ranking.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+      ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings <small style="opacity:.65;font-size:10px">prévia</small>';
+    }
+    const adminNav=document.getElementById('crmAdminNav');
+    const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
+    const admin=verified&&adminNav&&!adminNav.hidden&&adminNav.parentElement===nav;
+    if(admin){
+      if(section.previousElementSibling!==adminNav||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking)
+        adminNav.after(section,avatar,ranking);
+    }else if(nav.firstElementChild!==section||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking){
+      nav.prepend(section,avatar,ranking);
+    }
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addAvatarStudioLink,{once:true});
-  else addAvatarStudioLink();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncXpLinks,{once:true});
+  else syncXpLinks();
+  document.addEventListener('crm:admin-ready',syncXpLinks);
+  // Auth settles asynchronously; do not attach an unbounded MutationObserver to the sidebar.
+  let xpNavChecks=0;
+  const xpNavInterval=setInterval(()=>{syncXpLinks();if(++xpNavChecks>=20)clearInterval(xpNavInterval);},900);
 
   // Onboarding in the signed-in workspace, scoped to one viewing per member.
   if(!document.getElementById('cx-xp-onboarding-style')){
