@@ -4,12 +4,12 @@
 const c=window.CXAvatarCatalog;
 const $=id=>document.getElementById(id);
 const url='https://rwkbpafpniwzvlkfngag.supabase.co',key='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
-const fields=['hair_style','hair_color','skin','face','eyes','mouth','presentation','shirt','bg','accessory','badge'];
+const fields=['hair_style','hair_color','skin','face','eyes','eye_color','mouth','presentation','shirt','bg','accessory','badge'];
 let db=null,user=null,draft={...c.defaultConfig},saved={...c.defaultConfig},coins=null,unlocks=new Set(),category='hair_style',group='liso',pending=false,isAdmin=false;
 const detail={
  hair_style:'Escolha uma textura e depois o penteado',hair_color:'Todas as cores podem ser combinadas com qualquer cabelo',
  skin:'Todos os tons de pele são gratuitos',face:'Escolha o formato que mais combina com você',
- eyes:'Seis formas de representar o olhar',mouth:'Seu sorriso, sua expressão',
+ eyes:'Seis formas de representar o olhar',eye_color:'Escolha a cor dos olhos separadamente do formato',mouth:'Seu sorriso, sua expressão',
  presentation:'Opção visual independente de todos os traços físicos',
  shirt:'As frases aparecem na camiseta do personagem',bg:'Personalize o fundo do avatar',
  accessory:'Adicione seu toque pessoal',badge:'Conquistas aparecem no canto do avatar'
@@ -55,10 +55,10 @@ function render(){
  const fragment=document.createDocumentFragment();
  for(const item of items){
   const button=document.createElement('button');
-  button.className='choice'+(draft[category]===item.id?' selected':'')+(category==='hair_color'||category==='skin'?' color-opt':'');
+  button.className='choice'+(draft[category]===item.id?' selected':'')+(category==='hair_color'||category==='eye_color'||category==='skin'?' color-opt':'');
   button.type='button';button.dataset.option=item.id;button.dataset.field=category;
   button.setAttribute('aria-pressed',draft[category]===item.id?'true':'false');
-  if(category==='hair_color'||category==='skin'){
+  if(category==='hair_color'||category==='eye_color'||category==='skin'){
    const sw=document.createElement('span');sw.className='swatch';sw.style.backgroundColor=item.color;button.append(sw);
   }else if(category==='hair_style'){
    const preview=document.createElement('span');preview.className='choice-portrait';
