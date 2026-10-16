@@ -11,4 +11,5 @@ assert(html.includes('crmExperienceSubmitting'),'Botão de nota deve evitar dupl
 assert(html.includes("if(data?.ok!==true)"),'Não confirmar avaliação sem resposta positiva do banco');
 assert(html.includes("Number(localStorage.getItem(SNOOZE)||0)>Date.now()"),'Convite de newsletter deve respeitar adiamento');
 assert(html.includes("if(competingPrompt()||!CURRENT_USER?.id)return;"),'Newsletter não pode abrir sobre pesquisa');
+assert(html.includes("// Outro modal pode ter aberto durante a leitura assíncrona."),'Verificar exclusividade após resposta assíncrona');
 console.log('PASS experience feedback: auth sem perfil, estado de gravação e prompts exclusivos');

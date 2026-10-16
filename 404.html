@@ -9694,8 +9694,10 @@ async function newsletterPrompt(){
        e.currentTarget.disabled=false;
      }
    });
-   // Nenhuma outra pesquisa flutuante deve ficar sobre um diálogo.
-   window.crmRenderFloatingPrompts?.();
+   // O modal tem prioridade; nenhum aviso flutuante deve aparecer sobre ele.
+   document.getElementById('crmProfilePrompt')?.setAttribute('hidden','');
+   document.getElementById('crmExperiencePrompt')?.setAttribute('hidden','');
+   document.body.classList.remove('crm-profile-prompt-visible');
    dialog.showModal();
  }catch(error){console.warn('[Newsletter] convite',error?.code||error?.message)}
  finally{checking=false}
@@ -9793,6 +9795,12 @@ async function crmRenderFloatingPrompts(){
   if(showProfile)window.posthogTracker?.track('profile_completion_prompt_shown');
 
   const answered=await crmLoadExperienceAnswer();
+  // Outro modal pode ter aberto durante a leitura assíncrona.
+  if(document.querySelector('dialog[open]')){
+    experienceEl.hidden=true;profileEl.hidden=true;
+    document.body.classList.remove('crm-profile-prompt-visible');
+    return;
+  }
   if(CURRENT_USER?.id!==crmExperienceCheckUser)return;
   const showExperience=!showProfile&&!answered&&!crmPromptIsSnoozed('experience');
   experienceEl.hidden=!showExperience;
