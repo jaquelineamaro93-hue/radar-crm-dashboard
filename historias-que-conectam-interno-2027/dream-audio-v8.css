@@ -1,0 +1,16 @@
+/* Jardim dos Sonhos · soundtrack transport v8, intentionally separate from the awards */
+.garden-sound-dock{position:fixed;left:14px;bottom:15px;z-index:80;display:flex;align-items:center;gap:6px;padding:7px;background:rgba(6,17,37,.87);color:#f0fbff;border:1px solid rgba(179,243,228,.38);border-radius:22px;box-shadow:0 16px 44px rgba(0,0,0,.45),inset 0 0 24px rgba(144,228,206,.09);backdrop-filter:blur(15px);max-width:calc(100vw - 30px)}
+.garden-sound-dock::before{content:"";width:7px;height:7px;flex-shrink:0;background:#9bffcf;box-shadow:0 0 12px #8cffe3;border-radius:100px;margin:0 5px 0 8px;animation:garden-audio-breathe 2.6s ease-in-out infinite}
+.garden-sound-dock button{border:1px solid rgba(164,219,233,.23);background:rgba(255,255,255,.055);color:#fff8ee;border-radius:14px;min-height:36px;padding:9px 13px;font:700 11px/1.2 "DM Sans",sans-serif;white-space:nowrap}
+.garden-sound-dock button:hover{background:rgba(173,230,235,.17)}
+.garden-sound-dock.waiting-for-gesture #gardenSoundPlay{background:linear-gradient(115deg,#85f9df,#f0d2ab);color:#071b2c;box-shadow:0 0 21px rgba(117,242,210,.16)}
+.garden-sound-sep{width:1px;height:23px;background:rgba(255,255,255,.17)}
+.garden-sound-status{max-width:145px;color:#bcd6de;font-size:10px;line-height:1.35;letter-spacing:.02em}
+.garden-sound-fallback{position:fixed;z-index:81;bottom:80px;left:14px;width:min(350px,calc(100vw - 28px));border:1px solid #abd9ce85;border-radius:19px;padding:16px 17px;background:#0b1830f2;box-shadow:0 12px 42px #0008;color:#dff6ee;font:500 12px/1.55 "DM Sans",sans-serif}
+.garden-sound-fallback[hidden]{display:none!important}
+.garden-sound-fallback a{color:#a5f6e1;text-decoration:underline;text-underline-offset:3px}
+.garden-sound-fallback button{display:block;color:#071629;background:#b6ffdf;border:0;border-radius:12px;padding:10px 14px;margin-top:10px;cursor:pointer;font:800 11px "DM Sans",sans-serif}
+.garden-sound-fallback input{display:none}
+@keyframes garden-audio-breathe{50%{opacity:.5;box-shadow:0 0 4px #8cffe3}}
+@media(max-width:700px){.garden-sound-dock{left:10px;bottom:10px;padding:5px;gap:3px;border-radius:14px}.garden-sound-dock button{font-size:10px;padding:8px 10px;min-height:35px}.garden-sound-status{display:none}.garden-sound-fallback{left:10px;bottom:66px}}
+@media(prefers-reduced-motion:reduce){.garden-sound-dock::before{animation:none}}
