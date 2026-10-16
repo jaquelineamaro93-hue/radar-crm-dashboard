@@ -11,7 +11,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./dream-garden-v7.css?v=7">
+<link rel="stylesheet" href="./dream-audio-v8.css?v=8">
 <script src="./dream-garden-v7.js?v=7" defer></script>
+<script src="./dream-audio-v8.js?v=8" defer></script>
 </head>
 <body>
 <a href="#main" class="skip-link">Pular para os sonhos</a>
@@ -77,6 +79,19 @@
   </section>
  </main>
  <footer class="footer"><span>CONEXÃO CRM. · O FUTURO TEM NOME</span><span>Prévia interativa · sonhos ilustrativos · nenhuma informação enviada</span></footer>
+</div>
+<!-- A música fornecida é uma edição de 2m21. O player começa do início do arquivo. -->
+<audio id="gardenAmbientAudio" autoplay preload="auto" loop aria-hidden="true" src="./assets/sonhos-remix-maycon.mp3"></audio>
+<div class="garden-sound-dock" role="group" aria-label="Trilha de fundo do Jardim dos Sonhos">
+ <button type="button" id="gardenSoundPlay" aria-label="Tocar música do Jardim dos Sonhos" aria-pressed="false">▶ Tocar</button>
+ <span class="garden-sound-sep" aria-hidden="true"></span>
+ <button type="button" id="gardenSoundMute" aria-label="Silenciar a música" aria-pressed="false">🔊 Som</button>
+ <span class="garden-sound-status" id="gardenSoundStatus" aria-live="polite">Preparando música</span>
+</div>
+<div class="garden-sound-fallback" id="gardenSoundFallback" hidden>
+ <b>Amarelo, azul e branco · Maycon × Manokidrs Remix</b>
+ <p>O arquivo não está hospedado nesta versão. Você ainda pode ouvi-lo no <a href="https://www.palcomp3.com.br/MayconRutherford/anavitoria-rita-lee-amarelo-azul-e-branco-maycon-x-manokidrs-remix/" target="_blank" rel="noopener noreferrer">Palco MP3 do artista</a>, ou testar com seu MP3 neste navegador.</p>
+ <button type="button" id="gardenSoundPickFile">Selecionar MP3 para testar</button><input type="file" accept="audio/mpeg,.mp3" id="gardenSoundLocalFile" aria-label="Arquivo MP3 para reprodução local">
 </div>
 <div class="sound-control"><button type="button" class="sound-trigger" id="musicToggle" aria-expanded="false" aria-controls="musicPanel">♫ Música dos sonhos</button></div>
 <div class="sound-panel" id="musicPanel" role="region" aria-label="Escolha a música dos sonhos" hidden>
