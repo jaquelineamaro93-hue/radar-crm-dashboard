@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const html=fs.readFileSync('index.html','utf8');
+const fallback=fs.readFileSync('404.html','utf8');
+const schema=fs.readFileSync('supabase/migrations/20261015210000_experience_feedback_auth_user.sql','utf8');
+assert.equal(html,fallback,'Deep links devem acompanhar a home');
+assert(schema.includes('references auth.users(id) on delete cascade'),'Feedback deve referenciar a conta Auth, não o perfil');
+assert(!schema.includes('if not exists (select 1 from public.profiles'),'Cadastro de perfil não pode bloquear a nota');
+assert(html.includes("if(document.querySelector('dialog[open]'))"),'Avisos flutuantes não podem competir com modais');
+assert(html.includes('crmExperienceSubmitting'),'Botão de nota deve evitar duplo envio');
+assert(html.includes("if(data?.ok!==true)"),'Não confirmar avaliação sem resposta positiva do banco');
+assert(html.includes("Number(localStorage.getItem(SNOOZE)||0)>Date.now()"),'Convite de newsletter deve respeitar adiamento');
+assert(html.includes("if(competingPrompt()||!CURRENT_USER?.id)return;"),'Newsletter não pode abrir sobre pesquisa');
+console.log('PASS experience feedback: auth sem perfil, estado de gravação e prompts exclusivos');

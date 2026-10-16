@@ -9641,14 +9641,67 @@ document.addEventListener("DOMContentLoaded",()=>setTimeout(setup,0));document.a
 })();
 </script>
 <script>
+/* Inscrição newsletter: no máximo um convite por sessão, nunca sobre outros avisos. */
 (function(){
+'use strict';
 const KEY='crm_newsletter_prompt_v1';
-async function newsletterPrompt(){
- if(!CURRENT_USER)return; if(!authSb&&!authInitSB())return; if(localStorage.getItem(KEY)==='subscribed')return;
- try{const {data}=await authSb.from('crm_newsletter_subscriptions').select('status').eq('user_id',CURRENT_USER.id).maybeSingle();if(data?.status==='subscribed'){localStorage.setItem(KEY,'subscribed');return;}}catch(e){}
- setTimeout(()=>{if(document.getElementById('crmNewsletterPrompt'))return;const d=document.createElement('dialog');d.id='crmNewsletterPrompt';d.innerHTML='<div style="max-width:430px;padding:8px"><button type="button" data-nl-close style="float:right">×</button><p style="color:#f97316;font-weight:800">CONEXÃO CRM.</p><h2>Quer receber as novidades da comunidade?</h2><p>Receba conteúdos, pesquisas, eventos e oportunidades do universo de CRM por e-mail.</p><button type="button" data-nl-yes class="cx-primary">Quero receber a newsletter</button> <button type="button" data-nl-later>Agora não</button><p data-nl-status role="status"></p></div>';document.body.appendChild(d);d.showModal();const close=()=>{localStorage.setItem(KEY,'dismissed');d.close();d.remove()};d.querySelector('[data-nl-close]').onclick=close;d.querySelector('[data-nl-later]').onclick=close;d.querySelector('[data-nl-yes]').onclick=async e=>{e.currentTarget.disabled=true;const st=d.querySelector('[data-nl-status]');st.textContent='Inscrevendo…';const email=CURRENT_USER.email||'';const {error}=await authSb.from('crm_newsletter_subscriptions').upsert({user_id:CURRENT_USER.id,email,status:'subscribed',source:'post_login_prompt'},{onConflict:'user_id'});if(error){st.textContent='Não foi possível concluir agora.';e.currentTarget.disabled=false;return}localStorage.setItem(KEY,'subscribed');st.textContent='Inscrição realizada!';setTimeout(()=>{d.close();d.remove()},900)}} ,1800);
+const SNOOZE='crm_newsletter_prompt_snooze_until_v2';
+const TWO_WEEKS=14*24*60*60*1000;
+let checking=false,offeredThisSession=false;
+function competingPrompt(){
+ return !!document.querySelector('dialog[open],#crmProfilePrompt:not([hidden]),#crmExperiencePrompt:not([hidden]),#crmSurveyReminder:not([hidden])');
 }
-window.addEventListener('crm:auth-ready',newsletterPrompt);document.addEventListener('DOMContentLoaded',()=>{setTimeout(newsletterPrompt,2500);setTimeout(newsletterPrompt,6000)});
+async function newsletterPrompt(){
+ if(checking||offeredThisSession||!CURRENT_USER?.id)return;
+ if(!authSb&&!authInitSB())return;
+ try{
+   if(localStorage.getItem(KEY)==='subscribed'||Number(localStorage.getItem(SNOOZE)||0)>Date.now())return;
+ }catch{}
+ if(competingPrompt())return;
+ checking=true;
+ try{
+   const {data,error}=await authSb.from('crm_newsletter_subscriptions').select('status').eq('user_id',CURRENT_USER.id).maybeSingle();
+   if(error)return; // Não oferecer inscrição se não conseguimos consultar o status.
+   if(data?.status==='subscribed'){localStorage.setItem(KEY,'subscribed');return;}
+   if(competingPrompt()||!CURRENT_USER?.id)return;
+   offeredThisSession=true;
+   const dialog=document.createElement('dialog');
+   dialog.id='crmNewsletterPrompt';
+   dialog.innerHTML='<div style="max-width:430px;padding:8px"><button type="button" data-nl-close aria-label="Fechar convite" style="float:right">×</button><p style="color:#f97316;font-weight:800">CONEXÃO CRM.</p><h2>Quer receber as novidades da comunidade?</h2><p>Receba conteúdos, pesquisas, eventos e oportunidades do universo de CRM por e-mail.</p><button type="button" data-nl-yes class="cx-primary">Quero receber a newsletter</button> <button type="button" data-nl-later>Agora não</button><p data-nl-status role="status"></p></div>';
+   document.body.appendChild(dialog);
+   function dismiss(){
+     try{localStorage.setItem(KEY,'dismissed');localStorage.setItem(SNOOZE,String(Date.now()+TWO_WEEKS));}catch{}
+     dialog.close();dialog.remove();
+   }
+   dialog.querySelector('[data-nl-close]').addEventListener('click',dismiss);
+   dialog.querySelector('[data-nl-later]').addEventListener('click',dismiss);
+   dialog.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
+   dialog.querySelector('[data-nl-yes]').addEventListener('click',async e=>{
+     e.currentTarget.disabled=true;
+     const st=dialog.querySelector('[data-nl-status]');
+     st.textContent='Inscrevendo…';
+     try{
+       const {data:{session},error:sessionError}=await authSb.auth.getSession();
+       if(sessionError||!session?.user?.id)throw Error('Faça login novamente para receber a newsletter.');
+       const email=session.user.email||'';
+       const {error:saveError}=await authSb.from('crm_newsletter_subscriptions').upsert({user_id:session.user.id,email,status:'subscribed',source:'post_login_prompt'},{onConflict:'user_id'});
+       if(saveError)throw saveError;
+       localStorage.setItem(KEY,'subscribed');st.textContent='Inscrição realizada!';
+       setTimeout(()=>{dialog.close();dialog.remove()},900);
+     }catch(error){
+       console.warn('[Newsletter] inscrição',error?.code||error?.message);
+       st.textContent='Não foi possível concluir agora. Tente novamente.';
+       e.currentTarget.disabled=false;
+     }
+   });
+   // Nenhuma outra pesquisa flutuante deve ficar sobre um diálogo.
+   window.crmRenderFloatingPrompts?.();
+   dialog.showModal();
+ }catch(error){console.warn('[Newsletter] convite',error?.code||error?.message)}
+ finally{checking=false}
+}
+window.addEventListener('crm:auth-ready',newsletterPrompt);
+document.addEventListener('DOMContentLoaded',()=>setTimeout(newsletterPrompt,3200));
 })();
 </script>
 <div id="crm-floating-prompts">
@@ -9727,6 +9780,12 @@ async function crmRenderFloatingPrompts(){
   if(!CURRENT_USER){
     profileEl.hidden=true;experienceEl.hidden=true;document.body.classList.remove('crm-profile-prompt-visible');return;
   }
+  // Não competir por espaço com newsletter, login, perfil ou outro diálogo modal.
+  if(document.querySelector('dialog[open]')){
+    profileEl.hidden=true;experienceEl.hidden=true;
+    document.body.classList.remove('crm-profile-prompt-visible');
+    return;
+  }
   const incomplete=!CURRENT_PROFILE||!crmProfileComplete(CURRENT_PROFILE);
   const showProfile=incomplete&&!crmPromptIsSnoozed('profile')&&!document.getElementById('profileModalOverlay');
   profileEl.hidden=!showProfile;
@@ -9739,24 +9798,52 @@ async function crmRenderFloatingPrompts(){
   experienceEl.hidden=!showExperience;
   if(showExperience)window.posthogTracker?.track('experience_prompt_shown');
 }
+let crmExperienceSubmitting=false;
 async function crmSubmitExperienceRating(rating){
-  if(!CURRENT_USER?.id||!authSb)return;
+  if(crmExperienceSubmitting)return;
   const el=document.getElementById('crmExperiencePrompt');
-  el?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  if(!el)return;
+  let status=el.querySelector('[data-experience-save-status]');
+  if(!status){
+    status=document.createElement('p');
+    status.dataset.experienceSaveStatus='1';
+    status.setAttribute('role','status');
+    status.setAttribute('aria-live','polite');
+    status.className='crm-experience-save-status';
+    el.querySelector('.crm-rating-scale')?.after(status);
+  }
+  if(!authSb||!CURRENT_USER?.id){
+    status.textContent='Entre na sua conta para enviar sua avaliação.';
+    return;
+  }
+  const score=Number(rating);
+  if(!Number.isInteger(score)||score<1||score>5)return;
+  crmExperienceSubmitting=true;
+  el.querySelectorAll('button').forEach(b=>b.disabled=true);
+  status.textContent='Salvando sua avaliação…';
   try{
-    const score=Number(rating);
+    const {data:{session},error:sessionError}=await authSb.auth.getSession();
+    if(sessionError||!session?.access_token||session.user?.id!==CURRENT_USER.id){
+      throw Object.assign(new Error('Sua sessão expirou. Entre novamente para salvar a avaliação.'),{code:'SESSION_REQUIRED'});
+    }
     const {data,error}=await authSb.rpc('crm_submit_experience_feedback',{p_rating:score});
     if(error)throw error;
-    if(data?.ok===false)throw Error(data?.error||'Não foi possível salvar.');
-    crmExperienceHasAnswer=true;crmExperienceCheckUser=CURRENT_USER.id;
-    if(el)el.hidden=true;
+    if(data?.ok!==true)throw new Error('O serviço não confirmou o salvamento.');
+    crmExperienceHasAnswer=true;
+    crmExperienceCheckUser=CURRENT_USER.id;
+    status.textContent='Avaliação registrada. Obrigada!';
     window.posthogTracker?.track('experience_feedback_submitted',{rating:score});
-    window.crmInngageSyncExperience?.(CURRENT_USER,{answered:true,rating:score,updated_at:data?.updated_at||new Date().toISOString()});
-    if(typeof evToastMsg==='function')evToastMsg('Obrigada pela avaliação.','');
-  }catch(e){
-    console.error('crmSubmitExperienceRating',e);
-    if(typeof evToastMsg==='function')evToastMsg('Não foi possível salvar sua avaliação agora.','');
-    el?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    try{window.crmInngageSyncExperience?.(CURRENT_USER,{answered:true,rating:score,updated_at:data.updated_at||new Date().toISOString()})}catch{}
+    setTimeout(()=>{if(el)el.hidden=true;},700);
+  }catch(error){
+    console.warn('[CRM avaliação]',error?.code||'UNKNOWN',error?.message||'Falha');
+    status.textContent=error?.code==='SESSION_REQUIRED'||error?.status===401
+      ? 'Sua sessão expirou. Entre novamente para registrar a avaliação.'
+      : 'Não foi possível salvar. Verifique a conexão e tente novamente.';
+    // A pesquisa permanece aberta, a nota é reenviável e nenhum sucesso é inventado.
+  }finally{
+    crmExperienceSubmitting=false;
+    if(!crmExperienceHasAnswer)el.querySelectorAll('button').forEach(b=>b.disabled=false);
   }
 }
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
@@ -9767,5 +9854,14 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261015-1">
 <script defer src="/assets/push-preferences.js?v=20261015-1"></script>
+<style id="crm-survey-mobile-fix-20261015">
+.crm-experience-save-status{font-size:12px;line-height:1.4;color:#d4e6f8;margin:8px 0}
+@media(max-width:700px){
+ #crmExperiencePrompt{left:12px;right:12px;bottom:14px;width:auto;max-height:min(65dvh,520px);overflow:auto;padding:15px;z-index:1100}
+ #crmExperiencePrompt .crm-rating-row{display:flex;gap:8px}
+ #crmExperiencePrompt .crm-rating-row>button{min-width:0;flex:1}
+ #crmProfilePrompt{bottom:14px}
+}
+</style>
 </body>
 </html>
