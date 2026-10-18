@@ -3,7 +3,8 @@
  */
 (function(){
   'use strict';
-  const visibleIds=['filtro-categoria','filtro-cargo','filtro-modalidade'];
+  const visibleIds=['filtro-categoria','filtro-cargo','filtro-nivel','filtro-modalidade'];
+  const quickIds=['filtro-periodo-hub','filtro-ordem-hub'];
   function initFilters(){
     const select=document.getElementById('filtro-categoria');
     const grid=select?.parentElement?.parentElement;
@@ -18,10 +19,16 @@
     box.classList.add('crm-radar-filterbox');
     grid.classList.add('crm-radar-fields');
     action.classList.add('crm-radar-actions');
+    const quick=document.createElement('div');
+    quick.className='crm-radar-quick';
+    quick.setAttribute('aria-label','Período e ordenação');
     for(const item of children){
       const primary=visibleIds.some(id=>item.querySelector('#'+id));
-      if(!primary)item.classList.add('crm-filter-extra');
+      const isQuick=quickIds.some(id=>item.querySelector('#'+id));
+      if(isQuick){quick.append(item);item.classList.remove('crm-filter-extra');}
+      else if(!primary)item.classList.add('crm-filter-extra');
     }
+    box.insertBefore(quick,action);
     const toggle=document.createElement('button');
     toggle.type='button';
     toggle.id='crm-radar-more-filters';
@@ -48,7 +55,7 @@
     else action.append(toggle);
     // Quando filtros avançados já têm valores, mantenha-os visíveis.
     for(const el of grid.querySelectorAll('.crm-filter-extra input,.crm-filter-extra select')){
-      if(el.id==='filtro-ordem-hub') {if(el.value && el.value!=='recente') {setExpanded(true);break;} continue;}
+      if(el.id==='filtro-ordem-hub'||el.id==='filtro-periodo-hub')continue;
       if(el.value && el.value!=='Todas'){setExpanded(true);break;}
     }
   }
