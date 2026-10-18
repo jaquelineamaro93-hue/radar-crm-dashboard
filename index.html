@@ -1259,7 +1259,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details{margin:0 0 10px;color:var(--muted);font-size:12px}
 #vagasContainerHub .crm-job-details summary{color:var(--accent);cursor:pointer}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
-</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261014-no-flash1">
+</style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261018-filters4">
 <link rel="stylesheet" href="/assets/freelancers-subnav.css?v=20261014-1">
 <link rel="stylesheet" href="/assets/share-everything.css?v=20261015-og1">
 <style id="cx-xp-shell-style">
@@ -2630,9 +2630,20 @@ crmShowSurveyReminder();
           <div>
             <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Ordenar por</label>
             <select id="filtro-ordem-hub" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" onchange="aplicarFiltrosVagas()">
-              <option value="recente">Mais Recentes</option>
+              <option value="recente">Publicadas recentemente</option>
+              <option value="relevancia">Mais relevantes para a busca</option>
               <option value="empresa">Empresa (A-Z)</option>
               <option value="cargo">Cargo (A-Z)</option>
+            </select>
+          </div>
+          <div>
+            <label for="filtro-periodo-hub" style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Publicada em</label>
+            <select id="filtro-periodo-hub" aria-label="Período de publicação" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; background:var(--panel); color:var(--text);" onchange="crmSearchJobs()">
+              <option value="1">Últimas 24 horas</option>
+              <option value="7">Últimos 7 dias</option>
+              <option value="14" selected>Últimos 14 dias</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="all">Todas as datas</option>
             </select>
           </div>
           <div>
@@ -3898,8 +3909,80 @@ function initVagasSupabase() {
   return vagasSb !== null;
 }
 
+function crmRadarPublicationCutoff(){
+ const value=document.getElementById('filtro-periodo-hub')?.value||'14';
+ if(value==='all')return null;
+ const days=Number(value);
+ return [1,7,14,30].includes(days)?new Date(Date.now()-days*86400000).toISOString():new Date(Date.now()-14*86400000).toISOString();
+}
+function crmRadarNormalized(value){
+ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR')
+   .replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+}
+function crmRadarPublishedMillis(job){
+ const time=Date.parse(job?.published_at||'');
+ return Number.isFinite(time)?time:0;
+}
+function crmRadarUniqueKey(job){
+ const title=crmRadarNormalized(job?.title||job?.cargo);
+ const company=crmRadarNormalized(job?.company||job?.empresa);
+ const location=crmRadarNormalized(job?.location||job?.regiao);
+ if(title&&company)return title+'|'+company+'|'+location;
+ const rawUrl=job?.url||job?.link||job?.job_url;
+ try{const u=new URL(rawUrl);return u.hostname.toLowerCase()+u.pathname.replace(/\/+$/,'');}
+ catch{return String(job?.id||job?.job_id||'')||title+'|'+location;}
+}
+function crmRadarRelevance(job){
+ const search=crmRadarNormalized(document.getElementById('filtro-cargo')?.value);
+ const cat=document.getElementById('filtro-categoria')?.value||'';
+ const title=crmRadarNormalized(job?.title||job?.cargo);
+ const desc=crmRadarNormalized(job?.descricao_resumo||job?.description).slice(0,700);
+ const tags=crmRadarNormalized([job?.categoria_slug,job?.category].join(' '));
+ const company=crmRadarNormalized(job?.company||job?.empresa);
+ let score=0;
+ if(search){
+   if(title===search)score+=45;
+   else if(title.includes(search))score+=28;
+   for(const word of search.split(' ').filter(w=>w.length>1)){
+     if(title.split(' ').includes(word))score+=10;
+     else if(title.includes(word))score+=5;
+     if(company.includes(word))score+=2;
+     if(desc.includes(word))score+=1;
+   }
+ }
+ if(cat){
+   const group={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],revops:['revops','salesops'],designer:['product-design'],data:['data-analytics','ai','tech','qa','product-management']}[cat]||[];
+   if(group.some(t=>tags.includes(crmRadarNormalized(t))))score+=6;
+ }
+ return score;
+}
+function crmRadarSortUnique(jobs,sortMode){
+ const rows=(jobs||[]).filter(j=>String(j?.availability_status||'').toLowerCase()!=='closed');
+ const recent=(a,b)=>crmRadarPublishedMillis(b)-crmRadarPublishedMillis(a);
+ rows.sort((a,b)=>{
+   if(sortMode==='relevancia'){
+     const difference=crmRadarRelevance(b)-crmRadarRelevance(a);
+     if(difference)return difference;
+   }else if(sortMode==='empresa'){
+     const c=String(a.company||a.empresa||'').localeCompare(String(b.company||b.empresa||''),'pt-BR');
+     if(c)return c;
+   }else if(sortMode==='cargo'){
+     const c=String(a.title||a.cargo||'').localeCompare(String(b.title||b.cargo||''),'pt-BR');
+     if(c)return c;
+   }
+   return recent(a,b)||String(a.id||'').localeCompare(String(b.id||''));
+ });
+ const seen=new Set();
+ return rows.filter(job=>{const key=crmRadarUniqueKey(job);if(seen.has(key))return false;seen.add(key);return true;});
+}
+
 async function carregarVagasHub() {
   if(crmRadarRequestInFlight)return;
+  const activeFilters=['categoria','cargo','empresa','nivel','plataforma','estado','municipio','modalidade']
+    .some(n=>Boolean(document.getElementById('filtro-'+n)?.value));
+  if(activeFilters||document.getElementById('filtro-ordem-hub')?.value!=='recente'){
+    return crmSearchJobs();
+  }
   crmRadarRequestInFlight=true;
   const renderSeq=++crmVagasRenderSeq;
   const container = document.getElementById('vagasContainerHub');
@@ -3915,14 +3998,11 @@ async function carregarVagasHub() {
     }
 
     console.log('[VAGAS] Iniciando consulta de vagas...');
-    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
-    const { data, error, count } = await vagasSb
-      .from('crm_radar_jobs_public')
-      .select('*', { count: 'exact' })
-      .neq('availability_status', 'closed')
-      .gte('published_at',cutoff14)
-      .order('published_at', { ascending: false })
-      .limit(1000);
+    const cutoff=crmRadarPublicationCutoff();
+    let request=vagasSb.from('crm_radar_jobs_public').select('*',{count:'exact'})
+      .neq('availability_status','closed');
+    if(cutoff)request=request.gte('published_at',cutoff);
+    const {data,error,count}=await request.order('published_at',{ascending:false,nullsFirst:false}).limit(1000);
 
     if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
@@ -4054,10 +4134,9 @@ async function crmLoadClosedJobs(category='') {
 }
 
 function renderizarVagasHub(vagas, sortMode='recente') {
-  // Apenas exibição: registros encerrados continuam no banco e nos salvos.
-  vagas=(vagas||[]).filter(v=>String(v.availability_status||'').toLowerCase()!=='closed');
-  // A data de verificação/coleta não representa uma nova publicação.
-  if(sortMode==='recente')vagas.sort((a,b)=>(Date.parse(b.published_at||'')||0)-(Date.parse(a.published_at||'')||0));
+  // Preserve source data; always sort by source publication date and hide duplicate postings.
+  sortMode=document.getElementById('filtro-ordem-hub')?.value||sortMode;
+  vagas=crmRadarSortUnique(vagas,sortMode);
   const container = document.getElementById('vagasContainerHub');
   if (!vagas || vagas.length === 0) {
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px;"><div style="font-size:24px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada.</p></div>';
@@ -4174,9 +4253,10 @@ async function aplicarFiltrosVagas() {
     const municipio = sanitizeInputVagas(document.getElementById('filtro-municipio')?.value || '', 80);
     const ordem = document.getElementById('filtro-ordem-hub').value;
 
-    const cutoff14 = new Date(Date.now()-14*86400000).toISOString();
-    let query = vagasSb.from('crm_radar_jobs_public').select('*',{count:'exact'})
-      .neq('availability_status', 'closed').gte('published_at',cutoff14);
+    const cutoff=crmRadarPublicationCutoff();
+    let query=vagasSb.from('crm_radar_jobs_public').select('*',{count:'exact'})
+      .neq('availability_status','closed');
+    if(cutoff)query=query.gte('published_at',cutoff);
 
     const areaMap={crm:['crm'],cxcs:['customer-success','customer-experience'],marketing:['marketing','marketing-automation'],
       revops:['revops','salesops'],designer:['product-design'],data:['data-analytics','ai','tech','qa','product-management']};
@@ -4222,15 +4302,8 @@ async function aplicarFiltrosVagas() {
       query = query.or(`location.ilike.%${municipio}%,regiao.ilike.%${municipio}%,title.ilike.%${municipio}%`);
     }
 
-    if (ordem === 'empresa') {
-      query = query.order('company', { ascending: true });
-    } else if (ordem === 'cargo') {
-      query = query.order('title', { ascending: true });
-    } else {
-      query = query.order('published_at', { ascending: false, nullsFirst: false });
-    }
-
-    query = query.limit(1000);
+    // Fetch the newest publications first; apply relevance/alphabetic ranking to that result set.
+    query=query.order('published_at',{ascending:false,nullsFirst:false}).limit(1000);
 
     const { data, error } = await query;
     if(renderSeq!==crmVagasRenderSeq)return;
@@ -4241,7 +4314,8 @@ async function aplicarFiltrosVagas() {
       return;
     }
 
-    const filtradas = (data || []).filter(vaga => crmJobMatchesLocation(vaga, estado, municipio));
+    const filtradas=(data||[]).filter(vaga=>crmJobMatchesLocation(vaga,estado,municipio));
+    document.getElementById('totalVagasHub').textContent=Number.isFinite(count)?String(count):String(filtradas.length);
     if (!filtradas.length) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada com esses critérios.</p></div>';
       document.getElementById('vagasCountHub').textContent = '0';
@@ -4265,6 +4339,7 @@ function limparFiltrosVagas() {
   if (document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = '';
   if (document.getElementById('filtro-municipio')) document.getElementById('filtro-municipio').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
+  const period=document.getElementById('filtro-periodo-hub');if(period)period.value='14';
   carregarVagasHub();
 }
 
@@ -9858,7 +9933,7 @@ window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=2"></script>
 <script src="/assets/portal-hardening.js?v=20261015-xp-shell1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
-<script defer src="/assets/radar-ux.js?v=20261014-compact2"></script>
+<script defer src="/assets/radar-ux.js?v=20261018-filters4"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261015-1">
 <script defer src="/assets/push-preferences.js?v=20261015-1"></script>
