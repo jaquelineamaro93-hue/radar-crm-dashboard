@@ -5,7 +5,7 @@
 #pageVagas .crm-add-community-job{font-size:13px;padding:10px 15px;white-space:nowrap}
 #pageVagas .crm-radar-filterbox{padding:12px 14px!important;margin:10px 0 12px!important;border-radius:11px!important}
 #pageVagas .crm-radar-filterbox>h3{font-size:12px!important;margin:0 0 8px!important;letter-spacing:.05em!important}
-#pageVagas .crm-radar-fields{display:grid!important;grid-template-columns:minmax(150px,1.15fr) minmax(210px,2fr) minmax(145px,1.05fr)!important;gap:8px!important;margin:0 0 9px!important;align-items:end}
+#pageVagas .crm-radar-fields{display:grid!important;grid-template-columns:minmax(148px,1.13fr) minmax(170px,1.4fr) minmax(130px,.85fr) minmax(128px,.86fr)!important;gap:8px!important;margin:0 0 9px!important;align-items:end}
 #pageVagas .crm-radar-fields>div{min-width:0}
 #pageVagas .crm-radar-fields label{font-size:11px!important;margin-bottom:4px!important;line-height:1.25}
 #pageVagas .crm-radar-fields input,#pageVagas .crm-radar-fields select{box-sizing:border-box;min-width:0;width:100%;min-height:39px;padding:7px 10px!important;font-size:13px!important}
@@ -18,11 +18,10 @@
 #pageVagas .crm-radar-more-filters:focus-visible{outline:3px solid #fdba74;outline-offset:2px}
 @media(max-width:850px){
   #pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  #pageVagas .crm-radar-fields>div:has(#filtro-cargo){grid-column:span 2}
 }
 @media(max-width:500px){
-  #pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:1fr!important}
-  #pageVagas .crm-radar-fields>div:has(#filtro-cargo){grid-column:auto}
+  #pageVagas .crm-radar-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   #pageVagas .crm-job-publish-cta{align-items:stretch}
   #pageVagas .crm-job-publish-cta>button{width:100%}
 }
@@ -108,3 +107,13 @@
 @media(prefers-reduced-motion:reduce){
   #pageVagas #vagasContainerHub>.crm-job-card{transition:none!important}
 }
+
+
+/* Date and sort are secondary actions and don't add clutter to the four main filters */
+#pageVagas .crm-radar-quick{display:grid;grid-template-columns:minmax(145px,1fr) minmax(145px,1fr);gap:9px;max-width:490px;margin:4px 0 10px;align-items:end}
+#pageVagas .crm-radar-quick>div{min-width:0}
+#pageVagas .crm-radar-quick label{font-size:11px!important;font-weight:650!important;line-height:1.3;margin-bottom:4px!important;color:var(--muted)}
+#pageVagas .crm-radar-quick select{box-sizing:border-box;width:100%;min-width:0;min-height:39px;padding:7px 10px!important;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-size:12px!important}
+#pageVagas .crm-radar-quick select:focus-visible{outline:2px solid #fbbf91;outline-offset:2px}
+#pageVagas .crm-radar-fields>div:has(#filtro-nivel){order:0}
+@media(max-width:360px){#pageVagas .crm-radar-fields,#pageVagas .crm-radar-quick,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:minmax(0,1fr)!important}}
