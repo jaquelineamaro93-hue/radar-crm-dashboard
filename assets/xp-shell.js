@@ -3,8 +3,8 @@
 'use strict';
 if(window.CXXPShell)return;
 const specs={
- 'xp-avatar':{id:'pageXpAvatar',label:'Meu Avatar',path:'/avatar-studio/?embedded=1'},
- 'xp-rankings':{id:'pageXpRankings',label:'Rankings',path:'/rankings/?embedded=1'}
+ 'xp-avatar':{id:'pageXpAvatar',label:'Meu Avatar',path:'/avatar-studio/index.html?embedded=1'},
+ 'xp-rankings':{id:'pageXpRankings',label:'Rankings',path:'/rankings/index.html?embedded=1'}
 };
 function register(){
  if(typeof crmRoutes==='undefined'||typeof crmRoutePaths==='undefined')return false;
@@ -30,7 +30,23 @@ function register(){
   frame.title='Conexão XP: '+sp.label;
   frame.loading='eager';frame.referrerPolicy='same-origin';
   frame.style.cssText='display:block;width:100%;height:900px;min-height:600px;border:0;background:transparent;overflow:hidden';
-  frame.addEventListener('load',()=>{label.hidden=true;pane.dataset.loaded='true';frame.dataset.loaded='true';});
+  frame.addEventListener('load',()=>{
+   let valid=false;
+   try{
+     const doc=frame.contentDocument;
+     valid=Boolean(doc&&doc.getElementById(route==='xp-rankings'?'rankMain':'studio'));
+     if(doc?.getElementById('crmSidebar')||doc?.getElementById('crmNavSlot'))valid=false;
+   }catch{}
+   if(!valid){
+     frame.style.display='none';frame.dataset.loaded='false';
+     label.hidden=false;
+     label.textContent='Não foi possível abrir '+sp.label+' aqui. Atualize a página para tentar novamente';
+     pane.dataset.loaded='false';
+     return;
+   }
+   frame.style.display='block';
+   label.hidden=true;pane.dataset.loaded='true';frame.dataset.loaded='true';
+  });
   pane.append(label,frame);
   pages.append(pane);
  }
