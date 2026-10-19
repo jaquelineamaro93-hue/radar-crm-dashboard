@@ -29,13 +29,17 @@ function register(){
   frame.dataset.src=sp.path+(route==='xp-rankings'&&validTarget?'&recommend='+encodeURIComponent(target):'');
   frame.title='Conexão XP: '+sp.label;
   frame.loading='eager';frame.referrerPolicy='same-origin';
-  frame.style.cssText='display:block;width:100%;height:900px;min-height:600px;border:0;background:transparent;overflow:hidden';
+  // Keep the embedded page invisible until its actual document passes validation.
+  // An HTML fallback or old cached portal must never show a second sidebar.
+  frame.style.cssText='display:none;width:100%;height:900px;min-height:600px;border:0;background:transparent;overflow:hidden';
   frame.addEventListener('load',()=>{
    let valid=false;
    try{
      const doc=frame.contentDocument;
      valid=Boolean(doc&&doc.getElementById(route==='xp-rankings'?'rankMain':'studio'));
-     if(doc?.getElementById('crmSidebar')||doc?.getElementById('crmNavSlot'))valid=false;
+     const expectedPath=new URL(sp.path,location.origin).pathname;
+     const actualPath=frame.contentWindow?.location.pathname;
+     if(actualPath!==expectedPath||doc?.querySelector('#crmSidebar,#crmNavSlot,#view-logada,#crmPages,.crm-nav-items'))valid=false;
    }catch{}
    if(!valid){
      frame.style.display='none';frame.dataset.loaded='false';
