@@ -9,7 +9,8 @@
     {id:'vagas',page:'pageVagas',label:'Radar de Vagas'},
     {id:'eventos',page:'pageEventos',label:'Agenda de Eventos'},
     {id:'comunidade',page:'pageComunidade',label:'Comunidade'},
-    {id:'talentos',page:'pageSearch',label:'Open to Work'}
+    {id:'talentos',page:'pageSearch',label:'Open to Work'},
+    {id:'cadastro',page:null,label:'Cadastro e perfil'}
   ];
   const defaults=()=>({vagas:false,eventos:false,comunidade:false,talentos:false});
   function read(){
@@ -27,6 +28,7 @@
       push_interesse_eventos:p.eventos===true,
       push_interesse_comunidade:p.comunidade===true,
       push_interesse_talentos:p.talentos===true,
+      push_interesse_cadastro:p.cadastro===true,
       push_interesse_ativo:any(p)
     };
   }
@@ -146,6 +148,81 @@
       console.warn('[CRM Push] configuração:',error);
     }finally{button.disabled=false}
   }
+
+  // Reengajamento contextual: somente membros autenticados com perfil incompleto.
+  // Nunca aciona Notification.requestPermission automaticamente.
+  const REENGAGE_KEY='crm_onboarding_reengage_dismissed_v1_';
+  function incompleteMember(){
+    try{
+      if(typeof crmSignedIn!=='function'||!crmSignedIn())return null;
+      const user=typeof CURRENT_USER!=='undefined'?CURRENT_USER:null;
+      const profile=typeof CURRENT_PROFILE!=='undefined'?CURRENT_PROFILE:null;
+      const workspace=document.getElementById('view-logada');
+      if(!user?.id||user?.is_anonymous||!workspace||workspace.hidden)return null;
+      if(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true)return null;
+      const complete=profile?.guided_onboarding_completed===true
+        &&String(profile.full_name||'').trim()
+        &&String(profile.headline||'').trim()
+        &&String(profile.seniority||'').trim()
+        &&Array.isArray(profile.tools)&&profile.tools.length>0;
+      return complete?null:String(user.id);
+    }catch{return null;}
+  }
+  function dismissed(userId){
+    try{return Number(localStorage.getItem(REENGAGE_KEY+userId)||0)>Date.now()}catch{return false}
+  }
+  function dismissForWeek(userId){
+    try{localStorage.setItem(REENGAGE_KEY+userId,String(Date.now()+7*86400000))}catch{}
+    document.getElementById('crmIncompleteProfileNudge')?.remove();
+  }
+  function refreshIncompleteProfileNudge(){
+    const id=incompleteMember(),existing=document.getElementById('crmIncompleteProfileNudge');
+    if(!id||dismissed(id)){
+      existing?.remove();
+      return;
+    }
+    if(existing?.dataset.userId===id){
+      const opt=existing.querySelector('[data-crm-onboarding-push-optin]');
+      if(opt)opt.textContent=read().cadastro?'Avisos selecionados':'Configurar avisos';
+      return;
+    }
+    existing?.remove();
+    if(!document.getElementById('crmIncompleteProfileNudgeStyle')){
+      const css=document.createElement('style');
+      css.id='crmIncompleteProfileNudgeStyle';
+      css.textContent=
+        '#crmIncompleteProfileNudge{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(350px,calc(100vw - 32px));box-sizing:border-box;z-index:680;background:#1c1d20;color:#f8f8f8;border:1px solid rgba(249,115,22,.5);border-radius:15px;box-shadow:0 12px 36px rgba(0,0,0,.22);padding:16px 17px;font-family:inherit;line-height:1.4}' +
+        '#crmIncompleteProfileNudge h3{font-size:15px;color:#fff;font-weight:700;margin:0 22px 6px 0}' +
+        '#crmIncompleteProfileNudge p{font-size:13px;color:#dbdbdb;margin:0 0 12px}' +
+        '#crmIncompleteProfileNudge .crm-onboarding-actions{display:flex;gap:8px;flex-wrap:wrap}' +
+        '#crmIncompleteProfileNudge button{font:inherit;cursor:pointer;border-radius:8px;font-size:12px;padding:9px 11px}' +
+        '#crmIncompleteProfileNudge .crm-onboarding-complete{background:#f97316;border:1px solid #f97316;color:#171717;font-weight:700}' +
+        '#crmIncompleteProfileNudge .crm-onboarding-push{background:transparent;border:1px solid #717171;color:#fff}' +
+        '#crmIncompleteProfileNudge .crm-onboarding-dismiss{position:absolute;right:10px;top:7px;padding:4px 7px;border:0;background:transparent;color:#ddd;font-size:19px}' +
+        '@media(max-width:480px){#crmIncompleteProfileNudge{right:10px;width:calc(100vw - 20px);bottom:calc(10px + env(safe-area-inset-bottom,0px))}}';
+      document.head.appendChild(css);
+    }
+    const panel=document.createElement('aside');
+    panel.id='crmIncompleteProfileNudge';panel.dataset.userId=id;
+    panel.setAttribute('aria-label','Cadastro pendente');
+    panel.innerHTML='<button class="crm-onboarding-dismiss" type="button" aria-label="Dispensar lembrete">×</button>'+
+      '<h3>Seu perfil está quase pronto</h3>'+
+      '<p>Finalize seus dados para aproveitar melhor a comunidade. Você também pode escolher receber lembretes, se quiser.</p>'+
+      '<div class="crm-onboarding-actions"><button type="button" class="crm-onboarding-complete">Completar perfil</button>'+
+      '<button type="button" class="crm-onboarding-push" data-crm-onboarding-push-optin>Configurar avisos</button></div>';
+    panel.querySelector('.crm-onboarding-dismiss').addEventListener('click',()=>dismissForWeek(id));
+    panel.querySelector('.crm-onboarding-complete').addEventListener('click',()=>{
+      if(typeof openProfileModal==='function')openProfileModal();
+      else location.assign('/#perfil');
+    });
+    panel.querySelector('.crm-onboarding-push').addEventListener('click',()=>{
+      openDialog('cadastro');
+      dialog?.querySelector('input[name="cadastro"]')?.focus();
+    });
+    document.body.appendChild(panel);
+    const opt=panel.querySelector('[data-crm-onboarding-push-optin]');
+    if(opt)opt.textContent=read().cadastro?'Avisos selecionados':'Configurar avisos';
+  }
   function init(){
     for(const t of topics){
       const page=document.getElementById(t.page);
@@ -163,6 +240,9 @@
       anchor.insertAdjacentElement('afterend',wrap);
     }
     refreshButtons();
+    setTimeout(refreshIncompleteProfileNudge,1200);
+    setInterval(refreshIncompleteProfileNudge,6000);
+    document.addEventListener('crm:role-resolved',refreshIncompleteProfileNudge);
     // Nunca solicitar permissão durante uma simples visita.
     // Bootstrap silencioso somente quando o navegador já autorizou e há tema escolhido.
     if(any(read())&&permission()==='granted')ensureSdk().then(()=>sync(read())).catch(e=>console.warn('[CRM Push] inicialização:',e));
