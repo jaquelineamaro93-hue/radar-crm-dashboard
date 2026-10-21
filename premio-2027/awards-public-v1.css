@@ -104,3 +104,22 @@ body.award-view-mode .awards-public-voting{padding-top:72px}
 .awards-category-note-row.important{border-color:#f973163f;background:#f9731609;margin:12px -7px -5px;padding:11px 7px 7px;border-radius:8px}
 .awards-category-note-row.important b{color:#f39a5c}
 .awards-category-note-empty{padding:2px 0}
+
+/* fix faixa editorial x aviso de calendário no modo de telas */
+body.award-view-mode .preview-banner{
+ position:relative;
+ z-index:12;
+ margin-bottom:0;
+}
+body.award-view-mode .ticker{
+ position:relative;
+ z-index:3;
+ margin-top:24px!important;
+ margin-bottom:18px;
+}
+@media(max-width:810px){
+ body.award-view-mode .ticker{
+  margin-top:18px!important;
+  margin-bottom:14px;
+ }
+}
