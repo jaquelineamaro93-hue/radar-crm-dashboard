@@ -1,0 +1,25 @@
+name: Open to Work card regression
+on:
+  push:
+    branches:
+      - main
+      - fix/open-to-work-ver-mais-20261021
+    paths:
+      - 'assets/open-to-work-excerpts.js'
+      - 'assets/open-to-work-excerpts.css'
+      - 'assets/crm-runtime-integrations.js'
+      - 'tests/open-to-work-excerpts.cjs'
+      - '.github/workflows/open-to-work-excerpts.yml'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate safe, accessible expansion
+        run: node tests/open-to-work-excerpts.cjs
