@@ -192,6 +192,47 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openToWorkRankShortcut,{once:true});
   else openToWorkRankShortcut();
 
+
+  // Evita skeleton infinito caso a leitura de "Meus Eventos" demore ou falhe.
+  // Não altera a consulta do membro nem grava informações em outro usuário.
+  function guardMyEventsLoading(){
+    if(window.CXMyEventsLoadingGuard||typeof window.crmLoadMyEvents!=='function')return;
+    const original=window.crmLoadMyEvents;
+    window.crmLoadMyEvents=async function(...args){
+      const target=document.getElementById('crmMyEventsList');
+      const showRetry=()=>{
+        if(!target||!target.isConnected)return;
+        target.removeAttribute('aria-busy');
+        target.replaceChildren();
+        const message=document.createElement('p');
+        message.setAttribute('role','status');
+        message.textContent='A consulta aos seus eventos está demorando. Verifique a conexão e tente novamente.';
+        const retry=document.createElement('button');
+        retry.className='crm-button';retry.type='button';
+        retry.textContent='Tentar novamente';
+        retry.addEventListener('click',()=>window.crmLoadMyEvents());
+        target.append(message,retry);
+      };
+      const timeout=window.setTimeout(()=>{
+        if(target?.getAttribute('aria-busy')==='true'&&
+           document.getElementById('crmMyEvents')?.classList.contains('active'))showRetry();
+      },15000);
+      try{return await original.apply(this,args);}
+      catch(error){showRetry();}
+      finally{
+        window.clearTimeout(timeout);
+        if(target?.getAttribute('aria-busy')==='true'){
+          // O caso comum é login cancelado ou sessão expirada após o skeleton.
+          target.removeAttribute('aria-busy');
+          target.textContent='Entre com sua conta para consultar seus eventos.';
+        }
+      }
+    };
+    window.CXMyEventsLoadingGuard=true;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',guardMyEventsLoading,{once:true});
+  else guardMyEventsLoading();
+
   // Onboarding in the signed-in workspace, scoped to one viewing per member.
   if(!document.getElementById('cx-xp-onboarding-style')){
     const link=document.createElement('link');
