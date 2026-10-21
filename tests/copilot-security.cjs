@@ -36,13 +36,32 @@ assert.doesNotMatch(script,/currentProfileStatus[\s\S]{0,1100}functions\.invoke/
 
 // Test the allowlisted intent engine without mounting anything or contacting Supabase.
 const listeners=[];
-const fakeWindow={};
-const fakeDocument={readyState:'loading',addEventListener:(name,fn)=>listeners.push({name,fn})};
-vm.runInNewContext(script,{window:fakeWindow,document:fakeDocument},{timeout:1000});
+let authenticated=false;
+const workspace={hidden:true, getAttribute:()=>null};
+const fakeWindow={addEventListener:()=>{}};
+const fakeDocument={readyState:'loading',addEventListener:(name,fn)=>listeners.push({name,fn}),getElementById:(id)=>id==='view-logada'?workspace:null};
+vm.runInNewContext(script,{window:fakeWindow,document:fakeDocument,crmSignedIn:()=>authenticated,CURRENT_USER:{id:'example-user',is_anonymous:false}},{timeout:1000});
 const assistant=fakeWindow.CXCopilot;
 assert.equal(typeof assistant?.open,'function');
 assert.equal(typeof assistant?.classify,'function');
 assert.equal(listeners.filter(x=>x.name==='DOMContentLoaded').length,1);
+assert.equal(typeof assistant.isAvailable,'function');
+// Área pública e usuário anônimo nunca têm acesso ao copiloto.
+assert.equal(assistant.isAvailable(),false,'guest must not see copilot');
+authenticated=true;
+assert.equal(assistant.isAvailable(),false,'signed-in member outside workspace must not see copilot');
+workspace.hidden=false;
+assert.equal(assistant.isAvailable(),true,'logged member inside workspace may see copilot');
+workspace.getAttribute=()=> 'true';
+assert.equal(assistant.isAvailable(),false,'aria-hidden workspace must hide copilot');
+workspace.getAttribute=()=>null;
+assert.equal(assistant.isAvailable(),true);
+authenticated=false;
+assert.equal(assistant.isAvailable(),false,'logout must hide copilot');
+assert.match(script,/if\(!canShow\(\)\)return;\s*if\(document\.getElementById\('cxCopilot'\)/);
+assert.match(script,/root\.remove\(\)/);
+assert.match(script,/new MutationObserver\(reconcile\)/);
+assert.match(script,/setInterval\(reconcile,2000\)/);
 const cases=[
   ['Como finalizar meu cadastro?','profile-status'],
   ['Encontre vagas remotas de CRM','action','remote'],
