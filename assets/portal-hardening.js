@@ -86,6 +86,9 @@
     document.head.append(style);
   }
 
+  // Registrar a rota antes da restauração de sessão do shell legado.
+  ensureTeamPage();
+
   // Public-facing team belongs to Comunidade. Editing is exclusive to Administração.
   function syncTeamNavigation(nav){
     const groups=document.getElementById('navComunidade');
@@ -158,14 +161,13 @@
     ensureTeamPage();
     syncXpLinks();
     // Preserva o histórico da área logada mesmo após atualizar a página.
-    if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn()){
-      if(typeof crmNavigate==='function')crmNavigate('equipe',false);
-    }
+    if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn())openTeamInside(false);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startTeamAndNavigation,{once:true});
   else startTeamAndNavigation();
   document.addEventListener('crm:admin-ready',syncXpLinks);
   document.addEventListener('crm:role-resolved',syncXpLinks);
+  document.addEventListener('crm:role-resolved',()=>{if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn())openTeamInside(false);});
   document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
   // Role-resolved event handles authentication changes without moving menu items repeatedly.
 
