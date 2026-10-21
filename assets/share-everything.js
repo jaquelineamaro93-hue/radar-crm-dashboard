@@ -150,10 +150,16 @@ function createButton(label,info,cls){
  return btn;
 }
 function installSidebar(){
- const nav=document.querySelector('.crm-nav-items');
- if(!nav||nav.querySelector('#cx-share-portal'))return;
- const btn=createButton('Compartilhar Conexão CRM',pageInfo,'cx-share-nav');
- btn.id='cx-share-portal';nav.append(btn);
+ const nav=document.querySelector('#view-logada .crm-nav-items');
+ if(!nav)return;
+ let btn=nav.querySelector('#cx-share-portal');
+ if(!btn){
+  btn=createButton('Compartilhar Conexão CRM',pageInfo,'cx-share-nav');
+  btn.id='cx-share-portal';
+ }
+ // Ação final do menu: quando XP ou ferramentas são carregadas depois,
+ // restaurar esta posição sem duplicar o botão.
+ if(nav.lastElementChild!==btn)nav.append(btn);
 }
 function rootFor(route,pages){
  for(const id of pages){const el=document.getElementById(id);if(el)return el;}
