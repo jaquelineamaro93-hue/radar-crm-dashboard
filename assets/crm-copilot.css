@@ -1,0 +1,44 @@
+/* CONEXÃO CRM • Copiloto v1 — isolado do layout e scripts existentes. */
+#cxCopilot{position:fixed;right:20px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:785;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#f7f7f8;}
+#cxCopilot *,#cxCopilot *::before,#cxCopilot *::after{box-sizing:border-box;}
+#cxCopilot button{font:inherit;cursor:pointer;transition:background-color .15s,border-color .15s;}
+#cxCopilot button:focus-visible,#cxCopilot textarea:focus-visible{outline:3px solid #fda76f;outline-offset:2px;}
+#cxCopilot .cx-copilot-launch{display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;border:1px solid #fda873;background:#f97316;color:#191919;font-weight:750;box-shadow:0 7px 28px #0004;min-height:48px;font-size:14px;}
+#cxCopilot .cx-copilot-launch:hover{background:#ff8d35;}
+#cxCopilot .cx-copilot-panel{position:absolute;right:0;bottom:63px;display:flex;flex-direction:column;width:min(400px,calc(100vw - 28px));height:min(610px,calc(100dvh - 105px));max-height:calc(100dvh - 105px);border:1px solid #434044;border-radius:16px;overflow:hidden;background:#1d1d21;color:#fafafa;box-shadow:0 18px 58px #0009;}
+#cxCopilot .cx-copilot-panel[hidden]{display:none!important;}
+#cxCopilot .cx-copilot-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;border-bottom:1px solid #39383c;background:#252427;flex:0 0 auto;}
+#cxCopilot .cx-copilot-head>div{display:flex;flex-direction:column;gap:3px;}
+#cxCopilot .cx-copilot-head strong{font-size:16px;font-weight:750;color:#fff;}
+#cxCopilot .cx-copilot-head small{font-size:11px;color:#bdb7b4;}
+#cxCopilot .cx-copilot-close{align-self:flex-start;background:transparent;color:#eee;border:0;font-size:23px;line-height:1;padding:2px 7px;border-radius:8px;}
+#cxCopilot .cx-copilot-close:hover{background:#3c3a3d;}
+#cxCopilot .cx-copilot-privacy{border-bottom:1px solid #3d3836;background:#312922;color:#f9e4d0;padding:10px 16px;font-size:11px;line-height:1.45;flex:0 0 auto;}
+#cxCopilot .cx-copilot-history{overflow-y:auto;overscroll-behavior:contain;flex:1 1 auto;min-height:70px;padding:17px 15px;display:flex;flex-direction:column;gap:12px;}
+#cxCopilot .cx-copilot-message{max-width:91%;padding:11px 13px;border-radius:13px;font-size:13px;line-height:1.55;overflow-wrap:anywhere;white-space:pre-line;}
+#cxCopilot .cx-copilot-message p{margin:0;color:inherit;font-size:inherit;line-height:inherit;white-space:pre-line;}
+#cxCopilot .cx-copilot-assistant{align-self:flex-start;background:#303035;border:1px solid #414046;color:#f4f2f1;border-bottom-left-radius:3px;}
+#cxCopilot .cx-copilot-user{align-self:flex-end;background:#6d3b1e;border:1px solid #94542c;color:#fff;border-bottom-right-radius:3px;}
+#cxCopilot .cx-copilot-action{display:block;width:100%;margin-top:10px;padding:10px 12px;border:1px solid #ffab70;border-radius:9px;background:#f97316;color:#191919;font-weight:750;font-size:12px;}
+#cxCopilot .cx-copilot-action:hover{background:#ff9544;}
+#cxCopilot .cx-copilot-consent{align-self:stretch;border:1px solid #7c6859;background:#322820;border-radius:12px;padding:13px;display:flex;flex-wrap:wrap;gap:9px;font-size:12px;line-height:1.5;color:#f3e2d2;}
+#cxCopilot .cx-copilot-consent p{width:100%;margin:0 0 4px;color:inherit;font-size:inherit;}
+#cxCopilot .cx-copilot-consent button{border-radius:8px;padding:9px 11px;font-size:11px;border:1px solid #7e7772;color:#fff;background:#423c39;}
+#cxCopilot .cx-copilot-consent button:first-of-type{border:1px solid #f97316;background:#f97316;color:#171717;font-weight:750;}
+#cxCopilot .cx-copilot-quick{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px 11px;border-top:1px solid #363539;background:#252427;flex:0 0 auto;}
+#cxCopilot .cx-copilot-quick button{color:#ffd1b3;background:#343034;border:1px solid #635044;padding:7px 9px;border-radius:999px;font-size:11px;line-height:1.2;}
+#cxCopilot .cx-copilot-quick button:hover{background:#4b382c;}
+#cxCopilot .cx-copilot-form{padding:12px;border-top:1px solid #38363a;background:#252427;flex:0 0 auto;}
+#cxCopilot .cx-copilot-label{display:block;font-size:12px;color:#f4e3d7;margin:0 0 6px;font-weight:650;}
+#cxCopilot .cx-copilot-form textarea{font-family:inherit;font-size:13px;width:100%;resize:vertical;max-height:150px;min-height:54px;display:block;background:#17171a;border:1px solid #58545a;color:#fff;border-radius:9px;padding:10px;line-height:1.4;}
+#cxCopilot .cx-copilot-form textarea::placeholder{color:#aaa5a5;opacity:1;}
+#cxCopilot .cx-copilot-bottom{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:9px;}
+#cxCopilot .cx-copilot-bottom small{font-size:10px;line-height:1.4;color:#beb8b6;max-width:70%;}
+#cxCopilot .cx-copilot-bottom button{font-size:12px;line-height:1;border:1px solid #f97316;border-radius:8px;padding:11px 15px;background:#f97316;color:#181818;font-weight:750;}
+#cxCopilot .cx-copilot-bottom button:disabled{opacity:.55;cursor:wait;}
+@media(max-width:480px){
+ #cxCopilot{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+ #cxCopilot .cx-copilot-panel{right:-4px;bottom:59px;width:calc(100vw - 16px);height:min(625px,calc(100dvh - 90px));max-height:calc(100dvh - 90px);}
+ #cxCopilot .cx-copilot-launch{padding:11px 15px;}
+}
+@media(prefers-reduced-motion:reduce){#cxCopilot *,#cxCopilot *::before,#cxCopilot *::after{transition:none!important;animation:none!important;}}
