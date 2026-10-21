@@ -9,6 +9,16 @@ function addScript(src,id){
 }
 addScript(INTEGRATION_URL,'crm-inngage-integration-runtime');
 
+// Copiloto independente: não altera login, Match, RLS nem funções legadas.
+// O módulo só executa ações predefinidas da interface; IA requer consentimento.
+if(!document.getElementById('crm-copilot-css')){
+  const css=document.createElement('link');
+  css.id='crm-copilot-css';css.rel='stylesheet';
+  css.href='/assets/crm-copilot.css?v=20261020-1';
+  document.head.appendChild(css);
+}
+addScript('/assets/crm-copilot.js?v=20261020-1','crm-copilot-runtime');
+
 // O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.
 
 let lastIdentity='',experienceUser='',experienceCheckedAt=0,experienceBusy=false;
