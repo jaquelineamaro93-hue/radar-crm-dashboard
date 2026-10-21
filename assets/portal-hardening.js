@@ -26,6 +26,65 @@
     document.head.appendChild(script);
   }
 
+
+  // A página institucional "Quem Faz" funciona dentro do workspace autenticado.
+  // O iframe usa somente URL estática same-origin e mantém o RLS / Auth existentes.
+  function ensureTeamPage(){
+    const host=document.getElementById('crmPages');
+    if(!host||typeof crmRoutes==='undefined')return null;
+    if(!crmRoutes.equipe)crmRoutes.equipe=['crmTeamEmbedPage','Quem Faz'];
+    let page=document.getElementById('crmTeamEmbedPage');
+    if(page)return page;
+    page=document.createElement('section');
+    page.id='crmTeamEmbedPage';
+    page.className='tab-page';
+    page.setAttribute('aria-label','Quem faz o Conexão CRM');
+    page.innerHTML='<div class="crm-team-in-workspace">'+
+      '<div class="crm-team-embed-head"><div><span>COMUNIDADE / PESSOAS</span>'+
+      '<h1>Quem faz o Conexão CRM</h1></div>'+
+      '<a href="/quem-faz/" target="_blank" rel="noopener noreferrer" aria-label="Abrir equipe em nova aba">Abrir página completa ↗</a></div>'+
+      '<p class="crm-team-load" role="status">Preparando a página da equipe…</p>'+
+      '<iframe class="crm-team-frame" title="Equipe Conexão CRM" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'+
+      '</div>';
+    host.append(page);
+    const iframe=page.querySelector('iframe');
+    iframe.addEventListener('load',()=>{
+      const status=page.querySelector('.crm-team-load');
+      if(status)status.hidden=true;
+    });
+    return page;
+  }
+  function openTeamInside(management){
+    if(typeof crmSignedIn!=='function'||!crmSignedIn())return;
+    const admin=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
+    const page=ensureTeamPage();
+    if(!page)return;
+    const iframe=page.querySelector('iframe');
+    const resource=management&&admin?'/quem-faz/?gestao=1&embedded=1':'/quem-faz/?embedded=1';
+    if(iframe.getAttribute('src')!==resource){
+      page.querySelector('.crm-team-load').hidden=false;
+      iframe.setAttribute('src',resource);
+    }
+    if(typeof crmNavigate==='function'){
+      crmNavigate('equipe',false);
+      // Uma rota SPA conservadora que preserva o sidebar e suporta o histórico.
+      history.pushState(null,'','/#equipe');
+    }
+  }
+  if(!document.getElementById('crm-team-workspace-css')){
+    const style=document.createElement('style');
+    style.id='crm-team-workspace-css';
+    style.textContent='#crmTeamEmbedPage .crm-team-in-workspace{max-width:100%;min-width:0}' +
+      '#crmTeamEmbedPage .crm-team-embed-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;flex-wrap:wrap;padding:0 0 17px;border-bottom:1px solid #38342f}' +
+      '#crmTeamEmbedPage .crm-team-embed-head span{font-size:11px;letter-spacing:.1em;color:#ff8a3d;font-weight:800}' +
+      '#crmTeamEmbedPage .crm-team-embed-head h1{font-size:clamp(24px,3vw,37px);color:#f4f3ed;line-height:1.2;margin:8px 0 0}' +
+      '#crmTeamEmbedPage .crm-team-embed-head a{font-size:12px;color:#fca66e;text-decoration:underline;text-underline-offset:3px}' +
+      '#crmTeamEmbedPage .crm-team-frame{border:0;width:100%;min-height:720px;height:calc(100dvh - 165px);background:#0d0d0d;display:block}' +
+      '#crmTeamEmbedPage .crm-team-load{font-size:13px;color:#aca49f;padding:12px 0}' +
+      '@media(max-width:760px){#crmTeamEmbedPage .crm-team-frame{height:calc(100dvh - 190px);min-height:520px}}';
+    document.head.append(style);
+  }
+
   // Public-facing team belongs to Comunidade. Editing is exclusive to Administração.
   function syncTeamNavigation(nav){
     const groups=document.getElementById('navComunidade');
@@ -34,17 +93,18 @@
       if(!publicLink){
         publicLink=document.createElement('a');
         publicLink.id='crmTeamPublicNav';publicLink.className='tab-btn';
-        publicLink.href='/quem-faz/';
+        publicLink.href='/#equipe';publicLink.dataset.crmRoute='equipe';
         publicLink.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         publicLink.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M2 20v-2a6 6 0 0 1 12 0v2M17 9a3 3 0 1 0-2-5M17 14a5 5 0 0 1 5 5v1"/></svg></span>Quem Faz';
       }
       if(groups.nextElementSibling!==publicLink)groups.after(publicLink);
+      publicLink.onclick=event=>{event.preventDefault();openTeamInside(false);};
     }
     const teamAdmin=document.getElementById('crmTeamAdminNav');
     if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
       teamAdmin.dataset.cxTeamAdminEdited='1';
       teamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></span>Gerenciar equipe';
-      teamAdmin.onclick=()=>{window.location.href='/quem-faz/?gestao=1';};
+      teamAdmin.onclick=()=>openTeamInside(true);
     }
   }
 
@@ -85,12 +145,13 @@
       const teamNav=document.getElementById('crmTeamAdminNav');
       const hasTeam=teamNav&&teamNav.parentElement===nav&&!teamNav.hidden;
       if(hasTeam&&adminNav.nextElementSibling!==teamNav)adminNav.after(teamNav);
-      const afterAdmin=hasTeam?teamNav:adminNav;
-      if(section.previousElementSibling!==afterAdmin||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay))
-        afterAdmin.after(section,avatar,ranking,...(replay?[replay]:[]));
-    }else if(nav.firstElementChild!==section||section.nextElementSibling!==avatar||avatar.nextElementSibling!==ranking||(replay&&ranking.nextElementSibling!==replay)){
-      nav.prepend(section,avatar,ranking,...(replay?[replay]:[]));
     }
+    // XP e Rankings ficam após as ferramentas e demais recursos, não no topo.
+    // É uma ordem de navegação, sem alteração de perfil, ranking ou pontuação.
+    const ordered=[section,avatar,...(replay?[replay]:[]),ranking];
+    if(nav.lastElementChild!==ranking||section.nextElementSibling!==avatar||
+       avatar.nextElementSibling!==(replay||ranking)||
+       (replay&&replay.nextElementSibling!==ranking))nav.append(...ordered);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncXpLinks,{once:true});
   else syncXpLinks();
@@ -103,14 +164,10 @@
   function syncReportsAndIcons(){
     const nav=document.querySelector('#view-logada .crm-nav-items');
     if(!nav)return;
-    const salary=document.getElementById('navCargos');
-    if(salary&&!document.getElementById('crmOpenToWorkReportNav')){
-      const button=document.createElement('button');button.id='crmOpenToWorkReportNav';
-      button.type='button';button.className='tab-btn';
-      button.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 17v-5M12 17V7M16 17v-7"/></svg></span>Report Open to Work';
-      button.addEventListener('click',()=>typeof crmNavigate==='function'&&crmNavigate('mercado'));
-      salary.after(button);
-    }
+    // O atalho duplicado era inserido por esta rotina e também pelo
+    // agrupamento oficial "Reports do mercado de trabalho", mais abaixo.
+    // Manter somente navMarketReport, a fonte de navegação já existente.
+    document.getElementById('crmOpenToWorkReportNav')?.remove();
     const defaultIcon='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 4h14v16H5zM9 9h6M9 13h6M9 17h4"/></svg>';
     nav.querySelectorAll('.tab-btn').forEach(button=>{
       if(button.querySelector('.crm-nav-glyph'))return;
