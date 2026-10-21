@@ -47,7 +47,7 @@ function renderCalculator(){content().innerHTML=`<div class="cx-grid"><section c
 function clear(){epoch++;rows=[];portalRequests=[];busy=false;formId=null;page?.querySelector('dialog')?.close();if(page)page.replaceChildren();}
 function init(){page=document.createElement('section');page.id='cxWorkspace';page.className='tab-page cx-work';document.getElementById('crmPages').append(page);for(const[k,v]of Object.entries(routes))crmRoutes['workspace-'+k]=[page.id,v];const nav=document.createElement('section');
 nav.id='cxFreelancerManagementNav';nav.className='cx-freelancer-management';
-nav.style.cssText='display:flex;flex-direction:column;gap:3px;border-top:1px solid #47382e;margin-top:16px;padding-top:13px';
+nav.style.cssText='display:flex;flex-direction:column;gap:3px;margin-top:8px;padding-top:0';
 const head=document.createElement('span');head.className='crm-nav-section';
 head.textContent='Gestão Freelancer';nav.append(head);
 const icons={
@@ -64,6 +64,8 @@ for(const [route,label] of Object.entries(routes)){
  button.addEventListener('click',()=>crmNavigate('workspace-'+route));nav.append(button);
 }
 document.querySelector('.crm-nav-items')?.append(nav);
+// Posiciona o grupo antes de Conexão XP/Compartilhar quando a navegação é montada.
+document.dispatchEvent(new Event('crm:freelancer-nav-ready'));
 page.addEventListener('click',e=>{const b=e.target.closest('[data-cx]');if(!b)return;const action=b.dataset.cx,r=rows.find(x=>x.id===b.dataset.id);if(action==='navigate')crmNavigate('workspace-'+b.dataset.route);else if(action==='refresh')open('workspace-'+view);else if(action==='close')page.querySelector('dialog').close();else if(action==='new')form();else if(action==='edit'&&r)form(r);else if(action==='preview'&&r)preview(r);else if(action==='download'&&r)download(r);else if(action==='toggle'&&r)mutate(r.id,{status:r.status==='done'?'pending':'done'});else if(action==='approve'&&r)mutate(r.id,{status:'approved'});else if(action==='reject'&&r)mutate(r.id,{status:'rejected'});else if(action==='delete'&&r)showDialog('Excluir registro?',`<p>Excluir “${esc(r.title)}”? Esta ação não pode ser desfeita.</p>${button('Confirmar exclusão','confirm-delete',`data-id="${r.id}"`)}`);else if(action==='confirm-delete'&&r){page.querySelector('dialog').close();mutate(r.id,{},true);}});
 page.addEventListener('change',e=>{if(e.target.matches('[data-stage]'))mutate(e.target.dataset.stage,{status:e.target.value});});page.addEventListener('submit',e=>{if(e.target.matches('[data-save]')){e.preventDefault();save(e.target);}else if(e.target.matches('[data-calc]')){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));const base=finite(f.hours)*finite(f.rate)+finite(f.cost),sum=base*(1+finite(f.buffer)/100);page.querySelector('[data-estimate]').textContent=money(sum);page.querySelector('[data-formula]').textContent=`Base: ${money(base)} + reserva: ${money(sum-base)}. Estimativa comercial; ajuste conforme o escopo.`;}});
 if(location.hash.startsWith('#workspace-'))crmHandleHash();}

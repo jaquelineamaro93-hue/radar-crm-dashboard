@@ -119,6 +119,15 @@
     style.textContent='#crmAvatarStudioLink,#crmXpRankingLink,#cxXpReplay{min-width:0;overflow:hidden;position:relative;box-sizing:border-box;align-items:center!important}#crmAvatarStudioLink .crm-nav-glyph,#crmXpRankingLink .crm-nav-glyph,#cxXpReplay .crm-nav-glyph{display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;width:20px;height:20px;overflow:hidden}#crmAvatarStudioLink svg,#crmXpRankingLink svg,#cxXpReplay svg{display:block;width:18px!important;height:18px!important;max-width:18px;max-height:18px;overflow:hidden}';
     document.head.appendChild(style);
   }
+  // Um único final de sidebar, estável e sem mudanças repetitivas no DOM.
+  // Posição final: Gestão Freelancer, Conexão XP (incluindo Rankings), Compartilhar.
+  function placeSidebarTail(nav,nodes){
+    const tail=nodes.filter(Boolean);
+    if(!tail.length)return;
+    const consecutive=tail.every((node,index)=>index===0||tail[index-1].nextElementSibling===node);
+    if(consecutive&&nav.lastElementChild===tail[tail.length-1])return;
+    nav.append(...tail);
+  }
   // Conexão XP is for the member's Avatar, Rankings and XP features, never institutional team editing.
   function syncXpLinks(){
     const nav=document.querySelector('#view-logada .crm-nav-items')||document.querySelector('.crm-nav-items');
@@ -150,12 +159,16 @@
       const hasTeam=teamNav&&teamNav.parentElement===nav&&!teamNav.hidden;
       if(hasTeam&&adminNav.nextElementSibling!==teamNav)adminNav.after(teamNav);
     }
-    // XP e Rankings ficam após as ferramentas e demais recursos, não no topo.
-    // É uma ordem de navegação, sem alteração de perfil, ranking ou pontuação.
-    const ordered=[section,avatar,...(replay?[replay]:[]),ranking];
-    if(nav.lastElementChild!==ranking||section.nextElementSibling!==avatar||
-       avatar.nextElementSibling!==(replay||ranking)||
-       (replay&&replay.nextElementSibling!==ranking))nav.append(...ordered);
+    // Gestão Freelancer permanece imediatamente antes de XP, e Compartilhar
+    // permanece sempre por último. Não altera pontos ou os links existentes.
+    const freelancer=document.getElementById('cxFreelancerManagementNav');
+    const share=document.getElementById('cx-share-portal');
+    const tail=[
+      ...(freelancer?.parentElement===nav?[freelancer]:[]),
+      section,avatar,...(replay?[replay]:[]),ranking,
+      ...(share?.parentElement===nav?[share]:[])
+    ];
+    placeSidebarTail(nav,tail);
   }
   function startTeamAndNavigation(){
     ensureTeamPage();
@@ -167,6 +180,7 @@
   else startTeamAndNavigation();
   document.addEventListener('crm:admin-ready',syncXpLinks);
   document.addEventListener('crm:role-resolved',syncXpLinks);
+  document.addEventListener('crm:freelancer-nav-ready',syncXpLinks);
   document.addEventListener('crm:role-resolved',()=>{
     if(typeof crmSignedIn!=='function'||!crmSignedIn()){
       const frame=document.querySelector('#crmTeamEmbedPage .crm-team-frame');
