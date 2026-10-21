@@ -24,6 +24,14 @@ const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 const getUser=()=>{try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null}catch{return null}};
 const getProfile=()=>{try{return typeof CURRENT_PROFILE!=='undefined'?CURRENT_PROFILE:null}catch{return null}};
 const signed=()=>{try{return typeof crmSignedIn==='function'&&crmSignedIn()&&!!getUser()?.id&&!getUser()?.is_anonymous}catch{return false}};
+function canShow(){
+  // A sessão e a área logada precisam estar ativas ao mesmo tempo.
+  // Uma rota pública nunca pode montar nem exibir este assistente.
+  try{
+    const workspace=document.getElementById('view-logada');
+    return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
+  }catch{return false;}
+}
 let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='';
 const CTA=[
   ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
@@ -108,6 +116,7 @@ function applyJobFilter(filter){
   return true;
 }
 function runAction(id){
+  if(!canShow()){reconcile();return;}
   if(!Object.prototype.hasOwnProperty.call(ACTIONS,id))return;
   if(id==='login'){
     if(typeof window.CXGoogleLogin?.open==='function')window.CXGoogleLogin.open();
@@ -151,6 +160,8 @@ function containsSensitive(s){
    /(?:\+?\d[\d\s()\-]{10,}\d)/.test(s);
 }
 async function analyze(){
+  if(!canShow()){pendingDescription='';reconcile();return;}
+  const memberId=getUser()?.id;
   const value=pendingDescription;pendingDescription='';
   if(busy||!value)return;
   if(containsSensitive(value)){
@@ -165,15 +176,19 @@ async function analyze(){
   try{
     const prompt='Analise esta descrição de vaga, destaque requisitos e pontos de atenção para a entrevista. Não invente informações. Descrição:\n'+value;
     const result=await sb.functions.invoke('openai-assistant',{body:{kind:'assistant',prompt}});
+    // Impede exibir resultado privado depois de logout, troca de conta ou rota.
+    if(!canShow()||getUser()?.id!==memberId)return;
     if(result.error||!result.data?.resposta){
       addMessage('assistant','Não foi possível concluir a análise. Confira se você está conectado e tente novamente. As outras funções continuam disponíveis.');return;
     }
     addMessage('assistant',String(result.data.resposta).slice(0,2600),'jobs');
   }catch{
-    addMessage('assistant','A IA não respondeu agora. Você pode continuar navegando pelo portal sem depender dela.');
+    if(canShow()&&getUser()?.id===memberId)
+      addMessage('assistant','A IA não respondeu agora. Você pode continuar navegando pelo portal sem depender dela.');
   }finally{busy=false;if(submit)submit.disabled=false;}
 }
 function process(question){
+  if(!canShow()){reconcile();return;}
   // Nenhuma autorização antiga pode ser reaproveitada por uma nova pergunta.
   pendingDescription='';
   history?.querySelectorAll('.cx-copilot-consent').forEach(el=>el.remove());
@@ -200,6 +215,7 @@ function clearOnAccountChange(){
   showIntro();
 }
 function open(){
+  if(!canShow()){reconcile();return;}
   if(!drawer)return;
   clearOnAccountChange();drawer.hidden=false;root.querySelector('[data-cx-open]').setAttribute('aria-expanded','true');
   showIntro();entry?.focus();
@@ -209,6 +225,7 @@ function close(){
   drawer.hidden=true;root.querySelector('[data-cx-open]').setAttribute('aria-expanded','false');
 }
 function mount(){
+  if(!canShow())return;
   if(document.getElementById('cxCopilot'))return;
   root=document.createElement('div');root.id='cxCopilot';root.className='ph-no-capture';root.setAttribute('data-ph-no-capture','true');
   root.innerHTML=
@@ -236,7 +253,6 @@ function mount(){
   entry.addEventListener('keydown',e=>{
     if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();root.querySelector('[data-cx-form]').requestSubmit();}
   });
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)close();});
   const quick=root.querySelector('[data-cx-quick]');
   CTA.forEach(([action,label])=>{
     const b=document.createElement('button');b.type='button';b.textContent=label;
@@ -247,10 +263,41 @@ function mount(){
   });
   lastUserId=getUser()?.id||'';
   showIntro();
-  window.addEventListener('focus',clearOnAccountChange);
-  document.addEventListener('crm:role-resolved',clearOnAccountChange);
 }
-window.CXCopilot=Object.freeze({open,close,classify});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
-else mount();
+// Mesmo com troca de rota, logout ou expiração, o copiloto desaparece
+// e seus dados temporários de conversa são descartados.
+function reconcile(){
+  if(!canShow()){
+    pendingDescription='';
+    if(root){
+      close();
+      root.remove();
+      root=null;drawer=null;history=null;entry=null;
+      lastUserId='';
+    }
+    return;
+  }
+  if(!root||!root.isConnected)mount();
+  clearOnAccountChange();
+}
+function start(){
+  const workspace=document.getElementById('view-logada');
+  if(workspace&&typeof MutationObserver==='function'){
+    const watcher=new MutationObserver(reconcile);
+    watcher.observe(workspace,{attributes:true,attributeFilter:['hidden','class','style','aria-hidden']});
+  }
+  document.addEventListener('crm:role-resolved',reconcile);
+  document.addEventListener('crm:auth-state',reconcile);
+  document.addEventListener('visibilitychange',reconcile);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer&&!drawer.hidden)close();});
+  window.addEventListener('hashchange',reconcile);
+  window.addEventListener('pageshow',reconcile);
+  window.addEventListener('focus',reconcile);
+  // Retoma após restauração de sessão e trata logout mesmo sem evento de UI.
+  setInterval(reconcile,2000);
+  reconcile();
+}
+window.CXCopilot=Object.freeze({open,close,classify,isAvailable:canShow});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+else start();
 })();
