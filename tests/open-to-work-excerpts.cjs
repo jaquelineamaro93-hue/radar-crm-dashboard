@@ -19,7 +19,8 @@ assert.match(js,/Ver menos/);
 assert.match(js,/aria-expanded/);
 assert.match(js,/textNode\.classList\.toggle\('cx-otw-excerpt',!expanded\)/);
 assert.match(js,/observe\(results,\{childList:true,subtree:false\}\)/);
-assert.doesNotMatch(js,/document\.body\s*,\s*\{childList|localStorage|sessionStorage|\.from\(|\.rpc\(|fetch\(|innerHTML\s*=/);
+// Array.from manipula somente os nós DOM; é permitido.
+assert.doesNotMatch(js,/document\.body\s*,\s*\{childList|localStorage|sessionStorage|(?:supabase|authSb|client|db)\.from\(|\.rpc\(|\bfetch\(|innerHTML\s*=/);
 assert.match(loader,/\/assets\/open-to-work-excerpts\.js\?v=/);
 assert.match(loader,/\/assets\/open-to-work-excerpts\.css\?v=/);
 
