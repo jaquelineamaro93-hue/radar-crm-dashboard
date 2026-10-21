@@ -96,7 +96,7 @@ try{
   dream_text:text,
   display_name:$("plantName").value.trim(),
   consent_publication:$("plantConsent").checked,
-  website_company:""
+  website_company:$("dreamWebsiteCompany")?.value||""
  });
  const d=payload.dream;
  own={id:d.id,mine:true,type:d.type,name:d.name||"Você",text:d.text,x:52,y:58,color:"#ffe6b8"};
