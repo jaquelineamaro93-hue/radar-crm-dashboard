@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./dream-garden-v7.css?v=7">
 <link rel="stylesheet" href="./dream-audio-v8.css?v=8">
-<script src="./dream-garden-v7.js?v=7" defer></script>
+<script src="./dream-garden-v7.js?v=8" defer></script>
 <script src="./dream-audio-v8.js?v=10" defer></script>
 </head>
 <body>
@@ -125,10 +125,10 @@
    <label for="plantText">Eu sonho em…</label><textarea id="plantText" maxlength="360" minlength="12" required placeholder="Conte seu sonho com suas próprias palavras..."></textarea>
    <span class="word-counter" id="wordCounter">0 / 360</span>
    <label for="plantName">Como gostaria de assinar? (opcional)</label><input id="plantName" maxlength="45" placeholder="Seu primeiro nome ou apelido">
-   <label class="check-consent" for="plantConsent"><input id="plantConsent" type="checkbox" required><span>Entendi que esta é uma prévia: meu sonho será mostrado só nesta visita, sem envio ou publicação</span></label>
+   <input type="text" id="dreamWebsiteCompany" class="dream-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true"><label class="check-consent" for="plantConsent"><input id="plantConsent" type="checkbox" required><span>Autorizo o registro deste sonho no Jardim dos Sonhos e entendo que ele poderá aparecer publicamente após moderação.</span></label>
    <button class="action action-primary plant-submit" type="submit">✧ Ver meu sonho florescer ↗</button>
   </form>
-  <div class="plant-success" id="plantSuccess" hidden role="status"><div class="grown-flower" aria-hidden="true">✿</div><h3>Seu sonho começou a florescer ✨</h3><blockquote id="plantPreview"></blockquote><p>Ele já ganhou uma luz no jardim desta visita. Nada foi enviado ou salvo.</p><div class="success-actions"><button class="action action-outline" id="seeNewWish" type="button">Ver minha flor na árvore ↗</button><a class="action action-fame" href="https://conexaocrm.com/premio-2027/?entry=sonhos#calcada">Ir para a Calçada da Fama ↗</a></div></div>
+  <div class="plant-success" id="plantSuccess" hidden role="status"><div class="grown-flower" aria-hidden="true">✿</div><h3>Seu sonho começou a florescer ✨</h3><blockquote id="plantPreview"></blockquote><p>Seu sonho foi registrado no Jardim. Você já consegue vê-lo nesta visita e, depois da moderação, ele poderá florescer publicamente para toda a comunidade.</p><div class="success-actions"><button class="action action-outline" id="seeNewWish" type="button">Ver minha flor na árvore ↗</button><a class="action action-fame" href="https://conexaocrm.com/premio-2027/?entry=sonhos#calcada">Ir para a Calçada da Fama ↗</a></div></div>
  </section>
 </div>
 </body></html>
