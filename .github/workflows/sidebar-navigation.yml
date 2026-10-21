@@ -1,0 +1,33 @@
+name: Sidebar navigation regression
+on:
+  push:
+    branches:
+      - main
+      - fix/sidebar-team-reports-ranking-otw-20261021
+    paths:
+      - 'index.html'
+      - 'assets/portal-hardening.js'
+      - 'quem-faz/index.html'
+      - 'tests/sidebar-navigation.cjs'
+      - '.github/workflows/sidebar-navigation.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'assets/portal-hardening.js'
+      - 'quem-faz/index.html'
+      - 'tests/sidebar-navigation.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate protected sidebar and routing
+        run: node tests/sidebar-navigation.cjs
