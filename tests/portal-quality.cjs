@@ -51,8 +51,8 @@ assert(!index.includes('<script type="text/javascript" src="https://cdn.inngage.
   'SDK de push não deve inicializar em todas as páginas');
 assert(index.includes('/assets/push-preferences.js?v=')&&index.includes('/assets/push-preferences.css?v='),
   'controles de notificações por seção devem estar incluídos');
-assert(index.includes("query = query.order('published_at', { ascending: false, nullsFirst: false });"),
-  'filtro de vagas deve ordenar pela publicação');
+assert(/query\s*=\s*query\.order\('published_at',\s*\{\s*ascending:\s*false,\s*nullsFirst:\s*false\s*\}\)\.limit\(1000\)/.test(index),
+  'filtro de vagas deve ordenar pela publicação antes de limitar resultados');
 assert(hardening.includes("Date.parse(b.published_at||'')"),
   'filtro local não deve reordenar pela data de coleta');
 assert(!read('assets/crm-runtime-integrations.js').includes("navigator.serviceWorker.register('/sw.js'"),
