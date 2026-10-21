@@ -131,8 +131,7 @@ async function voting(){
   const ids=[...new Set(candidates.map(c=>c.category_id))];
   const categoryMap={};
   // Build label map from public category ordering returned by config.
-  const publicCats=categories.filter(c=>c.public_voting);
-  ids.forEach((id,i)=>categoryMap[id]=publicCats[i]?.label||"Categoria "+(i+1));
+  ids.forEach((id,i)=>categoryMap[id]=categories.find(c=>c.id===id)?.label||"Categoria "+(i+1));
   const select=$("#awardsVoteCategory");
   if(select)select.innerHTML=ids.map(id=>'<option value="'+id+'">'+escapeHtml(categoryMap[id])+'</option>').join("");
   renderCandidates(candidates,data.my_votes||{});
