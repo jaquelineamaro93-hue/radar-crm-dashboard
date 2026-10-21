@@ -9,6 +9,9 @@ const base=path.join(__dirname,'..');
 const script=fs.readFileSync(path.join(base,'assets/crm-copilot.js'),'utf8');
 const css=fs.readFileSync(path.join(base,'assets/crm-copilot.css'),'utf8');
 const loader=fs.readFileSync(path.join(base,'assets/crm-runtime-integrations.js'),'utf8');
+const privacy=fs.readFileSync(path.join(base,'privacy-policy.html'),'utf8');
+assert.match(privacy,/Assistente Conexão IA/);
+assert.match(privacy,/somente o texto informado/);
 
 // Syntax checks cover both the assistant and existing bootstrap.
 new vm.Script(script,{filename:'assets/crm-copilot.js'});
