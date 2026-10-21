@@ -10,6 +10,7 @@ on:
       - 'assets/crm-copilot.css'
       - 'assets/crm-runtime-integrations.js'
       - 'tests/copilot-security.cjs'
+      - 'privacy-policy.html'
       - '.github/workflows/copilot-security.yml'
   pull_request:
     branches:
@@ -19,6 +20,7 @@ on:
       - 'assets/crm-copilot.css'
       - 'assets/crm-runtime-integrations.js'
       - 'tests/copilot-security.cjs'
+      - 'privacy-policy.html'
   workflow_dispatch:
 
 permissions:
