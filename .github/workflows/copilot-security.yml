@@ -1,0 +1,36 @@
+name: Copilot privacy and safety
+
+on:
+  push:
+    branches:
+      - main
+      - feature/conexao-ia-copiloto-seguro-20261020
+    paths:
+      - 'assets/crm-copilot.js'
+      - 'assets/crm-copilot.css'
+      - 'assets/crm-runtime-integrations.js'
+      - 'tests/copilot-security.cjs'
+      - '.github/workflows/copilot-security.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'assets/crm-copilot.js'
+      - 'assets/crm-copilot.css'
+      - 'assets/crm-runtime-integrations.js'
+      - 'tests/copilot-security.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  copilot-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JS syntax, privacy boundaries and intent routing
+        run: node tests/copilot-security.cjs
