@@ -8,7 +8,7 @@ const audio=document.getElementById("gardenAmbientAudio");
 const play=document.getElementById("gardenSoundPlay");
 const mute=document.getElementById("gardenSoundMute");
 const status=document.getElementById("gardenSoundStatus");
-const dock=document.getElementById("gardenSoundDock");
+const dock=document.getElementById("gardenSoundDock")||document.querySelector(".garden-sound-dock");
 const alternative=document.getElementById("gardenSoundFallback");
 const upload=document.getElementById("gardenSoundLocalFile");
 if(!audio||!play||!mute||!status||!dock)return;
@@ -75,7 +75,7 @@ mute.addEventListener("click",()=>{
  paint();save();
  if(!deliberatePause&&!active()&&!resourceFailed)start(false);
 });
-audio.addEventListener("playing",()=>{gestureRequired=false;paint()});
+audio.addEventListener("loadeddata",()=>{resourceFailed=false;paint()});\naudio.addEventListener("canplay",()=>{resourceFailed=false;paint()});\naudio.addEventListener("playing",()=>{gestureRequired=false;resourceFailed=false;paint()});
 audio.addEventListener("pause",paint);
 audio.addEventListener("volumechange",()=>{paint();save()});
 audio.addEventListener("error",()=>{resourceFailed=true;paint()});
