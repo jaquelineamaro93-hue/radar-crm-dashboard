@@ -8,6 +8,8 @@ function addScript(src,id){
   document.head.appendChild(s);
 }
 addScript(INTEGRATION_URL,'crm-inngage-integration-runtime');
+// Crédito discreto de UX/Product Design no rodapé público, sem alterar o HTML legado.
+addScript('/assets/footer-credits.js?v=20261021-1','crm-footer-credit-runtime');
 
 // Copiloto independente: não altera login, Match, RLS nem funções legadas.
 // O módulo só executa ações predefinidas da interface; IA requer consentimento.
