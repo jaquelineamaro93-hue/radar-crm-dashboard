@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - main
-      - fix/sidebar-team-reports-ranking-otw-20261021
+      - fix/sidebar-dividers-xp-before-share-20261021
     paths:
       - 'index.html'
       - 'assets/portal-hardening.js'
+      - 'assets/workspace.js'
+      - 'assets/share-everything.js'
       - 'quem-faz/index.html'
       - 'tests/sidebar-navigation.cjs'
       - '.github/workflows/sidebar-navigation.yml'
@@ -16,6 +18,8 @@ on:
     paths:
       - 'index.html'
       - 'assets/portal-hardening.js'
+      - 'assets/workspace.js'
+      - 'assets/share-everything.js'
       - 'quem-faz/index.html'
       - 'tests/sidebar-navigation.cjs'
   workflow_dispatch:
