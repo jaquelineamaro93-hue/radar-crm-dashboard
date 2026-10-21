@@ -68,6 +68,9 @@ function classify(question){
   if(!s)return {intent:'help'};
   if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
     return {intent:'profile-status'};
+  // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
+  if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
+    return {intent:'analyze'};
   if(/(avatar)/.test(s))return {intent:'action',action:'avatar'};
   if(/(ranking|pontos xp|coins|pontuacao)/.test(s))return {intent:'action',action:'rankings'};
   if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
@@ -77,8 +80,6 @@ function classify(question){
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
     return {intent:'action',action:'market'};
-  if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
-    return {intent:'analyze'};
   if(/(vaga|radar|emprego|oportunidade|match|aderencia|candidatura)/.test(s)){
     if(/remot/.test(s))return {intent:'action',action:'remote'};
     if(/hibrid/.test(s))return {intent:'action',action:'hybrid'};
@@ -173,6 +174,9 @@ async function analyze(){
   }finally{busy=false;if(submit)submit.disabled=false;}
 }
 function process(question){
+  // Nenhuma autorização antiga pode ser reaproveitada por uma nova pergunta.
+  pendingDescription='';
+  history?.querySelectorAll('.cx-copilot-consent').forEach(el=>el.remove());
   addMessage('user',question);
   const found=classify(question);
   if(found.intent==='profile-status'){
