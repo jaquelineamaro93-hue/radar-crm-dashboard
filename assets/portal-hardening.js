@@ -69,7 +69,7 @@
     if(typeof crmNavigate==='function'){
       crmNavigate('equipe',false);
       // Uma rota SPA conservadora que preserva o sidebar e suporta o histórico.
-      history.pushState(null,'','/#equipe');
+      if(location.hash!=='#equipe')history.pushState(null,'','/#equipe');
     }
   }
   if(!document.getElementById('crm-team-workspace-css')){
@@ -167,7 +167,14 @@
   else startTeamAndNavigation();
   document.addEventListener('crm:admin-ready',syncXpLinks);
   document.addEventListener('crm:role-resolved',syncXpLinks);
-  document.addEventListener('crm:role-resolved',()=>{if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn())openTeamInside(false);});
+  document.addEventListener('crm:role-resolved',()=>{
+    if(typeof crmSignedIn!=='function'||!crmSignedIn()){
+      const frame=document.querySelector('#crmTeamEmbedPage .crm-team-frame');
+      if(frame&&frame.getAttribute('src'))frame.removeAttribute('src');
+      return;
+    }
+    if(location.hash==='#equipe')openTeamInside(false);
+  });
   document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
   // Role-resolved event handles authentication changes without moving menu items repeatedly.
 
