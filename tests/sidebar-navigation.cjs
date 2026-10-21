@@ -11,7 +11,7 @@ const team=read('quem-faz/index.html');
 new vm.Script(nav,{filename:'assets/portal-hardening.js'});
 
 // O shell usa a versão atual, evitando scripts obsoletos por cache.
-assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261021-navigation1/);
+assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261021-sidebar2/);
 assert.match(shell,/id="view-logada"/);
 assert.match(shell,/id="crmPages"/);
 
@@ -28,10 +28,47 @@ assert.match(team,/html\.crm-team-embedded \.top\{display:none\}/);
 assert.match(team,/html\.crm-team-embedded \.cx-return-bar\{display:none!important\}/);
 assert.match(nav,/frame\.removeAttribute\('src'\)/);
 
-// Ranking colocado no fim do sidebar, e não sobre a experiência principal.
-assert.match(nav,/nav\.append\(\.\.\.ordered\)/);
-assert.doesNotMatch(nav,/nav\.prepend\(section,avatar,ranking/);
-assert.match(nav,/const ordered=\[section,avatar,\.\.\.\(replay\?\[replay\]:\[\]\),ranking\]/);
+// A última seção é Compartilhar; XP e Rankings são a penúltima.
+const freelancer=read('assets/workspace.js');
+const sharing=read('assets/share-everything.js');
+new vm.Script(freelancer,{filename:'assets/workspace.js'});
+new vm.Script(sharing,{filename:'assets/share-everything.js'});
+assert.match(nav,/const freelancer=document\.getElementById\('cxFreelancerManagementNav'\)/);
+assert.match(nav,/const share=document\.getElementById\('cx-share-portal'\)/);
+assert.match(nav,/placeSidebarTail\(nav,tail\)/);
+assert.match(nav,/document\.addEventListener\('crm:freelancer-nav-ready',syncXpLinks\)/);
+assert.match(freelancer,/document\.dispatchEvent\(new Event\('crm:freelancer-nav-ready'\)\)/);
+assert.match(freelancer,/head\.textContent='Gestão Freelancer'/);
+assert.doesNotMatch(freelancer,/gap:3px;border-top:1px solid #47382e/);
+assert.match(sharing,/if\(nav\.lastElementChild!==btn\)nav\.append\(btn\)/);
+
+// Executa o algoritmo real de ordenação usando DOM mínimo simulado.
+const start=nav.indexOf('function placeSidebarTail(nav,nodes){');
+const stop=nav.indexOf('  // Conexão XP is',start);
+assert(start>=0&&stop>start,'sidebar ordering helper must remain testable');
+const place=vm.runInNewContext('(function(){'+nav.slice(start,stop)+'return placeSidebarTail})()');
+const el=id=>({id,parentElement:null,nextElementSibling:null});
+const [regular,section,avatar,ranking,freelancerSection,share]=
+ ['normal','xp','avatar','ranking','freelancer','share'].map(el);
+const mockNav={
+ children:[],moves:0,
+ get lastElementChild(){return this.children[this.children.length-1]||null;},
+ append(...nodes){
+  this.moves++;
+  for(const n of nodes){
+   this.children=this.children.filter(x=>x!==n);
+   this.children.push(n);n.parentElement=this;
+  }
+  this.children.forEach((n,i)=>n.nextElementSibling=this.children[i+1]||null);
+ }
+};
+mockNav.append(regular,section,avatar,ranking,share,freelancerSection);
+place(mockNav,[freelancerSection,section,avatar,ranking,share]);
+assert.deepEqual(mockNav.children.map(x=>x.id),['normal','freelancer','xp','avatar','ranking','share']);
+const moves=mockNav.moves;
+place(mockNav,[freelancerSection,section,avatar,ranking,share]);
+assert.equal(mockNav.moves,moves,'same order must not trigger repeat DOM writes');
+assert.equal(new Set(mockNav.children).size,mockNav.children.length,'no duplicate menu items');
 
 // Report canônico único; o atalho redundante é excluído e não recriado.
 assert.match(nav,/document\.getElementById\('crmOpenToWorkReportNav'\)\?\.remove\(\)/);
