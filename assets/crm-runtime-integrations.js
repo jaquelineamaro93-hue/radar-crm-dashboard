@@ -11,6 +11,16 @@ addScript(INTEGRATION_URL,'crm-inngage-integration-runtime');
 // Crédito discreto de UX/Product Design no rodapé público, sem alterar o HTML legado.
 addScript('/assets/footer-credits.js?v=20261021-1','crm-footer-credit-runtime');
 
+// Open to Work: somente a apresentação dos textos longos, sem alterar origem dos dados.
+if(!document.getElementById('crm-otw-excerpts-css')){
+  const css=document.createElement('link');
+  css.id='crm-otw-excerpts-css';
+  css.rel='stylesheet';
+  css.href='/assets/open-to-work-excerpts.css?v=20261021-1';
+  document.head.appendChild(css);
+}
+addScript('/assets/open-to-work-excerpts.js?v=20261021-1','crm-otw-excerpts-runtime');
+
 // Copiloto independente: não altera login, Match, RLS nem funções legadas.
 // O módulo só executa ações predefinidas da interface; IA requer consentimento.
 if(!document.getElementById('crm-copilot-css')){
