@@ -4,7 +4,7 @@
 const API="https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-awards-public";
 const URL="https://rwkbpafpniwzvlkfngag.supabase.co";
 const KEY="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-let config=null,categories=[],selectedCandidate=null,authClient=null,session=null;
+let config=null,categories=[],selectedCandidate=null,session=null;
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 function fmt(iso){if(!iso)return"";try{return new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",year:"numeric"}).format(new Date(iso))}catch{return iso}}
 function message(el,text,type){if(!el)return;el.textContent=text||"";el.classList.remove("ok","error");if(type)el.classList.add(type)}
@@ -80,11 +80,48 @@ function tabs(){
  }));
 }
 async function auth(){
+ const storageKey="sb-rwkbpafpniwzvlkfngag-auth-token";
+ function readStored(){
+  try{
+   const raw=localStorage.getItem(storageKey);
+   if(!raw)return null;
+   const parsed=JSON.parse(raw);
+   return parsed?.currentSession||parsed?.session||parsed||null;
+  }catch{return null}
+ }
+ async function validate(accessToken){
+  if(!accessToken)return null;
+  try{
+   const res=await fetch(URL+"/auth/v1/user",{headers:{"apikey":KEY,"Authorization":"Bearer "+accessToken},cache:"no-store"});
+   if(!res.ok)return null;
+   const user=await res.json();
+   if(!user?.id||user.is_anonymous||!user.email)return null;
+   return user;
+  }catch{return null}
+ }
  try{
-  if(window.supabase?.createClient){
-   authClient=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-   const r=await authClient.auth.getSession();session=r.data?.session||null;
+  let stored=readStored();
+  if(!stored?.access_token)return;
+  let user=await validate(stored.access_token);
+  if(!user&&stored.refresh_token){
+   try{
+    const refresh=await fetch(URL+"/auth/v1/token?grant_type=refresh_token",{
+     method:"POST",
+     headers:{"apikey":KEY,"Content-Type":"application/json"},
+     body:JSON.stringify({refresh_token:stored.refresh_token}),
+     cache:"no-store"
+    });
+    if(refresh.ok){
+     const fresh=await refresh.json();
+     if(fresh?.access_token){
+      stored=fresh;
+      localStorage.setItem(storageKey,JSON.stringify(fresh));
+      user=await validate(fresh.access_token);
+     }
+    }
+   }catch{}
   }
+  if(user)session={...stored,user};
  }catch{}
 }
 function voteCategoryOptions(candidates){
