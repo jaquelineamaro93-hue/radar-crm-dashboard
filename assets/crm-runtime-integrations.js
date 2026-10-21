@@ -19,7 +19,7 @@ if(!document.getElementById('crm-copilot-css')){
   css.href='/assets/crm-copilot.css?v=20261020-1';
   document.head.appendChild(css);
 }
-addScript('/assets/crm-copilot.js?v=20261020-1','crm-copilot-runtime');
+addScript('/assets/crm-copilot.js?v=20261021-2','crm-copilot-runtime');
 
 // O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.
 
