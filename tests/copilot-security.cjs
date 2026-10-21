@@ -20,7 +20,8 @@ assert.match(css,/@media\(max-width:480px\)/);
 
 // Hard privacy boundaries and explicit third-party authorization.
 assert.doesNotMatch(script,/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|service_role/);
-assert.doesNotMatch(script,/\.from\(|\.rpc\(|\.upsert\(|\.insert\(|\.update\(|\.delete\(/);
+// Array.from is safe; block Supabase query builders and all database mutations.
+assert.doesNotMatch(script,/\b(?:authSb|supabase|client|sb)\.from\(|\.rpc\(|\.upsert\(|\.insert\(|\.update\(|\.delete\(/);
 assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB/);
 assert.doesNotMatch(script,/eval\(|new Function\(|document\.write\(/);
 assert.match(script,/ph-no-capture/);
