@@ -76,7 +76,7 @@ function classify(question){
   if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
   if(/(membros|networking|conhecer pessoas|fazer conexoes)/.test(s))
     return {intent:'action',action:'members'};
-  if(/(salario|remuneracao|faixa salarial|media salarial|quanto ganha)/.test(s))
+  if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
     return {intent:'action',action:'market'};
