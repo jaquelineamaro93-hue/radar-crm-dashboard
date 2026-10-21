@@ -20,6 +20,11 @@ function setOptions(id,type){
  const el=document.getElementById(id);if(!el)return;
  const list=categories.filter(c=>c.subject_type===type);
  el.innerHTML='<option value="">Selecione</option>'+list.map(c=>'<option value="'+c.code+'">'+c.label+'</option>').join("");
+ if(id==="awardPersonCategory"){
+  const revelation=$("#awardsRevelationFields");
+  const sync=()=>{const on=el.value==="revelacao";if(revelation){revelation.hidden=!on;revelation.querySelectorAll("select,input").forEach(x=>x.required=on)}};
+  el.addEventListener("change",sync);sync();
+ }
 }
 function setDisabled(selector,disabled){
  $$(selector+" input,"+selector+" select,"+selector+" textarea,"+selector+" button[type=submit]").forEach(el=>el.disabled=disabled);
