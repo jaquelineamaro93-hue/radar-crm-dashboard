@@ -83,7 +83,7 @@
 <script src="./motion-v4.js?v=4" defer></script>
 <script src="./editorial-v5.js?v=5" defer></script>
 <script src="./journey-v6.js?v=6" defer></script>
-</head>
+<link rel="stylesheet" href="./awards-public-v1.css?v=1">\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js" defer></script>\n<script src="./awards-public-v1.js?v=1" defer></script>\n</head>
 <body class="no-scroll">
 <audio id="awardsTheme" preload="auto" loop aria-hidden="true">\n <source src="https://raw.githubusercontent.com/tapiwamakandigona/emberdelve/main/assets/audio/music/boss_combat.ogg" type="audio/ogg">\n <source src="https://www.stargazersworld.com/wordpress/wp-content/uploads/2012/10/Five-Armies.mp3" type="audio/mpeg">\n <source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg">\n</audio>
 <a class="skip-link" href="#main">Ir para o conteúdo</a>
@@ -123,7 +123,7 @@
 <div class="motion-progress" aria-hidden="true"><span id="motionProgressFill"></span></div>
 <header class="nav"><div class="frame nav-in">
  <a class="brand" href="#inicio" aria-label="Conexão CRM Prêmio 2027"><span class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/><path d="m3 7 9 5 9-5M12 12v10"/></svg></span>CONEXÃO <b>CRM.</b></a>
- <nav class="nav-links" id="navLinks" aria-label="Navegação principal"><a href="#universos">OS 3 PILARES</a><a href="#calcada">CATEGORIAS</a><a href="#jornada">JORNADA</a><a href="#metodologia">METODOLOGIA</a><a href="#participacao">COMO PARTICIPAR</a><a href="#agenda">CALENDÁRIO</a><a href="#hall">HALL DA FAMA</a></nav>
+ <nav class="nav-links" id="navLinks" aria-label="Navegação principal"><a href="#universos">OS 3 PILARES</a><a href="#calcada">CATEGORIAS</a><a href="#jornada">JORNADA</a><a href="#metodologia">METODOLOGIA</a><a href="#participacao">INDICAÇÕES</a><a href="#votacao-public">VOTAÇÃO</a><a href="#agenda">CALENDÁRIO</a><a href="#hall">HALL DA FAMA</a></nav>
  <span class="pill">✦ PRIMEIRA EDIÇÃO · 2027</span>
  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
 </div></header>
@@ -135,7 +135,7 @@
    <span class="eyebrow">PRÊMIO CONEXÃO CRM &nbsp; / &nbsp; ESTREIA 2027</span>
    <h1><span class="hero-sans">UM NOVO CAPÍTULO</span><em>Começa</em><br><span id="heroHighlight">com você.</span></h1>
    <p class="hero-sub">CRM, CX e CS têm histórias que merecem ser vistas. Em 2027, nasce um novo prêmio para reconhecer profissionais, cases e tecnologias que fazem a diferença</p>
-   <div class="hero-actions"><a href="#calcada" class="btn btn-primary">Conhecer a Calçada da Fama <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="#agenda">Indicações abrem em novembro <span aria-hidden="true">→</span></a></div>
+   <div class="hero-actions"><a href="#participacao" class="btn btn-primary">Como participar <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="/historias-que-conectam-2027/">Conhecer o Jardim dos Sonhos <span aria-hidden="true">→</span></a></div>
    <div class="hero-foot"><div><span>01</span>PRIMEIRA EDIÇÃO</div><div><span>09</span>CATEGORIAS INICIAIS</div><div><span>2027</span>O ANO DO RECONHECIMENTO</div></div>
   </div>
   <div class="award-art" aria-hidden="true">
@@ -300,17 +300,169 @@
   <div class="governance-mini"><div><strong>Regras claras</strong> Regulamento antes da abertura</div><div><strong>Banca a definir</strong> Composição sujeita à validação</div><div><strong>Privacidade</strong> Proteções adequadas para os participantes</div></div>
  </div>
 </div></section>
-<section class="section story" id="participacao"><div class="frame">
- <div class="chapter-heading"><span class="num">03</span><span class="eyebrow">COMO PARTICIPAR</span></div>
- <h2 class="section-heading">Da indicação ao palco.<br><span class="gold">A comunidade constrói essa história.</span></h2>
- <p class="section-desc">A primeira edição terá etapas diferentes para pessoas, cases e tecnologias. As regras completas e o regulamento serão publicados antes da abertura das indicações.</p>
- <div class="story-grid" style="grid-template-columns:repeat(4,1fr)">
-  <article class="story-step"><span class="count">01</span><h3>Indicações abertas</h3><p>De novembro de 2026 até fevereiro ou março de 2027, a comunidade poderá indicar nomes, cases e ferramentas conforme cada categoria.</p></article>
-  <article class="story-step"><span class="count">02</span><h3>Live dos Indicados</h3><p>Em fevereiro ou março, uma live especial apresenta os nomes que avançam e transforma as histórias indicadas em conteúdo para o mercado.</p></article>
-  <article class="story-step"><span class="count">03</span><h3>Voto & avaliação</h3><p>Pessoas e tecnologias seguem para voto da comunidade. Cases passam por banca técnica e critérios publicados no regulamento.</p></article>
-  <article class="story-step"><span class="count">04</span><h3>06 de julho</h3><p>O evento reúne conteúdo e conexões. No encerramento acontecem a premiação oficial e o show.</p></article>
+<section class="section story awards-participation" id="participacao"><div class="frame">
+ <div class="awards-arrival" id="awardsDreamArrival" hidden>
+  <span>DO JARDIM PARA A CALÇADA</span>
+  <strong>Alguns sonhos viram histórias. Algumas histórias viram estrelas.</strong>
+  <p>Agora você pode reconhecer quem está ajudando a construir o futuro de CRM, CX e CS.</p>
  </div>
-</div></section>\n<section class="section" id="indicacoes" hidden aria-hidden="true"><div class="frame">
+ <div class="chapter-heading"><span class="num">03</span><span class="eyebrow">INDICAÇÕES · PRIMEIRA EDIÇÃO</span></div>
+ <h2 class="section-heading">Quem merece<br><span class="gold">ser reconhecido?</span></h2>
+ <p class="section-desc">As indicações oficiais acontecem de <strong>01 de novembro de 2026 a 07 de janeiro de 2027</strong>. Depois vem a curadoria, a votação da comunidade e a Live dos Indicados, que revelará os finalistas oficiais da primeira edição.</p>
+ <div class="awards-phase-card" id="awardsPhaseCard" aria-live="polite"><span class="awards-phase-dot"></span><div><b>Carregando calendário oficial</b><p>Consultando as datas do Prêmio Conexão CRM 2027.</p></div></div>
+ <div class="awards-path" aria-label="Etapas até a premiação">
+  <article><span>01</span><b>Indique</b><p>Profissionais, revelações, cases e tecnologias.</p></article>
+  <article><span>02</span><b>Curadoria</b><p>Elegibilidade, duplicidades, critérios e evidências.</p></article>
+  <article><span>03</span><b>Vote</b><p>A comunidade escolhe entre os nomes publicados.</p></article>
+  <article><span>04</span><b>Live</b><p>Os finalistas oficiais são revelados ao mercado.</p></article>
+  <article><span>05</span><b>06/07</b><p>Evento, premiação e show no encerramento.</p></article>
+ </div>
+
+ <div class="awards-form-tabs" role="tablist" aria-label="Escolha como participar">
+  <button type="button" class="awards-form-tab active" data-awards-form="person" aria-selected="true">Indicar profissional</button>
+  <button type="button" class="awards-form-tab" data-awards-form="case" aria-selected="false">Inscrever case</button>
+  <button type="button" class="awards-form-tab" data-awards-form="tool" aria-selected="false">Indicar ferramenta</button>
+  <button type="button" class="awards-form-tab jury" data-awards-form="jury" aria-selected="false">Quero ser jurado</button>
+ </div>
+
+ <div class="awards-form-panel active" data-awards-panel="person">
+  <div class="awards-form-copy"><span class="eyebrow">PESSOAS</span><h3>Indique alguém que deveria estar na Calçada da Fama</h3><p>O LinkedIn será a identidade pública principal para evitar homônimos. Seu nome e e-mail como indicador ficam privados e são usados apenas para validar a indicação.</p></div>
+  <form class="awards-real-form" id="awardPersonForm">
+   <fieldset data-nomination-fieldset>
+    <input class="awards-hp" tabindex="-1" autocomplete="off" name="website_company" aria-hidden="true">
+    <label><span>Categoria *</span><select name="category" id="awardPersonCategory" required><option>Carregando...</option></select></label>
+    <div class="awards-form-grid">
+     <label><span>Nome completo do indicado *</span><input name="nominee_name" maxlength="120" required autocomplete="off" placeholder="Nome e sobrenome"></label>
+     <label><span>LinkedIn do indicado *</span><input name="linkedin_url" type="url" required placeholder="https://www.linkedin.com/in/..."></label>
+    </div>
+    <div class="awards-form-grid">
+     <label><span>Cargo atual</span><input name="role" maxlength="160" placeholder="Ex.: Coordenadora de CRM"></label>
+     <label><span>Empresa / organização</span><input name="company" maxlength="160" placeholder="Opcional"></label>
+    </div>
+    <label><span>Apresente essa pessoa em poucas linhas *</span><textarea name="intro" minlength="30" maxlength="500" required placeholder="Quem é essa pessoa e qual é sua atuação no ecossistema?"></textarea></label>
+    <label><span>Por que ela merece esse reconhecimento? *</span><textarea name="reason" minlength="40" maxlength="1400" required placeholder="Conte sobre impacto, resultados, contribuição para o mercado e o que faz essa pessoa se destacar."></textarea></label>
+    <label><span>Link de referência</span><input name="reference_url" type="url" placeholder="Case, artigo, palestra ou outra evidência pública"></label>
+    <div class="awards-form-grid">
+     <label><span>Seu nome *</span><input name="nominator_name" maxlength="120" required autocomplete="name"></label>
+     <label><span>Seu e-mail *</span><input name="nominator_email" type="email" maxlength="254" required autocomplete="email"></label>
+    </div>
+    <label class="awards-check"><input name="consent" type="checkbox" required><span>Confirmo que as informações são verdadeiras e autorizo o uso dos dados enviados para análise da premiação, conforme a política de privacidade.</span></label>
+    <button class="btn btn-primary awards-submit" type="submit">Enviar indicação →</button>
+   </fieldset>
+   <p class="awards-feedback" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+
+ <div class="awards-form-panel" data-awards-panel="case" hidden>
+  <div class="awards-form-copy"><span class="eyebrow">CASES</span><h3>Inscreva um case para avaliação técnica</h3><p>Cases não serão decididos por popularidade. A banca avaliará estratégia, execução, resultados e evidências. Informações de contato e materiais de apoio não ficam públicos.</p></div>
+  <form class="awards-real-form" id="awardCaseForm">
+   <fieldset data-nomination-fieldset>
+    <input class="awards-hp" tabindex="-1" autocomplete="off" name="website_company" aria-hidden="true">
+    <label><span>Categoria *</span><select name="category" id="awardCaseCategory" required><option>Carregando...</option></select></label>
+    <div class="awards-form-grid">
+     <label><span>Nome do case *</span><input name="case_title" maxlength="180" required></label>
+     <label><span>Empresa responsável *</span><input name="company_name" maxlength="180" required></label>
+    </div>
+    <div class="awards-form-grid">
+     <label><span>Agência / consultoria parceira</span><input name="agency_partner" maxlength="180"></label>
+     <label><span>Tecnologias utilizadas</span><input name="technology_partners" maxlength="800" placeholder="Separe por vírgulas"></label>
+    </div>
+    <label><span>Desafio *</span><textarea name="challenge" required maxlength="1800" placeholder="Qual problema precisava ser resolvido?"></textarea></label>
+    <label><span>Estratégia *</span><textarea name="strategy" required maxlength="2200" placeholder="Qual foi a estratégia de CRM, CX ou CS?"></textarea></label>
+    <label><span>Execução *</span><textarea name="execution" required maxlength="2200" placeholder="Como foi implementado?"></textarea></label>
+    <label><span>Resultados e métricas *</span><textarea name="results" required maxlength="2200" placeholder="Traga baseline, indicadores, impacto e período analisado."></textarea></label>
+    <label><span>Link de evidências</span><input name="evidence_url" type="url" placeholder="Drive, Notion, apresentação, matéria ou documento de apoio"></label>
+    <label><span>Resumo que poderá ser publicado</span><textarea name="public_summary" maxlength="900" placeholder="Versão sem informações confidenciais do case."></textarea></label>
+    <div class="awards-form-grid">
+     <label><span>Responsável pela inscrição *</span><input name="contact_name" maxlength="120" required></label>
+     <label><span>E-mail de contato *</span><input name="contact_email" type="email" required></label>
+    </div>
+    <label><span>LinkedIn do responsável</span><input name="contact_linkedin_url" type="url" placeholder="https://www.linkedin.com/in/..."></label>
+    <label class="awards-check"><input name="consent" type="checkbox" required><span>Confirmo que tenho autorização para inscrever o case e que as informações enviadas poderão ser avaliadas pela banca técnica.</span></label>
+    <button class="btn btn-primary awards-submit" type="submit">Inscrever case →</button>
+   </fieldset>
+   <p class="awards-feedback" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+
+ <div class="awards-form-panel" data-awards-panel="tool" hidden>
+  <div class="awards-form-copy"><span class="eyebrow">TECNOLOGIA</span><h3>Indique uma ferramenta que faz diferença na prática</h3><p>A indicação deve partir de uma experiência real ou conhecimento direto do uso da solução. O vínculo informado ajuda a dar transparência à avaliação.</p></div>
+  <form class="awards-real-form" id="awardToolForm">
+   <fieldset data-nomination-fieldset>
+    <input class="awards-hp" tabindex="-1" autocomplete="off" name="website_company" aria-hidden="true">
+    <label><span>Categoria *</span><select name="category" id="awardToolCategory" required><option>Carregando...</option></select></label>
+    <div class="awards-form-grid">
+     <label><span>Nome da ferramenta *</span><input name="tool_name" maxlength="140" required></label>
+     <label><span>Site oficial *</span><input name="website_url" type="url" required placeholder="https://..."></label>
+    </div>
+    <label><span>Empresa responsável pela ferramenta</span><input name="tool_company" maxlength="160"></label>
+    <label><span>Como você usa ou conhece essa ferramenta? *</span><textarea name="use_case" minlength="20" maxlength="800" required placeholder="Contexto de uso, projeto ou experiência."></textarea></label>
+    <label><span>Por que ela merece o reconhecimento? *</span><textarea name="reason" minlength="40" maxlength="1400" required></textarea></label>
+    <div class="awards-form-grid">
+     <label><span>Seu nome *</span><input name="nominator_name" maxlength="120" required></label>
+     <label><span>Seu e-mail *</span><input name="nominator_email" type="email" required></label>
+    </div>
+    <div class="awards-form-grid">
+     <label><span>Sua empresa</span><input name="nominator_company" maxlength="160"></label>
+     <label><span>Seu vínculo com a ferramenta</span><input name="relationship_to_tool" maxlength="220" placeholder="Cliente, parceiro, usuário, consultor..."></label>
+    </div>
+    <label class="awards-check"><input name="consent" type="checkbox" required><span>Confirmo que a indicação reflete uma experiência ou conhecimento real e autorizo o tratamento dos dados enviados para a premiação.</span></label>
+    <button class="btn btn-primary awards-submit" type="submit">Indicar ferramenta →</button>
+   </fieldset>
+   <p class="awards-feedback" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+
+ <div class="awards-form-panel" data-awards-panel="jury" hidden>
+  <div class="awards-form-copy"><span class="eyebrow">BANCA TÉCNICA</span><h3>Quer avaliar os cases da primeira edição?</h3><p>A banca será formada com diversidade de experiência e independência. Pessoas selecionadas precisarão declarar conflitos de interesse e não poderão avaliar cases com os quais tenham vínculo.</p></div>
+  <form class="awards-real-form" id="awardJuryForm">
+   <fieldset data-jury-fieldset>
+    <input class="awards-hp" tabindex="-1" autocomplete="off" name="website_company" aria-hidden="true">
+    <div class="awards-form-grid">
+     <label><span>Nome completo *</span><input name="full_name" maxlength="120" required></label>
+     <label><span>E-mail *</span><input name="email" type="email" required></label>
+    </div>
+    <label><span>LinkedIn *</span><input name="linkedin_url" type="url" required placeholder="https://www.linkedin.com/in/..."></label>
+    <div class="awards-form-grid">
+     <label><span>Cargo atual</span><input name="role_title" maxlength="160"></label>
+     <label><span>Empresa / organização</span><input name="company" maxlength="160"></label>
+    </div>
+    <label><span>Anos de experiência</span><input name="years_experience" type="number" min="0" max="60" inputmode="numeric"></label>
+    <fieldset class="awards-expertise"><legend>Áreas de experiência *</legend>
+     <label><input type="checkbox" name="expertise" value="CRM">CRM</label>
+     <label><input type="checkbox" name="expertise" value="CX">CX</label>
+     <label><input type="checkbox" name="expertise" value="CS">CS</label>
+     <label><input type="checkbox" name="expertise" value="Dados">Dados</label>
+     <label><input type="checkbox" name="expertise" value="Martech">Martech</label>
+     <label><input type="checkbox" name="expertise" value="Marketing">Marketing</label>
+     <label><input type="checkbox" name="expertise" value="IA e Automação">IA e Automação</label>
+     <label><input type="checkbox" name="expertise" value="Pesquisa / Academia">Pesquisa / Academia</label>
+    </fieldset>
+    <label><span>Mini bio *</span><textarea name="short_bio" minlength="40" maxlength="1200" required placeholder="Conte sua trajetória e experiência relevante para avaliação de cases."></textarea></label>
+    <label><span>Por que quer fazer parte da banca? *</span><textarea name="motivation" minlength="30" maxlength="1200" required></textarea></label>
+    <label><span>Conflitos de interesse que devemos conhecer</span><textarea name="conflicts" maxlength="1200" placeholder="Clientes, empregadores, fornecedores ou outras relações que possam gerar conflito."></textarea></label>
+    <label class="awards-check"><input name="accepts_conflict_policy" type="checkbox" required><span>Concordo em declarar conflitos e me abster de avaliar cases com os quais eu tenha vínculo.</span></label>
+    <label class="awards-check"><input name="consent" type="checkbox" required><span>Autorizo o tratamento dos dados desta candidatura para seleção e comunicação da banca técnica.</span></label>
+    <button class="btn btn-primary awards-submit" type="submit">Enviar candidatura →</button>
+   </fieldset>
+   <p class="awards-feedback" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+</div></section>
+
+<section class="section awards-public-voting" id="votacao-public"><div class="frame">
+ <div class="chapter-heading"><span class="num">04</span><span class="eyebrow">VOTAÇÃO DA COMUNIDADE</span></div>
+ <h2 class="section-heading">Depois de indicar,<br><span class="gold">é hora de escolher.</span></h2>
+ <p class="section-desc">Após a curadoria, os nomes elegíveis serão publicados aqui. A votação começa em janeiro e cada membro autenticado poderá registrar um voto por categoria. A Live dos Indicados revelará os finalistas que seguem para a etapa final até 06 de julho.</p>
+ <div class="awards-vote-state" id="awardsVoteState" aria-live="polite"><b>Votação ainda não aberta</b><p>Os nomes aparecerão aqui depois da fase de indicações e da validação de elegibilidade.</p></div>
+ <div id="awardsVotingApp" hidden>
+  <div class="awards-vote-toolbar"><label><span>Categoria</span><select id="awardsVoteCategory"></select></label><span id="awardsAuthState"></span></div>
+  <div class="awards-candidate-grid" id="awardsCandidateGrid"></div>
+  <button type="button" class="btn btn-primary" id="awardsVoteButton" disabled>Confirmar voto →</button>
+  <p class="awards-feedback" id="awardsVoteFeedback" role="status" aria-live="polite"></p>
+ </div>
+</div></section>
+\n<section class="section" id="indicacoes" hidden aria-hidden="true"><div class="frame">
  <div class="chapter-heading"><span class="num">03</span><span class="eyebrow">VOCÊ CONHECE ALGUÉM QUE MERECE?</span></div><h2 class="section-heading">Você conhece alguém<br><span class="gold">que merece estar aqui?</span></h2>
  <p class="section-desc" style="margin-bottom:36px">Teste a experiência de indicação. Nenhuma informação será enviada à organização nesta fase; o rascunho fica salvo apenas neste dispositivo.</p>
  <div class="activity-grid">
@@ -355,14 +507,16 @@
 </div></section>
 <section class="event-season" id="agenda" aria-labelledby="agendaTitle">
 <div class="frame"><div class="chapter-heading"><span class="num">✳</span><span class="eyebrow">PRIMEIRA EDIÇÃO · ENCONTROS 2027</span></div>
-<h2 class="section-heading" id="agendaTitle">Quatro momentos.<br><span class="gold">Uma estreia.</span></h2>
-<p class="section-desc">A primeira edição começa meses antes do palco. Abrimos espaço para a comunidade indicar, conhecer os finalistas, votar e chegar junta ao grande encontro de julho</p>
-<div class="event-season-steps" aria-label="Calendário da primeira edição do Prêmio Conexão CRM 2027">
- <article class="event-season-step"><span class="event-season-day">NOV</span><span class="event-season-month">2026</span><h3>Abertura das indicações</h3><p>Começa a campanha pública de indicação de profissionais, revelações, cases e tecnologias. A divulgação segue até fevereiro ou março de 2027</p></article>
- <article class="event-season-step"><span class="event-season-day">FEV</span><span class="event-season-month">OU MARÇO · 2027</span><h3>Live dos Indicados</h3><p>Uma live especial apresenta os nomes que avançam para a próxima fase e transforma as histórias indicadas em conteúdo para toda a comunidade</p></article>
- <article class="event-season-step"><span class="event-season-day">MAR</span><span class="event-season-month">A MAIO · 2027</span><h3>Votação & banca</h3><p>A comunidade vota nas categorias de pessoas e tecnologias. Os cases seguem para avaliação técnica conforme o regulamento</p></article>
- <article class="event-season-step"><span class="event-season-day">06</span><span class="event-season-month">JULHO · 2027</span><h3>Evento + Prêmio + Show</h3><p>Um dia de conteúdo, conexões e encontros. No encerramento, acontece a premiação oficial seguida de show</p></article>
-</div><p class="event-season-note">A data de 06 de julho de 2027 está definida para o evento. A data exata da Live dos Indicados e os períodos finais de indicação e votação serão anunciados pela organização</p>
+<h2 class="section-heading" id="agendaTitle">Do primeiro nome<br><span class="gold">à grande noite.</span></h2>
+<p class="section-desc">O calendário foi desenhado para criar história antes do evento: indicação, curadoria, voto, revelação dos finalistas e construção de expectativa até julho</p>
+<div class="event-season-steps awards-six-steps" aria-label="Calendário da primeira edição do Prêmio Conexão CRM 2027">
+ <article class="event-season-step"><span class="event-season-day">01</span><span class="event-season-month">NOVEMBRO · 2026</span><h3>Abrem as indicações</h3><p>A comunidade começa a indicar profissionais, revelações, cases e tecnologias.</p></article>
+ <article class="event-season-step"><span class="event-season-day">07</span><span class="event-season-month">JANEIRO · 2027</span><h3>Encerram as indicações</h3><p>Fechamento da primeira etapa e consolidação das indicações recebidas.</p></article>
+ <article class="event-season-step"><span class="event-season-day">08–14</span><span class="event-season-month">JANEIRO · 2027</span><h3>Curadoria</h3><p>Validação de elegibilidade, duplicidades, categorias e evidências antes da votação.</p></article>
+ <article class="event-season-step"><span class="event-season-day">15</span><span class="event-season-month">JANEIRO → FEVEREIRO</span><h3>Votação dos indicados</h3><p>A comunidade escolhe entre os nomes publicados nas categorias com voto popular.</p></article>
+ <article class="event-season-step"><span class="event-season-day">LIVE</span><span class="event-season-month">FEVEREIRO / MARÇO · 2027</span><h3>Live dos Indicados</h3><p>Revelação dos finalistas oficiais, os nomes que venceram a etapa de indicação e votação.</p></article>
+ <article class="event-season-step"><span class="event-season-day">06</span><span class="event-season-month">JULHO · 2027</span><h3>Evento + Prêmio + Show</h3><p>Conteúdo e conexões ao longo do dia. No encerramento, premiação oficial e show.</p></article>
+</div><p class="event-season-note">A Live dos Indicados terá data exata divulgada após o fechamento das indicações. O vencedor de cada prêmio só será revelado em 06 de julho de 2027.</p>
 </div></section>
 <section class="section sponsor"><div class="frame sponsor-in">
  <div><span class="eyebrow">MARCAS QUE TORNAM HISTÓRIAS POSSÍVEIS</span><h2 class="section-heading" style="margin-bottom:7px">Tem lugar para a sua marca<br>nessa história</h2><p class="section-desc">Marcas parceiras poderão fazer parte da primeira edição com presença no evento, conteúdo, experiências e relacionamento com a comunidade de CRM, CX e CS.</p></div>
