@@ -18,3 +18,18 @@
 @media(max-width:600px){.topbar{padding:14px 12px;gap:7px}.brand{margin:auto}.topbar-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.chrome-btn,.fame-top{white-space:normal;line-height:1.2;font-size:9px;padding:9px 4px;min-height:40px}.sky-hero{padding:35px 12px 0}.sky-hero h1{font-size:clamp(53px,13vw,83px)}.sky-hero p{font-size:12px}.sky-hero p br{display:none}.action{font-size:11px;padding:13px 15px}.garden{min-height:675px;margin-top:15px}.garden-tree{width:720px;max-width:none;position:relative;left:50%;margin-left:-360px}.wish-orb{max-width:120px}.wish-label{font-size:11px}.garden-toolbar{padding:0 10px 30px;justify-content:center}.garden-counter{width:100%;justify-content:center}.counter-extra{font-size:10px}.list-section{padding:45px 14px}.list-header{flex-direction:column;align-items:start}.filter-bar{flex-direction:column}.filter-bar select{width:100%}.dream-list{grid-template-columns:1fr}.bridge{padding:70px 17px}.bridge h2{font-size:55px}.footer{padding-bottom:80px}.music-options{grid-template-columns:1fr}}
 @media(max-width:360px){.topbar-actions{grid-template-columns:1fr 1fr}.garden-tree{width:650px;margin-left:-325px}.garden{min-height:630px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* campo anti-bot: presente no DOM, invisível para pessoas */
+.dream-honeypot{
+ position:absolute!important;
+ left:-10000px!important;
+ top:auto!important;
+ width:1px!important;
+ height:1px!important;
+ padding:0!important;
+ margin:0!important;
+ border:0!important;
+ opacity:0!important;
+ pointer-events:none!important;
+ overflow:hidden!important;
+}
