@@ -104,6 +104,22 @@
       if(groups.nextElementSibling!==publicLink)groups.after(publicLink);
       publicLink.onclick=event=>{event.preventDefault();event.stopPropagation();openTeamInside(false);};
     }
+    const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
+    let dreamAdmin=document.getElementById('crmDreamGardenAdminNav');
+    if(verified){
+      if(!dreamAdmin){
+        dreamAdmin=document.createElement('a');
+        dreamAdmin.id='crmDreamGardenAdminNav';
+        dreamAdmin.className='tab-btn';
+        dreamAdmin.href='/admin-jardim-sonhos/';
+        dreamAdmin.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+        dreamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14c-3 0-4-2-4-5 4 0 6 1 7 4M17 14c3 0 4-2 4-5-4 0-6 1-7 4"/><path d="M8 21h8"/></svg></span>Jardim dos Sonhos';
+      }
+      const adminAnchor=document.getElementById('crmTeamAdminNav')||document.getElementById('crmAdminNav');
+      if(adminAnchor?.parentElement===nav&&dreamAdmin.parentElement!==nav)adminAnchor.after(dreamAdmin);
+      else if(adminAnchor?.parentElement===nav&&adminAnchor.nextElementSibling!==dreamAdmin)adminAnchor.after(dreamAdmin);
+    }else dreamAdmin?.remove();
+
     const teamAdmin=document.getElementById('crmTeamAdminNav');
     if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
       teamAdmin.dataset.cxTeamAdminEdited='1';

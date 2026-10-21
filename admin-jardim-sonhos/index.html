@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#f97316">
+<title>Admin · Jardim dos Sonhos | Conexão CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./admin-dreams.css?v=1">
+<script src="./admin-dreams.js?v=1" defer></script>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="/#admin"><span class="cube">◇</span><span>CONEXÃO <b>CRM.</b></span></a>
+ <div class="top-actions"><span>ADMINISTRAÇÃO</span><a href="/#admin">Voltar ao Admin ↗</a></div>
+</header>
+
+<main>
+ <section class="hero">
+  <div>
+   <span class="eyebrow">APROVAÇÕES / JARDIM DOS SONHOS</span>
+   <h1>Sonhos que estão<br><em>esperando para florescer.</em></h1>
+   <p>Revise cada envio antes de colocá-lo na árvore pública. Somente sonhos aprovados ficam visíveis para a comunidade.</p>
+  </div>
+  <div class="hero-note">
+   <span>PRIVACIDADE</span>
+   <strong>A moderação é exclusiva da administração.</strong>
+   <p>O navegador não recebe acesso direto à tabela. Todas as leituras e decisões passam pela função administrativa do Supabase.</p>
+  </div>
+ </section>
+
+ <section class="stats" aria-label="Resumo da moderação">
+  <button class="stat active" data-filter="pending"><span>Pendentes</span><strong id="countPending">—</strong></button>
+  <button class="stat" data-filter="approved"><span>Aprovados</span><strong id="countApproved">—</strong></button>
+  <button class="stat" data-filter="rejected"><span>Reprovados</span><strong id="countRejected">—</strong></button>
+  <button class="stat" data-filter="archived"><span>Arquivados</span><strong id="countArchived">—</strong></button>
+  <button class="stat" data-filter="all"><span>Total</span><strong id="countTotal">—</strong></button>
+ </section>
+
+ <section class="toolbar">
+  <label><span>Buscar sonho</span><input id="searchInput" type="search" placeholder="Busque por texto, nome ou categoria"></label>
+  <div class="toolbar-actions">
+   <span id="sessionState">Validando acesso...</span>
+   <button id="refreshButton" type="button">↻ Atualizar</button>
+  </div>
+ </section>
+
+ <div id="accessGate" class="gate" role="status">
+  <div class="loader" aria-hidden="true"></div>
+  <strong>Validando sua sessão administrativa</strong>
+  <p>Esta página só carrega os sonhos depois que o servidor confirma seu acesso.</p>
+ </div>
+
+ <section id="dreamsPanel" hidden>
+  <div class="list-head"><div><span id="listEyebrow">PENDENTES</span><h2 id="listTitle">Sonhos aguardando aprovação</h2></div><span id="resultCount">0 registros</span></div>
+  <div id="dreamList" class="dream-list"></div>
+  <div id="emptyState" class="empty" hidden><span>✦</span><strong>Nada por aqui.</strong><p id="emptyText">Não há sonhos pendentes neste momento.</p></div>
+ </section>
+
+ <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</main>
+
+<template id="dreamCardTemplate">
+ <article class="dream-card">
+  <div class="dream-card-main">
+   <div class="dream-meta"><span class="category"></span><span class="status-pill"></span><span class="date"></span></div>
+   <blockquote class="dream-text"></blockquote>
+   <div class="dream-author"></div>
+  </div>
+  <div class="moderation">
+   <label><span>Nota interna da moderação</span><textarea class="moderation-note" maxlength="1000" placeholder="Opcional. Ex.: linguagem ajustada, motivo da reprovação..."></textarea></label>
+   <div class="moderation-info"></div>
+   <div class="moderation-actions">
+    <button type="button" class="approve">Aprovar e publicar</button>
+    <button type="button" class="reject">Reprovar</button>
+    <button type="button" class="archive">Arquivar</button>
+   </div>
+  </div>
+ </article>
+</template>
+</body>
+</html>
