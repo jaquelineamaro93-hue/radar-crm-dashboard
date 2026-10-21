@@ -33,6 +33,7 @@
     const host=document.getElementById('crmPages');
     if(!host||typeof crmRoutes==='undefined')return null;
     if(!crmRoutes.equipe)crmRoutes.equipe=['crmTeamEmbedPage','Quem Faz'];
+    if(typeof crmRoutePaths!=='undefined')crmRoutePaths.equipe='/#equipe';
     let page=document.getElementById('crmTeamEmbedPage');
     if(page)return page;
     page=document.createElement('section');
@@ -98,13 +99,13 @@
         publicLink.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M2 20v-2a6 6 0 0 1 12 0v2M17 9a3 3 0 1 0-2-5M17 14a5 5 0 0 1 5 5v1"/></svg></span>Quem Faz';
       }
       if(groups.nextElementSibling!==publicLink)groups.after(publicLink);
-      publicLink.onclick=event=>{event.preventDefault();openTeamInside(false);};
+      publicLink.onclick=event=>{event.preventDefault();event.stopPropagation();openTeamInside(false);};
     }
     const teamAdmin=document.getElementById('crmTeamAdminNav');
     if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
       teamAdmin.dataset.cxTeamAdminEdited='1';
       teamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></span>Gerenciar equipe';
-      teamAdmin.onclick=()=>openTeamInside(true);
+      teamAdmin.onclick=event=>{event?.stopPropagation();openTeamInside(true);};
     }
   }
 
@@ -153,8 +154,16 @@
        avatar.nextElementSibling!==(replay||ranking)||
        (replay&&replay.nextElementSibling!==ranking))nav.append(...ordered);
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncXpLinks,{once:true});
-  else syncXpLinks();
+  function startTeamAndNavigation(){
+    ensureTeamPage();
+    syncXpLinks();
+    // Preserva o histórico da área logada mesmo após atualizar a página.
+    if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn()){
+      if(typeof crmNavigate==='function')crmNavigate('equipe',false);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startTeamAndNavigation,{once:true});
+  else startTeamAndNavigation();
   document.addEventListener('crm:admin-ready',syncXpLinks);
   document.addEventListener('crm:role-resolved',syncXpLinks);
   document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
