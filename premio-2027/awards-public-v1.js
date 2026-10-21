@@ -143,7 +143,65 @@ async function voting(){
  }catch(err){state.innerHTML='<b>Não foi possível carregar a votação.</b><p>'+escapeHtml(err.message||"Tente novamente.")+'</p>'}
 }
 function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+function setupScreenNavigation(){
+ const main=document.querySelector("main");
+ if(!main)return;
+ const topSections=Array.from(main.children).filter(el=>el.tagName==="SECTION");
+ const groups={
+  inicio:["inicio"],
+  universos:["universos"],
+  calcada:["calcada","tech-awards"],
+  jornada:["jornada"],
+  metodologia:["metodologia"],
+  participacao:["participacao"],
+  "votacao-public":["votacao-public"],
+  agenda:["agenda"],
+  hall:["hall"]
+ };
+ const managed=new Set(Object.values(groups).flat());
+ function setActive(id,push){
+  if(!groups[id])return false;
+  document.body.classList.add("award-view-mode");
+  topSections.forEach(section=>{
+   const sid=section.id||"";
+   const active=groups[id].includes(sid);
+   if(managed.has(sid)||sid===""||section.classList.contains("sponsor")||section.classList.contains("editorial-intro")||section.id==="manifesto"){
+    section.hidden=!active;
+   }
+  });
+  document.querySelectorAll("#navLinks a").forEach(a=>{
+   const target=(a.getAttribute("href")||"").replace(/^#/,"");
+   const on=target===id||(id==="calcada"&&target==="calcada");
+   a.classList.toggle("selected",on);
+   if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
+  });
+  if(push){
+   const u=new URL(location.href);u.hash=id;
+   history.pushState({awardView:id},"",u);
+  }
+  requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"instant"}));
+  return true;
+ }
+ function currentFromHash(){
+  const id=(location.hash||"").replace(/^#/,"");
+  return groups[id]?id:null;
+ }
+ document.querySelectorAll("#navLinks a[href^='#'],a.brand[href='#inicio']").forEach(a=>{
+  a.addEventListener("click",e=>{
+   const id=(a.getAttribute("href")||"").replace(/^#/,"");
+   if(!groups[id])return;
+   e.preventDefault();setActive(id,true);
+  });
+ });
+ window.addEventListener("popstate",()=>{const id=currentFromHash();if(id)setActive(id,false)});
+ window.addEventListener("hashchange",()=>{const id=currentFromHash();if(id)setActive(id,false)});
+ const initial=currentFromHash();
+ if(initial)setActive(initial,false);
+}
+
 async function init(){
+ setupScreenNavigation();
  tabs();bindForm("awardPersonForm","submit_person");bindForm("awardCaseForm","submit_case");bindForm("awardToolForm","submit_tool");bindForm("awardJuryForm","submit_jury");
  if(new URLSearchParams(location.search).get("entry")==="sonhos"){$("#awardsDreamArrival")?.removeAttribute("hidden")}
  await auth();

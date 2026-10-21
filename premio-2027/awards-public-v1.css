@@ -64,3 +64,13 @@
  opacity:1!important;
 }
 .awards-revelation-fields[hidden]{display:none!important}
+
+/* navegação do prêmio em telas, sem página infinita */
+body.award-view-mode main{min-height:calc(100svh - 76px)}
+body.award-view-mode main>section[hidden]{display:none!important}
+body.award-view-mode main>section:not([hidden]){min-height:calc(100svh - 76px)}
+body.award-view-mode #navLinks a.selected,
+body.award-view-mode #navLinks a[aria-current="page"]{color:#f97316!important}
+body.award-view-mode .awards-participation,
+body.award-view-mode .awards-public-voting{padding-top:72px}
+@media(max-width:810px){body.award-view-mode main{min-height:calc(100svh - 69px)}body.award-view-mode main>section:not([hidden]){min-height:calc(100svh - 69px)}}
