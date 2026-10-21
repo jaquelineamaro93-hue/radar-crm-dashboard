@@ -4,7 +4,18 @@
 const API="https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-awards-public";
 const URL="https://rwkbpafpniwzvlkfngag.supabase.co";
 const KEY="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-let config=null,categories=[],selectedCandidate=null,session=null;
+const FALLBACK_CATEGORIES=[
+ {code:"pro_crm",label:"Profissional do Ano · CRM & Lifecycle",subject_type:"person",description:"Estratégia de CRM, relacionamento, jornadas, lifecycle e resultados.",sort_order:10},
+ {code:"pro_cx",label:"Profissional do Ano · CX",subject_type:"person",description:"Experiência, voz do cliente e cultura centrada no consumidor.",sort_order:20},
+ {code:"pro_cs",label:"Profissional do Ano · CS",subject_type:"person",description:"Adoção, retenção, sucesso e crescimento sustentável de clientes.",sort_order:30},
+ {code:"revelacao",label:"Revelação do Ano",subject_type:"person",description:"Profissionais em início de trajetória no ecossistema, com até 3 anos de atuação.",sort_order:40},
+ {code:"pcd",label:"Protagonismo PCD · CRM, CX e CS",subject_type:"person",description:"Contribuição, liderança e realizações de profissionais com deficiência.",sort_order:50},
+ {code:"case_ano",label:"Case do Ano",subject_type:"case",description:"Iniciativas com desafio claro, estratégia, execução, evidências e impacto documentado.",sort_order:60},
+ {code:"tech_crm",label:"Tech Awards · CRM",subject_type:"tool",description:"Ferramentas de relacionamento, jornadas e operação de CRM.",sort_order:70},
+ {code:"tech_ai",label:"Tech Awards · IA & Automação",subject_type:"tool",description:"IA e automação aplicadas à operação, relacionamento e produtividade.",sort_order:80},
+ {code:"tech_cx",label:"Tech Awards · CX",subject_type:"tool",description:"Soluções para compreender, atender e melhorar a experiência dos clientes.",sort_order:90}
+];
+let config=null,categories=FALLBACK_CATEGORIES.slice(),selectedCandidate=null,session=null;
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 function fmt(iso){if(!iso)return"";try{return new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",year:"numeric"}).format(new Date(iso))}catch{return iso}}
 function message(el,text,type){if(!el)return;el.textContent=text||"";el.classList.remove("ok","error");if(type)el.classList.add(type)}
@@ -18,13 +29,60 @@ async function api(body,token){
 }
 function setOptions(id,type){
  const el=document.getElementById(id);if(!el)return;
- const list=categories.filter(c=>c.subject_type===type);
- el.innerHTML='<option value="">Selecione</option>'+list.map(c=>'<option value="'+c.code+'">'+c.label+'</option>').join("");
+ const current=el.value;
+ const list=categories.filter(c=>c.subject_type===type).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+ el.innerHTML='<option value="">Selecione</option>'+list.map(c=>'<option value="'+escapeHtml(c.code)+'">'+escapeHtml(c.label)+'</option>').join("");
+ if(current&&list.some(c=>c.code===current))el.value=current;
  if(id==="awardPersonCategory"){
   const revelation=$("#awardsRevelationFields");
   const sync=()=>{const on=el.value==="revelacao";if(revelation){revelation.hidden=!on;revelation.querySelectorAll("select,input").forEach(x=>x.required=on)}};
-  el.addEventListener("change",sync);sync();
+  if(!el.dataset.revelationBound){el.addEventListener("change",sync);el.dataset.revelationBound="1"}sync();
  }
+}
+
+function categoryCardMarkup(c){
+ return '<button type="button" class="awards-category-card" data-category-code="'+escapeHtml(c.code)+'">'+
+   '<span class="awards-category-card-kicker">'+escapeHtml(c.label.split("·")[0].trim())+'</span>'+
+   '<strong>'+escapeHtml(c.label)+'</strong>'+
+   '<p>'+escapeHtml(c.description||"")+'</p>'+
+   '<span class="awards-category-card-action">Selecionar →</span>'+
+ '</button>';
+}
+
+function renderCategoryBrowser(type,selectId,cardsId){
+ const select=document.getElementById(selectId),cards=document.getElementById(cardsId);
+ if(!select||!cards)return;
+ const list=categories.filter(c=>c.subject_type===type).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+ const search=document.querySelector('[data-category-search="'+type+'"]');
+ const draw=()=>{
+  const term=(search?.value||"").trim().toLowerCase();
+  const filtered=list.filter(c=>!term||((c.label+" "+(c.description||"")).toLowerCase().includes(term)));
+  cards.innerHTML=filtered.length?filtered.map(categoryCardMarkup).join(""):'<div class="awards-category-empty">Nenhuma categoria encontrada.</div>';
+  cards.querySelectorAll(".awards-category-card").forEach(card=>{
+   const code=card.dataset.categoryCode;
+   card.classList.toggle("selected",select.value===code);
+   card.addEventListener("click",()=>{
+    select.value=code;
+    select.dispatchEvent(new Event("change",{bubbles:true}));
+    cards.querySelectorAll(".awards-category-card").forEach(x=>x.classList.toggle("selected",x===card));
+    const form=select.closest("form");
+    const first=form?.querySelector('input:not([type="hidden"]):not(.awards-hp),textarea');
+    if(first&&!first.disabled)first.focus({preventScroll:true});
+   });
+  });
+ };
+ if(search&&!search.dataset.bound){search.addEventListener("input",draw);search.dataset.bound="1"}
+ if(!select.dataset.cardsBound){select.addEventListener("change",draw);select.dataset.cardsBound="1"}
+ draw();
+}
+
+function refreshCategoryUi(){
+ setOptions("awardPersonCategory","person");
+ setOptions("awardCaseCategory","case");
+ setOptions("awardToolCategory","tool");
+ renderCategoryBrowser("person","awardPersonCategory","awardPersonCategoryCards");
+ renderCategoryBrowser("case","awardCaseCategory","awardCaseCategoryCards");
+ renderCategoryBrowser("tool","awardToolCategory","awardToolCategoryCards");
 }
 function setDisabled(selector,disabled){
  $$(selector+" input,"+selector+" select,"+selector+" textarea,"+selector+" button[type=submit]").forEach(el=>el.disabled=disabled);
@@ -239,14 +297,14 @@ function setupScreenNavigation(){
 
 async function init(){
  setupScreenNavigation();
- tabs();bindForm("awardPersonForm","submit_person");bindForm("awardCaseForm","submit_case");bindForm("awardToolForm","submit_tool");bindForm("awardJuryForm","submit_jury");
+ tabs();refreshCategoryUi();bindForm("awardPersonForm","submit_person");bindForm("awardCaseForm","submit_case");bindForm("awardToolForm","submit_tool");bindForm("awardJuryForm","submit_jury");
  if(new URLSearchParams(location.search).get("entry")==="sonhos"){$("#awardsDreamArrival")?.removeAttribute("hidden")}
  await auth();
- try{config=await api({action:"config"});categories=config.categories||[];
-  // map ids are intentionally absent from config; selects use stable codes.
-  setOptions("awardPersonCategory","person");setOptions("awardCaseCategory","case");setOptions("awardToolCategory","tool");phase();await voting();
+ try{config=await api({action:"config"});categories=(config.categories&&config.categories.length)?config.categories:FALLBACK_CATEGORIES.slice();
+  refreshCategoryUi();phase();await voting();
  }catch(err){
-  const card=$("#awardsPhaseCard");if(card)card.innerHTML='<div><b>Não foi possível consultar o calendário</b><p>'+escapeHtml(err.message||"Atualize a página.")+'</p></div>';
+  categories=FALLBACK_CATEGORIES.slice();refreshCategoryUi();
+  const card=$("#awardsPhaseCard");if(card)card.innerHTML='<div><b>Categorias disponíveis</b><p>O calendário oficial não carregou agora, mas você já pode consultar as categorias. Tente atualizar a página para sincronizar as datas.</p></div>';
  }
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();

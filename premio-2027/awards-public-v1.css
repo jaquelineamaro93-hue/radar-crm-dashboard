@@ -74,3 +74,21 @@ body.award-view-mode #navLinks a[aria-current="page"]{color:#f97316!important}
 body.award-view-mode .awards-participation,
 body.award-view-mode .awards-public-voting{padding-top:72px}
 @media(max-width:810px){body.award-view-mode main{min-height:calc(100svh - 69px)}body.award-view-mode main>section:not([hidden]){min-height:calc(100svh - 69px)}}
+
+/* navegador visual de categorias */
+.awards-form-copy{align-self:start}
+.awards-category-browser{margin-top:26px;border-top:1px solid #ffffff18;padding-top:18px}
+.awards-category-search{display:block!important;margin:0 0 12px!important}
+.awards-category-search>span{display:block!important;font-size:9px!important;letter-spacing:.13em!important;text-transform:uppercase!important;color:#c2ab90!important;font-weight:900!important;margin-bottom:7px!important}
+.awards-category-search input{width:100%;border:1px solid #ffffff20;background:#111216;color:#f8f3eb;border-radius:10px;padding:12px 13px;font-size:12px;outline:0}
+.awards-category-search input:focus{border-color:#f97316;box-shadow:0 0 0 2px #f973161c}
+.awards-category-cards{display:grid;gap:9px}
+.awards-category-card{appearance:none;width:100%;text-align:left;border:1px solid #ffffff18;background:#141519;color:#f8f3eb;border-radius:12px;padding:14px 15px;cursor:pointer;transition:border-color .16s ease,background .16s ease,transform .16s ease}
+.awards-category-card:hover{border-color:#a96c3e;background:#191713;transform:translateY(-1px)}
+.awards-category-card.selected{border-color:#f97316;background:linear-gradient(120deg,#26180f,#171515);box-shadow:inset 3px 0 0 #f97316}
+.awards-category-card-kicker{display:block;font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:#dc915a;font-weight:900;margin-bottom:5px}
+.awards-category-card strong{display:block;font:500 18px/1.08 "Playfair Display",serif;color:#fff6eb;margin-bottom:6px}
+.awards-category-card p{font-size:10px!important;line-height:1.5!important;color:#9f978e!important;margin:0 0 9px!important}
+.awards-category-card-action{font-size:9px;color:#e4ad77;font-weight:850;letter-spacing:.04em}
+.awards-category-empty{border:1px dashed #ffffff1c;border-radius:10px;padding:18px;color:#8f8780;font-size:11px}
+@media(min-width:901px){.awards-form-copy{position:sticky;top:96px;max-height:calc(100svh - 120px);overflow:auto;padding-right:5px}}
