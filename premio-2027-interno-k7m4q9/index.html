@@ -85,7 +85,7 @@
 <script src="./journey-v6.js?v=6" defer></script>
 </head>
 <body class="no-scroll">
-<audio id="awardsTheme" autoplay preload="auto" loop aria-hidden="true"><source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg"></audio>
+<audio id="awardsTheme" preload="auto" loop aria-hidden="true">\n <source src="https://www.stargazersworld.com/wordpress/wp-content/uploads/2012/10/Five-Armies.mp3" type="audio/mpeg">\n <source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3" type="audio/mpeg">\n</audio>
 <a class="skip-link" href="#main">Ir para o conteúdo</a>
 <div class="overlay onboarding" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
  <div class="onboarding-shell">
@@ -431,7 +431,7 @@ document.getElementById('revealDemo').onclick=reveal;document.getElementById('ha
 document.getElementById('sharePreview').onclick=function(){var url=location.href.split('#')[0];if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){notify('Link da prévia copiado. Compartilhe apenas com o time!')},function(){window.prompt('Copie o link da prévia:',url)})}else window.prompt('Copie o link:',url)};
 document.getElementById('menuToggle').onclick=function(){var n=document.getElementById('navLinks');var on=n.classList.toggle('open');this.setAttribute('aria-expanded',String(on))};Array.prototype.forEach.call(document.querySelectorAll('#navLinks a'),function(el){el.onclick=function(){document.getElementById('navLinks').classList.remove('open')}});
 
-/* Soundtrack replaces generated oscillator sounds. CC BY 4.0 attribution in footer. */
+/* Five Armies soundtrack. Two MP3 origins are provided so the Calçada da Fama does not lose music if one host is unavailable. Attribution remains in the footer. */
 var soundtrack=document.getElementById('awardsTheme');
 var musicPausedByChoice=false;
 var audioActivationNeeded=false;
