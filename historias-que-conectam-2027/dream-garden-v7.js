@@ -224,4 +224,26 @@ raf=requestAnimationFrame(()=>$("treeScene").style.transform="translate3d("+x+"p
 $("treeScene").addEventListener("pointerleave",()=>$("treeScene").style.transform="");
 stars();drawTree();drawList();loadRemoteDreams();handleEditHash();document.body.classList.toggle("motion-off",paused);
 if(paused){$("pauseMotion").textContent="▶ Retomar movimento";$("pauseMotion").setAttribute("aria-pressed","true")}
+
+function vectorizeDreamArrows(root=document){
+ const selector='a.action,button.action,.fame-top,.dialog-back,.garden-tools button,#musicExternal';
+ root.querySelectorAll(selector).forEach(el=>{
+  const raw=el.textContent||"";
+  const dir=raw.includes("←")?"left":raw.includes("↗")?"up-right":raw.includes("→")?"right":"";
+  if(!dir)return;
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(n=>{n.nodeValue=n.nodeValue.replace(/[←→↗]/g,"").replace(/\s{2,}/g," ")});
+  el.querySelectorAll(".crm-ui-arrow").forEach(x=>x.remove());
+  const span=document.createElement("span");span.className="crm-ui-arrow";span.setAttribute("aria-hidden","true");
+  const ns="http://www.w3.org/2000/svg",svg=document.createElementNS(ns,"svg");svg.setAttribute("viewBox","0 0 20 20");
+  const path=document.createElementNS(ns,"path");
+  path.setAttribute("d",dir==="left"?"M12.5 4.5 7 10l5.5 5.5M7.5 10H17":dir==="up-right"?"M6 14 14 6M8 6h6v6":"M7.5 4.5 13 10l-5.5 5.5M3 10h9.5");
+  svg.append(path);span.append(svg);
+  if(dir==="left")el.prepend(span);else el.append(span);
+ });
+}
+const dreamArrowObserver=new MutationObserver(()=>vectorizeDreamArrows());
+dreamArrowObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+vectorizeDreamArrows();
 })();
