@@ -134,6 +134,21 @@
       if(anchor?.parentElement===nav&&anchor.nextElementSibling!==speakersNav)anchor.after(speakersNav);
     }else document.getElementById('crmSpeakersAdminNav')?.remove();
 
+    if(verified){
+      let creatorNav=document.getElementById('crmCreatorsAdminNav');
+      if(!creatorNav){
+        creatorNav=document.createElement('a');
+        creatorNav.id='crmCreatorsAdminNav';
+        creatorNav.className='tab-btn';
+        creatorNav.href='/admin-creators-2027/';
+        creatorNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+        creatorNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 10V7a4 4 0 0 1 4-4h3M14 3h3a4 4 0 0 1 4 4v3M21 14v3a4 4 0 0 1-4 4h-3M10 21H7a4 4 0 0 1-4-4v-3"/></svg></span>Creators Parceiros';
+      }
+      const anchor=document.getElementById('crmSpeakersAdminNav')||document.getElementById('crmAdminNav');
+      if(anchor?.parentElement===nav&&anchor.nextElementSibling!==creatorNav)anchor.after(creatorNav);
+    }else document.getElementById('crmCreatorsAdminNav')?.remove();
+
+
 
     const teamAdmin=document.getElementById('crmTeamAdminNav');
     if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
