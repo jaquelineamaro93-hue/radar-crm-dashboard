@@ -145,6 +145,33 @@ function bindForm(id,action){
   finally{btn.disabled=false}
  });
 }
+
+function syncParticipationContext(key){
+ const title=document.getElementById("awardsParticipationHeading");
+ const desc=document.getElementById("awardsParticipationDescription");
+ const phase=document.getElementById("awardsPhaseCard");
+ const path=document.getElementById("awardsParticipationPath");
+ const headings={
+  person:["Quem merece","ser reconhecido?"],
+  case:["Qual projeto merece","ser reconhecido?"],
+  tool:["Que tecnologia merece","ser reconhecida?"],
+  jury:["Quer avaliar as","histórias que transformam?"],
+  speaker:["Sua história pode","ganhar o palco."]
+ };
+ const descriptions={
+  person:"As indicações oficiais acontecem de 01 de novembro de 2026 a 07 de janeiro de 2027. Depois vem a curadoria, a votação da comunidade e a Live dos Indicados.",
+  case:"Inscreva projetos reais com contexto, estratégia, execução e resultados. As inscrições oficiais acontecem de 01 de novembro de 2026 a 07 de janeiro de 2027. A avaliação será feita por banca técnica.",
+  tool:"Indique tecnologias de CRM, CX e CS a partir de conhecimento e uso reais. As indicações oficiais acontecem de 01 de novembro de 2026 a 07 de janeiro de 2027.",
+  jury:"Ajude a construir uma avaliação técnica independente. A candidatura à banca é separada da votação, exige declaração de conflitos e passa por seleção.",
+  speaker:"Quer contribuir para o conteúdo do evento? A chamada de palestrantes já recebe propostas da comunidade. A curadoria avaliará relevância, aplicabilidade e diversidade de vozes. Não é necessário patrocinar o evento para se candidatar."
+ };
+ if(title){const t=headings[key]||headings.person;title.replaceChildren(document.createTextNode(t[0]),document.createElement("br"));const mark=document.createElement("span");mark.className="gold";mark.textContent=t[1];title.append(mark)}
+ if(desc)desc.textContent=descriptions[key]||descriptions.person;
+ const independent=(key==="speaker"||key==="jury");
+ if(phase)phase.hidden=independent;
+ if(path)path.hidden=independent;
+}
+
 function tabs(){
  $$(".awards-form-tab").forEach(btn=>btn.addEventListener("click",()=>{
   const params=new URLSearchParams(location.search);
@@ -152,6 +179,7 @@ function tabs(){
   history.replaceState(null,"",location.pathname+(params.toString()?"?"+params:"")+location.hash);
 
   const key=btn.dataset.awardsForm;
+  syncParticipationContext(key);
   $$(".awards-form-tab").forEach(b=>{const on=b===btn;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
   $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel===key;p.hidden=!on;p.classList.toggle("active",on)});
  }));
@@ -162,6 +190,7 @@ function tabs(){
      $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel==="speaker";p.hidden=!on;p.classList.toggle("active",on)});
    }
  }
+ syncParticipationContext(new URLSearchParams(location.search).get("participar")==="palestrante"?"speaker":"person");
 }
 async function auth(){
  const storageKey="sb-rwkbpafpniwzvlkfngag-auth-token";
