@@ -129,6 +129,7 @@ function formData(form){
  for(const [k,v] of fd.entries()){if(k==="expertise"){(obj.expertise||(obj.expertise=[])).push(v)}else if(k!=="consent"&&k!=="accepts_conflict_policy")obj[k]=v}
  obj.consent=!!form.querySelector('[name="consent"]')?.checked;
  if(form.querySelector('[name="accepts_conflict_policy"]'))obj.accepts_conflict_policy=!!form.querySelector('[name="accepts_conflict_policy"]').checked;
+ if(form.querySelector('[name="confirms_noncommercial"]'))obj.confirms_noncommercial=!!form.querySelector('[name="confirms_noncommercial"]').checked;
  return obj;
 }
 function bindForm(id,action){
@@ -145,11 +146,22 @@ function bindForm(id,action){
  });
 }
 function tabs(){
- $$(".awards-form-tab").forEach(btn=>btn.addEventListener("click",()=>{
+ $(".awards-form-tab").forEach(btn=>btn.addEventListener("click",()=>{
+  const params=new URLSearchParams(location.search);
+  if(btn.dataset.awardsForm==="speaker")params.set("participar","palestrante");else params.delete("participar");
+  history.replaceState(null,"",location.pathname+(params.toString()?"?"+params:"")+location.hash);
+
   const key=btn.dataset.awardsForm;
   $$(".awards-form-tab").forEach(b=>{const on=b===btn;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
   $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel===key;p.hidden=!on;p.classList.toggle("active",on)});
  }));
+ if(new URLSearchParams(location.search).get("participar")==="palestrante"){
+   const speaker=document.querySelector('[data-awards-form="speaker"]');
+   if(speaker){
+     $(".awards-form-tab").forEach(b=>{const on=b===speaker;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
+     $(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel==="speaker";p.hidden=!on;p.classList.toggle("active",on)});
+   }
+ }
 }
 async function auth(){
  const storageKey="sb-rwkbpafpniwzvlkfngag-auth-token";
@@ -311,7 +323,7 @@ function setupScreenNavigation(){
 
 async function init(){
  setupScreenNavigation();
- tabs();refreshCategoryUi();bindForm("awardPersonForm","submit_person");bindForm("awardCaseForm","submit_case");bindForm("awardToolForm","submit_tool");bindForm("awardJuryForm","submit_jury");
+ tabs();refreshCategoryUi();bindForm("awardPersonForm","submit_person");bindForm("awardCaseForm","submit_case");bindForm("awardToolForm","submit_tool");bindForm("awardJuryForm","submit_jury");bindForm("awardSpeakerForm","submit_speaker");
  if(new URLSearchParams(location.search).get("entry")==="sonhos"){$("#awardsDreamArrival")?.removeAttribute("hidden")}
  await auth();
  try{config=await api({action:"config"});categories=(config.categories&&config.categories.length)?config.categories:FALLBACK_CATEGORIES.slice();
