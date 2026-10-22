@@ -90,8 +90,8 @@
 <script src="./motion-v4.js?v=4" defer></script>
 <script src="./editorial-v5.js?v=5" defer></script>
 <script src="./journey-v6.js?v=6" defer></script>
-<link rel="stylesheet" href="./awards-public-v1.css?v=6">
-<script src="./awards-public-v1.js?v=6" defer></script>
+<link rel="stylesheet" href="./awards-public-v1.css?v=7">
+<script src="./awards-public-v1.js?v=7" defer></script>
 </head>
 <body class="no-scroll">
 <audio id="awardsTheme" preload="auto" loop aria-hidden="true">
@@ -336,6 +336,7 @@
   <button type="button" class="awards-form-tab" data-awards-form="case" aria-selected="false">Inscrever case</button>
   <button type="button" class="awards-form-tab" data-awards-form="tool" aria-selected="false">Indicar ferramenta</button>
   <button type="button" class="awards-form-tab jury" data-awards-form="jury" aria-selected="false">Quero ser jurado</button>
+  <button type="button" class="awards-form-tab speaker" data-awards-form="speaker" aria-selected="false">Quero ser palestrante</button>
  </div>
 
  <div class="awards-form-panel active" data-awards-panel="person">
@@ -461,6 +462,66 @@
     <label class="awards-check"><input name="accepts_conflict_policy" type="checkbox" required><span>Concordo em declarar conflitos e me abster de avaliar cases com os quais eu tenha vínculo.</span></label>
     <label class="awards-check"><input name="consent" type="checkbox" required><span>Autorizo o tratamento dos dados desta candidatura para seleção e comunicação da banca técnica.</span></label>
     <button class="btn btn-primary awards-submit" type="submit">Enviar candidatura →</button>
+   </fieldset>
+   <p class="awards-feedback" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+
+ <div class="awards-form-panel awards-speaker-panel" data-awards-panel="speaker" hidden>
+  <div class="awards-form-copy">
+   <span class="eyebrow">CONTEÚDO / PROGRAMAÇÃO 2027</span>
+   <h3>Sua experiência pode abrir caminhos para outras pessoas.</h3>
+   <p>Quer compartilhar conhecimento no Prêmio Conexão CRM 2027? Conte o que você gostaria de apresentar. Procuramos conversas úteis, histórias de mercado, aprendizados, experiências práticas e perspectivas que ajudem a comunidade a evoluir.</p>
+   <div class="awards-category-note">
+    <div class="awards-category-note-head"><span>ANTES DE SE CANDIDATAR</span><strong>Conteúdo com propósito, não pitch comercial.</strong></div>
+    <p class="awards-category-note-summary">A chamada é independente de patrocínio e de indicações ao prêmio. Sua proposta será analisada pela curadoria da programação.</p>
+    <div class="awards-category-note-row"><b>O que valorizamos</b><p>Clareza de tema, relevância para CRM, CX e CS, diversidade de vozes, aprendizado aplicável e casos reais que possam ser compartilhados com responsabilidade.</p></div>
+    <div class="awards-category-note-row important"><b>Importante</b><p>Enviar uma proposta não garante espaço na programação. Palestras comerciais obrigatórias não fazem parte desta chamada. Se a sua empresa deseja apoiar a realização do evento, visite a área de Patrocínio e Apoio.</p></div>
+   </div>
+   <a class="awards-partner-inline" href="/parceiros-premio-2027/">Quero apoiar a realização do evento →</a>
+  </div>
+  <form class="awards-real-form" id="awardSpeakerForm">
+   <fieldset>
+    <input class="awards-hp" tabindex="-1" autocomplete="off" name="website_company" aria-hidden="true">
+    <div class="awards-form-grid">
+      <label><span>Nome completo *</span><input name="full_name" maxlength="120" autocomplete="name" required></label>
+      <label><span>E-mail para contato *</span><input name="contact_email" type="email" maxlength="254" autocomplete="email" required></label>
+    </div>
+    <label><span>Seu perfil do LinkedIn *</span><input name="linkedin_url" type="url" placeholder="https://www.linkedin.com/in/..." required></label>
+    <div class="awards-form-grid">
+      <label><span>Cargo atual</span><input name="role_title" maxlength="160" placeholder="Ex.: Líder de Customer Experience"></label>
+      <label><span>Empresa / organização</span><input name="company" maxlength="160" placeholder="Opcional"></label>
+    </div>
+    <label><span>Cidade e estado</span><input name="city_state" maxlength="140" placeholder="Ex.: São Paulo, SP"></label>
+    <label><span>Apresente sua trajetória e experiência *</span><textarea name="short_bio" minlength="40" maxlength="1800" required placeholder="O que você já construiu, em quais frentes atua e como se conecta a CRM, CX ou CS?"></textarea></label>
+    <div class="awards-form-grid">
+      <label><span>Tema central *</span>
+        <select name="topic_area" required>
+          <option value="">Selecione</option><option value="crm">CRM e relacionamento</option><option value="cx">Customer Experience</option><option value="cs">Customer Success</option>
+          <option value="dados">Dados e personalização</option><option value="ia_automacao">IA e automação</option><option value="revops">Revenue Operations</option>
+          <option value="lideranca">Liderança e carreira</option><option value="outros">Interdisciplinar / Outros</option>
+        </select>
+      </label>
+      <label><span>Formato sugerido *</span>
+        <select name="format_preference" required>
+          <option value="">Selecione</option><option value="palestra">Palestra</option><option value="painel">Painel / conversa</option>
+          <option value="workshop">Workshop prático</option><option value="case">Apresentação de case</option><option value="aberto">Aberto a sugestões</option>
+        </select>
+      </label>
+    </div>
+    <label><span>Título provisório da palestra *</span><input name="talk_title" minlength="8" maxlength="200" required placeholder="Que história ou problema você quer colocar no palco?"></label>
+    <label><span>Resumo da proposta *</span><textarea name="talk_summary" minlength="80" maxlength="3000" required placeholder="Contexto, problema, argumentos, experiência prática e a ideia central da sua apresentação."></textarea></label>
+    <label><span>Quais aprendizados o público levará? *</span><textarea name="audience_takeaways" minlength="40" maxlength="1600" required placeholder="Liste 2 ou 3 aprendizados concretos para quem participar."></textarea></label>
+    <label><span>Você já apresentou esse tema ou temas relacionados?</span><textarea name="prior_experience" maxlength="1200" placeholder="Experiências anteriores, eventos, aulas ou encontros. Não é obrigatório já ter palestrado."></textarea></label>
+    <label><span>Link de vídeo, artigo ou apresentação anterior (opcional)</span><input name="prior_talk_url" type="url" placeholder="https://..."></label>
+    <label><span>Outras pessoas que poderiam participar com você</span><input name="co_speakers" maxlength="500" placeholder="Opcional. Participação conjunta ou painel."></label>
+    <div class="awards-form-grid">
+      <label><span>Disponibilidade / observações</span><textarea name="availability_notes" maxlength="700" placeholder="Presencial, logística, agenda, disponibilidade..."></textarea></label>
+      <label><span>Necessidades de acessibilidade (opcional)</span><textarea name="accessibility_needs" maxlength="700" placeholder="Informe somente o que for necessário para sua participação."></textarea></label>
+    </div>
+    <label class="awards-check"><input name="confirms_noncommercial" type="checkbox" required><span>Confirmo que a proposta tem finalidade de compartilhar conhecimento e não é uma apresentação comercial ou venda de produto.</span></label>
+    <label class="awards-check"><input name="consent" type="checkbox" required><span>Autorizo o uso dos dados enviados exclusivamente para avaliação e contato sobre a programação do Prêmio Conexão CRM 2027. Minha candidatura não será publicada automaticamente.</span></label>
+    <button class="btn btn-primary awards-submit" type="submit">Enviar minha proposta →</button>
    </fieldset>
    <p class="awards-feedback" role="status" aria-live="polite"></p>
   </form>
