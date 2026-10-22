@@ -62,6 +62,7 @@ function render(){
   frag.querySelector(".approve").onclick=()=>moderate(row.id,"approved",note.value,card);
   frag.querySelector(".reject").onclick=()=>moderate(row.id,"rejected",note.value,card);
   frag.querySelector(".archive").onclick=()=>moderate(row.id,"archived",note.value,card);
+  frag.querySelector(".edit-link").onclick=()=>issueEditLink(row.id,card);
   list.append(frag)
  }
 }
@@ -74,6 +75,15 @@ async function load(){
   if(e.code==="admin_required"||e.status===403){$("dreamsPanel").hidden=true;$("accessGate").hidden=false;$("accessGate").innerHTML='<strong>Acesso exclusivo da administração</strong><p>Entre no portal com uma conta administradora e volte a esta página.</p><a class="gate-link" href="/#admin">Ir para o Admin →</a>'}
   else toast(e.message,"error")
  }
+}
+async function issueEditLink(id,card){
+ const buttons=card.querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
+ try{
+  const p=await api({action:"issue_edit_link",id});
+  try{await navigator.clipboard.writeText(p.edit_url);toast("Link privado copiado. Envie somente para o autor deste sonho.","ok")}
+  catch{prompt("Copie o link privado e envie somente para o autor deste sonho:",p.edit_url)}
+ }catch(e){toast(e.message,"error")}
+ finally{buttons.forEach(b=>b.disabled=false)}
 }
 async function moderate(id,decision,note,card){
  const labels={approved:"aprovar e publicar",rejected:"reprovar",archived:"arquivar"};
