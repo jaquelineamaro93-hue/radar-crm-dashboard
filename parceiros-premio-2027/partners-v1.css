@@ -45,3 +45,7 @@
 @media(max-width:1130px){.tier-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tier-card{min-height:430px}}
 @media(max-width:720px){.sponsorship-heading,.tier-footnotes{grid-template-columns:1fr;gap:12px}.tier-grid{grid-template-columns:1fr}.tier-card{min-height:0;padding:22px 20px}.tier-card-top p{min-height:0}.tier-price strong{font-size:48px}.sponsorship-tiers{padding:65px 20px}.sponsorship-heading h2{font-size:51px}}
 @media(prefers-reduced-motion:reduce){.tier-card{transition:none}.tier-card:hover{transform:none}}
+
+.tier-card.tier-selected{outline:2px solid #ffb27e;outline-offset:3px;box-shadow:0 0 0 4px #f9731624}
+.tier-selection-notice{display:block;padding:13px 15px;border:1px solid #f9731680;border-radius:10px;background:#f9731612;color:#ffbd89;font-size:12px;font-weight:800;line-height:1.6;margin:0 0 20px}
+.tier-selection-notice[hidden]{display:none}
