@@ -49,3 +49,30 @@
 .tier-card.tier-selected{outline:2px solid #ffb27e;outline-offset:3px;box-shadow:0 0 0 4px #f9731624}
 .tier-selection-notice{display:block;padding:13px 15px;border:1px solid #f9731680;border-radius:10px;background:#f9731612;color:#ffbd89;font-size:12px;font-weight:800;line-height:1.6;margin:0 0 20px}
 .tier-selection-notice[hidden]{display:none}
+
+/* Creator partnership: distinct from paid sponsor packages */
+.creator-partnership{background:#e9d8c3;color:#2b1c14}
+.creator-intro{display:grid;grid-template-columns:1.17fr .83fr;gap:55px;align-items:start;margin:23px 0 45px}
+.creator-intro h2{font-size:clamp(46px,5.4vw,74px);margin:0 0 26px}
+.creator-intro h2 em{color:#cb5b24}
+.creator-intro>div>p{max-width:650px;font-size:14px;line-height:1.8;color:#645348}
+.creator-deliverables{display:grid;gap:9px;margin-top:27px}
+.creator-deliverables strong{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#a84b1c}
+.creator-deliverables span{display:flex;align-items:center;gap:12px;font-size:12px}
+.creator-deliverables span:before{content:"";display:block;background:#f97316;width:7px;height:7px;border-radius:50%;flex:none}
+.creator-evidence{background:#151517;color:#f8e9db;border:1px solid #cc7951;padding:32px;border-radius:15px}
+.creator-evidence>span{font-size:9px;letter-spacing:.16em;color:#fca46f;font-weight:900}
+.creator-evidence h3{font:400 clamp(34px,3.5vw,46px)/1 "Instrument Serif",serif;margin:18px 0}
+.creator-evidence p{font-size:12px;line-height:1.8;color:#c5b9af}
+.creator-form-area{display:grid;grid-template-columns:.7fr 1.3fr;gap:38px;align-items:start;border-radius:17px;background:#151619;color:#f8eee2;padding:30px}
+.creator-form-help{padding:15px 3px}
+.creator-form-help h3{font:400 clamp(39px,4vw,54px)/1 "Instrument Serif",serif;margin:18px 0 24px}
+.creator-form-help>p{font-size:13px;line-height:1.7;color:#bcafa3}
+.creator-form{background:#1a1b1e;border-color:#ffffff23}
+.creator-form label>small{display:block;color:#ab9f93;line-height:1.5;font-size:10px;text-transform:none;letter-spacing:0;margin-top:6px}
+.creator-metrics-title{border-top:1px solid #ffffff23;padding-top:18px;margin:20px 0}
+.creator-metrics-title strong{color:#f8af78;font:400 26px "Instrument Serif",serif}
+.creator-metrics-title p{font-size:11px;color:#bdb0a6;line-height:1.6}
+.tier-card li b{color:#ffe7cf}
+@media(max-width:980px){.creator-intro,.creator-form-area{grid-template-columns:1fr;gap:22px}}
+@media(max-width:620px){.creator-partnership{padding:65px 20px}.creator-form-area{padding:18px}.creator-intro h2{font-size:51px}.creator-evidence{padding:25px}.creator-form input:not([type=checkbox]),.creator-form select,.creator-form textarea{font-size:16px;min-height:46px}}
