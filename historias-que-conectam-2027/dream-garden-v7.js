@@ -13,7 +13,7 @@ const rows=[
 ];
 const themes={carreira:"TRABALHO E CARREIRA",aprendizado:"APRENDIZADO",comunidade:"COMUNIDADE E IMPACTO",vida:"VIDA E FAMÍLIA",empreender:"EMPREENDER"};
 const songs={ana:{name:"Amarelo, azul e branco",artist:"ANAVITÓRIA ao vivo com Orquestra Ouro Preto",iframe:"https://www.youtube-nocookie.com/embed/riSNfxIDa1I?rel=0&playsinline=1",link:"https://www.youtube.com/watch?v=riSNfxIDa1I",height:220},wilian:{name:"Lua de Cristal",artist:"Wilian Metlei",iframe:"https://embed.music.apple.com/br/album/lua-de-cristal/1839994030?i=1839994031",link:"https://music.apple.com/us/album/lua-de-cristal/1839994030?i=1839994031",height:175}};
-let own=null,remoteDreams=[],index=0,focusReturn=null,showList=false,song="ana",paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let own=null,remoteDreams=[],editContext=null,index=0,focusReturn=null,showList=false,song="ana",paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const water=new Map();
 const activeDemos=()=>rows.slice(Math.min(remoteDreams.length,rows.length));
 const data=()=>own?[...activeDemos(),...remoteDreams,own]:[...activeDemos(),...remoteDreams];
@@ -22,6 +22,51 @@ async function dreamApi(body){
  let payload={};try{payload=await res.json()}catch(e){}
  if(!res.ok||payload.ok===false)throw new Error(payload.message||"Não foi possível concluir agora.");
  return payload
+}
+
+const EDIT_KEYS_STORAGE="crm_dream_edit_keys_v1";
+function readEditKeys(){try{return JSON.parse(localStorage.getItem(EDIT_KEYS_STORAGE)||"{}")}catch{return {}}}
+function saveEditKey(id,token){try{const keys=readEditKeys();keys[id]=token;localStorage.setItem(EDIT_KEYS_STORAGE,JSON.stringify(keys))}catch{}}
+function editLink(id,token){return location.origin+location.pathname+"#editar="+encodeURIComponent(id+"."+token)}
+function resetPlantForNew(){
+ editContext=null;
+ $("plantForm").removeAttribute("data-edit-id");
+ $("plantCategory").value="";
+ $("plantText").value="";
+ $("plantName").value="";
+ $("plantConsent").checked=false;
+ $("wordCounter").textContent="0 / 360";
+ const feedback=$("plantForm").querySelector(".plant-error");if(feedback)feedback.textContent="";
+}
+function fillEditForm(d,id,token){
+ editContext={id,token};
+ $("plantForm").dataset.editId=id;
+ $("plantCategory").value=d.category||d.type||"";
+ $("plantText").value=d.dream_text||d.text||"";
+ $("plantName").value=d.display_name||((d.name&&d.name!=="Você")?d.name:"");
+ $("plantConsent").checked=true;
+ $("wordCounter").textContent=$("plantText").value.length+" / 360";
+ $("plantForm").hidden=false;$("plantSuccess").hidden=true;
+ const button=$("plantForm").querySelector('button[type="submit"]');if(button)button.textContent="Salvar alterações";
+}
+async function openPrivateEdit(id,token){
+ try{
+  const payload=await dreamApi({action:"get_owned_dream",dream_id:id,edit_token:token});
+  saveEditKey(id,token);
+  fillEditForm(payload.dream,id,token);
+  focusReturn=document.activeElement;$("plantOverlay").hidden=false;document.body.classList.add("no-scroll");$("plantDialog").focus();
+  if(location.hash.startsWith("#editar="))history.replaceState(null,"",location.pathname+location.search);
+ }catch(err){
+  alert(err.message||"Este link de edição não é válido.");
+  if(location.hash.startsWith("#editar="))history.replaceState(null,"",location.pathname+location.search);
+ }
+}
+function handleEditHash(){
+ const raw=location.hash.startsWith("#editar=")?decodeURIComponent(location.hash.slice(8)):"";
+ if(!raw)return;
+ const dot=raw.indexOf(".");if(dot<1)return;
+ const id=raw.slice(0,dot),token=raw.slice(dot+1);
+ if(/^[0-9a-fA-F-]{36}$/.test(id)&&token.length>=30)openPrivateEdit(id,token);
 }
 function remotePosition(i){
  const points=[[17,39],[39,25],[58,34],[82,31],[20,57],[44,52],[67,50],[83,58],[31,72],[58,70],[76,73],[49,40]];
@@ -87,33 +132,45 @@ $(type==="dream"?"wishOverlay":"plantOverlay").hidden=true;
 if($("wishOverlay").hidden&&$("plantOverlay").hidden)document.body.classList.remove("no-scroll");
 const old=focusReturn;focusReturn=null;if(old&&old.focus)old.focus()
 }
-function plant(){focusReturn=document.activeElement;$("plantOverlay").hidden=false;$("plantForm").hidden=false;$("plantSuccess").hidden=true;document.body.classList.add("no-scroll");$("plantDialog").focus()}
+function plant(){focusReturn=document.activeElement;resetPlantForNew();$("plantOverlay").hidden=false;$("plantForm").hidden=false;$("plantSuccess").hidden=true;document.body.classList.add("no-scroll");$("plantDialog").focus()}
 async function submit(e){
 e.preventDefault();
 if(!$("plantForm").reportValidity())return;
 const text=$("plantText").value.trim();
 if(text.length<12){$("plantText").setCustomValidity("Escreva ao menos 12 caracteres.");$("plantForm").reportValidity();return}
 const button=$("plantForm").querySelector('button[type="submit"]');
-button.disabled=true;button.textContent="Registrando seu sonho...";
+button.disabled=true;button.textContent=editContext?"Salvando alterações...":"Registrando seu sonho...";
 try{
- const payload=await dreamApi({
+ const request=editContext?{
+  action:"edit_dream",
+  dream_id:editContext.id,
+  edit_token:editContext.token,
+  category:$("plantCategory").value,
+  dream_text:text,
+  display_name:$("plantName").value.trim(),
+  website_company:$("dreamWebsiteCompany")?.value||""
+ }:{
   action:"submit_dream",
   category:$("plantCategory").value,
   dream_text:text,
   display_name:$("plantName").value.trim(),
   consent_publication:$("plantConsent").checked,
   website_company:$("dreamWebsiteCompany")?.value||""
- });
+ };
+ const payload=await dreamApi(request);
  const d=payload.dream;
- own={id:d.id,mine:true,type:d.type,name:d.name||"Você",text:d.text,x:52,y:58,color:"#ffe6b8"};
- $("plantPreview").textContent="“"+d.text+"”";
+ if(payload.edit_token){editContext={id:d.id,token:payload.edit_token};saveEditKey(d.id,payload.edit_token)}
+ const token=editContext?.token||readEditKeys()[d.id]||"";
+ own={id:d.id,mine:true,type:d.type||d.category,name:d.name||d.display_name||"Você",text:d.text||d.dream_text,x:52,y:58,color:"#ffe6b8",editToken:token};
+ $("plantPreview").textContent="“"+own.text+"”";
+ $("plantSuccessMessage").textContent=payload.message||"Seu sonho foi registrado no Jardim e aguarda aprovação da administração.";
  $("plantForm").hidden=true;$("plantSuccess").hidden=false;drawTree();drawList()
 }catch(err){
  let feedback=$("plantForm").querySelector(".plant-error");
  if(!feedback){feedback=document.createElement("p");feedback.className="plant-error";feedback.setAttribute("role","alert");$("plantForm").append(feedback)}
  feedback.textContent=err.message||"Não foi possível registrar seu sonho agora.";
 }finally{
- button.disabled=false;button.textContent="✧ Ver meu sonho florescer ↗"
+ button.disabled=false;button.textContent=editContext?"Salvar alterações":"✧ Ver meu sonho florescer ↗"
 }
 }
 function selectMusic(key){
@@ -142,7 +199,9 @@ else if(!e.shiftKey&&document.activeElement===els[els.length-1]){e.preventDefaul
 $("plantDream").onclick=plant;$("gardenPlant").onclick=plant;
 $("plantForm").addEventListener("submit",submit);
 $("plantText").addEventListener("input",()=>{$("plantText").setCustomValidity("");$("wordCounter").textContent=$("plantText").value.length+" / 360"});
-$("seeNewWish").onclick=()=>{close("plant");view(false,true);setTimeout(()=>$("dreamOrbs").querySelector('[data-id="meu-sonho"]')?.focus(),paused?0:600)};
+$("seeNewWish").onclick=()=>{close("plant");view(false,true);setTimeout(()=>$("dreamOrbs").querySelector('[data-id="'+(own?.id||"")+'"]')?.focus(),paused?0:600)};
+$("editNewWish").onclick=()=>{if(!own)return;const token=own.editToken||readEditKeys()[own.id];if(!token)return;fillEditForm({type:own.type,text:own.text,name:own.name},own.id,token)};
+$("copyEditLink").onclick=async()=>{if(!own)return;const token=own.editToken||readEditKeys()[own.id];if(!token)return;const url=editLink(own.id,token);try{await navigator.clipboard.writeText(url);$("copyEditLink").textContent="Link copiado";setTimeout(()=>$("copyEditLink").textContent="Copiar link privado de edição",2200)}catch{prompt("Guarde este link privado para editar seu sonho depois:",url)}};
 $("waterDream").onclick=async()=>{let id=$("waterDream").dataset.id;const d=data().find(x=>x.id===id);if(!d)return;if(d.remote){try{const payload=await dreamApi({action:"water_dream",dream_id:id});water.set(id,Number(payload.waters||0));$("waterCount").textContent=String(water.get(id))}catch(e){console.warn("Não foi possível regar agora",e)}}else{water.set(id,(water.get(id)||0)+1);$("waterCount").textContent=String(water.get(id))}};
 $("switchView").onclick=()=>view(!showList,true);$("backToTree").onclick=()=>view(false,true);
 $("findDream").onclick=()=>{view(true,true);$("searchDream").focus({preventScroll:true})};
@@ -163,6 +222,6 @@ const x=((e.clientX-box.left)/box.width-.5)*9,y=((e.clientY-box.top)/box.height-
 raf=requestAnimationFrame(()=>$("treeScene").style.transform="translate3d("+x+"px,"+y+"px,0)")
 });
 $("treeScene").addEventListener("pointerleave",()=>$("treeScene").style.transform="");
-stars();drawTree();drawList();loadRemoteDreams();document.body.classList.toggle("motion-off",paused);
+stars();drawTree();drawList();loadRemoteDreams();handleEditHash();document.body.classList.toggle("motion-off",paused);
 if(paused){$("pauseMotion").textContent="▶ Retomar movimento";$("pauseMotion").setAttribute("aria-pressed","true")}
 })();
