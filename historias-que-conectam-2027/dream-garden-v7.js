@@ -15,7 +15,8 @@ const themes={carreira:"TRABALHO E CARREIRA",aprendizado:"APRENDIZADO",comunidad
 const songs={ana:{name:"Amarelo, azul e branco",artist:"ANAVITÓRIA ao vivo com Orquestra Ouro Preto",iframe:"https://www.youtube-nocookie.com/embed/riSNfxIDa1I?rel=0&playsinline=1",link:"https://www.youtube.com/watch?v=riSNfxIDa1I",height:220},wilian:{name:"Lua de Cristal",artist:"Wilian Metlei",iframe:"https://embed.music.apple.com/br/album/lua-de-cristal/1839994030?i=1839994031",link:"https://music.apple.com/us/album/lua-de-cristal/1839994030?i=1839994031",height:175}};
 let own=null,remoteDreams=[],index=0,focusReturn=null,showList=false,song="ana",paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const water=new Map();
-const data=()=>own?[...rows,...remoteDreams,own]:[...rows,...remoteDreams];
+const activeDemos=()=>rows.slice(Math.min(remoteDreams.length,rows.length));
+const data=()=>own?[...activeDemos(),...remoteDreams,own]:[...activeDemos(),...remoteDreams];
 async function dreamApi(body){
  const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify(body),cache:"no-store"});
  let payload={};try{payload=await res.json()}catch(e){}
@@ -45,7 +46,12 @@ b.append(light,msg,by);b.onclick=()=>open(d.id,b);return b
 }
 function drawTree(){
 $("dreamOrbs").replaceChildren(...data().map(orb));
-$("dreamCount").textContent=(rows.length+remoteDreams.length)+" sonhos no jardim"+(own?" + o seu":"")
+{
+ const real=remoteDreams.length,demos=activeDemos().length;
+ $("dreamCount").textContent=real
+   ? real+" "+(real===1?"sonho real aprovado":"sonhos reais aprovados")+(demos?" · "+demos+" "+(demos===1?"exemplo temporário":"exemplos temporários"):"")+(own?" + o seu aguardando moderação":"")
+   : demos+" exemplos temporários"+(own?" + o seu aguardando moderação":"");
+}
 }
 function drawList(){
 const query=$("searchDream").value.trim().toLocaleLowerCase("pt-BR"),type=$("filterDream").value;
