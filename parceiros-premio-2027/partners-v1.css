@@ -7,3 +7,41 @@
 .speaker-crosslink strong{font:400 clamp(25px,3vw,38px)/1.1 "Instrument Serif",serif}
 .speaker-crosslink p{font-size:13px;line-height:1.6;color:#6a5144;margin:8px 0 0}
 .speaker-crosslink a{color:#b6501b;text-decoration:underline;text-underline-offset:4px;font-weight:800}
+
+/* Patrocínio: cotas com referência comercial, sem interferência no prêmio */
+.sponsorship-tiers{background:#171617;color:#f8eee2;scroll-margin-top:75px}
+.sponsorship-tiers .section-label{color:#f99a60}
+.sponsorship-heading{display:grid;grid-template-columns:1.35fr .65fr;gap:50px;align-items:end;margin:23px 0 33px}
+.sponsorship-heading h2{font-size:clamp(45px,5.4vw,70px);margin:0 0 19px}
+.sponsorship-heading h2 em{color:#f97731}
+.sponsorship-heading p{font-size:14px;line-height:1.73;color:#bfb3a6;max-width:690px;margin:0}
+.sponsorship-value-note{border:1px solid #e4854c88;background:linear-gradient(135deg,#312019,#211b1c);padding:19px 20px;border-radius:13px}
+.sponsorship-value-note>span{display:block;color:#e9a579;letter-spacing:.13em;font-size:9px;font-weight:900}
+.sponsorship-value-note strong{display:block;font:400 29px/1.15 "Instrument Serif",serif;margin:10px 0 6px}
+.sponsorship-value-note p{font-size:11px;color:#c4b4a6}
+.tier-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tier-card{border:1px solid #7b604b;background:linear-gradient(157deg,#292322,#1c1b1d);border-radius:17px;display:flex;flex-direction:column;min-height:495px;padding:24px 20px;transition:border-color .2s,transform .2s}
+.tier-card:hover,.tier-card:focus-within{border-color:#f99560;transform:translateY(-3px)}
+.tier-card.tier-featured{border-color:#f97316;background:linear-gradient(155deg,#472718,#2e211b)}
+.tier-card.tier-master{border-color:#e5bb90;background:linear-gradient(147deg,#493026,#211a17)}
+.tier-card-top>span{font-size:9px;color:#e8a36d;font-weight:900;letter-spacing:.15em}
+.tier-card h3{font:400 39px/1.1 "Instrument Serif",serif;margin:16px 0 8px;color:#fff6ec}
+.tier-card-top p{font-size:11px;line-height:1.58;color:#c2b4aa;margin:0;min-height:50px}
+.tier-price{border-top:1px solid #ffffff20;border-bottom:1px solid #ffffff20;margin:22px 0 17px;padding:12px 0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.tier-price>span{font-size:13px;font-weight:750;color:#f6c499}
+.tier-price strong{font:400 clamp(37px,3vw,51px)/1 "Instrument Serif",serif;color:#fff7ee;letter-spacing:-.035em}
+.tier-price small{font-size:9px;display:block;flex-basis:100%;color:#bda995;margin-top:2px}
+.tier-card ul{padding-left:18px;margin:0 0 22px;list-style:square;flex:1}
+.tier-card li{font-size:11px;line-height:1.63;margin:0 0 9px;color:#dfd1c3}
+.tier-card li::marker{color:#f97316}
+.tier-cta{width:100%;display:flex;align-items:center;justify-content:space-between;gap:5px;padding:12px 13px;border:1px solid #f98540;border-radius:10px;background:#f97316;color:#1e1511;font-size:10px;font-weight:900;cursor:pointer;min-height:44px;text-align:left}
+.tier-cta>span{font-size:18px;line-height:1}
+.tier-cta:hover{background:#ff965b}
+.tier-card:not(.tier-featured):not(.tier-master) .tier-cta{background:#fbe8d4;color:#271c14;border-color:#bd8a67}
+.tier-footnotes{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:22px 0 0}
+.tier-footnotes p{font-size:11px;line-height:1.68;color:#c2b2a4;border-left:2px solid #cc7645;padding-left:13px}
+.tier-footnotes strong{color:#ffcfaa}
+.partner-form select#partnerInvestmentRange{border-color:#f9731655}
+@media(max-width:1130px){.tier-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tier-card{min-height:430px}}
+@media(max-width:720px){.sponsorship-heading,.tier-footnotes{grid-template-columns:1fr;gap:12px}.tier-grid{grid-template-columns:1fr}.tier-card{min-height:0;padding:22px 20px}.tier-card-top p{min-height:0}.tier-price strong{font-size:48px}.sponsorship-tiers{padding:65px 20px}.sponsorship-heading h2{font-size:51px}}
+@media(prefers-reduced-motion:reduce){.tier-card{transition:none}.tier-card:hover{transform:none}}
