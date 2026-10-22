@@ -8129,6 +8129,17 @@ function requireAuth(actionLabel){
   return false;
 }
 
+// Evento de engajamento VAGA_SALVA. Não envia e-mail.
+function crmTrackSavedJobReminderEvent(userId){
+  try{
+    if(!userId || CURRENT_USER?.id!==userId)return;
+    if(CURRENT_PROFILE?.receive_community_updates!==true)return;
+    if(typeof window.crmInngageEvent!=='function')return;
+    // Não transmitir URL, título, empresa, detalhes de vaga ou perfil para a Inngage.
+    window.crmInngageEvent('VAGA_SALVA', {area:'radar',versao:'1'});
+  }catch(_error){/* falha de telemetria nunca impede salvar a vaga */}
+}
+
 async function saveScrapedJob(url, title, company){
   if(!requireAuth('salvar esta vaga')) return;
   if(!CURRENT_USER || !authSb){ evToastMsg && evToastMsg('Faça login para salvar vagas.', ''); return; }
@@ -8176,6 +8187,7 @@ async function saveScrapedJob(url, title, company){
             body: JSON.stringify({ user_id: newSess.user.id, vaga_url: url, vaga_title: title||'Vaga', vaga_company: company||'' })
           });
           if(retry.ok || retry.status === 409){
+            if(retry.ok && retry.status !== 409)crmTrackSavedJobReminderEvent(newSess.user.id);
             evToastMsg && evToastMsg('Vaga salva!  Salvar não garante candidatura, entre na vaga e siga o processo seletivo.', '');
             if(document.getElementById('membroVagasSalvas')) loadMembroPanel();
             return;
@@ -8186,6 +8198,7 @@ async function saveScrapedJob(url, title, company){
       throw new Error('Erro ' + resp.status + ': ' + body.slice(0,100));
     }
 
+    crmTrackSavedJobReminderEvent(session.user.id);
     evToastMsg && evToastMsg('Vaga salva!  Salvar não garante candidatura, entre na vaga e siga o processo seletivo.', '');
     if(document.getElementById('membroVagasSalvas')) loadMembroPanel();
   }catch(e) {
