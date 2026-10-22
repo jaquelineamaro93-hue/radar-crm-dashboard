@@ -16,6 +16,30 @@ function syncClient(){
 form.querySelectorAll('input[name="interest_types"]').forEach(el=>el.addEventListener("change",syncClient));
 syncClient();
 
+const tierChoices=Array.from(document.querySelectorAll('[data-select-tier]'));
+const tierSelect=form.querySelector('[name="investment_range"]');
+const sponsorInterest=form.querySelector('input[name="interest_types"][value="patrocinador_evento"]');
+const selectionNotice=document.getElementById("selectedTierNotice");
+function updateTierUI(){
+ const chosen=tierSelect?.value||"";
+ document.querySelectorAll("[data-tier-card]").forEach(card=>card.classList.toggle("tier-selected",chosen!==""&&card.dataset.tierCard===chosen));
+ if(selectionNotice){
+  const isTier=tierChoices.some(button=>button.dataset.selectTier===chosen);
+  selectionNotice.hidden=!isTier;
+  selectionNotice.textContent=isTier?"Cota de interesse selecionada: "+chosen+". Preencha os dados abaixo para conversarmos sobre a proposta.":"";
+ }
+}
+tierChoices.forEach(button=>button.addEventListener("click",()=>{
+ if(!tierSelect)return;
+ tierSelect.value=button.dataset.selectTier;
+ if(sponsorInterest)sponsorInterest.checked=true;
+ syncClient();updateTierUI();
+ document.getElementById("contato")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+ setTimeout(()=>{const input=form.querySelector('[name="organization_name"]');input?.focus({preventScroll:true})},250);
+}));
+tierSelect?.addEventListener("change",updateTierUI);
+updateTierUI();
+
 function setMessage(text,type){
  feedback.textContent=text||"";
  feedback.classList.remove("ok","error");
@@ -40,7 +64,7 @@ form.addEventListener("submit",async e=>{
   const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify(body),cache:"no-store"});
   let data={};try{data=await res.json()}catch{}
   if(!res.ok||data.ok===false)throw new Error(data.message||"Não foi possível enviar agora.");
-  setMessage(data.message||"Interesse recebido.","ok");form.reset();syncClient();
+  setMessage(data.message||"Interesse recebido.","ok");form.reset();syncClient();updateTierUI();
  }catch(err){setMessage(err.message||"Não foi possível enviar agora.","error")}
  finally{button.disabled=false}
 });
