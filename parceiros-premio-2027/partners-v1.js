@@ -68,4 +68,35 @@ form.addEventListener("submit",async e=>{
  }catch(err){setMessage(err.message||"Não foi possível enviar agora.","error")}
  finally{button.disabled=false}
 });
+
+const creatorForm=document.getElementById("creatorForm");
+const creatorFeedback=document.getElementById("creatorFeedback");
+if(creatorForm&&creatorFeedback){
+ function creatorMessage(text,type){
+  creatorFeedback.textContent=text||"";
+  creatorFeedback.classList.remove("ok","error");
+  if(type)creatorFeedback.classList.add(type);
+ }
+ creatorForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!creatorForm.reportValidity())return;
+  const button=creatorForm.querySelector('button[type="submit"]');
+  const values=new FormData(creatorForm),body={action:"submit_creator"};
+  for(const [k,v] of values.entries()){
+   if(k!=="consent"&&k!=="confirms_aggregate_only")body[k]=v;
+  }
+  body.consent=!!creatorForm.querySelector('[name="consent"]')?.checked;
+  body.confirms_aggregate_only=!!creatorForm.querySelector('[name="confirms_aggregate_only"]')?.checked;
+  button.disabled=true;button.textContent="Registrando candidatura...";creatorMessage("Validando informações...");
+  try{
+   const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},
+    body:JSON.stringify(body),cache:"no-store"});
+   let data={};try{data=await res.json()}catch{}
+   if(!res.ok||data.ok===false)throw new Error(data.message||"Não foi possível enviar agora.");
+   creatorMessage(data.message||"Candidatura recebida.","ok");
+   creatorForm.reset();
+  }catch(err){creatorMessage(err.message||"Não foi possível enviar agora.","error")}
+  finally{button.disabled=false;button.textContent="Enviar candidatura de Creator Parceiro →"}
+ });
+}
 })();
