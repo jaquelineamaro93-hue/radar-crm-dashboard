@@ -1,0 +1,36 @@
+name: Saved jobs Inngage events
+
+on:
+  push:
+    branches:
+      - main
+      - feature/inngage-saved-job-reminder-20261022
+    paths:
+      - 'index.html'
+      - '404.html'
+      - 'docs/inngage-saved-jobs-reminder.md'
+      - 'tests/inngage-saved-jobs-reminder.cjs'
+      - '.github/workflows/inngage-saved-jobs.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - '404.html'
+      - 'docs/inngage-saved-jobs-reminder.md'
+      - 'tests/inngage-saved-jobs-reminder.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate opt-in event, route parity, and no email dispatch
+        run: node tests/inngage-saved-jobs-reminder.cjs
