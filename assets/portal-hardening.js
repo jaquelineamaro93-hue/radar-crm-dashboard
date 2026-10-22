@@ -120,6 +120,21 @@
       else if(adminAnchor?.parentElement===nav&&adminAnchor.nextElementSibling!==dreamAdmin)adminAnchor.after(dreamAdmin);
     }else dreamAdmin?.remove();
 
+    if(verified){
+      let speakersNav=document.getElementById('crmSpeakersAdminNav');
+      if(!speakersNav){
+        speakersNav=document.createElement('a');
+        speakersNav.id='crmSpeakersAdminNav';
+        speakersNav.className='tab-btn';
+        speakersNav.href='/admin-palestrantes-2027/';
+        speakersNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
+        speakersNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h5l8-4v12l-8-4H5zM8 15v5"/></svg></span>Propostas de palestras';
+      }
+      const anchor=document.getElementById('crmDreamGardenAdminNav')||document.getElementById('crmAdminNav');
+      if(anchor?.parentElement===nav&&anchor.nextElementSibling!==speakersNav)anchor.after(speakersNav);
+    }else document.getElementById('crmSpeakersAdminNav')?.remove();
+
+
     const teamAdmin=document.getElementById('crmTeamAdminNav');
     if(teamAdmin&&!teamAdmin.dataset.cxTeamAdminEdited){
       teamAdmin.dataset.cxTeamAdminEdited='1';
