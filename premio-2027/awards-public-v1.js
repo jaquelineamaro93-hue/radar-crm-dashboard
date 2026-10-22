@@ -152,8 +152,8 @@ function tabs(){
   history.replaceState(null,"",location.pathname+(params.toString()?"?"+params:"")+location.hash);
 
   const key=btn.dataset.awardsForm;
-  $$$(".awards-form-tab").forEach(b=>{const on=b===btn;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
-  $$$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel===key;p.hidden=!on;p.classList.toggle("active",on)});
+  $$(".awards-form-tab").forEach(b=>{const on=b===btn;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
+  $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel===key;p.hidden=!on;p.classList.toggle("active",on)});
  }));
  if(new URLSearchParams(location.search).get("participar")==="palestrante"){
    const speaker=document.querySelector('[data-awards-form="speaker"]');
