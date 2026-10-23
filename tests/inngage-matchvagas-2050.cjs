@@ -84,4 +84,19 @@ for(const token of [
 ]) assert.ok(html.includes(token),"Missing protected manual UI: "+token);
 assert.ok(src.indexOf('if (action === "manual_csv"') < src.indexOf('if (action === "probe_fields"'),"manual path isn't independent of field probe");
 
-console.log("Inngage 2050: all production guards, dedupe and manual CSV controls passed.");
+
+// Rejecting a message must capture only classified reason and harmless response keys,
+// while all limits and manual consent remain unchanged.
+for (const token of [
+  "function safeProviderDiagnostic(",
+  "MESSAGE_REJECTED",
+  "MANUAL_MESSAGE_REJECTED",
+  "recent_manual_test:",
+  "response_keys: providerMeta.response_keys",
+  '"MESSAGE_" + response.status + "_"',
+]) assert.ok(src.includes(token),"Missing provider diagnostics: "+token);
+for (const token of ["data.recent_manual_test","manualTestBlocked=true","manualTestBlocked||!manualCsvReady","Engajamento &gt; Envio em Massa"]) {
+ assert.ok(html.includes(token),"Missing same-day safety in UI: "+token);
+}
+
+console.log("Inngage 2050: manual send HTTP 400 visibility, idempotency and privacy guards passed.");

@@ -308,6 +308,50 @@ function validFiveCards(recs: Rec[]): boolean {
     new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === 5 &&
     recs.every(x => x.score >= 65 && validExternalUrl(x.job.url));
 }
+async function safeProviderDiagnostic(response: Response): Promise<{ reason: string; response_keys: string[] }> {
+  // Never return/log the raw response. It may contain email addresses,
+  // App Token, bearer tokens or personalized job attributes.
+  const raw = (await response.text()).slice(0, 4096);
+  let keys: string[] = [];
+  let clues = raw;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") {
+      const entry = parsed as Record<string, unknown>;
+      keys = Object.keys(entry).filter(k => /^[a-zA-Z][a-zA-Z0-9_]{0,40}$/.test(k)).slice(0, 12);
+      const values: string[] = [];
+      for (const key of ["message","error","description","detail","reason","code","error_code","errorMessage","errors"]) {
+        const value = entry[key];
+        if (typeof value === "string") values.push(value);
+        else if (typeof value === "number") values.push(String(value));
+        else if (Array.isArray(value)) for (const item of value.slice(0, 3)) {
+          if (typeof item === "string") values.push(item);
+          else if (item && typeof item === "object") for (const k of ["message","code","field"]) {
+            const sub = (item as Record<string, unknown>)[k];
+            if (typeof sub === "string") values.push(sub);
+          }
+        }
+      }
+      clues = values.join(" ");
+    }
+  } catch { /* HTML/plain text error; classify without retaining response text. */ }
+  const normalized = clues.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const category = (pattern: RegExp, name: string) => pattern.test(normalized) ? name : null;
+  const reason =
+    category(/template.{0,60}(draft|rascunh|inactive|inativ|disabled|not found|nao encontrado)/, "TEMPLATE_UNAVAILABLE") ||
+    category(/(draft|rascunh|inactive|inativ).{0,60}template/, "TEMPLATE_UNAVAILABLE") ||
+    category(/(api_template_id|template_id|template).{0,60}(invalid|invalido|required|missing|obrigator)/, "TEMPLATE_ID_INVALID") ||
+    category(/(identifier|identifiers|subscriber_email|recipient|destinatario|email).{0,60}(invalid|invalido|required|missing|obrigator|not found|nao encontrad)/, "RECIPIENT_INVALID") ||
+    category(/(invalid|invalido|required|missing|obrigator).{0,60}(identifier|identifiers|subscriber_email|recipient|destinatario|email)/, "RECIPIENT_INVALID") ||
+    category(/(channel_id|channel|canal).{0,60}(invalid|invalido|required|missing|obrigator|disabled|inactive)/, "CHANNEL_CONFIGURATION") ||
+    category(/(invalid|invalido|required|missing|obrigator|disabled|inactive).{0,60}(channel_id|channel|canal)/, "CHANNEL_CONFIGURATION") ||
+    category(/(invalid|invalido|required|missing|obrigator).{0,60}(tags|tag)/, "TAGS_INVALID") ||
+    category(/(token|app_token|authorization|unauthoriz|authentication|authentic|permission|permissao)/, "AUTHORIZATION_REJECTED") ||
+    category(/(json|syntax|schema|request|body|payload).{0,60}(invalid|invalido|required|missing)/, "REQUEST_SCHEMA_INVALID") ||
+    category(/(invalid|invalido|required|missing|malformed).{0,60}(json|syntax|schema|request|body|payload)/, "REQUEST_SCHEMA_INVALID") ||
+    "UNKNOWN_PROVIDER_VALIDATION";
+  return { reason, response_keys: keys };
+}
 async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
   if (!email || recs.length !== 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
@@ -366,7 +410,12 @@ async function send(userId: string, profile: { full_name?: string | null }, recs
       });
       providerStatus = response.status;
       status = response.ok ? "accepted" : "rejected";
-      failure = response.ok ? "" : "MESSAGE_" + response.status;
+      const providerMeta = response.ok ? null : await safeProviderDiagnostic(response);
+      if (providerMeta) console.warn("[inngage-match] MESSAGE_REJECTED", JSON.stringify({
+        http_status: response.status, provider_reason: providerMeta.reason,
+        response_keys: providerMeta.response_keys,
+      }));
+      failure = response.ok ? "" : "MESSAGE_" + response.status + "_" + (providerMeta?.reason || "UNKNOWN_PROVIDER_VALIDATION");
     }
   } catch (error) {
     status = "unknown";
@@ -400,6 +449,10 @@ Deno.serve(async (req: Request) => {
         .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
         .eq("user_id", caller.id).eq("campaign_key", "matchvagas_2050_probe_campos")
         .order("created_at", { ascending: false }).limit(1);
+      const { data: manualTest, error: manualError } = await db.from("crm_inngage_match_delivery")
+        .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
+        .eq("user_id", caller.id).eq("campaign_key", "matchvagas_2050_csv_manual_test")
+        .order("created_at", { ascending: false }).limit(1);
       return reply({
         ok: true, template_id: TEMPLATE_ID, configured: {
           app_token: !!Deno.env.get("INNGAGE_APP_TOKEN"),
@@ -409,7 +462,8 @@ Deno.serve(async (req: Request) => {
         provider_fields_verified: cfg.provider_fields_verified === true,
         recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
         recent_probe: probeError ? { error: "HISTORY_UNAVAILABLE" } : probe?.[0] ?? null,
-        advisory: "Consulte recent_probe para a última validação dos campos e recent_test para o teste de e-mail. O formato fieldsRequest foi corrigido; a aceitação pela Inngage ainda requer homologação. Os limites de tentativas permanecem ativos.",
+        recent_manual_test: manualError ? { error: "HISTORY_UNAVAILABLE" } : manualTest?.[0] ?? null,
+        advisory: "Verifique recent_manual_test: após importar o CSV, o envio do template 2050 recebeu HTTP 400. O motivo exato não foi capturado na tentativa antiga. Não repita o envio neste dia; para testar hoje use Envio em Massa visual com apenas seu e-mail.",
       });
     }
     // Admin-only launch control. Never enable without accepted self-test and
@@ -518,7 +572,12 @@ Deno.serve(async (req: Request) => {
           });
           providerCode = response.status;
           state = response.ok ? "accepted" : "rejected";
-          errorCode = response.ok ? null : "MESSAGE_" + response.status;
+          const providerMeta = response.ok ? null : await safeProviderDiagnostic(response);
+          if (providerMeta) console.warn("[inngage-match] MANUAL_MESSAGE_REJECTED", JSON.stringify({
+            http_status: response.status, provider_reason: providerMeta.reason,
+            response_keys: providerMeta.response_keys,
+          }));
+          errorCode = response.ok ? null : "MESSAGE_" + response.status + "_" + (providerMeta?.reason || "UNKNOWN_PROVIDER_VALIDATION");
         } catch (e) {
           state = "unknown";
           errorCode = e instanceof Error ? e.name.slice(0, 45) : "UNKNOWN_TRANSPORT_ERROR";

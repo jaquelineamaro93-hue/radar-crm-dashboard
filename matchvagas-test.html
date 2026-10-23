@@ -70,14 +70,15 @@ VAGA_5_URL</pre>
 <p><a href="https://docs.inngage.com.br/artigo/campos-personalizados-nao-aparecem" target="_blank" rel="noopener">Documentação oficial da Inngage sobre campos personalizados</a></p>
 </div>
 <div class="card" id="manualToday">
-  <h2>Envio manual hoje: sem depender da API de campos</h2>
+  <h2>Envio manual hoje: importação e teste</h2>
+  <p class="status">O envio pelo API Template 2050 recebeu HTTP 400 hoje. O sistema não fará um novo teste automático neste dia. Para enviar agora, utilize o fluxo visual <strong>Engajamento &gt; Envio em Massa</strong>, com o CSV de uma linha contendo somente seu e-mail, selecionando os 31 campos como variáveis e conferindo o descadastro. A campanha semanal permanece desativada.</p>
   <p>Alternativa para homologação individual. Primeiro gere um CSV com o seu e-mail e os 31 atributos calculados de cinco oportunidades realmente distintas. Depois importe em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Público &gt; Todo Público &gt; Importar Lista, vinculando <strong>identifier</strong>, <strong>email</strong> e os 31 campos. Verifique os valores no seu próprio perfil antes de enviar.</p>
   <button id="manualCsv" disabled>1. Gerar CSV do meu Match IA</button>
   <pre id="manualCsvResult">Nenhum arquivo exportado. Não envia mensagens.</pre>
   <p>Após importar a linha no seu contato, confirme no perfil da Inngage se o nome, as cinco vagas, os links e os percentuais estão preenchidos. Confirme também que o HTML 2050 possui o link de descadastro correto.</p>
   <label><input type="checkbox" id="confirmManualImport"> 2. Importei o CSV para meu próprio contato, conferi os 31 atributos na Inngage e validei os links e o descadastro do template 2050.</label>
   <button id="manualSend" disabled>3. Enviar apenas meu teste 2050 hoje</button>
-  <pre id="manualSendResult">Nenhum teste manual solicitado. Não libera a campanha automática.</pre>
+  <pre id="manualSendResult">Consulte Verificar credenciais para conferir a última tentativa manual. Não libera a campanha automática.</pre>
   <p>Se quiser fazer uma campanha inteiramente manual em vez de acionar o API Template, use <a href="https://docs.inngage.com.br/artigo/envio-em-massa" target="_blank" rel="noopener">Engajamento &gt; Envio em Massa</a>, com este CSV e conteúdo de e-mail mapeado às variáveis do arquivo. Revise a lista de destinatários antes de confirmar.</p>
 </div>
 <div class="card">
@@ -107,12 +108,12 @@ VAGA_5_URL</pre>
 <script>
 (function(){
 "use strict";
-var sb=null,who=null,testBlocked=false,probeBlocked=false,manualFingerprint=null,manualCsvReady=false;
+var sb=null,who=null,testBlocked=false,probeBlocked=false,manualTestBlocked=false,manualFingerprint=null,manualCsvReady=false;
 var el=function(id){return document.getElementById(id)};
 var buttonIds=["diagnostics","preview","dryRun","probe","manualCsv","manualSend","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=probeBlocked||!el("confirmProbe").checked;if(!b&&who)el("manualSend").disabled=!manualCsvReady||!el("confirmManualImport").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=probeBlocked||!el("confirmProbe").checked;if(!b&&who)el("manualSend").disabled=manualTestBlocked||!manualCsvReady||!el("confirmManualImport").checked}
 function safeError(e){return String(e&&e.message||e)}
 function weekStart(){
  var d=new Date(),w=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
@@ -142,6 +143,18 @@ function showDiagnostics(data){
  if(probe&&probe.week_key===new Date().toISOString().slice(0,10)){
    probeBlocked=true;
    el("probe").disabled=true;
+ }
+ var manual=data&&data.recent_manual_test;
+ if(manual){
+   el("manualSendResult").textContent="Último teste manual 2050: "+manual.status+
+     (manual.provider_error_code?" | "+manual.provider_error_code:"")+
+     (manual.provider_status?" | HTTP "+manual.provider_status:"")+
+     (manual.created_at?" | Registro UTC: "+manual.created_at:"")+
+     ". Não reenviar pelo API Template sem corrigir a solicitação. Para enviar hoje, utilize Engajamento > Envio em Massa, com apenas o seu endereço.";
+   if(manual.week_key===new Date().toISOString().slice(0,10)){
+     manualTestBlocked=true;
+     el("manualSend").disabled=true;
+   }
  }
 }
 function print(id,content){el(id).textContent=typeof content==="string"?content:JSON.stringify(content,null,2)}
@@ -174,6 +187,7 @@ async function run(action,resultId,extra){
    print(resultId,data);
    if(action==="diagnostics")showDiagnostics(data);
    if(action==="probe_fields")run("diagnostics","diagnosticsResult");
+   if(action==="manual_template_test")run("diagnostics","diagnosticsResult");
    if(action==="send_test"&&data&&data.status==="blocked_previous_attempt"){
       el("sendResult").textContent="Não enviado. Já existe uma tentativa registrada nesta semana. Nenhuma outra solicitação foi realizada.";
       testBlocked=true;
@@ -230,10 +244,10 @@ el("manualCsv").onclick=async function(){
  setBusy(false);
 };
 el("confirmManualImport").onchange=function(){
- el("manualSend").disabled=!who||!manualCsvReady||!el("confirmManualImport").checked;
+ el("manualSend").disabled=!who||manualTestBlocked||!manualCsvReady||!el("confirmManualImport").checked;
 };
 el("manualSend").onclick=async function(){
- if(!who||!manualCsvReady||!manualFingerprint||!el("confirmManualImport").checked)return;
+ if(!who||manualTestBlocked||!manualCsvReady||!manualFingerprint||!el("confirmManualImport").checked)return;
  if(!window.confirm("Enviar um único e-mail do template 2050 para "+who.email+" após a importação manual? Esta ação NÃO envia para a comunidade."))return;
  setBusy(true);
  try{
