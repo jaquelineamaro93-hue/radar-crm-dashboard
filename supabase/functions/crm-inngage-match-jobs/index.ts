@@ -167,10 +167,32 @@ function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string,
   // A bounded rules-based ranking; not a statistically calibrated probability.
   return Math.max(0, Math.min(92, titleSignal + levelScore + modeScore + regionScore + skillScore - companyPenalty));
 }
+
+async function isVerifiedServiceKey(token: string, endpoint: string): Promise<boolean> {
+  // Claims are only a prefilter. Supabase Auth must validate the actual credential.
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(payload + "=".repeat((4 - payload.length % 4) % 4)));
+    if (claims.role !== "service_role") return false;
+    const response = await fetch(endpoint.replace(/\/$/, "") + "/auth/v1/admin/users?page=1&per_page=1", {
+      headers: { apikey: token, Authorization: "Bearer " + token },
+      redirect: "error",
+      signal: AbortSignal.timeout(5000),
+    });
+    // Never read, log, or return user data from this authorization check.
+    await response.body?.cancel();
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
 async function authorize(req: Request) {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   if (!token) return null;
-  if (SERVICE_KEY && token === SERVICE_KEY) return { mode: "service" as const, id: "" };
+  if ((SERVICE_KEY && token === SERVICE_KEY) || await isVerifiedServiceKey(token, PROJECT_URL)) return { mode: "service" as const, id: "" };
   const client = createClient(PROJECT_URL, ANON_KEY, {
     global: { headers: { Authorization: "Bearer " + token } },
     auth: { persistSession: false },
