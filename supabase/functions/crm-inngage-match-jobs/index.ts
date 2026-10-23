@@ -344,6 +344,7 @@ async function safeProviderDiagnostic(response: Response): Promise<{ reason: str
     category(/(identifier|identifiers|subscriber_email|recipient|destinatario|email).{0,60}(invalid|invalido|required|missing|obrigator|not found|nao encontrad)/, "RECIPIENT_INVALID") ||
     category(/(invalid|invalido|required|missing|obrigator).{0,60}(identifier|identifiers|subscriber_email|recipient|destinatario|email)/, "RECIPIENT_INVALID") ||
     category(/(channel_id|channel|canal).{0,60}(invalid|invalido|required|missing|obrigator|disabled|inactive)/, "CHANNEL_CONFIGURATION") ||
+    category(/(invalid|invalido|required|missing|obrigator|disabled|inactive).{0,60}(channel_id|channel|canal)/, "CHANNEL_CONFIGURATION") ||
     category(/(invalid|invalido|required|missing|obrigator).{0,60}(tags|tag)/, "TAGS_INVALID") ||
     category(/(token|app_token|authorization|unauthoriz|authentication|authentic|permission|permissao)/, "AUTHORIZATION_REJECTED") ||
     category(/(json|syntax|schema|request|body|payload).{0,60}(invalid|invalido|required|missing)/, "REQUEST_SCHEMA_INVALID") ||
