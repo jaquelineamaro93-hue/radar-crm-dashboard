@@ -130,11 +130,11 @@ function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string,
   if (managementTarget && /\b(director|diretor|vp|chief)\b/.test(norm(role))) return null;
   const mode = workMode(job.modalidade_normalizada || job.modelo);
   const desiredModes = list(pref.work_models || match.work_models).map(workMode).filter(Boolean);
-  if (desiredModes.length && mode && !desiredModes.includes(mode)) return null;
+  if (desiredModes.length && (!mode || !desiredModes.includes(mode))) return null;
   const workRegion = clean(job.location || job.regiao);
   const desiredLocations = list(pref.preferred_locations);
-  if (mode !== "remoto" && desiredLocations.length && workRegion &&
-      !desiredLocations.some(l => overlap(l, workRegion))) return null;
+  if (mode !== "remoto" && desiredLocations.length &&
+      (!workRegion || !desiredLocations.some(l => overlap(l, workRegion)))) return null;
   const desired = requestedTracks(list(pref.target_roles), clean(match.primary_area));
   if (!desired.length) return null;
   const titleNorm = norm(role);
