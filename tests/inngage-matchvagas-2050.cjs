@@ -99,4 +99,36 @@ for (const token of ["data.recent_manual_test","manualTestBlocked=true","manualT
  assert.ok(html.includes(token),"Missing same-day safety in UI: "+token);
 }
 
-console.log("Inngage 2050: manual send HTTP 400 visibility, idempotency and privacy guards passed.");
+
+for(const check of [
+ 'function validAvailableCards(',
+ 'recs.length >= 1 && recs.length <= 5',
+ 'new Set(recs.map(x => opportunityKey(x.job))).size === recs.length',
+ 'new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === recs.length',
+ 'if (!email || !validAvailableCards(recs))',
+ 'if (!validAvailableCards(matches)) { skipped++; continue; }',
+ 'ready_with_1_to_5_matches',
+ 'without_matches',
+ 'slot > picks.length ? mapped[name] === ""',
+ 'slot > matches.length ? attributes[name] === ""',
+]) assert.ok(src.includes(check),"1-5 guard missing: "+check);
+// Extract pure mapper and run fixtures for every slot count, including zero.
+const fn=src.match(/function fields\(profile: \{ full_name\?: string \| null \}, recs: Rec\[\]\) \{[\s\S]*?\n\}/);
+assert.ok(fn,"fields() implementation not found");
+const mapper=new Function("clean","splitRoleAndCompany","verifiedWorkMode",
+  fn[0].replace("profile: { full_name?: string | null }, recs: Rec[]","profile, recs")
+       .replace("const result: Record<string, string> =","const result =")+";return fields;")(
+  x=>String(x??"").trim(),job=>({role:job.title,company:job.company}),job=>job.mode
+);
+for(let n=0;n<=5;n++){
+  const matches=Array.from({length:n},(_,i)=>({job:{title:"CRM Manager "+i,company:"Empresa "+i,mode:"remoto",url:"https://jobs.example/"+i,location:"Brasil"},score:75+i}));
+  const out=mapper({full_name:"Jaqueline Exemplo"},matches);
+  assert.equal(Object.keys(out).length,31,"Exactly 31 attributes with "+n+" matches");
+  for(let i=1;i<=5;i++)for(const part of ["CARGO","EMPRESA","MODALIDADE","LOCAL","MATCH","URL"]){
+    const value=out["VAGA_"+i+"_"+part];
+    assert.equal(typeof value,"string");
+    assert.equal(value.length>0,i<=n,"slot "+i+" must match "+n+" actual jobs");
+  }
+}
+
+console.log("Inngage 2050: one-to-five mapping fixtures, consent and safety guards passed.");
