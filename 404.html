@@ -2642,7 +2642,7 @@ crmShowSurveyReminder();
             <select id="filtro-periodo-hub" aria-label="Período de publicação" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; background:var(--panel); color:var(--text);" onchange="crmSearchJobs()">
               <option value="1">Últimas 24 horas</option>
               <option value="7">Últimos 7 dias</option>
-              <option value="14" selected>Últimos 14 dias</option>
+              <option value="14">Últimos 14 dias</option><option value="25" selected>Últimos 25 dias</option>
               <option value="30">Últimos 30 dias</option>
               <option value="all">Todas as datas</option>
             </select>
@@ -3917,10 +3917,10 @@ function initVagasSupabase() {
 }
 
 function crmRadarPublicationCutoff(){
- const value=document.getElementById('filtro-periodo-hub')?.value||'14';
+ const value=document.getElementById('filtro-periodo-hub')?.value||'25';
  if(value==='all')return null;
  const days=Number(value);
- return [1,7,14,30].includes(days)?new Date(Date.now()-days*86400000).toISOString():new Date(Date.now()-14*86400000).toISOString();
+ return [1,7,14,25,30].includes(days)?new Date(Date.now()-days*86400000).toISOString():new Date(Date.now()-25*86400000).toISOString();
 }
 function crmRadarNormalized(value){
  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR')
@@ -4057,37 +4057,20 @@ async function carregarVagasHub() {
 }
 
 function obterModalidade(vaga) {
-  const textoCompleto = `${vaga.work_model || ''} ${vaga.modelo || ''} ${vaga.location || ''} ${vaga.title || ''} ${vaga.description || ''}`.toLowerCase();
-
-  if (textoCompleto.includes('remoto') || textoCompleto.includes('home office') || textoCompleto.includes('teletrabalho')) {
-    return { label: 'Remoto', badge: 'Remoto', icon: '', color: 'rgba(34,197,94,0.1)', textColor: 'var(--accent)' };
-  }
-  if (textoCompleto.includes('híbrido') || textoCompleto.includes('hibrido')) {
-    return { label: 'Híbrido', badge: 'Híbrido', icon: '', color: 'rgba(59,130,246,0.1)', textColor: '#3b82f6' };
-  }
-  if (vaga.location && vaga.location !== 'Não informado' && vaga.location.toLowerCase() !== 'não informado') {
-    return { label: `Presencial - ${vaga.location}`, badge: 'Presencial', icon: '', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
-  }
-  return { label: 'A combinar', badge: 'A combinar', icon: '', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+  const explicit=String(vaga.modalidade_normalizada||vaga.work_model||vaga.modelo||'').trim().toLowerCase();
+  const text=explicit || String(vaga.description||vaga.descricao||vaga.location||'').toLowerCase();
+  let badge='';
+  if(/h[ií]brid/.test(text))badge='Híbrido';
+  else if(/remot|home office|teletrabalho/.test(text))badge='Remoto';
+  else if(/presencial|on-site|onsite/.test(text))badge='Presencial';
+  if(!badge)return null;
+  return {label:badge,badge,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'};
 }
 
 function obterEmpresa(vaga) {
-  let empresa = vaga.empresa || vaga.company || vaga.employer || '';
-
-  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
-    if (vaga.title) {
-      const match = vaga.title.match(/.*?\s*-\s*(.+?)$/);
-      if (match && match[1]) {
-        empresa = match[1].trim();
-      }
-    }
-  }
-
-  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
-    empresa = 'Empresa Confidencial';
-  }
-
-  return empresa;
+  const value=String(vaga.empresa || vaga.company || vaga.employer || '').trim();
+  if(!value || /^(não informado|nao informado|não informada|nao informada|unknown|null|undefined|n\/a)$/i.test(value))return '';
+  return value;
 }
 
 function mapearCampoVaga(vaga) {
@@ -4157,13 +4140,13 @@ function renderizarVagasHub(vagas, sortMode='recente') {
     return `
     <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="display:flex; flex-direction:column;">
       <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
-      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
+      ${vaga.empresa ? `<p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>` : ""}
       ${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at ? '<p class="crm-job-confirmed">Disponibilidade confirmada</p>' : ''}
       ${vagaRaw.tipo_contrato ? `<span class="crm-job-contract">${escapeHtmlVagas(vagaRaw.tipo_contrato)}</span>` : ''}
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
-        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ((vaga.modalidade?.badge==='Remoto'||vaga.modalidade?.badge==='Híbrido') ? `<span style="font-size:10px; background:var(--panel-2); color:var(--muted); padding:3px 8px; border-radius:4px;">📍 Localidade não informada</span>` : '')}
+        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ""}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
@@ -4176,7 +4159,7 @@ function renderizarVagasHub(vagas, sortMode='recente') {
       ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
 
       <div class="crm-job-clean-footer">
-        <span class="crm-job-posted-date">${vaga.publicacao&&formatarDataVagas(vaga.publicacao) ? 'Publicação informada pela fonte: '+formatarDataVagas(vaga.publicacao) : 'Data de publicação não informada'}</span>
+        <span class="crm-job-posted-date">${vaga.publicacao&&formatarDataVagas(vaga.publicacao) ? 'Publicação informada pela fonte: '+formatarDataVagas(vaga.publicacao) : ''}</span>
         ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ""}
       </div>
     </div>
@@ -4349,7 +4332,7 @@ function limparFiltrosVagas() {
   if (document.getElementById('filtro-municipio')) document.getElementById('filtro-municipio').value = '';
   if (document.getElementById('filtro-abrangencia')) document.getElementById('filtro-abrangencia').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
-  const period=document.getElementById('filtro-periodo-hub');if(period)period.value='14';
+  const period=document.getElementById('filtro-periodo-hub');if(period)period.value='25';
   carregarVagasHub();
 }
 
