@@ -101,7 +101,7 @@ function navigate(route){
   if(!Object.values(ACTIONS).some(a=>a.route===route&&a.route))return false;
   try{
     if(typeof crmNavigate==='function'){crmNavigate(route);return true;}
-    location.hash='#'+route;return true;
+    location.assign(typeof crmRoutePath==='function'?crmRoutePath(route):'/'+route);return true;
   }catch{return false;}
 }
 function applyJobFilter(filter){
