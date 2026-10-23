@@ -4088,7 +4088,13 @@ function mapearCampoVaga(vaga) {
     disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
     modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
-    localidade: crmJobLocationInfo(vaga)
+    localidade: (() => {
+      const info=crmJobLocationInfo(vaga);
+      // O título pode conter palavras de localização, mas não comprova cidade/UF.
+      // Somente apresente um lugar quando o campo da fonte o informar.
+      if(!info.raw)return {...info, display:''};
+      return info;
+    })()
   };
 }
 
@@ -4146,7 +4152,7 @@ function renderizarVagasHub(vagas, sortMode='recente') {
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
-        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ""}
+        ${vaga.localidade?.display && vaga.modalidade?.badge !== "Remoto" ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display.replace(" · ", ", "))}</span>` : ""}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
