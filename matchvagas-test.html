@@ -74,14 +74,14 @@ VAGA_5_URL</pre>
   <p>Verifica a atualização dos atributos personalizados <strong>apenas no seu próprio perfil</strong> na Inngage. Se houver cinco vagas aderentes, valida os 31 campos; caso contrário, envia apenas NOME. Não dispara o template 2050. Há limite de uma tentativa por dia.</p>
   <label><input type="checkbox" id="confirmProbe"> Autorizo atualizar os atributos do meu perfil na Inngage para homologar a integração, sem envio de mensagem.</label>
   <button id="probe" disabled>Validar campos na Inngage, sem e-mail</button>
-  <pre id="probeResult">Ainda não validado. O HTTP 400 anterior ocorreu antes do cadastro dos campos.</pre>
+  <pre id="probeResult">Consulte Verificar credenciais para ver o resultado da última tentativa de atualização dos campos.</pre>
 </div>
 <div class="card"><h2>4. Enviar um teste controlado</h2>
 <p>Solicita uma única mensagem para sua própria conta autenticada, somente se seu perfil estiver elegível. Não confirma entrega por si só.</p>
 <label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
 <button id="send" disabled>Enviar meu teste 2050</button>
 <pre id="sendResult">Não executado.</pre></div>
-<p id="deliveryNotice">O HTTP 400 é da tentativa anterior ao cadastro dos campos. Cadastro concluído, porém API de atualização e entrega ainda não homologadas. O bloqueio semanal não será apagado.</p>
+<p id="deliveryNotice">O teste do template e a atualização dos campos são verificações distintas. A campanha continua desativada até ambas serem homologadas.</p>
 <p>Confira os campos em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes diferenciam maiúsculas de minúsculas.</p>
 <div class="card">
   <h2>5. Publicação em produção</h2>
@@ -96,12 +96,12 @@ VAGA_5_URL</pre>
 <script>
 (function(){
 "use strict";
-var sb=null,who=null,testBlocked=false;
+var sb=null,who=null,testBlocked=false,probeBlocked=false;
 var el=function(id){return document.getElementById(id)};
 var buttonIds=["diagnostics","preview","dryRun","probe","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=!el("confirmProbe").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=probeBlocked||!el("confirmProbe").checked}
 function safeError(e){return String(e&&e.message||e)}
 function weekStart(){
  var d=new Date(),w=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
@@ -118,8 +118,19 @@ function showDiagnostics(data){
      (recent.provider_status?" | HTTP "+recent.provider_status:"")+
      ". Nenhum novo e-mail foi enviado. Use Simular sem enviar para verificar os campos.";
  }
- if(recent&&recent.provider_error_code&&recent.provider_error_code.indexOf("CUSTOM_FIELDS_400")===0){
-  el("deliveryNotice").textContent="O HTTP 400 ocorreu antes do cadastro dos 30 novos campos. O cadastro já foi concluído, mas a atualização via API e a entrega ainda não estão homologadas. A campanha permanece desativada.";
+ var probe=data&&data.recent_field_check;
+ if(probe&&probe.status==="rejected"){
+   var result="Verificação dos campos já executada: "+probe.status+
+      (probe.provider_error_code?" | "+probe.provider_error_code:"")+
+      (probe.provider_status?" | HTTP "+probe.provider_status:"")+
+      (probe.created_at?" | Data UTC: "+probe.created_at:"")+
+      ". A API recusou a atualização mesmo após o cadastro. Nenhum e-mail foi enviado.";
+   el("probeResult").textContent=result;
+   el("deliveryNotice").textContent="A verificação de campos após o cadastro foi rejeitada pela Inngage. O formato da chamada precisa ser diagnosticado antes de outra tentativa. Disparos desativados.";
+ }
+ if(probe&&probe.week_key===new Date().toISOString().slice(0,10)){
+   probeBlocked=true;
+   el("probe").disabled=true;
  }
 }
 function print(id,content){el(id).textContent=typeof content==="string"?content:JSON.stringify(content,null,2)}
@@ -149,6 +160,7 @@ async function run(action,resultId,extra){
    var data=await call(action,extra);
    print(resultId,data);
    if(action==="diagnostics")showDiagnostics(data);
+   if(action==="probe_fields")run("diagnostics","diagnosticsResult");
    if(action==="send_test"&&data&&data.status==="blocked_previous_attempt"){
       el("sendResult").textContent="Não enviado. Já existe uma tentativa registrada nesta semana. Nenhuma outra solicitação foi realizada.";
       testBlocked=true;
@@ -177,9 +189,9 @@ el("copyFields").onclick=function(){
 el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
 el("preview").onclick=function(){run("preview","previewResult")};
 el("dryRun").onclick=function(){run("dry_run","dryRunResult")};
-el("confirmProbe").onchange=function(){el("probe").disabled=!who||!el("confirmProbe").checked};
+el("confirmProbe").onchange=function(){el("probe").disabled=!who||probeBlocked||!el("confirmProbe").checked};
 el("probe").onclick=function(){
- if(!who||!el("confirmProbe").checked)return;
+ if(!who||probeBlocked||!el("confirmProbe").checked)return;
  if(!window.confirm("Confirmar a atualização dos atributos no seu próprio perfil da Inngage? Nenhum e-mail será enviado."))return;
  run("probe_fields","probeResult",{confirm:"VALIDAR_CAMPOS_SEM_EMAIL_2050"});
 };
