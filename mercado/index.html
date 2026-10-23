@@ -8857,7 +8857,7 @@ function crmNavigate(route,updateHash=true){
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
  if(route==='inicio'&&crmSignedIn())route='membros';
  if(route==='inicio'){
-  crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
+  crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';crmSyncRouteMeta('inicio');window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
  }
  if(route==='admin'&&!crmAdminVerified){crmOpenAdmin();return;}
  if(['award-dreams','award-speakers','award-creators'].includes(route)&&!crmAdminVerified){
@@ -8867,7 +8867,7 @@ function crmNavigate(route,updateHash=true){
  }
  if(!crmRoutes[route])return;
  if(!crmSignedIn()&&!crmPublicRoutes.has(route)){crmPendingRoute=route;crmJoin('Faça login gratuito para acessar esta área.');return;}
- crmActiveRoute=route;window.posthogTracker?.pageView(route);crmTrackMemberActivity(route);const id=crmRoutes[route][0];
+ crmActiveRoute=route;crmSyncRouteMeta(route);window.posthogTracker?.pageView(route);crmTrackMemberActivity(route);const id=crmRoutes[route][0];
  document.querySelectorAll('.crm-public-tabs [data-crm-route], .crm-navlinks > [data-crm-route]').forEach(link=>{if(link.dataset.crmRoute===route||(route==='patrocinio/apoiadores'&&link.dataset.crmRoute==='patrocinio')||(route==='public-match'&&link.dataset.crmRoute==='search'))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
  const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
  if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{const dest=crmById(id),host=crmById('crmPages');if(dest&&dest.parentElement!==host)host.append(dest);}
@@ -8953,8 +8953,18 @@ async function crmAnalyzeJob(button){
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
 const crmRoutePaths={'inicio':'/','quem-somos':'/quem-somos','solucoes':'/solucoes','public-match':'/match','dashboard':'/dashboard','mercado':'/mercado','vagas':'/vagas','vagas-salvas':'/vagas-salvas','search':'/open-to-work','membros':'/membros','freelancers':'/freelancers','membro':'/meu-painel','cargos':'/medias-salariais','calc':'/calculadora-clt-pj','plataformas':'/plataformas','agencias':'/agencias','courses':'/cursos','conteudos':'/conteudos','eventos':'/eventos','comunidade':'/comunidade','patrocinio':'/patrocinio','pesquisa':'/pesquisas-censo','ferramentas':'/comparativo-crms','match-recrutador':'/match-recrutador','meus-eventos':'/meus-eventos','publicar':'/publicar','admin':'/admin','equipe':'/painel/equipe/','xp-avatar':'/painel/avatar/','xp-rankings':'/painel/rankings/','award-dreams':'/painel/aprovacoes/sonhos/','award-speakers':'/painel/aprovacoes/palestrantes/','award-creators':'/painel/aprovacoes/creators/','patrocinio/apoiadores':'/apoiadores'};
-const crmPathRoutes=Object.fromEntries(Object.entries(crmRoutePaths).map(([route,path])=>[path,route]));
+const crmPathRoutes=Object.fromEntries(Object.entries(crmRoutePaths).map(([route,path])=>[path.replace(/\/+$/,'')||'/',route]));
 function crmRoutePath(route){return crmRoutePaths[route]||('/'+String(route||'').replace(/^\/+/,''));}
+function crmSyncRouteMeta(route){
+  const privateRoutes=new Set(['vagas-salvas','membros','membro','dashboard','match-recrutador','meus-eventos','publicar','admin','equipe','xp-avatar','xp-rankings','award-dreams','award-speakers','award-creators']);
+  const metadata=document.querySelector('meta[name="robots"]')||document.head.appendChild(document.createElement('meta'));
+  metadata.name='robots';metadata.content=privateRoutes.has(route)?'noindex,nofollow,noarchive':'index,follow';
+  const canonical=document.querySelector('link[rel="canonical"]')||document.head.appendChild(document.createElement('link'));
+  canonical.rel='canonical';canonical.href=location.origin+crmRoutePath(route);
+  const routeName=crmRoutes[route]?.[1];
+  document.title=route==='inicio'?'Conexão CRM, Estratégia, dados e pessoas conectadas':(routeName||'Conexão CRM')+' | Conexão CRM';
+}
+
 function crmRouteFromLocation(){
   const legacy=decodeURIComponent(location.hash.slice(1));
   if(legacy&&legacy.includes('access_token'))return null;
