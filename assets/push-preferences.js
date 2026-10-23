@@ -4,6 +4,8 @@
  */
 (()=>{'use strict';
   const KEY='crm_push_topics_v1';
+  const INVITE_KEY='crm_push_invite_seen_v1';
+  let inviteDismissed=false;
   const SDK='https://cdn.inngage.com.br/midia/js/wsdk/inngage.js';
   const topics=[
     {id:'vagas',page:'pageVagas',label:'Radar de Vagas'},
@@ -95,6 +97,7 @@
   }
   let dialog=null;
   function openDialog(section){
+    dismissInvite();
     if(!dialog)dialog=createDialog();
     const p=read();
     for(const t of topics)dialog.querySelector('[name="'+t.id+'"]').checked=!!p[t.id];
@@ -106,11 +109,11 @@
   }
   function refreshButtons(){
     const p=read();
-    document.querySelectorAll('[data-crm-push-page]').forEach(b=>{
-      const active=p[b.dataset.crmPushPage];
-      const label=active?'Avisos desta seção: selecionados':'Configurar avisos desta seção';
-      b.querySelector('span').textContent=label;
+    document.querySelectorAll('[data-crm-push-header]').forEach(b=>{
+      b.querySelector('span').textContent='Avisos';
+      const label=any(p)?'Configurar avisos: assuntos selecionados':'Configurar avisos';
       b.setAttribute('aria-label',label);
+      b.title=label;
     });
   }
   async function save(e){
@@ -223,25 +226,53 @@
     const opt=panel.querySelector('[data-crm-onboarding-push-optin]');
     if(opt)opt.textContent=read().cadastro?'Avisos selecionados':'Configurar avisos';
   }
+  function dismissInvite(){
+    inviteDismissed=true;
+    try{localStorage.setItem(INVITE_KEY,'1')}catch{}
+    document.getElementById('crmPushInvite')?.remove();
+  }
+  function refreshInvite(){
+    const workspace=document.getElementById('view-logada');
+    const visible=workspace&&!workspace.hidden&&workspace.getClientRects().length>0;
+    const existing=document.getElementById('crmPushInvite');
+    let seen=inviteDismissed;
+    try{seen=seen||!!localStorage.getItem(INVITE_KEY)||!!localStorage.getItem(KEY)}catch{}
+    if(!visible||(seen&&!existing)||any(read())||!supported()||permission()==='denied'){
+      existing?.remove();return;
+    }
+    // Convites existentes e formulários têm prioridade; nunca abrir um modal sozinho.
+    const busy=!!document.querySelector('dialog[open],#crmIncompleteProfileNudge');
+    if(existing){existing.hidden=busy;return;}
+    if(busy)return;
+    const panel=document.createElement('aside');
+    panel.id='crmPushInvite';panel.className='crm-push-invite';
+    panel.setAttribute('aria-label','Convite para configurar avisos');
+    panel.innerHTML='<p>Quer receber avisos de vagas e novidades?</p><div><button type="button" class="crm-push-invite-open">Configurar</button><button type="button" class="crm-push-invite-dismiss">Agora não</button></div>';
+    panel.querySelector('.crm-push-invite-open').addEventListener('click',()=>openDialog());
+    panel.querySelector('.crm-push-invite-dismiss').addEventListener('click',dismissInvite);
+    workspace.querySelector('.crm-workbar')?.appendChild(panel);
+    try{localStorage.setItem(INVITE_KEY,'1')}catch{}
+    inviteDismissed=true;
+  }
   function init(){
-    for(const t of topics){
-      const page=document.getElementById(t.page);
-      if(!page||page.querySelector('[data-crm-push-page]'))continue;
-      const anchor=page.querySelector('.section-desc')||page.querySelector('h1,h2')||page.firstElementChild;
-      if(!anchor)continue;
-      const wrap=document.createElement('div');
-      wrap.className='crm-push-entry';
+    const header=document.querySelector('.crm-workbar');
+    const survey=header?.querySelector('.crm-survey-top');
+    if(header&&!header.querySelector('[data-crm-push-header]')){
       const button=document.createElement('button');
-      button.type='button';button.className='crm-push-entry-button';
-      button.dataset.crmPushPage=t.id;
-      button.innerHTML=icon+'<span>Configurar avisos desta seção</span>';
-      button.addEventListener('click',()=>openDialog(t.id));
-      wrap.appendChild(button);
-      anchor.insertAdjacentElement('afterend',wrap);
+      button.type='button';button.className='crm-push-header-button';
+      button.dataset.crmPushHeader='1';
+      button.setAttribute('aria-haspopup','dialog');
+      button.setAttribute('aria-controls','crmPushPreferences');
+      button.innerHTML=icon+'<span>Avisos</span>';
+      button.addEventListener('click',()=>openDialog());
+      if(survey)survey.insertAdjacentElement('afterend',button);
+      else header.appendChild(button);
     }
     refreshButtons();
     setTimeout(refreshIncompleteProfileNudge,1200);
     setInterval(refreshIncompleteProfileNudge,6000);
+    setTimeout(refreshInvite,8000);
+    setInterval(refreshInvite,6000);
     document.addEventListener('crm:role-resolved',refreshIncompleteProfileNudge);
     // Nunca solicitar permissão durante uma simples visita.
     // Bootstrap silencioso somente quando o navegador já autorizou e há tema escolhido.
