@@ -32,7 +32,8 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 <label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
 <button id="send" disabled>Enviar meu teste 2050</button>
 <pre id="sendResult">Não executado.</pre></div>
-<p>O endpoint não libera disparos coletivos por meio desta página. Revise os logs após qualquer erro e não repita tentativas sem diagnóstico.</p>
+<p id="deliveryNotice">O teste de 22/10 foi rejeitado pela etapa de campos personalizados da Inngage (HTTP 400). A campanha continua desativada. Não repita o teste sem corrigir a configuração.</p>
+<p>Confira os campos em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes diferenciam maiúsculas de minúsculas.</p>
 <div class="card">
   <h2>4. Publicação em produção</h2>
   <p>Ative apenas depois de receber o teste e conferir os cinco cargos, empresas, percentuais calculados, links individuais e opção de descadastro funcionando. O e-mail aceito pelo provedor não prova entrega.</p>
@@ -46,30 +47,60 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 <script>
 (function(){
 "use strict";
-var sb=null,who=null;
+var sb=null,who=null,testBlocked=false;
 var el=function(id){return document.getElementById(id)};
 var buttonIds=["diagnostics","preview","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked}
 function safeError(e){return String(e&&e.message||e)}
+function weekStart(){
+ var d=new Date(),w=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
+ w.setUTCDate(w.getUTCDate()-(w.getUTCDay()+6)%7);
+ return w.toISOString().slice(0,10);
+}
+function showDiagnostics(data){
+ var recent=data&&data.recent_test;
+ if(recent&&recent.week_key===weekStart()){
+   testBlocked=true;
+   el("send").disabled=true;
+   el("sendResult").textContent="Tentativa já registrada nesta semana. Status: "+recent.status+
+     (recent.provider_error_code?" | Código: "+recent.provider_error_code:"")+
+     (recent.provider_status?" | API HTTP: "+recent.provider_status:"")+
+     ". Nenhum outro disparo será solicitado.";
+ }
+ if(recent&&recent.provider_error_code&&recent.provider_error_code.indexOf("CUSTOM_FIELDS_400")===0){
+  el("deliveryNotice").textContent="Confirmado pelo Supabase: API de campos personalizados rejeitou os dados com HTTP 400. Nenhum envio do e-mail 2050 foi solicitado. Verifique os campos cadastrados e o formato da requisição antes de uma nova tentativa.";
+ }
+}
 function print(id,content){el(id).textContent=typeof content==="string"?content:JSON.stringify(content,null,2)}
 async function call(action,extra){
  var body=Object.assign({action:action},extra||{});
  var resp=await sb.functions.invoke("crm-inngage-match-jobs",{body:body});
  if(resp.error){
-   if(resp.data&&resp.data.error)throw Error(resp.data.error);
-   if(resp.error.context&&typeof resp.error.context.json==="function"){
-     try{var err=await resp.error.context.json();throw Error(err.error||err.reason||String(resp.error.message))}
-     catch(e){throw e}
+   var detail=resp.data||null;
+   var ctx=resp.error.context;
+   if(ctx&&typeof ctx.text==="function"){
+      try{var raw=await ctx.text();detail=JSON.parse(raw)}catch(e){}
    }
-   throw resp.error;
+   if(detail&&typeof detail==="object"){
+      var reported=detail.results&&detail.results.length?detail.results[0]:null;
+      var parts=[detail.error||detail.reason||"PROVIDER_REQUEST_FAILED"];
+      if(reported&&reported.code)parts.push(reported.code);
+      if(reported&&reported.provider_http)parts.push("HTTP "+reported.provider_http);
+      throw Error(parts.join(" | "));
+   }
+   throw Error("Resposta HTTP não aceita pela Edge Function. Veja a etapa 1 para detalhes do último teste.");
  }
  return resp.data;
 }
 async function run(action,resultId,extra){
  setBusy(true);print(resultId,"Executando verificação...");
- try{print(resultId,await call(action,extra))}
+ try{
+   var data=await call(action,extra);
+   print(resultId,data);
+   if(action==="diagnostics")showDiagnostics(data);
+ }
  catch(e){print(resultId,"Falha: "+safeError(e))}
  setBusy(false)
 }
@@ -86,9 +117,9 @@ el("pause").onclick=function(){
 };
 el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
 el("preview").onclick=function(){run("preview","previewResult")};
-el("confirm").onchange=function(){el("send").disabled=!who||!el("confirm").checked};
+el("confirm").onchange=function(){el("send").disabled=!who||testBlocked||!el("confirm").checked};
 el("send").onclick=function(){
- if(!who||!el("confirm").checked)return;
+ if(!who||testBlocked||!el("confirm").checked)return;
  if(!window.confirm("Confirmar um único teste do template 2050 para "+who.email+"?"))return;
  run("send_test","sendResult",{confirm:"EU_AUTORIZO_TESTE_2050"});
 };
@@ -104,6 +135,7 @@ window.addEventListener("load",async function(){
   if(check.error||check.data!==true)throw Error("Acesso restrito à administração");
   who=auth.data.user;print("identity","Administração autenticada: "+who.email);
   setBusy(false);
+  run("diagnostics","diagnosticsResult");
  }catch(e){print("identity",safeError(e));}
 });
 })();
