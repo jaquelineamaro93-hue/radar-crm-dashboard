@@ -47,3 +47,20 @@ Nenhum comando de ativação deve ser executado sem a homologação visual da me
 - Respostas 2xx do provedor são aceitas para processamento, não garantem caixa de entrada.
 - Em falha de transporte, estado unknown. Não há retentativas automáticas.
 - O template 2049 e seu log permanecem independentes.
+
+
+## Contingência manual, disponível no mesmo dia
+
+O painel `https://conexaocrm.com/matchvagas-test.html` contém "Envio manual hoje", sem mudar o status da campanha semanal.
+
+1. Administrador autenticado: "1. Gerar CSV do meu Match IA" chama `manual_csv`. Apenas gera uma linha para o próprio endereço confirmado, desde que haja exatamente 5 vagas distintas, score >= 65, links seguros, consentimento e modo de trabalho validado. CSV de 33 colunas: `identifier`, `email` e os 31 atributos cadastrados na Inngage.
+2. Em Inngage > Público > Todo Público > Importar Lista, mapear `identifier` como Identificador, `email` como E-mail e as 31 colunas restantes para os campos personalizados. Concluir importação para o MESMO perfil de administrador. Conferir em Público > Todo Público > Ver detalhes > Atributos. Não usar a opção "criar novo usuário" se já há cadastro correto. Nenhuma importação via API da Conexão CRM é feita.
+3. Depois de confirmar que cinco cargos, empresas, URLs, modalidades e pontuações estão corretos no próprio contato, bem como o link de descadastro funcional do template 2050, marcar autorização explícita e clicar "3. Enviar apenas meu teste 2050 hoje".
+4. `manual_template_test` recalcula os matches, confirma SHA-256 dos mesmos 31 valores exportados, reserva a tentativa em `crm_inngage_match_delivery` pela chave `matchvagas_2050_csv_manual_test` e data UTC e envia APENAS ao admin, usando `sendPushRequest` com template 2050, sem chamar `/v1/subscription/addCustomField`. Aceita no máximo uma tentativa por dia, incluindo respostas 4xx/5xx.
+5. Verificar recebimento no e-mail do admin, variáveis substituídas, cinco links individuais e descadastro antes de habilitar rotina coletiva. Resposta 2xx da API não comprova entrega. A ação manual não habilita `crm_inngage_match_config`.
+
+### Alternativa inteiramente visual
+A Inngage documenta Engajamento > Envio em Massa com CSV como método para envios manuais com personalização por coluna: https://docs.inngage.com.br/artigo/envio-em-massa .
+Nesse método você precisa criar/revisar conteúdo de e-mail no fluxo de Envio em Massa e selecionar os campos da planilha como variáveis, porque as variáveis de CSV no editor não são necessariamente idênticas às de campos do perfil `{{cf.*}}`. Nunca enviar um e-mail com valores brutos do template ou link de unsubscribe falso.
+
+**Proteções**: caminho manual acessível só a admin; nunca expõe service role ou bearer; somente o próprio usuário autenticado; retorno CSV nunca armazenado pelo servidor; importação ou envio manual NÃO aumentam a elegibilidade nem autorizam lote; em menos de cinco vagas distintas não há CSV nem envio.
