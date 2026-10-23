@@ -69,7 +69,7 @@ for(const token of [
  'matchvagas_2050_csv_manual_test',
  'recipients: 1',
  'recipient_count: 1',
- 'function validFiveCards(',
+ 'function validAvailableCards(',
  'const matches = await prepare(caller.id, jobs, min)',
  'if (!validFiveCards(matches))',
  'fields_count: names.length',
