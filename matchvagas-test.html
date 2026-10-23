@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Conexão CRM | Homologação Inngage 2050</title>
+<style>
+:root{font-family:"Plus Jakarta Sans",system-ui,Arial,sans-serif;color:#f9fafb;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:#101014}main{width:min(720px,calc(100% - 32px));margin:40px auto 80px}
+h1{font-size:clamp(25px,5vw,40px);letter-spacing:-1px;margin:28px 0 8px}header{display:flex;justify-content:space-between;align-items:center}
+b.accent{color:#f97316}p{color:#b7b7bb;line-height:1.65}
+.card{padding:23px 24px;background:#19191e;border:1px solid #34343c;border-radius:15px;margin:19px 0}
+.card h2{font-size:18px;margin-top:0;color:#fff}
+button{border:0;border-radius:10px;background:#f97316;color:#181512;padding:13px 17px;font-weight:800;font:inherit;font-size:13px;cursor:pointer;margin:5px 8px 5px 0}
+button:disabled{opacity:.45;cursor:default}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c0c10;padding:15px;border-radius:10px;color:#ededf1;font-size:12px}
+code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.6}
+.status{border-radius:10px;padding:10px 12px;background:#25252c;color:#dedee4}
+</style></head>
+<body><main>
+<header><strong>CONEXÃO <b class="accent">CRM.</b></strong><a href="/">Voltar ao portal</a></header>
+<h1>Homologação Match IA</h1>
+<p>API Template <strong>2050 · matchvagas</strong>. Ferramenta exclusiva da administração. O envio em lote continua suspenso até a confirmação de que os campos dinâmicos chegam corretamente à Inngage.</p>
+<div class="card"><h2>Autorização</h2><p id="identity">Verificando sua sessão...</p></div>
+<div class="card"><h2>1. Checar integração</h2>
+<button id="diagnostics" disabled>Verificar credenciais</button>
+<pre id="diagnosticsResult">Não executado.</pre></div>
+<div class="card"><h2>2. Validar público</h2>
+<button id="preview" disabled>Prévia das vagas elegíveis</button>
+<pre id="previewResult">Não executado.</pre></div>
+<div class="card"><h2>3. Enviar um teste controlado</h2>
+<p>Solicita uma única mensagem para sua própria conta autenticada, somente se seu perfil estiver elegível. Não confirma entrega por si só.</p>
+<label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
+<button id="send" disabled>Enviar meu teste 2050</button>
+<pre id="sendResult">Não executado.</pre></div>
+<p>O endpoint não libera disparos coletivos por meio desta página. Revise os logs após qualquer erro e não repita tentativas sem diagnóstico.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+"use strict";
+var sb=null,who=null;
+var el=function(id){return document.getElementById(id)};
+var buttonIds=["diagnostics","preview","send"];
+var url="https://rwkbpafpniwzvlkfngag.supabase.co";
+var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=!el("confirm").checked}
+function safeError(e){return String(e&&e.message||e)}
+function print(id,content){el(id).textContent=typeof content==="string"?content:JSON.stringify(content,null,2)}
+async function call(action,extra){
+ var body=Object.assign({action:action},extra||{});
+ var resp=await sb.functions.invoke("crm-inngage-match-jobs",{body:body});
+ if(resp.error){
+   if(resp.data&&resp.data.error)throw Error(resp.data.error);
+   if(resp.error.context&&typeof resp.error.context.json==="function"){
+     try{var err=await resp.error.context.json();throw Error(err.error||err.reason||String(resp.error.message))}
+     catch(e){throw e}
+   }
+   throw resp.error;
+ }
+ return resp.data;
+}
+async function run(action,resultId,extra){
+ setBusy(true);print(resultId,"Executando verificação...");
+ try{print(resultId,await call(action,extra))}
+ catch(e){print(resultId,"Falha: "+safeError(e))}
+ setBusy(false)
+}
+el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
+el("preview").onclick=function(){run("preview","previewResult")};
+el("confirm").onchange=function(){el("send").disabled=!who||!el("confirm").checked};
+el("send").onclick=function(){
+ if(!who||!el("confirm").checked)return;
+ if(!window.confirm("Confirmar um único teste do template 2050 para "+who.email+"?"))return;
+ run("send_test","sendResult",{confirm:"EU_AUTORIZO_TESTE_2050"});
+};
+window.addEventListener("load",async function(){
+ try{
+  if(!window.supabase||!window.supabase.createClient)throw Error("Biblioteca Supabase indisponível");
+  sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  var sess=await sb.auth.getSession();
+  if(!sess.data||!sess.data.session)throw Error("Entre com sua conta do Conexão CRM antes de abrir esta página.");
+  var auth=await sb.auth.getUser();
+  if(auth.error||!auth.data.user)throw Error("Sessão inválida");
+  var check=await sb.rpc("crm_is_admin");
+  if(check.error||check.data!==true)throw Error("Acesso restrito à administração");
+  who=auth.data.user;print("identity","Administração autenticada: "+who.email);
+  setBusy(false);
+ }catch(e){print("identity",safeError(e));}
+});
+})();
+</script></body></html>
