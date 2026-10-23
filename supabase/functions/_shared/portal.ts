@@ -1,4 +1,3 @@
-import {sheetTalents} from './talents-csv.ts';
 import {linkedinLink,whatsappNumber} from './talent-links.ts';
 // Server-only data access. Never include this module or service-role secrets in the browser bundle.
 const SUPABASE_URL=Deno.env.get('SUPABASE_URL')!;
@@ -13,7 +12,20 @@ export const phone=(v:unknown)=>{let p=text(v).replace(/\D/g,'');if(p.length>=10
 export const safeUrl=(v:unknown)=>{const s=text(v);if(!s)return '';try{const u=new URL(/^https?:\/\//i.test(s)?s:'https://'+s);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch{return '';}};
 export async function database(table:string,params:string){const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`,{headers:{apikey:SERVICE_KEY,Authorization:`Bearer ${SERVICE_KEY}`},signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error('DIRECTORY_STORAGE_HTTP_'+r.status);return r.json();}
 export async function userFor(req:Request){const authorization=req.headers.get('Authorization')||'';if(!/^Bearer \S+$/.test(authorization))return null;const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:ANON_KEY,Authorization:authorization},signal:AbortSignal.timeout(10000)});if(!r.ok)return null;const user=await r.json();return user?.id&&!user.is_anonymous?user:null;}
-export async function talents(){const [source,edits]=await Promise.all([sheetTalents(),database('crm_talent_claims','select=source_id,linkedin,whatsapp&status=eq.approved&limit=1000')]);const overrides=new Map(edits.map((r:any)=>[r.source_id,r]));return source.map(p=>{const edit:any=overrides.get(p.id);return {...p,linkedin:linkedinLink(edit?.linkedin??p.linkedin),whatsapp:whatsappNumber(edit?.whatsapp??p.whatsapp)};});}
+export async function talents(){
+ const source=[];
+ for(let offset=0;;offset+=500){
+  const rows=await database('profissionais_open_to_work','select=id,nome,senioridade,area_atuacao,ferramentas,condicao_trabalho,localizacao,tempo_experiencia,linkedin,whatsapp,idioma,mudar_cidade,sheet_source_key&order=id&limit=500&offset='+offset);
+  source.push(...rows);if(rows.length<500)break;
+ }
+ const edits=await database('crm_talent_claims','select=source_id,linkedin,whatsapp&status=eq.approved&limit=1000');
+ const overrides=new Map(edits.map((r:any)=>[r.source_id,r]));
+ return source.map((r:any)=>{
+  const id=r.sheet_source_key?'csv-'+encodeURIComponent(text(r.nome)+'|'+text(r.linkedin)):'db-'+r.id;
+  const edit:any=overrides.get(id);
+  return {id,nome:r.nome,senioridade:r.senioridade,area:r.area_atuacao,ferramentas:r.ferramentas,condicao:r.condicao_trabalho,local:r.localizacao,exp:r.tempo_experiencia,linkedin:linkedinLink(edit?.linkedin??r.linkedin),whatsapp:whatsappNumber(edit?.whatsapp??r.whatsapp),idioma:r.idioma,muda:r.mudar_cidade};
+ });
+}
 export async function freelancers(){const rows=await database('freelancers_sugeridos','select=id,nome,categoria,bio,portfolio,contato,linkedin&aprovado=eq.true&order=created_at.desc&limit=500');return rows.map((p:any)=>({...p,linkedin:safeUrl(p.linkedin),portfolio:safeUrl(p.portfolio),contato:phone(p.contato)}));}
 export async function consumeQuota(id:string){const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/crm_consume_ai_request`,{method:'POST',headers:{apikey:SERVICE_KEY,Authorization:`Bearer ${SERVICE_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:id}),signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('quota_unavailable');return await r.json()===true;}
 
