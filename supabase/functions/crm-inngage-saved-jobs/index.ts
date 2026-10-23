@@ -83,14 +83,20 @@ async function handle(req: Request) {
     const body = await req.json().catch(() => null);
     const action = body?.action;
     const service = createClient(endpoint, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    if (action === "diagnostics") {
+      return json({ ok: true, mode: "diagnostics", template_id: TEMPLATE_ID,
+        inngage_app_token_configured: !!Deno.env.get("INNGAGE_APP_TOKEN"),
+        inngage_authorization_configured: !!Deno.env.get("INNGAGE_API_BEARER"),
+        test_mode: "single_authenticated_admin",
+        recurring_reminders_active: false });
+    }
     if (action === "preview") {
       const preview = await eligibleCount(service);
       return json({ ok: true, mode: "preview", template_id: TEMPLATE_ID,
         email_automation_active: false, ...preview });
     }
     if (action !== "send_test") return json({ error: "ACTION_NOT_ALLOWED" }, 400);
-    // Testes precisam de habilitação explícita no Supabase APÓS ativação do template na Inngage.
-    if (Deno.env.get("CRM_INNGAGE_TEST_ENABLED") !== "true") return json({ error: "TEST_DISABLED" }, 423);
+    // Teste liberado após confirmação de ativação do template. Admin autenticado deve solicitar o envio explicitamente.
     if (body?.confirm !== "ENVIAR_TESTE_PARA_MIM") return json({ error: "CONFIRMATION_REQUIRED" }, 400);
     const user = auth.user;
     if (!user.email || !user.email_confirmed_at) return json({ error: "EMAIL_NOT_CONFIRMED" }, 400);
@@ -104,7 +110,7 @@ async function handle(req: Request) {
     const payload = { sendPushRequest: {
       app_token: config("INNGAGE_APP_TOKEN"),
       api_template_id: TEMPLATE_ID,
-      tags: {},
+      tags: { "": [] },
       identifier: email,
       subscriber_email: email,
     }};
@@ -131,7 +137,7 @@ async function handle(req: Request) {
       .eq("user_id", user.id).eq("campaign_key", TEST_CAMPAIGN).eq("period_key", day);
     if (logError) console.error("[crm-inngage-saved-jobs] Falha ao atualizar log", logError.code);
     return json({ ok: status === "accepted", mode: "send_test", status,
-      provider_http_status: providerStatus || null, test_email_sent_to_authenticated_admin_only: true }, status === "accepted" ? 200 : 502);
+      provider_http_status: providerStatus || null, submitted_to_provider: status === "accepted" }, status === "accepted" ? 200 : 502);
   } catch (error) {
     const code = error instanceof Error && error.message.startsWith("CONFIG_MISSING_")
       ? "CONFIGURATION_INCOMPLETE" : "INTERNAL_ERROR";
