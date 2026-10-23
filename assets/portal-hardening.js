@@ -89,6 +89,96 @@
   // Registrar a rota antes da restauração de sessão do shell legado.
   ensureTeamPage();
 
+  // Private 2027 award modules use the existing authenticated SPA shell.
+  // The sidebar stays mounted, and the underlying pages keep their own admin JWT validation.
+  const awardAdminModules={
+    'award-dreams':{id:'crmAwardDreamsEmbedPage',title:'Jardim dos Sonhos',url:'/admin-jardim-sonhos/?embedded=1'},
+    'award-speakers':{id:'crmAwardSpeakersEmbedPage',title:'Propostas de palestras',url:'/admin-palestrantes-2027/?embedded=1'},
+    'award-creators':{id:'crmAwardCreatorsEmbedPage',title:'Creators Parceiros',url:'/admin-creators-2027/?embedded=1'}
+  };
+  function ensureAwardAdminPage(route){
+    const def=awardAdminModules[route];
+    const host=document.getElementById('crmPages');
+    if(!def||!host||typeof crmRoutes==='undefined')return null;
+    if(!crmRoutes[route])crmRoutes[route]=[def.id,def.title];
+    if(typeof crmRoutePaths!=='undefined')crmRoutePaths[route]='/#'+route;
+    let page=document.getElementById(def.id);
+    if(page)return page;
+    page=document.createElement('section');
+    page.id=def.id;
+    page.className='tab-page crm-award-embed-page';
+    page.setAttribute('aria-label','Administração: '+def.title);
+    const wrap=document.createElement('div');wrap.className='crm-award-embed-wrap';
+    const heading=document.createElement('div');heading.className='crm-award-embed-top';
+    const kicker=document.createElement('span');kicker.textContent='ADMINISTRAÇÃO / PRÊMIO 2027';
+    const name=document.createElement('h2');name.textContent=def.title;
+    heading.append(kicker,name);
+    const status=document.createElement('p');status.className='crm-award-embed-status';status.setAttribute('role','status');status.textContent='Preparando a área de aprovação...';
+    const frame=document.createElement('iframe');frame.className='crm-award-admin-frame';frame.title='Administração: '+def.title;frame.loading='eager';frame.referrerPolicy='same-origin';
+    frame.addEventListener('load',()=>{status.hidden=true;page.classList.remove('crm-award-is-loading')});
+    frame.addEventListener('error',()=>{status.hidden=false;status.textContent='Não foi possível carregar esta área. Tente selecionar o menu novamente.'});
+    wrap.append(heading,status,frame);page.append(wrap);host.append(page);
+    return page;
+  }
+  Object.keys(awardAdminModules).forEach(ensureAwardAdminPage);
+  function syncAwardAdminNavSelection(route){
+    const active=route||location.hash.replace(/^#/,'');
+    for(const [key,id] of [['award-dreams','crmDreamGardenAdminNav'],['award-speakers','crmSpeakersAdminNav'],['award-creators','crmCreatorsAdminNav']]){
+      const link=document.getElementById(id);
+      if(!link)continue;
+      const selected=active===key;
+      link.classList.toggle('crm-award-selected',selected);
+      if(selected)link.setAttribute('aria-current','page');
+      else link.removeAttribute('aria-current');
+    }
+  }
+  function openAwardAdminInside(route){
+    const def=awardAdminModules[route];
+    if(!def||typeof crmSignedIn!=='function'||!crmSignedIn()||typeof crmAdminVerified==='undefined'||crmAdminVerified!==true)return;
+    const page=ensureAwardAdminPage(route);
+    if(!page)return;
+    const frame=page.querySelector('iframe');
+    const status=page.querySelector('.crm-award-embed-status');
+    if(frame.getAttribute('src')!==def.url){
+      status.hidden=false;status.textContent='Preparando a área de aprovação...';
+      page.classList.add('crm-award-is-loading');
+      frame.setAttribute('src',def.url);
+    }
+    if(typeof crmNavigate==='function')crmNavigate(route,false);
+    if(location.hash!=='#'+route)history.pushState(null,'','/#'+route);
+    syncAwardAdminNavSelection(route);
+  }
+  function activateAwardAdminHash(){
+    const route=location.hash.replace(/^#/,'');
+    if(!Object.prototype.hasOwnProperty.call(awardAdminModules,route)){syncAwardAdminNavSelection(route);return}
+    if(typeof crmSignedIn==='function'&&crmSignedIn()&&typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true){
+      const page=ensureAwardAdminPage(route);
+      const frame=page?.querySelector('iframe');
+      if(frame&&!frame.getAttribute('src'))openAwardAdminInside(route);
+      else syncAwardAdminNavSelection(route);
+    }
+  }
+  window.addEventListener('hashchange',activateAwardAdminHash);
+  if(!document.getElementById('crm-award-workspace-style')){
+    const style=document.createElement('style');style.id='crm-award-workspace-style';
+    style.textContent=
+      '.crm-award-embed-page{min-width:0;max-width:100%;overflow:hidden}' +
+      '.crm-award-embed-wrap{width:100%;min-width:0;max-width:100%;padding:0 2px}' +
+      '.crm-award-embed-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:6px 0 14px;border-bottom:1px solid #333336}' +
+      '.crm-award-embed-top span{font-size:9px;letter-spacing:.12em;font-weight:700;color:#ba9177}' +
+      '.crm-award-embed-top h2{font:600 clamp(17px,2.2vw,23px)/1.2 system-ui,sans-serif;color:#f5eee8;margin:0}' +
+      '.crm-award-embed-status{font-size:12px;color:#b2a59a;padding:12px 2px}' +
+      '.crm-award-admin-frame{width:100%;min-width:0;border:0;display:block;background:#141414;height:calc(100dvh - 175px);min-height:650px;border-radius:12px}' +
+      '.crm-award-admin-nav{color:#aea8a4!important;border-left:2px solid transparent!important;border-radius:8px!important;background:transparent!important;font-weight:500!important;box-shadow:none!important;outline-offset:2px;transition:background .16s ease,color .16s ease}' +
+      '.crm-award-admin-nav:hover{background:#ffffff0b!important;color:#ede4dc!important}' +
+      '.crm-award-admin-nav.crm-award-selected,.crm-award-admin-nav[aria-current="page"]{background:#f9731612!important;border-left-color:#ba693b!important;color:#f0e5dc!important;box-shadow:none!important}' +
+      '.crm-award-admin-nav.crm-award-selected .crm-nav-glyph{color:#d18a60!important}' +
+      '@media(max-width:760px){.crm-award-embed-top{margin:0 0 8px}.crm-award-admin-frame{height:calc(100dvh - 175px);min-height:560px;border-radius:10px}}' +
+      '@media(prefers-reduced-motion:reduce){.crm-award-admin-nav{transition:none}}';
+    document.head.append(style);
+  }
+  activateAwardAdminHash();
+
   // Public-facing team belongs to Comunidade. Editing is exclusive to Administração.
   function syncTeamNavigation(nav){
     const groups=document.getElementById('navComunidade');
@@ -111,7 +201,7 @@
         dreamAdmin=document.createElement('a');
         dreamAdmin.id='crmDreamGardenAdminNav';
         dreamAdmin.className='tab-btn';
-        dreamAdmin.href='/admin-jardim-sonhos/';
+        dreamAdmin.href='/#award-dreams';dreamAdmin.dataset.crmRoute='award-dreams';dreamAdmin.classList.add('crm-award-admin-nav');dreamAdmin.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-dreams');};
         dreamAdmin.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         dreamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14c-3 0-4-2-4-5 4 0 6 1 7 4M17 14c3 0 4-2 4-5-4 0-6 1-7 4"/><path d="M8 21h8"/></svg></span>Jardim dos Sonhos';
       }
@@ -126,7 +216,7 @@
         speakersNav=document.createElement('a');
         speakersNav.id='crmSpeakersAdminNav';
         speakersNav.className='tab-btn';
-        speakersNav.href='/admin-palestrantes-2027/';
+        speakersNav.href='/#award-speakers';speakersNav.dataset.crmRoute='award-speakers';speakersNav.classList.add('crm-award-admin-nav');speakersNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-speakers');};
         speakersNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         speakersNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h5l8-4v12l-8-4H5zM8 15v5"/></svg></span>Propostas de palestras';
       }
@@ -140,13 +230,25 @@
         creatorNav=document.createElement('a');
         creatorNav.id='crmCreatorsAdminNav';
         creatorNav.className='tab-btn';
-        creatorNav.href='/admin-creators-2027/';
+        creatorNav.href='/#award-creators';creatorNav.dataset.crmRoute='award-creators';creatorNav.classList.add('crm-award-admin-nav');creatorNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-creators');};
         creatorNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         creatorNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 10V7a4 4 0 0 1 4-4h3M14 3h3a4 4 0 0 1 4 4v3M21 14v3a4 4 0 0 1-4 4h-3M10 21H7a4 4 0 0 1-4-4v-3"/></svg></span>Creators Parceiros';
       }
       const anchor=document.getElementById('crmSpeakersAdminNav')||document.getElementById('crmAdminNav');
       if(anchor?.parentElement===nav&&anchor.nextElementSibling!==creatorNav)anchor.after(creatorNav);
     }else document.getElementById('crmCreatorsAdminNav')?.remove();
+    for(const [id,route] of [['crmDreamGardenAdminNav','award-dreams'],['crmSpeakersAdminNav','award-speakers'],['crmCreatorsAdminNav','award-creators']]){
+      const link=document.getElementById(id);
+      if(!link)continue;
+      link.href='/#'+route;link.dataset.crmRoute=route;
+      link.classList.add('crm-award-admin-nav');
+      if(link.dataset.crmAwardWired!==route){
+        link.dataset.crmAwardWired=route;
+        link.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside(route)};
+      }
+    }
+    syncAwardAdminNavSelection();
+    activateAwardAdminHash();
 
 
 
