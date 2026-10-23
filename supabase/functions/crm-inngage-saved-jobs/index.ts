@@ -126,6 +126,9 @@ async function handle(req: Request) {
     if (adminError || admin !== true) return json({ error: "FORBIDDEN" }, 403);
     const body = await req.json().catch(() => null);
     const action = body?.action;
+    const targetIds = body?.user_ids;
+    if (targetIds !== undefined && (!Array.isArray(targetIds) || targetIds.length < 1 || targetIds.length > 20 || targetIds.some((id: unknown) => typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)))) return json({error:"INVALID_RECIPIENTS"},400);
+
     const service = createClient(endpoint, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const {data: settings, error: settingsError} = await service.from("crm_inngage_match_config").select("saved_jobs_enabled").eq("id",1).single();
     if (settingsError) throw settingsError;
@@ -134,11 +137,13 @@ async function handle(req: Request) {
       if (!serviceCaller) return json({error:"SERVICE_ONLY"},403);
       if (settings?.saved_jobs_enabled !== true) return json({ok:true,status:"paused"});
       const {start,end}=todayWindow();
-      const {data:saves,error}=await service.from("saved_scraped_jobs").select("user_id,vaga_url,created_at").gte("created_at",start).lte("created_at",end).order("created_at").limit(1000);
+      let savesQuery=service.from("saved_scraped_jobs").select("user_id,vaga_url,created_at").gte("created_at",start).lte("created_at",end).order("created_at");
+      if(targetIds) savesQuery=savesQuery.in("user_id",targetIds);
+      const {data:saves,error}=await savesQuery.limit(1000);
       if(error)throw error;
       let accepted=0,skipped=0;
       for(const id of [...new Set((saves||[]).map(x=>x.user_id))]) {
-        if(accepted>=10)break;
+        if(accepted>=(targetIds?20:10))break;
         const {data:profile,error:pe}=await service.from("profiles").select("receive_community_updates").eq("id",id).single();
         if(pe||profile?.receive_community_updates!==true){skipped++;continue;}
         const own=(saves||[]).filter(x=>x.user_id===id);

@@ -203,10 +203,12 @@ async function authorize(req: Request) {
   if (checkError || allowed !== true) return null;
   return { mode: "admin" as const, id: user.id };
 }
-async function loadProfiles() {
-  const { data, error } = await db.from("profiles")
+async function loadProfiles(targetIds?: string[]) {
+  let query = db.from("profiles")
     .select("id,full_name,open_to_work,receive_community_updates")
-    .eq("open_to_work", true).eq("receive_community_updates", true).limit(100);
+    .eq("open_to_work", true).eq("receive_community_updates", true);
+  if(targetIds) query=query.in("id",targetIds);
+  const {data,error}=await query.limit(100);
   if (error) throw Error("PROFILES_QUERY_FAILED");
   return data || [];
 }
@@ -445,6 +447,9 @@ Deno.serve(async (req: Request) => {
     if (!caller) return reply({ error: "FORBIDDEN" }, 403);
     const body = await req.json().catch(() => ({}));
     const action = typeof body.action === "string" ? body.action : "preview";
+    const targetIds = body?.user_ids;
+    if (targetIds !== undefined && (!Array.isArray(targetIds) || targetIds.length < 1 || targetIds.length > 20 || targetIds.some((id: unknown) => typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)))) return reply({error:"INVALID_RECIPIENTS"},400);
+
     const { data: cfg, error: cfgError } = await db.from("crm_inngage_match_config").select("*").eq("id", 1).single();
     if (cfgError || !cfg) return reply({ error: "CONFIG_NOT_FOUND" }, 503);
     const enabled = cfg.enabled === true && cfg.provider_fields_verified === true;
@@ -506,7 +511,7 @@ Deno.serve(async (req: Request) => {
       if (enableError) throw Error("ENABLE_FAILED");
       return reply({ ok: true, dispatch_enabled: true, template_id: TEMPLATE_ID });
     }
-    const profiles = await loadProfiles();
+    const profiles = await loadProfiles(targetIds);
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
     const week = weekStartUtc();
@@ -643,7 +648,7 @@ Deno.serve(async (req: Request) => {
     if (!Deno.env.get("INNGAGE_APP_TOKEN") || !Deno.env.get("INNGAGE_API_BEARER"))
       return reply({ error: "INNGAGE_SECRETS_MISSING" }, 503);
     const toProcess = action === "send_test" ? profiles.filter(p => p.id === caller.id)
-      : profiles.slice(0, cfg.max_recipients_per_run || 10);
+      : profiles.slice(0, targetIds ? 20 : cfg.max_recipients_per_run || 10);
     let accepted = 0; let rejected = 0; let unknown = 0; let skipped = 0;
     const results: unknown[] = [];
     for (const profile of toProcess) {

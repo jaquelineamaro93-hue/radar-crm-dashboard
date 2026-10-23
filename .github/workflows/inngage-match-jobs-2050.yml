@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: "0 12 * * 1"
   workflow_dispatch:
+    inputs:
+      user_ids:
+        description: 'IDs das contas autorizadas, separados por vírgula (até 20); vazio mantém a rotina geral'
+        required: false
+        type: string
 permissions:
   contents: read
 jobs:
@@ -12,6 +17,7 @@ jobs:
     steps:
       - name: Disparar digest com bloqueio de homologação
         env:
+          TARGET_USER_IDS: ${{ inputs.user_ids }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         shell: bash
         run: |
@@ -19,9 +25,16 @@ jobs:
             echo "::notice::Configure SUPABASE_SERVICE_ROLE_KEY em GitHub Actions Secrets."
             exit 0
           fi
+          python - <<'PYBODY'
+          import json, os
+          ids = [s.strip() for s in os.environ.get('TARGET_USER_IDS','').split(',') if s.strip()]
+          payload = {'action':'run'}
+          if ids: payload['user_ids'] = ids
+          with open('/tmp/inngage-body.json','w') as f: json.dump(payload,f)
+          PYBODY
           curl --fail-with-body --silent --show-error --max-time 120 \
             --request POST 'https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-inngage-match-jobs' \
             --header "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             --header "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
             --header 'Content-Type: application/json' \
-            --data '{"action":"run"}'
+            --data @/tmp/inngage-body.json
