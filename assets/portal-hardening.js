@@ -162,6 +162,22 @@
     }
   }
   window.addEventListener('hashchange',activateAwardAdminHash);
+  function clearAwardAdminDataWhenUnauthorized(){
+    const allowed=typeof crmSignedIn==='function'&&crmSignedIn()&&typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true;
+    if(allowed)return;
+    for(const def of Object.values(awardAdminModules)){
+      const page=document.getElementById(def.id);
+      const frame=page?.querySelector('iframe');
+      if(frame?.getAttribute('src'))frame.removeAttribute('src');
+      if(page)page.classList.remove('crm-award-is-loading');
+    }
+    syncAwardAdminNavSelection('');
+  }
+  document.addEventListener('crm:role-resolved',()=>{
+    clearAwardAdminDataWhenUnauthorized();
+    if(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true)activateAwardAdminHash();
+  });
+  document.addEventListener('crm:admin-ready',activateAwardAdminHash);
   if(!document.getElementById('crm-award-workspace-style')){
     const style=document.createElement('style');style.id='crm-award-workspace-style';
     style.textContent=
