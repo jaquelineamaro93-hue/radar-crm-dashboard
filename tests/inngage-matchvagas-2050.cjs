@@ -38,4 +38,10 @@ assert.match(src,/splitRoleAndCompany\(job\)/);
 assert.match(src,/matching_method: "strict_role_and_seniority_weighted_rules_not_probability"/);
 assert.match(src,/return Math.min\(92, titleSignal/);
 
+assert.match(src,/if \(action === "probe_fields"\)/);
+assert.match(src,/VALIDAR_CAMPOS_SEM_EMAIL_2050/);
+assert.match(src,/const campaignKey = "matchvagas_2050_probe_campos"/);
+assert.match(src,/sent_email: false/);
+assert.match(html,/id="probe"/);
+assert.match(html,/probe_fields/);
 console.log("Matchvagas 2050: matching rules and production safety checks passed.");
