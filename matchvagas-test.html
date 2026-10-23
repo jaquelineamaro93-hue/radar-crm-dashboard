@@ -28,13 +28,13 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 <button id="preview" disabled>Prévia das vagas elegíveis</button>
 <pre id="previewResult">Não executado.</pre>
 <h2>Simular meus cinco matches, sem enviar e-mail</h2>
-<p>Verifique a composição dos 31 campos do template 2050. Esta ação não chama a Inngage, não grava uma nova tentativa e não libera a campanha.</p>
+<p>Confira quais vagas realmente atendem a senioridade e a modalidade desejadas. Vagas sem comprovação de remoto ou híbrido serão descartadas. Se restarem menos de cinco, nenhum e-mail será enviado. Esta ação não chama a Inngage nem libera a campanha.</p>
 <button id="dryRun" disabled>Simular sem enviar</button>
 <pre id="dryRunResult">Simulação ainda não realizada.</pre>
 </div>
 <div class="card">
 <h2>Campos personalizados exigidos no template 2050</h2>
-<p>Cadastre os seguintes 31 atributos como <strong>Texto</strong> em Inngage &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes são sensíveis a maiúsculas e minúsculas. Verifique também se os campos já existem com tipos compatíveis.</p>
+<p>O cadastro dos 30 campos de vagas como <strong>String</strong> foi concluído no painel da Inngage, segundo a conferência administrativa. Somados ao campo NOME já existente, são 31 atributos. A atualização dos valores pela API ainda precisa ser validada. Os nomes diferenciam maiúsculas de minúsculas.</p>
 <button id="copyFields" type="button">Copiar lista dos 31 campos</button>
 <pre id="fieldsList">NOME
 VAGA_1_CARGO
@@ -74,7 +74,7 @@ VAGA_5_URL</pre>
 <label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
 <button id="send" disabled>Enviar meu teste 2050</button>
 <pre id="sendResult">Não executado.</pre></div>
-<p id="deliveryNotice">A primeira tentativa do template 2050 foi rejeitada com HTTP 400 antes de os campos serem cadastrados. Depois do cadastro, ainda não houve nova homologação. Não reenviar sem validação.</p>
+<p id="deliveryNotice">O HTTP 400 é da tentativa anterior ao cadastro dos campos. Cadastro concluído, porém API de atualização e entrega ainda não homologadas. O bloqueio semanal não será apagado.</p>
 <p>Confira os campos em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes diferenciam maiúsculas de minúsculas.</p>
 <div class="card">
   <h2>4. Publicação em produção</h2>
