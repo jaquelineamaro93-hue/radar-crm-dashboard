@@ -11,13 +11,13 @@ const team=read('quem-faz/index.html');
 new vm.Script(nav,{filename:'assets/portal-hardening.js'});
 
 // O shell usa a versão atual, evitando scripts obsoletos por cache.
-assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261021-sidebar2/);
+assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261022-cleanroutes1/);
 assert.match(shell,/id="view-logada"/);
 assert.match(shell,/id="crmPages"/);
 
-// O Quem Faz agora faz parte da SPA autenticada; a versão independente continua pública.
+// O Quem Faz agora usa URL limpa e mantém o sidebar da SPA autenticada.
 assert.match(nav,/crmRoutes\.equipe=\['crmTeamEmbedPage','Quem Faz'\]/);
-assert.match(nav,/crmRoutePaths\.equipe='\/#equipe'/);
+assert.match(nav,/crmRoutePaths\.equipe='\/painel\/equipe\/'/);
 assert.match(nav,/if\(typeof crmSignedIn!=='function'\|\|!crmSignedIn\(\)\)return/);
 assert.match(nav,/management&&admin\?'\/quem-faz\/\?gestao=1&embedded=1':'\/quem-faz\/\?embedded=1'/);
 assert.match(nav,/crmNavigate\('equipe',false\)/);
@@ -87,4 +87,15 @@ assert.match(nav,/window\.clearTimeout\(timeout\)/);
 assert.doesNotMatch(nav,/SUPABASE_SERVICE_ROLE_KEY|process\.env|Deno\.env/);
 assert.match(nav,/iframe\.setAttribute\('src',resource\)/);
 assert.doesNotMatch(nav,/iframe\.setAttribute\('src',location\./);
+
+// Módulos administrativos não podem sair do portal ou depender de URL com hash.
+for(const route of ['award-dreams','award-speakers','award-creators']){
+ assert(nav.includes("route);")&&nav.includes("openAwardAdminInside(route)"),'módulos administrativos devem navegar dentro do workspace');
+ assert(!nav.includes("href='/#"+route+"'"),'não reutilizar hash no sidebar administrativo: '+route);
+}
+for(const path of ['/painel/aprovacoes/sonhos/','/painel/aprovacoes/palestrantes/','/painel/aprovacoes/creators/']){
+ assert(nav.includes(path),'rota física de aprovação ausente: '+path);
+}
+assert.match(nav,/syncAwardAdminNavSelection/);
+
 console.log('PASS: Quem Faz integrado ao portal, ranking abaixo, report único, carregamento recuperável e auth preservado.');
