@@ -59,4 +59,29 @@ const remoteListings=locations.map((location,i)=>({...shared,location,url:"https
 assert.equal(new Set(remoteListings.map(opportunityKey)).size,1,"Remote posts by same employer and role must collapse");
 assert.notEqual(opportunityKey(remoteListings[0]),opportunityKey({...shared,title:"CRM Manager - Remote Work",location:"Brasil"}),"Distinct roles remain");
 assert.notEqual(opportunityKey({...shared,workMode:"hibrido",location:"São Paulo"}),opportunityKey({...shared,workMode:"hibrido",location:"Minas Gerais"}),"Hybrid locations may differ");
-console.log("Inngage 2050: production guards and BairesDev duplicate regression passed.");
+
+// Emergency manual QA runs independently of the old weekly failed test.
+// No bulk path is enabled, requires explicit CSV import confirmation.
+for(const token of [
+ 'if (action === "manual_csv" || action === "manual_template_test")',
+ 'body.confirm !== "IMPORTEI_E_VALIDEI_31_CAMPOS_2050"',
+ 'body.fingerprint !== fingerprint',
+ 'matchvagas_2050_csv_manual_test',
+ 'recipients: 1',
+ 'recipient_count: 1',
+ 'function validFiveCards(',
+ 'const matches = await prepare(caller.id, jobs, min)',
+ 'if (!validFiveCards(matches))',
+ 'fields_count: names.length',
+ 'sent_email: false, provider_contacted: false'
+]) assert.ok(src.includes(token),"Missing protected manual action: "+token);
+for(const token of [
+ 'id="manualCsv"','id="manualSend"',
+ 'confirmManualImport', 'manualFingerprint',
+ 'matchvagas-2050-importacao-manual.csv',
+ 'manual_template_test', 'manual_csv',
+ 'IMPORTEI_E_VALIDEI_31_CAMPOS_2050'
+]) assert.ok(html.includes(token),"Missing protected manual UI: "+token);
+assert.ok(src.indexOf('if (action === "manual_csv"') < src.indexOf('if (action === "probe_fields"'),"manual path isn't independent of field probe");
+
+console.log("Inngage 2050: all production guards, dedupe and manual CSV controls passed.");
