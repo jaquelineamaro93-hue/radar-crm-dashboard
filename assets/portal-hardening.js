@@ -208,7 +208,7 @@
       if(!publicLink){
         publicLink=document.createElement('a');
         publicLink.id='crmTeamPublicNav';publicLink.className='tab-btn';
-        publicLink.href='/#equipe';publicLink.dataset.crmRoute='equipe';
+        publicLink.href='/painel/equipe/';publicLink.dataset.crmRoute='equipe';
         publicLink.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         publicLink.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M2 20v-2a6 6 0 0 1 12 0v2M17 9a3 3 0 1 0-2-5M17 14a5 5 0 0 1 5 5v1"/></svg></span>Quem Faz';
       }
