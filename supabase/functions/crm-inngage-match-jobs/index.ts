@@ -216,7 +216,23 @@ async function send(userId: string, profile: { full_name?: string | null }, recs
     });
     providerStatus = cfResponse.status;
     if (!cfResponse.ok) {
-      status = "rejected"; failure = "CUSTOM_FIELDS_" + cfResponse.status;
+      // Do not log the full provider body: it could contain user data or secrets.
+      const responseText = (await cfResponse.text()).slice(0, 3000);
+      let parsed: Record<string, unknown> | null = null;
+      try {
+        const data = JSON.parse(responseText);
+        if (data && typeof data === "object" && !Array.isArray(data)) parsed = data;
+      } catch { /* Body might be HTML or empty. */ }
+      const providerCode = [parsed?.code, parsed?.errorCode, parsed?.statusCode]
+        .find(value => typeof value === "number" || (typeof value === "string" && /^[A-Z][A-Z0-9_-]{1,35}$/.test(value))) ?? null;
+      console.error("[inngage-match] CUSTOM_FIELDS_REJECTED", JSON.stringify({
+        provider_http: cfResponse.status,
+        response_keys: parsed ? Object.keys(parsed).slice(0, 10) : [],
+        provider_code: providerCode,
+        body_is_json: parsed !== null,
+      }));
+      status = "rejected";
+      failure = "CUSTOM_FIELDS_" + cfResponse.status + (providerCode ? "_" + providerCode : "");
     } else {
       // Only after confirmed field update can a template be sent.
       const payload = { sendPushRequest: {
@@ -254,12 +270,23 @@ Deno.serve(async (req: Request) => {
     const { data: cfg, error: cfgError } = await db.from("crm_inngage_match_config").select("*").eq("id", 1).single();
     if (cfgError || !cfg) return reply({ error: "CONFIG_NOT_FOUND" }, 503);
     const enabled = cfg.enabled === true && cfg.provider_fields_verified === true;
-    if (action === "diagnostics") return reply({
-      ok: true, template_id: TEMPLATE_ID, configured: {
-        app_token: !!Deno.env.get("INNGAGE_APP_TOKEN"),
-        api_bearer: !!Deno.env.get("INNGAGE_API_BEARER"),
-      }, dispatch_enabled: enabled, provider_fields_verified: cfg.provider_fields_verified === true,
-    });
+    if (action === "diagnostics") {
+      const { data: latest, error: historyError } = await db.from("crm_inngage_match_delivery")
+        .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
+        .eq("user_id", caller.id)
+        .eq("campaign_key", "matchvagas_2050_teste")
+        .order("created_at", { ascending: false }).limit(1);
+      return reply({
+        ok: true, template_id: TEMPLATE_ID, configured: {
+          app_token: !!Deno.env.get("INNGAGE_APP_TOKEN"),
+          api_bearer: !!Deno.env.get("INNGAGE_API_BEARER"),
+        },
+        dispatch_enabled: enabled,
+        provider_fields_verified: cfg.provider_fields_verified === true,
+        recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
+        advisory: "CUSTOM_FIELDS_400: request rejected before template delivery. Do not retry without correcting and validating provider field schema.",
+      });
+    }
     // Admin-only launch control. Never enable without accepted self-test and
     // explicit confirmation that the five rendered cards and unsubscribe work.
     if (action === "pause" || action === "activate") {
