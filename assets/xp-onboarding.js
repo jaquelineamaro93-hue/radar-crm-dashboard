@@ -46,10 +46,10 @@ function create(){
  '<button type="button" class="cx-xp-secondary">Agora não</button></div>';
  document.body.append(dialog);
  dialog.querySelector('[data-close]').addEventListener('click',()=>close());
- dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){track('cta',{destination:'rankings'});close();if(typeof crmNavigate==='function')crmNavigate('xp-rankings');else location.assign('/#xp-rankings');}else{track('dismissed');close();}});
+ dialog.querySelector('.cx-xp-secondary').addEventListener('click',()=>{if(step===STEPS.length-1){track('cta',{destination:'rankings'});close();if(typeof crmNavigate==='function')crmNavigate('xp-rankings');else location.assign('/painel/rankings/');}else{track('dismissed');close();}});
  dialog.querySelector('.cx-xp-back').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
  dialog.querySelector('.cx-xp-primary').addEventListener('click',()=>{
-  if(step===STEPS.length-1){track('cta',{destination:'avatar'});close();if(typeof crmNavigate==='function')crmNavigate('xp-avatar');else location.assign('/#xp-avatar');return;}
+  if(step===STEPS.length-1){track('cta',{destination:'avatar'});close();if(typeof crmNavigate==='function')crmNavigate('xp-avatar');else location.assign('/painel/avatar/');return;}
   step++;render();track('step_viewed');
  });
  dialog.addEventListener('close',()=>{markSeen();document.body.classList.remove('cx-xp-tour-open');});
