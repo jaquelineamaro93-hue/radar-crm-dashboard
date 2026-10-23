@@ -180,17 +180,19 @@ async function eligibleEmail(userId: string): Promise<string | null> {
   const { data: found, error } = await db.auth.admin.getUserById(userId);
   if (error || !found.user?.email || !found.user.email_confirmed_at) return null;
   const email = found.user.email.trim().toLowerCase();
-  const { data: unsub, error: optError } = await db.from("crm_newsletter_subscriptions")
-    .select("status").or("user_id.eq." + userId + ",email.eq." + email).limit(20);
-  if (optError) throw Error("OPT_OUT_QUERY_FAILED");
-  if ((unsub || []).some(x => x.status !== "subscribed")) return null;
+  const [byUser, byEmail] = await Promise.all([
+    db.from("crm_newsletter_subscriptions").select("status").eq("user_id", userId).limit(20),
+    db.from("crm_newsletter_subscriptions").select("status").eq("email", email).limit(20),
+  ]);
+  if (byUser.error || byEmail.error) throw Error("OPT_OUT_QUERY_FAILED");
+  if ([...(byUser.data || []), ...(byEmail.data || [])].some(x => x.status !== "subscribed")) return null;
   return email;
 }
-async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string) {
+async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
   if (!email || recs.length !== 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
   const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
-    user_id: userId, campaign_key: CAMPAIGN, week_key: week,
+    user_id: userId, campaign_key: campaignKey, week_key: week,
     job_ids: recs.map(x => x.job.id), scores: recs.map(x => x.score), status: "reserved",
   });
   if (reserveError?.code === "23505") return { state: "skipped", code: "ALREADY_ATTEMPTED_THIS_WEEK" };
@@ -237,7 +239,7 @@ async function send(userId: string, profile: { full_name?: string | null }, recs
   const { error: updateError } = await db.from("crm_inngage_match_delivery").update({
     status, provider_status: providerStatus, provider_error_code: failure || null,
     updated_at: new Date().toISOString(),
-  }).eq("user_id", userId).eq("campaign_key", CAMPAIGN).eq("week_key", week);
+  }).eq("user_id", userId).eq("campaign_key", campaignKey).eq("week_key", week);
   if (updateError) console.error("[inngage-match] UPDATE_LOG_FAILED", updateError.code);
   return { state: status, code: failure || "SUBMITTED", provider_http: providerStatus };
 }
@@ -290,7 +292,7 @@ Deno.serve(async (req: Request) => {
     for (const profile of toProcess) {
       const matches = await prepare(profile.id, jobs, min);
       if (matches.length !== 5) { skipped++; continue; }
-      const result = await send(profile.id, profile, matches, week);
+      const result = await send(profile.id, profile, matches, week, action === "send_test" ? "matchvagas_2050_teste" : CAMPAIGN);
       results.push(result);
       if (result.state === "accepted") accepted++;
       else if (result.state === "rejected") rejected++;
