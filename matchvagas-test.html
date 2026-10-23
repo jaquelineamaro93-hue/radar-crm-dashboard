@@ -69,6 +69,17 @@ VAGA_5_MATCH
 VAGA_5_URL</pre>
 <p><a href="https://docs.inngage.com.br/artigo/campos-personalizados-nao-aparecem" target="_blank" rel="noopener">Documentação oficial da Inngage sobre campos personalizados</a></p>
 </div>
+<div class="card" id="manualToday">
+  <h2>Envio manual hoje: sem depender da API de campos</h2>
+  <p>Alternativa para homologação individual. Primeiro gere um CSV com o seu e-mail e os 31 atributos calculados de cinco oportunidades realmente distintas. Depois importe em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Público &gt; Todo Público &gt; Importar Lista, vinculando <strong>identifier</strong>, <strong>email</strong> e os 31 campos. Verifique os valores no seu próprio perfil antes de enviar.</p>
+  <button id="manualCsv" disabled>1. Gerar CSV do meu Match IA</button>
+  <pre id="manualCsvResult">Nenhum arquivo exportado. Não envia mensagens.</pre>
+  <p>Após importar a linha no seu contato, confirme no perfil da Inngage se o nome, as cinco vagas, os links e os percentuais estão preenchidos. Confirme também que o HTML 2050 possui o link de descadastro correto.</p>
+  <label><input type="checkbox" id="confirmManualImport"> 2. Importei o CSV para meu próprio contato, conferi os 31 atributos na Inngage e validei os links e o descadastro do template 2050.</label>
+  <button id="manualSend" disabled>3. Enviar apenas meu teste 2050 hoje</button>
+  <pre id="manualSendResult">Nenhum teste manual solicitado. Não libera a campanha automática.</pre>
+  <p>Se quiser fazer uma campanha inteiramente manual em vez de acionar o API Template, use <a href="https://docs.inngage.com.br/artigo/envio-em-massa" target="_blank" rel="noopener">Engajamento &gt; Envio em Massa</a>, com este CSV e conteúdo de e-mail mapeado às variáveis do arquivo. Revise a lista de destinatários antes de confirmar.</p>
+</div>
 <div class="card">
   <h2>3. Conferir API dos campos sem enviar e-mail</h2>
   <p>Verifica a atualização dos atributos personalizados <strong>apenas no seu próprio perfil</strong> na Inngage. Se houver cinco vagas aderentes, valida os 31 campos; caso contrário, envia apenas NOME. Não dispara o template 2050. Há limite de uma tentativa por dia.</p>
@@ -96,12 +107,12 @@ VAGA_5_URL</pre>
 <script>
 (function(){
 "use strict";
-var sb=null,who=null,testBlocked=false,probeBlocked=false;
+var sb=null,who=null,testBlocked=false,probeBlocked=false,manualFingerprint=null,manualCsvReady=false;
 var el=function(id){return document.getElementById(id)};
-var buttonIds=["diagnostics","preview","dryRun","probe","send","activate","pause"];
+var buttonIds=["diagnostics","preview","dryRun","probe","manualCsv","manualSend","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=probeBlocked||!el("confirmProbe").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=probeBlocked||!el("confirmProbe").checked;if(!b&&who)el("manualSend").disabled=!manualCsvReady||!el("confirmManualImport").checked}
 function safeError(e){return String(e&&e.message||e)}
 function weekStart(){
  var d=new Date(),w=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
@@ -196,6 +207,47 @@ el("probe").onclick=function(){
  if(!who||probeBlocked||!el("confirmProbe").checked)return;
  if(!window.confirm("Confirmar a atualização dos atributos no seu próprio perfil da Inngage? Nenhum e-mail será enviado."))return;
  run("probe_fields","probeResult",{confirm:"VALIDAR_CAMPOS_SEM_EMAIL_2050"});
+};
+el("manualCsv").onclick=async function(){
+ if(!who)return;
+ setBusy(true);
+ print("manualCsvResult","Calculando cinco vagas distintas e montando CSV...");
+ try{
+   var data=await call("manual_csv");
+   if(!data||!data.ok||data.cards_count!==5||data.fields_count!==31||data.recipients!==1||!data.fingerprint||!data.csv){
+     manualCsvReady=false;manualFingerprint=null;
+     print("manualCsvResult",data||"O perfil não possui cinco vagas aderentes para exportar.");
+   }else{
+     var blob=new Blob([String.fromCharCode(0xFEFF),data.csv],{type:"text/csv;charset=utf-8;"});
+     var objectUrl=URL.createObjectURL(blob),anchor=document.createElement("a");
+     anchor.href=objectUrl;anchor.download="matchvagas-2050-importacao-manual.csv";
+     document.body.appendChild(anchor);anchor.click();anchor.remove();
+     setTimeout(function(){URL.revokeObjectURL(objectUrl)},10000);
+     manualFingerprint=data.fingerprint;manualCsvReady=true;
+     print("manualCsvResult","CSV gerado para um único contato, cinco vagas e 31 campos. Nenhum e-mail enviado. Importe em Público > Todo Público, confira os atributos e só então autorize o teste.");
+   }
+ }catch(e){manualCsvReady=false;manualFingerprint=null;print("manualCsvResult","Falha: "+safeError(e))}
+ setBusy(false);
+};
+el("confirmManualImport").onchange=function(){
+ el("manualSend").disabled=!who||!manualCsvReady||!el("confirmManualImport").checked;
+};
+el("manualSend").onclick=async function(){
+ if(!who||!manualCsvReady||!manualFingerprint||!el("confirmManualImport").checked)return;
+ if(!window.confirm("Enviar um único e-mail do template 2050 para "+who.email+" após a importação manual? Esta ação NÃO envia para a comunidade."))return;
+ setBusy(true);
+ try{
+   var result=await call("manual_template_test",{
+     confirm:"IMPORTEI_E_VALIDEI_31_CAMPOS_2050",
+     fingerprint:manualFingerprint
+   });
+   print("manualSendResult",result);
+   manualCsvReady=false;manualFingerprint=null;
+ }catch(e){
+   print("manualSendResult","Não confirmado: "+safeError(e)+". Confira os logs antes de tentar novamente.");
+   manualCsvReady=false;manualFingerprint=null;
+ }
+ setBusy(false);
 };
 el("confirm").onchange=function(){el("send").disabled=!who||testBlocked||!el("confirm").checked};
 el("send").onclick=function(){
