@@ -20,4 +20,11 @@ assert.match(workflow,/SUPABASE_SERVICE_ROLE_KEY/);
 assert.doesNotMatch(workflow,/sk_test_|sb_secret_/);
 assert.match(html,/EU_AUTORIZO_TESTE_2050/);
 assert.match(html,/crm_is_admin/);
+
+assert.match(src,/if \(action === "dry_run"\)/);
+assert.match(src,/sent_email: false, provider_contacted: false/);
+assert.match(src,/status: "blocked_previous_attempt"/);
+assert.match(html,/Simular sem enviar/);
+assert.match(html,/blocked_previous_attempt/);
+
 console.log("Matchvagas 2050: 15 security and integration assertions passed.");
