@@ -37,7 +37,8 @@ assert(html.includes('id="filtro-abrangencia"')&&html.includes("query=query.eq('
 
 
 // As vagas encerradas nunca aparecem no Radar, mas não são apagadas nem do bot nem dos salvos.
-assert(html.includes("vagas=(vagas||[]).filter(v=>String(v.availability_status||'').toLowerCase()!=='closed')"),
+assert(html.includes("const rows=(jobs||[]).filter(j=>String(j?.availability_status||'').toLowerCase()!=='closed')") &&
+  html.includes('vagas=crmRadarSortUnique(vagas,sortMode)'),
   'Cards must exclude closed vacancies even when a caller passes unfiltered data');
 assert((html.match(/\.neq\('availability_status',\s*'closed'\)/g)||[]).length>=2,
   'Both primary Radar fetches must exclude vacancies marked closed');
