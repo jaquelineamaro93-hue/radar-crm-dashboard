@@ -128,6 +128,10 @@ async function handle(req: Request) {
       });
       providerStatus = response.status;
       status = response.ok ? "accepted" : "rejected";
+      if (!response.ok) {
+        const providerText = (await response.text()).slice(0, 1500);
+        console.error("[crm-inngage-saved-jobs] Provider rejected", response.status, providerText.replace(/[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/g, "[email]"));
+      }
     } catch (error) {
       // Falhas de rede são ambíguas: nunca reenviar automaticamente.
       console.error("[crm-inngage-saved-jobs] Falha de transporte no teste", error instanceof Error ? error.name : "unknown");
