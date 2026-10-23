@@ -44,4 +44,17 @@ assert.match(src,/const campaignKey = "matchvagas_2050_probe_campos"/);
 assert.match(src,/sent_email: false/);
 assert.match(html,/id="probe"/);
 assert.match(html,/probe_fields/);
-console.log("Matchvagas 2050: matching rules and production safety checks passed.");
+
+// Paginate entire recent pool, avoid silent 1,000-row PostgREST truncation.
+assert.match(src,/const maxPages = 8/);
+assert.match(src,/\.range\(page \* pageSize, \(page \+ 1\) \* pageSize - 1\)/);
+assert.match(src,/JOB_POOL_EXCEEDS_SAFE_LIMIT/);
+// Quality of outbound recommendations is more important than always filling five cards.
+assert.match(src,/if \(structured && declared && structured !== declared\) return ""/);
+assert.match(src,/seenRoleCompanyLocations/);
+assert.match(src,/Empresa não divulgada/);
+assert.match(src,/companyPenalty/);
+assert.match(src,/if \(mode !== "remoto" && desiredLocations.length/);
+assert.match(src,/if \(managementTarget && jobLevel !== "management"\) return null/);
+
+console.log("Matchvagas 2050: safety, full-pool pagination and quality assertions passed.");
