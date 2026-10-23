@@ -224,24 +224,38 @@ async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]>
   const skip = new Set((prevRes.data || []).flatMap(x => (Array.isArray(x.job_ids) ? x.job_ids : [])).map(Number));
   const skills = (skillsRes.data || []).map(x => clean(x.skill_name));
   const scored: Rec[] = [];
-  const seenUrls = new Set<string>();
-  const seenRoleCompanyLocations = new Set<string>();
   for (const job of pool) {
     if (skip.has(job.id) || !validExternalUrl(job.url) || !verifiedWorkMode(job)) continue;
-    const key = clean(job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
-    const roleCompany = splitRoleAndCompany(job);
-    const signature = [norm(roleCompany.role), norm(roleCompany.company),
-      norm(job.location || job.regiao), verifiedWorkMode(job)].join("|");
-    if (seenUrls.has(key) || seenRoleCompanyLocations.has(signature)) continue;
     const score = scoreJob(job, prefRes.data, matchRes.data, skills);
     if (score === null || score < min) continue;
-    seenUrls.add(key);
-    seenRoleCompanyLocations.add(signature);
     scored.push({ job, score });
   }
   scored.sort((a, b) => b.score - a.score ||
     String(b.job.found_at || "").localeCompare(String(a.job.found_at || "")));
-  return scored.slice(0, 5);
+  // Select only after ranking, so the strongest available listing wins.
+  // A remote role repeated for different cities is still one opportunity.
+  const selected: Rec[] = [];
+  const seenUrls = new Set<string>();
+  const seenOpportunities = new Set<string>();
+  const companyCounts = new Map<string, number>();
+  for (const item of scored) {
+    const link = clean(item.job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
+    const { role, company } = splitRoleAndCompany(item.job);
+    const companyKey = norm(company);
+    const mode = verifiedWorkMode(item.job);
+    const baseRole = norm(role).replace(/\bref\s*\d+\b/g, "").trim();
+    const geographicSuffix = mode === "remoto" ? "" : norm(item.job.location || item.job.regiao);
+    const signature = [companyKey, baseRole, mode, geographicSuffix].join("|");
+    if (seenUrls.has(link) || seenOpportunities.has(signature)) continue;
+    // A digest of five slots should not be dominated by one employer.
+    if (companyKey !== "empresa nao divulgada" && (companyCounts.get(companyKey) || 0) >= 2) continue;
+    selected.push(item);
+    seenUrls.add(link);
+    seenOpportunities.add(signature);
+    companyCounts.set(companyKey, (companyCounts.get(companyKey) || 0) + 1);
+    if (selected.length === 5) break;
+  }
+  return selected;
 }
 function fields(profile: { full_name?: string | null }, recs: Rec[]) {
   const result: Record<string, string> = {
@@ -355,11 +369,16 @@ Deno.serve(async (req: Request) => {
     if (cfgError || !cfg) return reply({ error: "CONFIG_NOT_FOUND" }, 503);
     const enabled = cfg.enabled === true && cfg.provider_fields_verified === true;
     if (action === "diagnostics") {
-      const { data: latest, error: historyError } = await db.from("crm_inngage_match_delivery")
-        .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
-        .eq("user_id", caller.id)
-        .eq("campaign_key", "matchvagas_2050_teste")
-        .order("created_at", { ascending: false }).limit(1);
+      const [emailTest, fieldProbe] = await Promise.all([
+        db.from("crm_inngage_match_delivery")
+          .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
+          .eq("user_id", caller.id).eq("campaign_key", "matchvagas_2050_teste")
+          .order("created_at", { ascending: false }).limit(1),
+        db.from("crm_inngage_match_delivery")
+          .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
+          .eq("user_id", caller.id).eq("campaign_key", "matchvagas_2050_probe_campos")
+          .order("created_at", { ascending: false }).limit(1),
+      ]);
       return reply({
         ok: true, template_id: TEMPLATE_ID, configured: {
           app_token: !!Deno.env.get("INNGAGE_APP_TOKEN"),
@@ -367,8 +386,11 @@ Deno.serve(async (req: Request) => {
         },
         dispatch_enabled: enabled,
         provider_fields_verified: cfg.provider_fields_verified === true,
-        recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
-        advisory: "O HTTP 400 foi registrado antes do cadastro dos 30 campos. A tentativa permanece bloqueada nesta semana. Faça a simulação local; a API externa ainda requer homologação.",
+        recent_test: emailTest.error ? { error: "HISTORY_UNAVAILABLE" } : emailTest.data?.[0] ?? null,
+        recent_field_check: fieldProbe.error ? { error: "HISTORY_UNAVAILABLE" } : fieldProbe.data?.[0] ?? null,
+        advisory: fieldProbe.data?.[0]?.status === "rejected"
+          ? "A verificação de campos executada após o cadastro foi rejeitada pela Inngage. Não repetir sem corrigir o contrato da API."
+          : "A API externa de campos ainda requer homologação; os disparos permanecem desativados.",
       });
     }
     // Admin-only launch control. Never enable without accepted self-test and
