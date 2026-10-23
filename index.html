@@ -4065,29 +4065,16 @@ function obterModalidade(vaga) {
   if (textoCompleto.includes('híbrido') || textoCompleto.includes('hibrido')) {
     return { label: 'Híbrido', badge: 'Híbrido', icon: '', color: 'rgba(59,130,246,0.1)', textColor: '#3b82f6' };
   }
-  if (vaga.location && vaga.location !== 'Não informado' && vaga.location.toLowerCase() !== 'não informado') {
+  if (false) { // Localização, isoladamente, não comprova modalidade presencial.
     return { label: `Presencial - ${vaga.location}`, badge: 'Presencial', icon: '', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
   }
-  return { label: 'A combinar', badge: 'A combinar', icon: '', color: 'rgba(107,114,128,0.1)', textColor: '#6b7280' };
+  return null;
 }
 
 function obterEmpresa(vaga) {
-  let empresa = vaga.empresa || vaga.company || vaga.employer || '';
-
-  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
-    if (vaga.title) {
-      const match = vaga.title.match(/.*?\s*-\s*(.+?)$/);
-      if (match && match[1]) {
-        empresa = match[1].trim();
-      }
-    }
-  }
-
-  if (!empresa || empresa.trim() === '' || empresa.toLowerCase() === 'não informado') {
-    empresa = 'Empresa Confidencial';
-  }
-
-  return empresa;
+  const value=String(vaga.empresa || vaga.company || vaga.employer || '').trim();
+  if(!value || /^(não informado|nao informado|não informada|nao informada|unknown|null|undefined|n\/a)$/i.test(value))return '';
+  return value;
 }
 
 function mapearCampoVaga(vaga) {
@@ -4157,13 +4144,13 @@ function renderizarVagasHub(vagas, sortMode='recente') {
     return `
     <div class="card crm-job-card" data-job-id="${escapeHtmlVagas(String(vaga.id || ''))}" data-job-title="${escapeHtmlVagas(vaga.cargo)}" data-job-company="${escapeHtmlVagas(vaga.empresa)}" data-job-source="${escapeHtmlVagas(vaga.fonte)}" data-job-url="${escapeHtmlVagas(crmSafeUrl(vaga.link || ''))}" style="display:flex; flex-direction:column;">
       <h3 style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 8px;">${escapeHtmlVagas(vaga.cargo)}</h3>
-      <p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>
+      ${vaga.empresa ? `<p style="font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px;">${escapeHtmlVagas(vaga.empresa)}</p>` : ""}
       ${vaga.disponibilidade==='listed' && vagaRaw.availability_checked_at ? '<p class="crm-job-confirmed">Disponibilidade confirmada</p>' : ''}
       ${vagaRaw.tipo_contrato ? `<span class="crm-job-contract">${escapeHtmlVagas(vagaRaw.tipo_contrato)}</span>` : ''}
 
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
         ${vaga.modalidade ? `<span style="font-size:10px; background:${vaga.modalidade.color}; color:${vaga.modalidade.textColor}; padding:3px 8px; border-radius:4px; font-weight:500;">${vaga.modalidade.icon} ${escapeHtmlVagas(vaga.modalidade.badge)}</span>` : ''}
-        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ((vaga.modalidade?.badge==='Remoto'||vaga.modalidade?.badge==='Híbrido') ? `<span style="font-size:10px; background:var(--panel-2); color:var(--muted); padding:3px 8px; border-radius:4px;">📍 Localidade não informada</span>` : '')}
+        ${vaga.localidade?.display ? `<span style="font-size:10px; background:var(--panel-2); color:var(--text); padding:3px 8px; border-radius:4px; font-weight:500;">📍 ${escapeHtmlVagas(vaga.localidade.display)}</span>` : ""}
         ${vaga.fonte ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.fonte)}</span>` : ''}
         ${vaga.nivel ? `<span style="font-size:10px; background:rgba(190,143,99,0.15); color:var(--accent); padding:3px 8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.nivel)}</span>` : ''}
       </div>
@@ -4176,7 +4163,7 @@ function renderizarVagasHub(vagas, sortMode='recente') {
       ${vaga.salario ? `<div style="font-size:12px; color:var(--text); font-weight:700; background:rgba(5,150,105,0.08); padding:8px; margin-bottom:8px; border-radius:4px;"> ${escapeHtmlVagas(vaga.salario)}</div>` : ''}
 
       <div class="crm-job-clean-footer">
-        <span class="crm-job-posted-date">${vaga.publicacao&&formatarDataVagas(vaga.publicacao) ? 'Publicação informada pela fonte: '+formatarDataVagas(vaga.publicacao) : 'Data de publicação não informada'}</span>
+        <span class="crm-job-posted-date">${vaga.publicacao&&formatarDataVagas(vaga.publicacao) ? 'Publicação informada pela fonte: '+formatarDataVagas(vaga.publicacao) : ''}</span>
         ${vaga.link ? `<a href="${escapeHtmlVagas(crmSafeUrl(vaga.link))}" target="_blank" rel="noopener noreferrer" data-job-apply="1" class="crm-job-clean-apply">Candidatar <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ""}
       </div>
     </div>
