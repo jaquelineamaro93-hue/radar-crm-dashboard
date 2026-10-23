@@ -211,6 +211,14 @@ async function loadJobPool(): Promise<Job[]> {
   // Fail closed if the cap is reached; an incomplete pool biases matching.
   throw Error("JOB_POOL_EXCEEDS_SAFE_LIMIT");
 }
+function opportunityKey(job: Job): string {
+  const { role, company } = splitRoleAndCompany(job);
+  const mode = verifiedWorkMode(job);
+  const baseRole = norm(role).replace(/\bref\s*\d+\b/g, "").trim();
+  // Remote posts replicated for several cities are one recommendation.
+  const geographicSuffix = mode === "remoto" ? "" : norm(job.location || job.regiao);
+  return [norm(company), baseRole, mode, geographicSuffix].join("|");
+}
 async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]> {
   const [prefRes, matchRes, skillsRes, prevRes] = await Promise.all([
     db.from("match_preferences").select("*").eq("user_id", userId).maybeSingle(),
@@ -240,12 +248,9 @@ async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]>
   const companyCounts = new Map<string, number>();
   for (const item of scored) {
     const link = clean(item.job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
-    const { role, company } = splitRoleAndCompany(item.job);
+    const { company } = splitRoleAndCompany(item.job);
     const companyKey = norm(company);
-    const mode = verifiedWorkMode(item.job);
-    const baseRole = norm(role).replace(/\bref\s*\d+\b/g, "").trim();
-    const geographicSuffix = mode === "remoto" ? "" : norm(item.job.location || item.job.regiao);
-    const signature = [companyKey, baseRole, mode, geographicSuffix].join("|");
+    const signature = opportunityKey(item.job);
     if (seenUrls.has(link) || seenOpportunities.has(signature)) continue;
     // A digest of five slots should not be dominated by one employer.
     if (companyKey !== "empresa nao divulgada" && (companyCounts.get(companyKey) || 0) >= 2) continue;
@@ -524,11 +529,13 @@ Deno.serve(async (req: Request) => {
         Object.keys(mapped).length === 31 &&
         names.every(name => typeof mapped[name] === "string" && mapped[name].length > 0);
       const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === 5;
+      const uniqueOpportunities = new Set(picks.map(({ job }) => opportunityKey(job))).size === 5;
       return reply({
-        ok: true, status: valid && unique ? "mapping_ready" : "mapping_invalid",
+        ok: true, status: valid && unique && uniqueOpportunities ? "mapping_ready" : "mapping_invalid",
         template_id: TEMPLATE_ID, cards_available: picks.length,
         custom_fields_count: Object.keys(mapped).length,
         custom_fields_valid: valid, unique_job_urls: unique,
+        unique_opportunities: uniqueOpportunities,
         fields: mapped,
         matching_method: "strict_role_and_seniority_weighted_rules_not_probability",
         disclaimer: "Pontuações são indicadores heurísticos de aderência; não representam probabilidade de contratação.",
