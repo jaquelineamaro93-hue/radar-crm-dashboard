@@ -173,25 +173,52 @@ function syncParticipationContext(key){
 }
 
 function tabs(){
- $$(".awards-form-tab").forEach(btn=>btn.addEventListener("click",()=>{
-  const params=new URLSearchParams(location.search);
-  if(btn.dataset.awardsForm==="speaker")params.set("participar","palestrante");else params.delete("participar");
-  history.replaceState(null,"",location.pathname+(params.toString()?"?"+params:"")+location.hash);
-
-  const key=btn.dataset.awardsForm;
+ const routes={
+  person:"/premio-2027/indicacoes/",
+  case:"/premio-2027/indicacoes/cases/",
+  tool:"/premio-2027/indicacoes/tecnologias/",
+  jury:"/premio-2027/indicacoes/juri/",
+  speaker:"/premio-2027/indicacoes/palestrantes/"
+ };
+ const fromPath=()=>{
+  const path=location.pathname.replace(/\\/g,"/");
+  for(const [key,value] of Object.entries(routes))if(path===value||path===value.slice(0,-1))return key;
+  if(new URLSearchParams(location.search).get("participar")==="palestrante")return "speaker";
+  return "person";
+ };
+ const show=(key)=>{
   syncParticipationContext(key);
-  $$(".awards-form-tab").forEach(b=>{const on=b===btn;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
-  $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel===key;p.hidden=!on;p.classList.toggle("active",on)});
+  $$(".awards-form-tab").forEach(b=>{
+   const on=b.dataset.awardsForm===key;
+   b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))
+  });
+  $$(".awards-form-panel").forEach(p=>{
+   const on=p.dataset.awardsPanel===key;
+   p.hidden=!on;p.classList.toggle("active",on)
+  });
+  if(location.pathname.startsWith("/premio-2027/indicacoes/")){
+   const label=$$('.awards-form-tab').find(b=>b.dataset.awardsForm===key)?.textContent?.trim()||"Indicações";
+   document.title=label+" | Prêmio Conexão CRM 2027";
+   const canonical=document.querySelector('link[rel="canonical"]');
+   if(canonical)canonical.href=location.origin+routes[key];
+  }
+ };
+ $$(".awards-form-tab").forEach(btn=>btn.addEventListener("click",()=>{
+  const key=btn.dataset.awardsForm;
+  const url=new URL(location.href);url.pathname=routes[key];url.hash="";
+  url.searchParams.delete("participar");
+  history.pushState({awardParticipation:key},"",url);
+  show(key);
  }));
+ window.addEventListener("popstate",()=>show(fromPath()));
+ // Migrate existing ?participar=palestrante links to a real, shareable page.
  if(new URLSearchParams(location.search).get("participar")==="palestrante"){
-   const speaker=document.querySelector('[data-awards-form="speaker"]');
-   if(speaker){
-     $$(".awards-form-tab").forEach(b=>{const on=b===speaker;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});
-     $$(".awards-form-panel").forEach(p=>{const on=p.dataset.awardsPanel==="speaker";p.hidden=!on;p.classList.toggle("active",on)});
-   }
+  const url=new URL(location.href);url.pathname=routes.speaker;url.hash="";url.searchParams.delete("participar");
+  history.replaceState({awardParticipation:"speaker"},"",url);
  }
- syncParticipationContext(new URLSearchParams(location.search).get("participar")==="palestrante"?"speaker":"person");
+ show(fromPath());
 }
+
 async function auth(){
  const storageKey="sb-rwkbpafpniwzvlkfngag-auth-token";
  function readStored(){
@@ -328,6 +355,11 @@ function setupScreenNavigation(){
  function setActive(id,push){
   if(!groups[id])return false;
   document.body.classList.add("award-view-mode");
+  const canonical=document.querySelector('link[rel="canonical"]');
+  if(canonical)canonical.href=location.origin+(location.pathname.startsWith("/premio-2027/indicacoes/")?location.pathname:cleanPath(id));
+  if(!location.pathname.startsWith("/premio-2027/indicacoes/"))
+    document.title=(id==="inicio"?"Prêmio Conexão CRM 2027":($("#navLinks a.selected")?.textContent||id)+" | Prêmio Conexão CRM 2027");
+
   topSections.forEach(section=>{
    const sid=section.id||"",active=groups[id].includes(sid);
    if(managed.has(sid)||sid===""||section.classList.contains("sponsor")||
