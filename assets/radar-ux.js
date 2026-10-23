@@ -3,7 +3,7 @@
  */
 (function(){
   'use strict';
-  const visibleIds=['filtro-categoria','filtro-cargo','filtro-nivel','filtro-modalidade'];
+  const visibleIds=['filtro-categoria','filtro-cargo','filtro-nivel','filtro-modalidade','filtro-abrangencia'];
   const quickIds=['filtro-periodo-hub','filtro-ordem-hub'];
   function initFilters(){
     const select=document.getElementById('filtro-categoria');
