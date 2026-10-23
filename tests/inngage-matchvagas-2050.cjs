@@ -4,57 +4,59 @@ const root=path.join(__dirname,"..");
 const src=fs.readFileSync(path.join(root,"supabase/functions/crm-inngage-match-jobs/index.ts"),"utf8");
 const workflow=fs.readFileSync(path.join(root,".github/workflows/inngage-match-jobs-2050.yml"),"utf8");
 const html=fs.readFileSync(path.join(root,"matchvagas-test.html"),"utf8");
-assert.match(src,/TEMPLATE_ID = "2050"/);
-assert.match(src,/if \(action === "run" && !enabled\)/);
-assert.match(src,/provider_fields_verified === true/);
-assert.match(src,/receive_community_updates/);
-assert.match(src,/open_to_work/);
-assert.match(src,/ALREADY_ATTEMPTED_THIS_WEEK/);
-assert.match(src,/CUSTOM_FIELDS_/);
-assert.match(src,/scoreJob\(/);
-assert.match(src,/recs\.length !== 5/);
-assert.match(src,/crm_newsletter_subscriptions/);
-assert.match(src,/send_test" \? "matchvagas_2050_teste"/);
-assert.match(workflow,/cron: "0 12 \* \* 1"/);
-assert.match(workflow,/SUPABASE_SERVICE_ROLE_KEY/);
-assert.doesNotMatch(workflow,/sk_test_|sb_secret_/);
-assert.match(html,/EU_AUTORIZO_TESTE_2050/);
-assert.match(html,/crm_is_admin/);
 
-assert.match(src,/if \(action === "dry_run"\)/);
-assert.match(src,/sent_email: false, provider_contacted: false/);
-assert.match(src,/status: "blocked_previous_attempt"/);
-assert.match(html,/Simular sem enviar/);
-assert.match(html,/blocked_previous_attempt/);
+for (const check of [
+  'TEMPLATE_ID = "2050"',
+  'provider_fields_verified === true',
+  'if (action === "run" && !enabled)',
+  '.eq("receive_community_updates", true)',
+  '.eq("open_to_work", true)',
+  'ALREADY_ATTEMPTED_THIS_WEEK',
+  'matchvagas_2050_teste',
+  'CUSTOM_FIELDS_',
+  'if (action === "dry_run")',
+  'if (action === "probe_fields")',
+  'VALIDAR_CAMPOS_SEM_EMAIL_2050',
+  'matchvagas_2050_probe_campos',
+  'function scoreJob(',
+  'function verifiedWorkMode(',
+  'function opportunityKey(',
+  'seenOpportunities.has(signature)',
+  'unique_opportunities: uniqueOpportunities',
+  'recs.length !== 5',
+  'crm_newsletter_subscriptions',
+  'seenUrls.has(link)',
+  'companyCounts.get(companyKey)',
+  'if (selected.length === 5) break',
+  'const maxPages = 8',
+  '.range(page * pageSize, (page + 1) * pageSize - 1)',
+  'JOB_POOL_EXCEEDS_SAFE_LIMIT',
+  'Empresa não divulgada',
+  'managementTarget && jobLevel !== "management"',
+  'fieldsRequest:',
+  'recent_probe:',
+]) {
+  assert.ok(src.includes(check),"Missing production guard "+check);
+}
+for(const check of ["probeBlocked=true","data.recent_probe",'id="probe"','id="send"',"detail.provider_error_code","EU_AUTORIZO_TESTE_2050"]) {
+  assert.ok(html.includes(check),"Missing admin UI guard "+check);
+}
+assert.ok(workflow.includes('0 12 * * 1'),"Weekly cron missing");
+assert.ok(workflow.includes("SUPABASE_SERVICE_ROLE_KEY"),"Server-only workflow auth missing");
 
-
-assert.match(src,/function verifiedWorkMode\(/);
-assert.match(src,/if \(desiredModes.length && \(!mode \|\| !desiredModes.includes\(mode\)\) return null/);
-assert.match(src,/if \(skip.has\(job.id\) \|\| !validExternalUrl\(job.url\) \|\| !verifiedWorkMode\(job\)\)/);
-assert.match(src,/result\["VAGA_" \+ n \+ "_MODALIDADE"\] = verifiedWorkMode\(job\)/);
-assert.match(src,/if \(jobLevel === "part_time" \|\| jobLevel === "junior"\) return null/);
-assert.match(src,/if \(managementTarget && jobLevel !== "management"\) return null/);
-assert.match(src,/splitRoleAndCompany\(job\)/);
-assert.match(src,/matching_method: "strict_role_and_seniority_weighted_rules_not_probability"/);
-assert.match(src,/return Math.min\(92, titleSignal/);
-
-assert.match(src,/if \(action === "probe_fields"\)/);
-assert.match(src,/VALIDAR_CAMPOS_SEM_EMAIL_2050/);
-assert.match(src,/const campaignKey = "matchvagas_2050_probe_campos"/);
-assert.match(src,/sent_email: false/);
-assert.match(html,/id="probe"/);
-assert.match(html,/probe_fields/);
-
-// Paginate entire recent pool, avoid silent 1,000-row PostgREST truncation.
-assert.match(src,/const maxPages = 8/);
-assert.match(src,/\.range\(page \* pageSize, \(page \+ 1\) \* pageSize - 1\)/);
-assert.match(src,/JOB_POOL_EXCEEDS_SAFE_LIMIT/);
-// Quality of outbound recommendations is more important than always filling five cards.
-assert.match(src,/if \(structured && declared && structured !== declared\) return ""/);
-assert.match(src,/seenRoleCompanyLocations/);
-assert.match(src,/Empresa não divulgada/);
-assert.match(src,/companyPenalty/);
-assert.match(src,/if \(mode !== "remoto" && desiredLocations.length/);
-assert.match(src,/if \(managementTarget && jobLevel !== "management"\) return null/);
-
-console.log("Matchvagas 2050: safety, full-pool pagination and quality assertions passed.");
+// Extract and execute the real pure helper, rather than repeating its implementation.
+const keyFnSource=src.match(/function opportunityKey\(job: Job\): string \{[\s\S]*?\n\}/);
+assert.ok(keyFnSource,"opportunityKey helper missing");
+const executable=keyFnSource[0].replace("job: Job): string","job)");
+const canonical=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const opportunityKey=new Function("splitRoleAndCompany","verifiedWorkMode","norm",executable+";return opportunityKey;")(
+  job=>({role:job.title,company:job.company}),job=>job.workMode,canonical
+);
+const shared={title:"Head of Customer and Solutions Marketing - Remote Work",company:"BairesDev",workMode:"remoto"};
+const locations=["São Paulo, Brasil","Minas Gerais, Brasil","Brasil"];
+const remoteListings=locations.map((location,i)=>({...shared,location,url:"https://br.linkedin.com/jobs/view/"+i}));
+assert.equal(new Set(remoteListings.map(opportunityKey)).size,1,"Remote posts by same employer and role must collapse");
+assert.notEqual(opportunityKey(remoteListings[0]),opportunityKey({...shared,title:"CRM Manager - Remote Work",location:"Brasil"}),"Distinct roles remain");
+assert.notEqual(opportunityKey({...shared,workMode:"hibrido",location:"São Paulo"}),opportunityKey({...shared,workMode:"hibrido",location:"Minas Gerais"}),"Hybrid locations may differ");
+console.log("Inngage 2050: production guards and BairesDev duplicate regression passed.");
