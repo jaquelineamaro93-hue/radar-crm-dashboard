@@ -84,6 +84,28 @@ async function deliver(service: ReturnType<typeof createClient>, userId: string,
   return {status,provider_http_status:http};
 }
 
+
+async function isVerifiedServiceKey(token: string, endpoint: string): Promise<boolean> {
+  // Claims are only a prefilter. Supabase Auth must validate the actual credential.
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(payload + "=".repeat((4 - payload.length % 4) % 4)));
+    if (claims.role !== "service_role") return false;
+    const response = await fetch(endpoint.replace(/\/$/, "") + "/auth/v1/admin/users?page=1&per_page=1", {
+      headers: { apikey: token, Authorization: "Bearer " + token },
+      redirect: "error",
+      signal: AbortSignal.timeout(5000),
+    });
+    // Never read, log, or return user data from this authorization check.
+    await response.body?.cancel();
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
 async function handle(req: Request) {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
   if (req.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405);
@@ -97,7 +119,7 @@ async function handle(req: Request) {
       global: { headers: { Authorization: "Bearer " + token } },
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    const serviceCaller = token === serviceKey;
+    const serviceCaller = token === serviceKey || await isVerifiedServiceKey(token, endpoint);
     const { data: auth, error: authError } = serviceCaller ? { data: { user: null }, error: null } : await client.auth.getUser(token);
     if (!serviceCaller && (authError || !auth?.user?.id)) return json({ error: "UNAUTHORIZED" }, 401);
     const { data: admin, error: adminError } = serviceCaller ? { data: true, error: null } : await client.rpc("crm_is_admin");
