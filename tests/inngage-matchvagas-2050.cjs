@@ -27,4 +27,15 @@ assert.match(src,/status: "blocked_previous_attempt"/);
 assert.match(html,/Simular sem enviar/);
 assert.match(html,/blocked_previous_attempt/);
 
-console.log("Matchvagas 2050: 15 security and integration assertions passed.");
+
+assert.match(src,/function verifiedWorkMode\(/);
+assert.match(src,/if \(desiredModes.length && \(!mode \|\| !desiredModes.includes\(mode\)\) return null/);
+assert.match(src,/if \(skip.has\(job.id\) \|\| !validExternalUrl\(job.url\) \|\| !verifiedWorkMode\(job\)\)/);
+assert.match(src,/result\["VAGA_" \+ n \+ "_MODALIDADE"\] = verifiedWorkMode\(job\)/);
+assert.match(src,/if \(jobLevel === "part_time" \|\| jobLevel === "junior"\) return null/);
+assert.match(src,/if \(managementTarget && jobLevel !== "management"\) return null/);
+assert.match(src,/splitRoleAndCompany\(job\)/);
+assert.match(src,/matching_method: "strict_role_and_seniority_weighted_rules_not_probability"/);
+assert.match(src,/return Math.min\(92, titleSignal/);
+
+console.log("Matchvagas 2050: matching rules and production safety checks passed.");
