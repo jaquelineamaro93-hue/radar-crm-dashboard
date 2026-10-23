@@ -33,6 +33,14 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 <button id="send" disabled>Enviar meu teste 2050</button>
 <pre id="sendResult">Não executado.</pre></div>
 <p>O endpoint não libera disparos coletivos por meio desta página. Revise os logs após qualquer erro e não repita tentativas sem diagnóstico.</p>
+<div class="card">
+  <h2>4. Publicação em produção</h2>
+  <p>Ative apenas depois de receber o teste e conferir os cinco cargos, empresas, percentuais calculados, links individuais e opção de descadastro funcionando. O e-mail aceito pelo provedor não prova entrega.</p>
+  <label><input type="checkbox" id="confirmRendered"> Recebi o e-mail de teste 2050, conferi os cinco cards, os links e o descadastro.</label>
+  <button id="activate" disabled>Ativar campanha semanal</button>
+  <button id="pause" disabled style="background:#3b3b42;color:#f9fafb">Pausar imediatamente</button>
+  <pre id="activationResult">Campanha não homologada.</pre>
+</div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
 <script>
@@ -40,10 +48,10 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 "use strict";
 var sb=null,who=null;
 var el=function(id){return document.getElementById(id)};
-var buttonIds=["diagnostics","preview","send"];
+var buttonIds=["diagnostics","preview","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=!el("confirm").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked}
 function safeError(e){return String(e&&e.message||e)}
 function print(id,content){el(id).textContent=typeof content==="string"?content:JSON.stringify(content,null,2)}
 async function call(action,extra){
@@ -65,6 +73,17 @@ async function run(action,resultId,extra){
  catch(e){print(resultId,"Falha: "+safeError(e))}
  setBusy(false)
 }
+el("confirmRendered").onchange=function(){el("activate").disabled=!who||!el("confirmRendered").checked};
+el("activate").onclick=function(){
+ if(!who||!el("confirmRendered").checked)return;
+ if(!window.confirm("Você realmente recebeu o teste, validou cinco vagas, os botões e descadastro? Ativar os e-mails semanais?"))return;
+ run("activate","activationResult",{confirm:"RECEBI_E_CONFIRMEI_OS_5_CARDS_2050"});
+};
+el("pause").onclick=function(){
+ if(!who)return;
+ if(!window.confirm("Pausar imediatamente os e-mails semanais 2050?"))return;
+ run("pause","activationResult");
+};
 el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
 el("preview").onclick=function(){run("preview","previewResult")};
 el("confirm").onchange=function(){el("send").disabled=!who||!el("confirm").checked};
