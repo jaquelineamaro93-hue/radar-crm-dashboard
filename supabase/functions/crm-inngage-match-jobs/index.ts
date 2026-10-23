@@ -75,7 +75,7 @@ function splitRoleAndCompany(job: Job): { role: string; company: string } {
   const match = raw.match(/^(.*?)\s+at\s+([^|]+)$/i);
   const fromTitle = match ? clean(match[2]) : "";
   return { role: (match ? clean(match[1]) : raw).slice(0, 150),
-    company: (absent ? fromTitle : explicitCompany).slice(0, 120) };
+    company: ((absent ? fromTitle : explicitCompany) || "Empresa não divulgada").slice(0, 120) };
 }
 const ROLE_TERMS: Record<string, RegExp> = {
   crm: /\bcrm\b|customer relationship|marketing de relacionamento/i,
@@ -107,6 +107,10 @@ function titleLevel(role: string) {
 function brazilEligible(job: Job) {
   const location = norm(job.location || job.regiao);
   const description = norm(job.descricao_resumo || job.description);
+  const title = norm(job.title || job.cargo);
+  // A job that explicitly restricts geography in its title is not a Brazil match,
+  // even if the aggregator incorrectly classified the location as "Remoto".
+  if (/\b(remote|remoto|full remote)\b.{0,25}\b(france|cyprus|greece|poland|germany|spain|portugal|netherlands|malta|turkey|uk|usa|us|canada|united states)\b/.test(title)) return false;
   if (/\b(usa only|us only|united states only|canada only|uk only|europe only|emea only|united states|north america only)\b/.test(location)) return false;
   // International aggregation sites frequently label positions only "remote" even
   // when candidates in Brazil are not eligible; do not assert geographic fit.
@@ -120,13 +124,14 @@ function brazilEligible(job: Job) {
 }
 function verifiedWorkMode(job: Job): string {
   const structured = workMode(job.modalidade_normalizada || job.modelo);
-  if (structured) return structured;
   const title = norm(job.title || job.cargo);
-  // Only infer work arrangement when the job title states it explicitly.
-  if (/\b(remote|remoto|100 remoto|home office|work from home)\b/.test(title)) return "remoto";
-  if (/\b(hybrid|hibrido|hibrida)\b/.test(title)) return "hibrido";
-  if (/\b(on site|onsite|presencial)\b/.test(title)) return "presencial";
-  return "";
+  let declared = "";
+  if (/\b(remote|remoto|100 remoto|home office|work from home)\b/.test(title)) declared = "remoto";
+  else if (/\b(hybrid|hibrido|hibrida)\b/.test(title)) declared = "hibrido";
+  else if (/\b(on site|onsite|presencial)\b/.test(title)) declared = "presencial";
+  // Title and normalized columns disagree, so don't claim a work arrangement.
+  if (structured && declared && structured !== declared) return "";
+  return structured || declared;
 }
 function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string, unknown>, skills: string[]): number | null {
   const { role, company } = splitRoleAndCompany(job);
@@ -158,8 +163,9 @@ function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string,
   const haystack = norm([role, clean(job.trilha), clean(job.descricao_resumo || job.description)].join(" "));
   const hits = skills.slice(0, 25).filter(x => norm(x).length > 2 && haystack.includes(norm(x))).length;
   const skillScore = Math.min(10, hits * 2);
+  const companyPenalty = company === "Empresa não divulgada" ? 9 : 0;
   // A bounded rules-based ranking; not a statistically calibrated probability.
-  return Math.min(92, titleSignal + levelScore + modeScore + regionScore + skillScore);
+  return Math.max(0, Math.min(92, titleSignal + levelScore + modeScore + regionScore + skillScore - companyPenalty));
 }
 async function authorize(req: Request) {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
@@ -183,15 +189,27 @@ async function loadProfiles() {
   return data || [];
 }
 async function loadJobPool(): Promise<Job[]> {
+  // PostgREST caps single responses at 1,000 rows. Scan every recent page
+  // rather than silently excluding thousands of roles from the user's digest.
   const cutoff = new Date(Date.now() - 45 * 86400000).toISOString();
-  const { data, error } = await db.from("vagas_crm")
-    .select("id,title,cargo,company,empresa,location,regiao,url,descricao_resumo,description,trilha,modalidade_normalizada,modelo,senioridade_normalizada,nivel,availability_status,found_at,salario,tipo_contrato")
-    .in("availability_status", ["listed", "unverified"])
-    .gte("found_at", cutoff)
-    .order("found_at", { ascending: false })
-    .limit(1000);
-  if (error) throw Error("JOBS_QUERY_FAILED");
-  return (data || []) as Job[];
+  const pageSize = 1000;
+  const maxPages = 8;
+  const pool: Job[] = [];
+  for (let page = 0; page < maxPages; page++) {
+    const { data, error } = await db.from("vagas_crm")
+      .select("id,title,cargo,company,empresa,location,regiao,url,descricao_resumo,description,trilha,modalidade_normalizada,modelo,senioridade_normalizada,nivel,availability_status,found_at,salario,tipo_contrato")
+      .in("availability_status", ["listed", "unverified"])
+      .gte("found_at", cutoff)
+      .order("found_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error) throw Error("JOBS_QUERY_FAILED");
+    const chunk = (data || []) as Job[];
+    pool.push(...chunk);
+    if (chunk.length < pageSize) return pool;
+  }
+  // Fail closed if the cap is reached; an incomplete pool biases matching.
+  throw Error("JOB_POOL_EXCEEDS_SAFE_LIMIT");
 }
 async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]> {
   const [prefRes, matchRes, skillsRes, prevRes] = await Promise.all([
@@ -207,13 +225,18 @@ async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]>
   const skills = (skillsRes.data || []).map(x => clean(x.skill_name));
   const scored: Rec[] = [];
   const seenUrls = new Set<string>();
+  const seenRoleCompanyLocations = new Set<string>();
   for (const job of pool) {
     if (skip.has(job.id) || !validExternalUrl(job.url) || !verifiedWorkMode(job)) continue;
     const key = clean(job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
-    if (seenUrls.has(key)) continue;
+    const roleCompany = splitRoleAndCompany(job);
+    const signature = [norm(roleCompany.role), norm(roleCompany.company),
+      norm(job.location || job.regiao), verifiedWorkMode(job)].join("|");
+    if (seenUrls.has(key) || seenRoleCompanyLocations.has(signature)) continue;
     const score = scoreJob(job, prefRes.data, matchRes.data, skills);
     if (score === null || score < min) continue;
     seenUrls.add(key);
+    seenRoleCompanyLocations.add(signature);
     scored.push({ job, score });
   }
   scored.sort((a, b) => b.score - a.score ||
@@ -465,7 +488,9 @@ Deno.serve(async (req: Request) => {
       const picks = await prepare(caller.id, jobs, min);
       if (picks.length !== 5) return reply({
         ok: true, status: "not_enough_matches", template_id: TEMPLATE_ID,
-        cards_available: picks.length, sent_email: false, provider_contacted: false,
+        cards_available: picks.length, jobs_analyzed: jobs.length,
+        reason: "O filtro não encontrou cinco vagas com senioridade e modalidade verificadas.",
+        sent_email: false, provider_contacted: false,
       });
       const mapped = fields(ownProfile, picks);
       const names = ["NOME", ...Array.from({ length: 5 }, (_, i) => {
