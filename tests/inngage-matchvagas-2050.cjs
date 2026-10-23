@@ -57,4 +57,31 @@ assert.match(src,/companyPenalty/);
 assert.match(src,/if \(mode !== "remoto" && desiredLocations.length/);
 assert.match(src,/if \(managementTarget && jobLevel !== "management"\) return null/);
 
-console.log("Matchvagas 2050: safety, full-pool pagination and quality assertions passed.");
+
+// Regression: BairesDev posted the same remote Head role for three cities.
+// A different city or URL must NOT occupy an extra slot in the email.
+const keyFnSource=src.match(/function opportunityKey\(job: Job\): string \{[\s\S]*?\n\}/);
+assert.ok(keyFnSource,"Missing opportunityKey");
+const keyJs=keyFnSource[0].replace("job: Job): string", "job)");
+const canonical=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const opportunityKey=new Function("splitRoleAndCompany","verifiedWorkMode","norm",
+  keyJs+"; return opportunityKey;")(
+  job=>({role:job.title,company:job.company}),
+  job=>job.workMode,
+  canonical
+);
+const bairesBase={title:"Head of Customer and Solutions Marketing - Remote Work",company:"BairesDev",workMode:"remoto"};
+const bairesSp={...bairesBase,url:"https://br.linkedin.com/jobs/view/4480700321",location:"São Paulo, Brasil"};
+const bairesMg={...bairesBase,url:"https://br.linkedin.com/jobs/view/4480491571",location:"Minas Gerais, Brasil"};
+const bairesBr={...bairesBase,url:"https://br.linkedin.com/jobs/view/4480486759",location:"Brasil"};
+assert.equal(new Set([bairesSp,bairesMg,bairesBr].map(opportunityKey)).size,1,"Remote duplicate across states");
+assert.notEqual(opportunityKey(bairesSp),opportunityKey({...bairesBase,title:"Customer Success Manager - Remote Work",location:"São Paulo"}),"Different role");
+assert.notEqual(opportunityKey({...bairesBase,workMode:"hibrido",location:"SP"}),opportunityKey({...bairesBase,workMode:"hibrido",location:"MG"}),"Hybrid roles in different states may differ");
+assert.match(src,/seenOpportunities\.has\(signature\)/);
+assert.match(src,/companyCounts\.get\(companyKey\) \|\| 0\) >= 2/);
+assert.match(src,/unique_opportunities: uniqueOpportunities/);
+assert.match(src,/recent_field_check:/);
+assert.match(html,/probeBlocked=true/);
+assert.match(html,/recent_field_check/);
+
+console.log("Matchvagas 2050: duplicate-remote regression and provider diagnostics passed.");
