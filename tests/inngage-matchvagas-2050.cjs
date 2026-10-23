@@ -23,7 +23,7 @@ for (const check of [
   'function opportunityKey(',
   'seenOpportunities.has(signature)',
   'unique_opportunities: uniqueOpportunities',
-  'recs.length !== 5',
+  'validAvailableCards(recs)',
   'crm_newsletter_subscriptions',
   'seenUrls.has(link)',
   'companyCounts.get(companyKey)',
