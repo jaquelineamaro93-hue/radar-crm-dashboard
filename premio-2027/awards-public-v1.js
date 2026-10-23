@@ -299,55 +299,84 @@ function setupScreenNavigation(){
  if(!main)return;
  const topSections=Array.from(main.children).filter(el=>el.tagName==="SECTION");
  const groups={
-  inicio:["inicio"],
-  universos:["universos"],
-  calcada:["calcada","tech-awards"],
-  jornada:["jornada"],
-  metodologia:["metodologia"],
-  participacao:["participacao"],
-  "votacao-public":["votacao-public"],
-  agenda:["agenda"],
-  hall:["hall"]
+  inicio:["inicio"],universos:["universos"],calcada:["calcada","tech-awards"],
+  jornada:["jornada"],metodologia:["metodologia"],participacao:["participacao"],
+  "votacao-public":["votacao-public"],agenda:["agenda"],hall:["hall"]
  };
+ const urls={
+  inicio:"/premio-2027/",universos:"/premio-2027/pilares/",
+  calcada:"/premio-2027/categorias/",jornada:"/premio-2027/jornada/",
+  metodologia:"/premio-2027/metodologia/",participacao:"/premio-2027/indicacoes/",
+  "votacao-public":"/premio-2027/votacao/",agenda:"/premio-2027/calendario/",
+  hall:"/premio-2027/hall-da-fama/"
+ };
+ const paths=Object.fromEntries(Object.entries(urls).map(([key,value])=>[value,key]));
  const managed=new Set(Object.values(groups).flat());
+ const screenFromPath=()=>{
+  const path=location.pathname.replace(/\\/g,"/").replace(/\\/g,"/");
+  return paths[path]||paths[path.endsWith("/")?path:path+"/"]||
+    (path.startsWith("/premio-2027/indicacoes/")?"participacao":null);
+ };
+ const cleanPath=(route)=>urls[route]||urls.inicio;
+ const normalizeNavLink=(a)=>{
+  const href=a.getAttribute("href")||"";
+  if(!href.startsWith("#"))return;
+  const name=href.slice(1);
+  if(groups[name])a.href=cleanPath(name);
+ };
+ document.querySelectorAll('a[href^="#"]').forEach(normalizeNavLink);
  function setActive(id,push){
   if(!groups[id])return false;
   document.body.classList.add("award-view-mode");
   topSections.forEach(section=>{
-   const sid=section.id||"";
-   const active=groups[id].includes(sid);
-   if(managed.has(sid)||sid===""||section.classList.contains("sponsor")||section.classList.contains("editorial-intro")||section.id==="manifesto"){
-    section.hidden=!active;
-   }
+   const sid=section.id||"",active=groups[id].includes(sid);
+   if(managed.has(sid)||sid===""||section.classList.contains("sponsor")||
+      section.classList.contains("editorial-intro")||section.id==="manifesto")section.hidden=!active;
   });
   document.querySelectorAll("#navLinks a").forEach(a=>{
-   const target=(a.getAttribute("href")||"").replace(/^#/,"");
-   const on=target===id||(id==="calcada"&&target==="calcada");
+   const target=paths[a.pathname]||paths[a.pathname.endsWith("/")?a.pathname:a.pathname+"/"];
+   const on=target===id;
    a.classList.toggle("selected",on);
    if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
   });
   if(push){
-   const u=new URL(location.href);u.hash=id;
-   history.pushState({awardView:id},"",u);
+   const url=new URL(location.href);url.pathname=cleanPath(id);url.hash="";
+   history.pushState({awardView:id},"",url);
   }
   requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"instant"}));
   return true;
  }
- function currentFromHash(){
-  const id=(location.hash||"").replace(/^#/,"");
-  return groups[id]?id:null;
- }
- document.querySelectorAll("#navLinks a[href^='#'],a.brand[href='#inicio']").forEach(a=>{
-  a.addEventListener("click",e=>{
-   const id=(a.getAttribute("href")||"").replace(/^#/,"");
-   if(!groups[id])return;
-   e.preventDefault();setActive(id,true);
-  });
+ // Native links remain navigable without JS; with JS they switch screens and keep browser history.
+ document.addEventListener("click",event=>{
+  const link=event.target.closest?.('a[href^="/premio-2027/"],a[href^="#"]');
+  if(!link||!main.contains(link)&&!document.getElementById("navLinks")?.contains(link))return;
+  const href=link.getAttribute("href")||"";
+  const id=href.startsWith("#")?href.slice(1):
+    paths[new URL(href,location.origin).pathname]||
+    paths[new URL(href,location.origin).pathname.replace(/\\/g,"/")];
+  if(!groups[id])return;
+  event.preventDefault();
+  setActive(id,true);
+  document.getElementById("navLinks")?.classList.remove("open");
+  document.getElementById("menuToggle")?.setAttribute("aria-expanded","false");
  });
- window.addEventListener("popstate",()=>{const id=currentFromHash();if(id)setActive(id,false)});
- window.addEventListener("hashchange",()=>{const id=currentFromHash();if(id)setActive(id,false)});
- const initial=currentFromHash();
- if(initial)setActive(initial,false);
+ const readRoute=()=>{
+  const fromHash=(location.hash||"").replace(/^#/,"");
+  return groups[fromHash]?fromHash:screenFromPath()||"inicio";
+ };
+ window.addEventListener("popstate",()=>setActive(readRoute(),false));
+ window.addEventListener("hashchange",()=>{
+  const target=readRoute();
+  const url=new URL(location.href);url.pathname=cleanPath(target);url.hash="";
+  history.replaceState({awardView:target},"",url);
+  setActive(target,false);
+ });
+ const first=readRoute();
+ if(location.hash&&groups[location.hash.slice(1)]){
+  const url=new URL(location.href);url.pathname=cleanPath(first);url.hash="";
+  history.replaceState({awardView:first},"",url);
+ }
+ setActive(first,false);
 }
 
 async function init(){
