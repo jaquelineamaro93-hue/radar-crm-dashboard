@@ -98,4 +98,26 @@ for(const path of ['/painel/aprovacoes/sonhos/','/painel/aprovacoes/palestrantes
 }
 assert.match(nav,/syncAwardAdminNavSelection/);
 
+
+const expectedPortalPaths=[
+ 'membros','meu-painel','vagas','vagas-salvas','admin','eventos',
+ 'painel/equipe','painel/avatar','painel/rankings',
+ 'painel/aprovacoes/sonhos','painel/aprovacoes/palestrantes','painel/aprovacoes/creators'
+];
+for(const dir of expectedPortalPaths){
+ assert(fs.existsSync(path.join(__dirname,'..',dir,'index.html')),
+  'Rota limpa precisa carregar com HTTP 200: /'+dir+'/');
+}
+const award=read('premio-2027/index.html');
+for(const dir of ['pilares','categorias','jornada','metodologia','indicacoes','votacao','calendario','hall-da-fama',
+ 'indicacoes/cases','indicacoes/tecnologias','indicacoes/juri','indicacoes/palestrantes']){
+ assert(fs.existsSync(path.join(__dirname,'..','premio-2027',dir,'index.html')),
+  'Rota limpa de Prêmio ausente: '+dir);
+}
+assert(!award.includes('href="#calcada"')&&!award.includes('href="#participacao"'),
+ 'As abas principais do Prêmio devem ter URLs limpas');
+const xp=read('assets/xp-shell.js');
+assert(!xp.includes("crmRoutePaths[route]='/#'+route"),
+ 'Conexão XP não pode expor URL de navegação com hash');
+
 console.log('PASS: Quem Faz integrado ao portal, ranking abaixo, report único, carregamento recuperável e auth preservado.');
