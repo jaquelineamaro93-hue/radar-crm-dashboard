@@ -286,7 +286,7 @@ async function send(userId: string, profile: { full_name?: string | null }, recs
   let status = "unknown"; let providerStatus: number | null = null; let failure = "TRANSPORT_ERROR";
   try {
     const cf = {
-      addCustomFieldRequest: {
+      fieldsRequest: {
         app_token: appToken,
         identifier: email,
         email: email,
@@ -360,6 +360,10 @@ Deno.serve(async (req: Request) => {
         .eq("user_id", caller.id)
         .eq("campaign_key", "matchvagas_2050_teste")
         .order("created_at", { ascending: false }).limit(1);
+      const { data: probe, error: probeError } = await db.from("crm_inngage_match_delivery")
+        .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
+        .eq("user_id", caller.id).eq("campaign_key", "matchvagas_2050_probe_campos")
+        .order("created_at", { ascending: false }).limit(1);
       return reply({
         ok: true, template_id: TEMPLATE_ID, configured: {
           app_token: !!Deno.env.get("INNGAGE_APP_TOKEN"),
@@ -368,7 +372,8 @@ Deno.serve(async (req: Request) => {
         dispatch_enabled: enabled,
         provider_fields_verified: cfg.provider_fields_verified === true,
         recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
-        advisory: "O HTTP 400 foi registrado antes do cadastro dos 30 campos. A tentativa permanece bloqueada nesta semana. Faça a simulação local; a API externa ainda requer homologação.",
+        recent_probe: probeError ? { error: "HISTORY_UNAVAILABLE" } : probe?.[0] ?? null,
+        advisory: "Consulte recent_probe para a última validação dos campos e recent_test para o teste de e-mail. O formato fieldsRequest foi corrigido; a aceitação pela Inngage ainda requer homologação. Os limites de tentativas permanecem ativos.",
       });
     }
     // Admin-only launch control. Never enable without accepted self-test and
@@ -444,7 +449,7 @@ Deno.serve(async (req: Request) => {
         const response = await fetch(FIELDS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
-          body: JSON.stringify({ addCustomFieldRequest: {
+          body: JSON.stringify({ fieldsRequest: {
             app_token: appToken, identifier: email, email, custom_field: attributes,
           }}),
           signal: AbortSignal.timeout(12000),
