@@ -71,7 +71,7 @@ for(const token of [
  'recipient_count: 1',
  'function validAvailableCards(',
  'const matches = await prepare(caller.id, jobs, min)',
- 'if (!validFiveCards(matches))',
+ 'if (!validAvailableCards(matches))',
  'fields_count: names.length',
  'sent_email: false, provider_contacted: false'
 ]) assert.ok(src.includes(token),"Missing protected manual action: "+token);
