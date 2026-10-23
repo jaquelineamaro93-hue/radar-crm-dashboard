@@ -69,7 +69,14 @@ VAGA_5_MATCH
 VAGA_5_URL</pre>
 <p><a href="https://docs.inngage.com.br/artigo/campos-personalizados-nao-aparecem" target="_blank" rel="noopener">Documentação oficial da Inngage sobre campos personalizados</a></p>
 </div>
-<div class="card"><h2>3. Enviar um teste controlado</h2>
+<div class="card">
+  <h2>3. Conferir API dos campos sem enviar e-mail</h2>
+  <p>Verifica a atualização dos atributos personalizados <strong>apenas no seu próprio perfil</strong> na Inngage. Se houver cinco vagas aderentes, valida os 31 campos; caso contrário, envia apenas NOME. Não dispara o template 2050. Há limite de uma tentativa por dia.</p>
+  <label><input type="checkbox" id="confirmProbe"> Autorizo atualizar os atributos do meu perfil na Inngage para homologar a integração, sem envio de mensagem.</label>
+  <button id="probe" disabled>Validar campos na Inngage, sem e-mail</button>
+  <pre id="probeResult">Ainda não validado. O HTTP 400 anterior ocorreu antes do cadastro dos campos.</pre>
+</div>
+<div class="card"><h2>4. Enviar um teste controlado</h2>
 <p>Solicita uma única mensagem para sua própria conta autenticada, somente se seu perfil estiver elegível. Não confirma entrega por si só.</p>
 <label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
 <button id="send" disabled>Enviar meu teste 2050</button>
@@ -77,7 +84,7 @@ VAGA_5_URL</pre>
 <p id="deliveryNotice">O HTTP 400 é da tentativa anterior ao cadastro dos campos. Cadastro concluído, porém API de atualização e entrega ainda não homologadas. O bloqueio semanal não será apagado.</p>
 <p>Confira os campos em <a href="https://dash.inngage.com.br/" target="_blank" rel="noopener">Inngage</a> &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes diferenciam maiúsculas de minúsculas.</p>
 <div class="card">
-  <h2>4. Publicação em produção</h2>
+  <h2>5. Publicação em produção</h2>
   <p>Ative apenas depois de receber o teste e conferir os cinco cargos, empresas, percentuais calculados, links individuais e opção de descadastro funcionando. O e-mail aceito pelo provedor não prova entrega.</p>
   <label><input type="checkbox" id="confirmRendered"> Recebi o e-mail de teste 2050, conferi os cinco cards, os links e o descadastro.</label>
   <button id="activate" disabled>Ativar campanha semanal</button>
@@ -91,10 +98,10 @@ VAGA_5_URL</pre>
 "use strict";
 var sb=null,who=null,testBlocked=false;
 var el=function(id){return document.getElementById(id)};
-var buttonIds=["diagnostics","preview","dryRun","send","activate","pause"];
+var buttonIds=["diagnostics","preview","dryRun","probe","send","activate","pause"];
 var url="https://rwkbpafpniwzvlkfngag.supabase.co";
 var key="sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C";
-function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked}
+function setBusy(b){buttonIds.forEach(function(i){el(i).disabled=b||!who});if(!b&&who)el("send").disabled=testBlocked||!el("confirm").checked;if(!b&&who)el("activate").disabled=!el("confirmRendered").checked;if(!b&&who)el("probe").disabled=!el("confirmProbe").checked}
 function safeError(e){return String(e&&e.message||e)}
 function weekStart(){
  var d=new Date(),w=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
@@ -170,6 +177,12 @@ el("copyFields").onclick=function(){
 el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
 el("preview").onclick=function(){run("preview","previewResult")};
 el("dryRun").onclick=function(){run("dry_run","dryRunResult")};
+el("confirmProbe").onchange=function(){el("probe").disabled=!who||!el("confirmProbe").checked};
+el("probe").onclick=function(){
+ if(!who||!el("confirmProbe").checked)return;
+ if(!window.confirm("Confirmar a atualização dos atributos no seu próprio perfil da Inngage? Nenhum e-mail será enviado."))return;
+ run("probe_fields","probeResult",{confirm:"VALIDAR_CAMPOS_SEM_EMAIL_2050"});
+};
 el("confirm").onchange=function(){el("send").disabled=!who||testBlocked||!el("confirm").checked};
 el("send").onclick=function(){
  if(!who||testBlocked||!el("confirm").checked)return;
