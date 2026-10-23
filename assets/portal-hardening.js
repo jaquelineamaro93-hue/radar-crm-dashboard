@@ -33,7 +33,7 @@
     const host=document.getElementById('crmPages');
     if(!host||typeof crmRoutes==='undefined')return null;
     if(!crmRoutes.equipe)crmRoutes.equipe=['crmTeamEmbedPage','Quem Faz'];
-    if(typeof crmRoutePaths!=='undefined')crmRoutePaths.equipe='/#equipe';
+    if(typeof crmRoutePaths!=='undefined')crmRoutePaths.equipe='/painel/equipe/';
     let page=document.getElementById('crmTeamEmbedPage');
     if(page)return page;
     page=document.createElement('section');
@@ -69,7 +69,7 @@
     if(typeof crmNavigate==='function'){
       crmNavigate('equipe',false);
       // Uma rota SPA conservadora que preserva o sidebar e suporta o histórico.
-      if(location.hash!=='#equipe')history.pushState(null,'','/#equipe');
+      if(location.pathname!=='/painel/equipe/')history.pushState(null,'','/painel/equipe/');
     }
   }
   if(!document.getElementById('crm-team-workspace-css')){
@@ -92,16 +92,17 @@
   // Private 2027 award modules use the existing authenticated SPA shell.
   // The sidebar stays mounted, and the underlying pages keep their own admin JWT validation.
   const awardAdminModules={
-    'award-dreams':{id:'crmAwardDreamsEmbedPage',title:'Jardim dos Sonhos',url:'/admin-jardim-sonhos/?embedded=1'},
-    'award-speakers':{id:'crmAwardSpeakersEmbedPage',title:'Propostas de palestras',url:'/admin-palestrantes-2027/?embedded=1'},
-    'award-creators':{id:'crmAwardCreatorsEmbedPage',title:'Creators Parceiros',url:'/admin-creators-2027/?embedded=1'}
+    'award-dreams':{id:'crmAwardDreamsEmbedPage',title:'Jardim dos Sonhos',path:'/painel/aprovacoes/sonhos/',url:'/admin-jardim-sonhos/?embedded=1'},
+    'award-speakers':{id:'crmAwardSpeakersEmbedPage',title:'Propostas de palestras',path:'/painel/aprovacoes/palestrantes/',url:'/admin-palestrantes-2027/?embedded=1'},
+    'award-creators':{id:'crmAwardCreatorsEmbedPage',title:'Creators Parceiros',path:'/painel/aprovacoes/creators/',url:'/admin-creators-2027/?embedded=1'}
   };
   function ensureAwardAdminPage(route){
     const def=awardAdminModules[route];
     const host=document.getElementById('crmPages');
     if(!def||!host||typeof crmRoutes==='undefined')return null;
     if(!crmRoutes[route])crmRoutes[route]=[def.id,def.title];
-    if(typeof crmRoutePaths!=='undefined')crmRoutePaths[route]='/#'+route;
+    if(typeof crmRoutePaths!=='undefined')crmRoutePaths[route]=def.path;
+    if(typeof crmPathRoutes!=='undefined')crmPathRoutes[def.path.replace(/\/$/,'')]=route;
     let page=document.getElementById(def.id);
     if(page)return page;
     page=document.createElement('section');
@@ -122,7 +123,7 @@
   }
   Object.keys(awardAdminModules).forEach(ensureAwardAdminPage);
   function syncAwardAdminNavSelection(route){
-    const active=route||location.hash.replace(/^#/,'');
+    const active=route||(typeof crmRouteFromLocation==='function'?crmRouteFromLocation():location.hash.replace(/^#/,''));
     for(const [key,id] of [['award-dreams','crmDreamGardenAdminNav'],['award-speakers','crmSpeakersAdminNav'],['award-creators','crmCreatorsAdminNav']]){
       const link=document.getElementById(id);
       if(!link)continue;
@@ -145,11 +146,11 @@
       frame.setAttribute('src',def.url);
     }
     if(typeof crmNavigate==='function')crmNavigate(route,false);
-    if(location.hash!=='#'+route)history.pushState(null,'','/#'+route);
+    if(location.pathname!==def.path)history.pushState(null,'',def.path);
     syncAwardAdminNavSelection(route);
   }
   function activateAwardAdminHash(){
-    const route=location.hash.replace(/^#/,'');
+    const route=typeof crmRouteFromLocation==='function'?crmRouteFromLocation():location.hash.replace(/^#/,'');
     if(!Object.prototype.hasOwnProperty.call(awardAdminModules,route)){syncAwardAdminNavSelection(route);return}
     if(typeof crmSignedIn==='function'&&crmSignedIn()&&typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true){
       const page=ensureAwardAdminPage(route);
@@ -162,6 +163,7 @@
     }
   }
   window.addEventListener('hashchange',activateAwardAdminHash);
+  window.addEventListener('popstate',activateAwardAdminHash);
   function clearAwardAdminDataWhenUnauthorized(){
     const allowed=typeof crmSignedIn==='function'&&crmSignedIn()&&typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true;
     if(allowed)return;
@@ -220,7 +222,7 @@
         dreamAdmin=document.createElement('a');
         dreamAdmin.id='crmDreamGardenAdminNav';
         dreamAdmin.className='tab-btn';
-        dreamAdmin.href='/#award-dreams';dreamAdmin.dataset.crmRoute='award-dreams';dreamAdmin.classList.add('crm-award-admin-nav');dreamAdmin.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-dreams');};
+        dreamAdmin.href='/painel/aprovacoes/sonhos/';dreamAdmin.dataset.crmRoute='award-dreams';dreamAdmin.classList.add('crm-award-admin-nav');dreamAdmin.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-dreams');};
         dreamAdmin.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         dreamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14c-3 0-4-2-4-5 4 0 6 1 7 4M17 14c3 0 4-2 4-5-4 0-6 1-7 4"/><path d="M8 21h8"/></svg></span>Jardim dos Sonhos';
       }
@@ -235,7 +237,7 @@
         speakersNav=document.createElement('a');
         speakersNav.id='crmSpeakersAdminNav';
         speakersNav.className='tab-btn';
-        speakersNav.href='/#award-speakers';speakersNav.dataset.crmRoute='award-speakers';speakersNav.classList.add('crm-award-admin-nav');speakersNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-speakers');};
+        speakersNav.href='/painel/aprovacoes/palestrantes/';speakersNav.dataset.crmRoute='award-speakers';speakersNav.classList.add('crm-award-admin-nav');speakersNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-speakers');};
         speakersNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         speakersNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h5l8-4v12l-8-4H5zM8 15v5"/></svg></span>Propostas de palestras';
       }
@@ -249,7 +251,7 @@
         creatorNav=document.createElement('a');
         creatorNav.id='crmCreatorsAdminNav';
         creatorNav.className='tab-btn';
-        creatorNav.href='/#award-creators';creatorNav.dataset.crmRoute='award-creators';creatorNav.classList.add('crm-award-admin-nav');creatorNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-creators');};
+        creatorNav.href='/painel/aprovacoes/creators/';creatorNav.dataset.crmRoute='award-creators';creatorNav.classList.add('crm-award-admin-nav');creatorNav.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside('award-creators');};
         creatorNav.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
         creatorNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 10V7a4 4 0 0 1 4-4h3M14 3h3a4 4 0 0 1 4 4v3M21 14v3a4 4 0 0 1-4 4h-3M10 21H7a4 4 0 0 1-4-4v-3"/></svg></span>Creators Parceiros';
       }
@@ -259,7 +261,7 @@
     for(const [id,route] of [['crmDreamGardenAdminNav','award-dreams'],['crmSpeakersAdminNav','award-speakers'],['crmCreatorsAdminNav','award-creators']]){
       const link=document.getElementById(id);
       if(!link)continue;
-      link.href='/#'+route;link.dataset.crmRoute=route;
+      link.href=awardAdminModules[route].path;link.dataset.crmRoute=route;
       link.classList.add('crm-award-admin-nav');
       if(link.dataset.crmAwardWired!==route){
         link.dataset.crmAwardWired=route;
@@ -341,7 +343,7 @@
     ensureTeamPage();
     syncXpLinks();
     // Preserva o histórico da área logada mesmo após atualizar a página.
-    if(location.hash==='#equipe'&&typeof crmSignedIn==='function'&&crmSignedIn())openTeamInside(false);
+    if((location.pathname==='/painel/equipe/'||location.hash==='#equipe')&&typeof crmSignedIn==='function'&&crmSignedIn())openTeamInside(false);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startTeamAndNavigation,{once:true});
   else startTeamAndNavigation();
@@ -354,7 +356,7 @@
       if(frame&&frame.getAttribute('src'))frame.removeAttribute('src');
       return;
     }
-    if(location.hash==='#equipe')openTeamInside(false);
+    if(location.pathname==='/painel/equipe/'||location.hash==='#equipe')openTeamInside(false);
   });
   document.addEventListener('click',event=>{if(event.target.closest?.('#crmMenuToggle,#crmAdminNav,#userNavBtn'))setTimeout(syncXpLinks,100);});
   // Role-resolved event handles authentication changes without moving menu items repeatedly.
