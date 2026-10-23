@@ -134,7 +134,9 @@ async function call(action,extra){
    }
    if(detail&&typeof detail==="object"){
       var reported=detail.results&&detail.results.length?detail.results[0]:null;
-      var parts=[detail.error||detail.reason||"PROVIDER_REQUEST_FAILED"];
+      var parts=[detail.error||detail.reason||detail.provider_error_code||detail.status||"PROVIDER_REQUEST_FAILED"];
+      if(detail.provider_http_status)parts.push("HTTP "+detail.provider_http_status);
+      if(detail.message)parts.push(detail.message);
       if(reported&&reported.code)parts.push(reported.code);
       if(reported&&reported.provider_http)parts.push("HTTP "+reported.provider_http);
       throw Error(parts.join(" | "));
