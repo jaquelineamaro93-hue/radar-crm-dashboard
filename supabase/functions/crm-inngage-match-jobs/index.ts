@@ -284,7 +284,7 @@ Deno.serve(async (req: Request) => {
         dispatch_enabled: enabled,
         provider_fields_verified: cfg.provider_fields_verified === true,
         recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
-        advisory: "CUSTOM_FIELDS_400: request rejected before template delivery. Do not retry without correcting and validating provider field schema.",
+        advisory: "O HTTP 400 foi registrado antes do cadastro dos 30 campos. A tentativa permanece bloqueada nesta semana. Faça a simulação local; a API externa ainda requer homologação.",
       });
     }
     // Admin-only launch control. Never enable without accepted self-test and
@@ -322,6 +322,41 @@ Deno.serve(async (req: Request) => {
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
     const week = weekStartUtc();
+    if (action === "dry_run") {
+      if (caller.mode !== "admin") return reply({ error: "ADMIN_ONLY" }, 403);
+      const ownProfile = profiles.find(p => p.id === caller.id);
+      if (!ownProfile) return reply({
+        ok: true, status: "not_eligible", template_id: TEMPLATE_ID, dispatch_enabled: enabled,
+        message: "Perfil administrador não elegível ou sem aceite para recomendações.",
+        sent_email: false, provider_contacted: false,
+      });
+      const picks = await prepare(caller.id, jobs, min);
+      if (picks.length !== 5) return reply({
+        ok: true, status: "not_enough_matches", template_id: TEMPLATE_ID,
+        cards_available: picks.length, sent_email: false, provider_contacted: false,
+      });
+      const mapped = fields(ownProfile, picks);
+      const names = ["NOME", ...Array.from({ length: 5 }, (_, i) => {
+        const n = i + 1;
+        return ["CARGO", "EMPRESA", "MODALIDADE", "LOCAL", "MATCH", "URL"]
+          .map(suffix => "VAGA_" + n + "_" + suffix);
+      }).flat()];
+      const valid = names.length === 31 &&
+        Object.keys(mapped).length === 31 &&
+        names.every(name => typeof mapped[name] === "string" && mapped[name].length > 0);
+      const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === 5;
+      return reply({
+        ok: true, status: valid && unique ? "mapping_ready" : "mapping_invalid",
+        template_id: TEMPLATE_ID, cards_available: picks.length,
+        custom_fields_count: Object.keys(mapped).length,
+        custom_fields_valid: valid, unique_job_urls: unique,
+        fields: mapped,
+        matching_method: "weighted_rules_not_ai_probability",
+        provider_fields_verified: cfg.provider_fields_verified === true,
+        dispatch_enabled: enabled, sent_email: false, provider_contacted: false,
+        explanation: "Simulação local. Não valida a API externa da Inngage nem a entrega por e-mail.",
+      });
+    }
     if (action === "preview") {
       const stats = { marketing_optin_open_to_work: profiles.length, considered_jobs: jobs.length,
         ready_with_5_matches: 0, without_5_matches: 0, sent_this_week: 0,
@@ -358,8 +393,18 @@ Deno.serve(async (req: Request) => {
       else skipped++;
       if (rejected || unknown) break; // Fail closed on any provider issue.
     }
-    return reply({ ok: rejected + unknown === 0, template_id: TEMPLATE_ID, processed: toProcess.length,
-      accepted, rejected, unknown, skipped, results }, rejected + unknown ? 502 : 200);
+    const skippedPreviously = results.some(result =>
+      !!result && typeof result === "object" && "code" in result &&
+      result.code === "ALREADY_ATTEMPTED_THIS_WEEK");
+    return reply({
+      ok: rejected + unknown === 0 && !skippedPreviously,
+      status: skippedPreviously ? "blocked_previous_attempt" : rejected + unknown ? "provider_failed" : "completed",
+      template_id: TEMPLATE_ID, processed: toProcess.length,
+      accepted, rejected, unknown, skipped, results, sent_email: accepted > 0,
+      message: skippedPreviously
+        ? "A tentativa anterior já está registrada. Nenhum novo e-mail foi enviado."
+        : undefined,
+    }, rejected + unknown ? 502 : 200);
   } catch (error) {
     console.error("[inngage-match] INTERNAL_ERROR", error instanceof Error ? error.message : "unknown");
     return reply({ error: "INTERNAL_ERROR" }, 500);
