@@ -1,0 +1,27 @@
+name: Match IA — Inngage 2050
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  match-digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Disparar digest com bloqueio de homologação
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::notice::Configure SUPABASE_SERVICE_ROLE_KEY em GitHub Actions Secrets."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error --max-time 120 \
+            --request POST 'https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-inngage-match-jobs' \
+            --header "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            --header "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            --header 'Content-Type: application/json' \
+            --data '{"action":"run"}'
