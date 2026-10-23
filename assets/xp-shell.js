@@ -12,7 +12,8 @@ function register(){
  if(!pages)return false;
  for(const [route,sp] of Object.entries(specs)){
   crmRoutes[route]=[sp.id,sp.label];
-  crmRoutePaths[route]='/#'+route;
+  crmRoutePaths[route]=route==='xp-avatar'?'/painel/avatar/':'/painel/rankings/';
+  if(typeof crmPathRoutes!=='undefined')crmPathRoutes[crmRoutePaths[route].replace(/\/$/,'')]=route;
   let pane=document.getElementById(sp.id);
   if(pane)continue;
   pane=document.createElement('section');
@@ -90,7 +91,7 @@ window.addEventListener('message',handleMessage);
 function recommend(target){
  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(target||'')))return;
  if(typeof crmNavigate==='function')crmNavigate('xp-rankings');
- else location.hash='xp-rankings';
+ else location.assign('/painel/rankings/');
  const frame=document.querySelector('#pageXpRankings iframe');
  if(!frame)return;
  const send=()=>frame.contentWindow?.postMessage({type:'cx-xp-open-recommend',target},location.origin);
@@ -101,7 +102,7 @@ window.CXXPShell={activate,register,recommend};
 register();
 // Keep iframe panels synchronized with hash navigation from sidebar and embedded pages.
 function syncRoute(){
- const route=decodeURIComponent(location.hash.slice(1).split('?')[0]);
+ const route=typeof crmRouteFromLocation==='function'?crmRouteFromLocation():decodeURIComponent(location.hash.slice(1).split('?')[0]);
  if(!specs[route])return;
  if(!document.getElementById(specs[route].id))register();
  activate(route);
@@ -120,13 +121,13 @@ function syncRoute(){
  }
 }
 window.addEventListener('hashchange',()=>requestAnimationFrame(syncRoute));
+window.addEventListener('popstate',()=>requestAnimationFrame(syncRoute));
 document.addEventListener('click',e=>{
  const link=e.target.closest?.('a[data-crm-route="xp-avatar"],a[data-crm-route="xp-rankings"]');
  if(!link)return;
  const route=link.dataset.crmRoute;
  e.preventDefault();
- if(location.hash!=='#'+route)location.hash=route;
- if(typeof crmNavigate==='function')crmNavigate(route);
+ if(typeof crmNavigate==='function')crmNavigate(route);else location.assign(route==='xp-avatar'?'/painel/avatar/':'/painel/rankings/');
  requestAnimationFrame(syncRoute);
 });
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncRoute,{once:true});
