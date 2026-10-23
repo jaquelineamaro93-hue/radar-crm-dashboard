@@ -348,6 +348,7 @@ async function safeProviderDiagnostic(response: Response): Promise<{ reason: str
     category(/(invalid|invalido|required|missing|obrigator).{0,60}(tags|tag)/, "TAGS_INVALID") ||
     category(/(token|app_token|authorization|unauthoriz|authentication|authentic|permission|permissao)/, "AUTHORIZATION_REJECTED") ||
     category(/(json|syntax|schema|request|body|payload).{0,60}(invalid|invalido|required|missing)/, "REQUEST_SCHEMA_INVALID") ||
+    category(/(invalid|invalido|required|missing|malformed).{0,60}(json|syntax|schema|request|body|payload)/, "REQUEST_SCHEMA_INVALID") ||
     "UNKNOWN_PROVIDER_VALIDATION";
   return { reason, response_keys: keys };
 }
