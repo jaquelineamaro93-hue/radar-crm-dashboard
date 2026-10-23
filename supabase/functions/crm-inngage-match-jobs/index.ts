@@ -383,6 +383,77 @@ Deno.serve(async (req: Request) => {
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
     const week = weekStartUtc();
+    if (action === "probe_fields") {
+      // Distinct from send_test: only writes attributes for the authenticated admin.
+      // Never calls /v1/message/ and never enables campaign delivery.
+      if (caller.mode !== "admin" || body.confirm !== "VALIDAR_CAMPOS_SEM_EMAIL_2050") {
+        return reply({ error: "ADMIN_CONFIRMATION_REQUIRED" }, 403);
+      }
+      const appToken = Deno.env.get("INNGAGE_APP_TOKEN") || "";
+      const bearer = (Deno.env.get("INNGAGE_API_BEARER") || "").replace(/^Bearer\s+/i, "");
+      if (!appToken || !bearer) return reply({ error: "INNGAGE_SECRETS_MISSING" }, 503);
+      const ownProfile = profiles.find(p => p.id === caller.id);
+      if (!ownProfile) return reply({ error: "PROFILE_NOT_ELIGIBLE" }, 403);
+      const email = await eligibleEmail(caller.id);
+      if (!email) return reply({ error: "EMAIL_NOT_ELIGIBLE" }, 403);
+      const matching = await prepare(caller.id, jobs, min);
+      const attributes = matching.length === 5 ? fields(ownProfile, matching) : {
+        NOME: clean(ownProfile.full_name).split(/\s+/)[0] || "profissional",
+      };
+      const campaignKey = "matchvagas_2050_probe_campos";
+      const day = new Date().toISOString().slice(0, 10);
+      const { error: insertedError } = await db.from("crm_inngage_match_delivery").insert({
+        user_id: caller.id, campaign_key: campaignKey, week_key: day,
+        job_ids: matching.length === 5 ? matching.map(x => x.job.id) : [],
+        scores: matching.length === 5 ? matching.map(x => x.score) : [],
+        status: "reserved",
+      });
+      if (insertedError?.code === "23505") return reply({
+        ok: false, status: "already_checked_today", sent_email: false,
+        message: "A verificação de campos já foi tentada hoje. Confira o diagnóstico.",
+      }, 409);
+      if (insertedError) throw Error("PROBE_RESERVATION_FAILED");
+      let providerStatus: number | null = null;
+      let status = "unknown";
+      let code: string | null = "PROBE_TRANSPORT_FAILURE";
+      let responseKeys: string[] = [];
+      try {
+        const response = await fetch(FIELDS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
+          body: JSON.stringify({ addCustomFieldRequest: {
+            app_token: appToken, identifier: email, email, custom_field: attributes,
+          }}),
+          signal: AbortSignal.timeout(12000),
+        });
+        providerStatus = response.status;
+        status = response.ok ? "accepted" : "rejected";
+        code = response.ok ? null : "CUSTOM_FIELDS_" + response.status;
+        const txt = (await response.text()).slice(0, 2000);
+        try {
+          const parsed = JSON.parse(txt);
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            responseKeys = Object.keys(parsed).slice(0, 12);
+          }
+        } catch { /* Don't log or return raw response with possible personal data. */ }
+      } catch (error) {
+        code = error instanceof Error ? error.name.slice(0, 40) : "PROBE_UNKNOWN";
+      }
+      const { error: updateError } = await db.from("crm_inngage_match_delivery").update({
+        status, provider_status: providerStatus, provider_error_code: code,
+        updated_at: new Date().toISOString(),
+      }).eq("user_id", caller.id).eq("campaign_key", campaignKey).eq("week_key", day);
+      if (updateError) console.error("[inngage-match] PROBE_LOG_FAILED", updateError.code);
+      return reply({
+        ok: status === "accepted", status, template_id: TEMPLATE_ID,
+        submitted_fields: Object.keys(attributes).length,
+        provider_http_status: providerStatus, provider_error_code: code,
+        response_keys: responseKeys, sent_email: false,
+        message: status === "accepted"
+          ? "A API de campos aceitou a atualização. Nenhum template foi enviado. Ainda falta confirmar os atributos no perfil da Inngage e homologar o e-mail."
+          : "A atualização dos campos não foi confirmada. Nenhum template foi enviado. Inspecione a resposta da API antes de repetir.",
+      }, status === "accepted" ? 200 : 502);
+    }
     if (action === "dry_run") {
       if (caller.mode !== "admin") return reply({ error: "ADMIN_ONLY" }, 403);
       const ownProfile = profiles.find(p => p.id === caller.id);
