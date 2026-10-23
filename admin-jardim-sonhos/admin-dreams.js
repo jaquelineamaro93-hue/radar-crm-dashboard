@@ -72,7 +72,7 @@ async function load(){
   const p=await api({action:"list",status:filter});rows=p.rows||[];counts(p.counts||{});render();$("sessionState").textContent="Acesso admin confirmado";
  }catch(e){
   $("sessionState").textContent="Falha ao carregar";
-  if(e.code==="admin_required"||e.status===403){$("dreamsPanel").hidden=true;$("accessGate").hidden=false;$("accessGate").innerHTML='<strong>Acesso exclusivo da administração</strong><p>Entre no portal com uma conta administradora e volte a esta página.</p><a class="gate-link" href="/#admin">Ir para o Admin →</a>'}
+  if(e.code==="admin_required"||e.status===403){$("dreamsPanel").hidden=true;$("accessGate").hidden=false;$("accessGate").innerHTML='<strong>Acesso exclusivo da administração</strong><p>Entre no portal com uma conta administradora e volte a esta página.</p><a class="gate-link" href="/admin/">Ir para o Admin →</a>'}
   else toast(e.message,"error")
  }
 }
@@ -96,7 +96,7 @@ async function init(){
  session=await resolveSession();
  if(!session){
   $("sessionState").textContent="Sem sessão";
-  $("accessGate").innerHTML='<strong>Entre com sua conta administrativa</strong><p>Abra o Admin do Conexão CRM, faça login e depois retorne para moderar os sonhos.</p><a class="gate-link" href="/#admin">Ir para o Admin →</a>';
+  $("accessGate").innerHTML='<strong>Entre com sua conta administrativa</strong><p>Abra o Admin do Conexão CRM, faça login e depois retorne para moderar os sonhos.</p><a class="gate-link" href="/admin/">Ir para o Admin →</a>';
   return
  }
  $("accessGate").hidden=true;$("dreamsPanel").hidden=false;
