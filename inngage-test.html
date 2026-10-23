@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Conexão CRM | Validação Inngage</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+body{background:#0d0d0f;color:#f9fafb;margin:0;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:42px 20px 80px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{font-size:1.1rem;font-weight:900;letter-spacing:-.02em}
+.logo b{color:#f97316}
+a{color:#fdba74}
+.headerlink{font-size:.85rem;text-decoration:none;color:#aaa}
+h1{font-size:clamp(1.9rem,4.5vw,2.7rem);letter-spacing:-.045em;line-height:1.1;margin:42px 0 12px}
+.lead{color:#a9a9ad;line-height:1.55;max-width:600px}
+.panel{background:#171719;border:1px solid #343438;border-radius:18px;padding:24px;margin-top:22px}
+.kicker{font-size:.75rem;text-transform:uppercase;color:#fa9246;font-weight:750;letter-spacing:.1em}
+h2{font-size:1.14rem;margin:10px 0 8px}
+p{line-height:1.55}
+small{color:#aaa}
+.label{color:#a6a6ab;font-size:.87rem}
+.value{font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
+.cell{background:#222225;border-radius:12px;padding:14px}
+.cell strong{display:block;font-size:1.5rem;line-height:1.35}
+.cell span{color:#aaa;font-size:.82rem}
+button{border:0;border-radius:10px;background:#f97316;color:#16110d;font-weight:800;padding:12px 19px;cursor:pointer;font-size:.93rem}
+button.secondary{border:1px solid #5c5c62;background:#242428;color:#fff}
+button:disabled{opacity:.38;cursor:not-allowed}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.notice{margin-top:16px;padding:12px 14px;border-radius:10px;background:#242428;color:#dedee0;line-height:1.6;font-size:.88rem}
+.notice[data-type="error"]{border:1px solid #be564d}
+.notice[data-type="success"]{border:1px solid #458775}
+label{display:flex;align-items:flex-start;gap:10px;line-height:1.45;font-size:.91rem;color:#e0e0e3}
+input[type=checkbox]{width:18px;height:18px;accent-color:#f97316;flex:none;margin-top:1px}
+[hidden]{display:none!important}
+footer{color:#85858c;font-size:.83rem;margin-top:30px}
+@media(max-width:450px){.grid{grid-template-columns:1fr}.panel{padding:18px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+<header><div class="logo">CONEXÃO <b>CRM.</b></div><a class="headerlink" href="/">Voltar ao site</a></header>
+<h1>Validação de e-mails da Inngage</h1>
+<p class="lead">Área administrativa para conferir a integração do template 2049 e realizar um único envio individual para a sua própria conta. Nenhuma campanha automática é ativada por esta página.</p>
+<section class="panel" aria-label="Verificação de acesso">
+<div class="kicker">Acesso restrito</div>
+<h2 id="accountTitle">Verificando sua sessão</h2>
+<p id="accountInfo" class="label" role="status" aria-live="polite">É necessário estar conectado ao Conexão CRM com uma conta administradora.</p>
+<div id="accountActions" class="actions" hidden><a href="/#entrar">Acessar minha conta</a></div>
+</section>
+<section class="panel" id="testPanel" hidden aria-label="Ferramentas de diagnóstico">
+<div class="kicker">Template 2049 · vagassalvas</div>
+<h2>Diagnóstico da integração</h2>
+<p class="label">A verificação consulta apenas configurações disponíveis no servidor. Os valores das credenciais nunca são exibidos.</p>
+<div id="diagnostics" class="notice" role="status">Diagnóstico ainda não executado.</div>
+<div class="actions">
+<button id="diagnose" type="button" class="secondary">Verificar credenciais</button>
+<button id="preview" type="button" class="secondary">Simular público elegível</button>
+</div>
+<div id="previewOutput" class="grid" hidden>
+<div class="cell"><strong id="eligibleMembers">—</strong><span>Membros elegíveis</span></div>
+<div class="cell"><strong id="eligibleJobs">—</strong><span>Vagas elegíveis</span></div>
+</div>
+</section>
+<section class="panel" id="sendPanel" hidden aria-label="Teste individual">
+<div class="kicker">Envio controlado</div>
+<h2>Enviar um e-mail de teste para mim</h2>
+<p>Esta ação envia exclusivamente para <strong id="testEmail"></strong>, o endereço confirmado da conta administradora conectada. O servidor bloqueia novas tentativas para a mesma pessoa no mesmo dia.</p>
+<label><input id="confirmTest" type="checkbox"><span>Confirmo que o template 2049 está ativo na Inngage e autorizo um envio individual de teste para meu próprio e-mail.</span></label>
+<div class="actions"><button id="send" type="button" disabled>Enviar meu teste</button></div>
+<div id="sendStatus" class="notice" role="status" aria-live="polite">Nenhum e-mail de teste solicitado nesta página.</div>
+</section>
+<footer>CONEXÃO CRM. · Diagnóstico interno. O status “aceito” pela API não é confirmação de entrega na caixa de entrada.</footer>
+</div>
+<script>
+(function(){
+'use strict';
+const URL='https://rwkbpafpniwzvlkfngag.supabase.co';
+const KEY='sb_publishable_41a2jzlzwZgFrdMJ6UpDXQ_jysf69_C';
+const $=id=>document.getElementById(id);
+let db=null,me=null,configured=false;
+function status(id,msg,type){$(id).textContent=msg;$(id).dataset.type=type||'';}
+function busy(state){for(const el of document.querySelectorAll('button'))el.disabled=state;if(!state)$('send').disabled=!$('confirmTest').checked||!configured;}
+async function call(action,more={}){
+  const {data,error}=await db.functions.invoke('crm-inngage-saved-jobs',{body:{action,...more}});
+  if(error){
+    let code=error.message||'Não foi possível executar a solicitação.';
+    if(error.context&&typeof error.context.json==='function'){
+      try{const body=await error.context.json();code=body.error||code;}catch{}
+    }
+    throw Error(code);
+  }
+  return data;
+}
+$('confirmTest').addEventListener('change',()=>{$('send').disabled=!$('confirmTest').checked||!configured;});
+$('diagnose').addEventListener('click',async()=>{
+  busy(true);
+  try{
+    const data=await call('diagnostics');
+    configured=data?.inngage_app_token_configured===true&&data?.inngage_authorization_configured===true;
+    status('diagnostics',configured?'As duas credenciais estão configuradas. Teste individual disponível. Os lembretes automáticos continuam desligados.':'Integração incompleta: verifique as duas credenciais no Supabase em Edge Functions > Secrets.',configured?'success':'error');
+  }catch(e){configured=false;status('diagnostics',String(e.message||e),'error');}
+  busy(false);
+});
+$('preview').addEventListener('click',async()=>{
+  busy(true);$('previewOutput').hidden=true;
+  try{
+    const data=await call('preview');
+    $('eligibleMembers').textContent=String(data.eligible_members??0);
+    $('eligibleJobs').textContent=String(data.eligible_saved_jobs??0);
+    $('previewOutput').hidden=false;
+    if(data.capped)status('diagnostics','A prévia foi limitada a 1.000 registros e não é uma contagem integral.','error');
+  }catch(e){status('diagnostics',String(e.message||e),'error');}
+  busy(false);
+});
+$('send').addEventListener('click',async()=>{
+  if(!configured||!$('confirmTest').checked||!me)return;
+  if(!window.confirm('Confirmar um único e-mail de teste da Inngage para '+me.email+'?'))return;
+  busy(true);status('sendStatus','Solicitando envio ao provedor...');
+  try{
+    const data=await call('send_test',{confirm:'ENVIAR_TESTE_PARA_MIM'});
+    if(data?.status==='accepted')status('sendStatus','A Inngage aceitou a solicitação. Confira a caixa de entrada, a pasta de spam e o painel de envios para confirmar a entrega.','success');
+    else status('sendStatus','A Inngage não confirmou o envio. Consulte os registros do servidor antes de tentar novamente.','error');
+  }catch(e){status('sendStatus',String(e.message||e)+' Não repita o teste sem verificar os logs.','error');}
+  busy(false);
+});
+window.addEventListener('load',async()=>{
+  try{
+    if(!window.supabase?.createClient)throw Error('A biblioteca de autenticação não foi carregada.');
+    db=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+    const {data:sessionInfo}=await db.auth.getSession();
+    if(!sessionInfo?.session)throw Error('Faça login no Conexão CRM antes de abrir esta página.');
+    const {data:auth,error:authError}=await db.auth.getUser();
+    if(authError||!auth?.user)throw Error('Sessão não autenticada. Entre novamente.');
+    const {data:admin,error:adminError}=await db.rpc('crm_is_admin');
+    if(adminError||admin!==true)throw Error('Esta página está disponível somente para contas administradoras.');
+    me=auth.user;
+    $('accountTitle').textContent='Acesso de administração confirmado';
+    $('accountInfo').textContent='Conectada como '+me.email;
+    $('testEmail').textContent=me.email;
+    $('testPanel').hidden=false;$('sendPanel').hidden=false;
+  }catch(e){$('accountTitle').textContent='Acesso não liberado';$('accountInfo').textContent=String(e.message||e);$('accountActions').hidden=false;}
+});
+})();
+</script>
+</body></html>
