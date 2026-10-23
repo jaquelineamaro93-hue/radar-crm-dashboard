@@ -1,9 +1,9 @@
 // Conexão CRM: Inngage 2049, envio seguro e individual.
-// Este endpoint não possui modo de envio em lote nem agendamento automático.
+// Recorrência restrita ao servidor, com consentimento e reserva antes de cada envio.
 import { createClient } from "npm:@supabase/supabase-js@2.58.0";
 
 const TEMPLATE_ID = "2049";
-const TEST_CAMPAIGN = "vagassalvas_2049_teste";
+const TEST_CAMPAIGN = "vagassalvas_2049_teste_v2";
 const ORIGIN = "https://conexaocrm.com";
 const cors = {
   "Access-Control-Allow-Origin": ORIGIN,
@@ -63,6 +63,27 @@ async function eligibleCount(service: ReturnType<typeof createClient>) {
   };
 }
 
+async function deliver(service: ReturnType<typeof createClient>, userId: string, email: string, campaign: string) {
+  const period=utcDate();
+  const {error}=await service.from("crm_inngage_saved_jobs_send_log").insert({user_id:userId,campaign_key:campaign,period_key:period,status:"reserved"});
+  if(error?.code==="23505")return {status:"skipped",provider_http_status:null};
+  if(error)throw error;
+  let status="unknown",http:number|null=null;
+  try {
+    const response=await fetch("https://api.inngage.com.br/v1/message/",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+config("INNGAGE_API_BEARER").replace(/^Bearer\s+/i,"")},body:JSON.stringify({sendPushRequest:{app_token:config("INNGAGE_APP_TOKEN"),api_template_id:TEMPLATE_ID,tags:{},identifier:email}}),signal:AbortSignal.timeout(15000)});
+    http=response.status;
+    const data=await response.json().catch(()=>null);
+    const result=data?.saveResponse||data?.sendPushResponse||data;
+    const code=Number(result?.status??result?.statusCode??0);
+    const rejected=result?.success===false||[3,4,5,10,99].includes(code)||code>=400||/error|failed|invalid/i.test(String(result?.status||""));
+    const confirmed=[1,2,200,201,202].includes(code)||!!result?.details?.CM_id||!!result?.details?.control;
+    status=!response.ok||rejected?"rejected":confirmed?"accepted":"unknown";
+  }catch{ /* Unknown results are reserved and never retried automatically. */ }
+  const {error:updateError}=await service.from("crm_inngage_saved_jobs_send_log").update({status,provider_status:http,updated_at:new Date().toISOString()}).eq("user_id",userId).eq("campaign_key",campaign).eq("period_key",period);
+  if(updateError)throw updateError;
+  return {status,provider_http_status:http};
+}
+
 async function handle(req: Request) {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
   if (req.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405);
@@ -76,24 +97,70 @@ async function handle(req: Request) {
       global: { headers: { Authorization: "Bearer " + token } },
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    const { data: auth, error: authError } = await client.auth.getUser(token);
-    if (authError || !auth?.user?.id) return json({ error: "UNAUTHORIZED" }, 401);
-    const { data: admin, error: adminError } = await client.rpc("crm_is_admin");
+    const serviceCaller = token === serviceKey;
+    const { data: auth, error: authError } = serviceCaller ? { data: { user: null }, error: null } : await client.auth.getUser(token);
+    if (!serviceCaller && (authError || !auth?.user?.id)) return json({ error: "UNAUTHORIZED" }, 401);
+    const { data: admin, error: adminError } = serviceCaller ? { data: true, error: null } : await client.rpc("crm_is_admin");
     if (adminError || admin !== true) return json({ error: "FORBIDDEN" }, 403);
     const body = await req.json().catch(() => null);
     const action = body?.action;
     const service = createClient(endpoint, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    const {data: settings, error: settingsError} = await service.from("crm_inngage_match_config").select("saved_jobs_enabled").eq("id",1).single();
+    if (settingsError) throw settingsError;
+    if (serviceCaller && action !== "run") return json({error:"ACTION_NOT_ALLOWED"},403);
+    if (action === "run") {
+      if (!serviceCaller) return json({error:"SERVICE_ONLY"},403);
+      if (settings?.saved_jobs_enabled !== true) return json({ok:true,status:"paused"});
+      const {start,end}=todayWindow();
+      const {data:saves,error}=await service.from("saved_scraped_jobs").select("user_id,vaga_url,created_at").gte("created_at",start).lte("created_at",end).order("created_at").limit(1000);
+      if(error)throw error;
+      let accepted=0,skipped=0;
+      for(const id of [...new Set((saves||[]).map(x=>x.user_id))]) {
+        if(accepted>=10)break;
+        const {data:profile,error:pe}=await service.from("profiles").select("receive_community_updates").eq("id",id).single();
+        if(pe||profile?.receive_community_updates!==true){skipped++;continue;}
+        const own=(saves||[]).filter(x=>x.user_id===id);
+        const {data:jobs,error:je}=await service.from("vagas_crm").select("url,availability_status").in("url",own.map(x=>x.vaga_url)).in("availability_status",["listed","unverified"]);
+        if(je)throw je;
+        if(!jobs?.length){skipped++;continue;}
+        const {data:past,error:he}=await service.from("crm_inngage_saved_jobs_send_log").select("status").eq("user_id",id).eq("campaign_key","vagassalvas_2049").gte("created_at",new Date(Date.now()-7*86400000).toISOString()).limit(1);
+        if(he)throw he;
+        if(past?.length){skipped++;continue;}
+        const {data:account,error:ae}=await service.auth.admin.getUserById(id);
+        if(ae||!account.user?.email_confirmed_at||!account.user.email){skipped++;continue;}
+        const email=account.user.email.trim().toLowerCase();
+        const checks=await Promise.all([service.from("crm_newsletter_subscriptions").select("status").eq("user_id",id),service.from("crm_newsletter_subscriptions").select("status").eq("email",email)]);
+        if(checks.some(r=>r.error))throw Error("OPT_OUT_QUERY_FAILED");
+        if(checks.some(r=>r.data?.some(x=>x.status!=="subscribed"))){skipped++;continue;}
+        const result=await deliver(service,id,email,"vagassalvas_2049");
+        if(result.status==="skipped"){skipped++;continue;}
+        if(result.status!=="accepted")return json({ok:false,accepted,skipped,...result},502);
+        accepted++;
+      }
+      return json({ok:true,accepted,skipped});
+    }
+    if(action === "activate" || action === "pause") {
+      if(!auth.user?.id)return json({error:"ADMIN_ONLY"},403);
+      if(action==="activate") {
+        if(body?.confirm!=="CONFIRMEI_TESTE_E_DESCADASTRO_2049")return json({error:"VISUAL_CONFIRMATION_REQUIRED"},403);
+        const {data:past,error}=await service.from("crm_inngage_saved_jobs_send_log").select("status").eq("user_id",auth.user.id).eq("campaign_key",TEST_CAMPAIGN).eq("status","accepted").gte("created_at",new Date(Date.now()-7*86400000).toISOString()).limit(1);
+        if(error||!past?.length)return json({error:"ACCEPTED_TEST_REQUIRED"},403);
+      }
+      const {error}=await service.from("crm_inngage_match_config").update({saved_jobs_enabled:action==="activate"}).eq("id",1);
+      if(error)throw error;
+      return json({ok:true,enabled:action==="activate"});
+    }
     if (action === "diagnostics") {
       return json({ ok: true, mode: "diagnostics", template_id: TEMPLATE_ID,
         inngage_app_token_configured: !!Deno.env.get("INNGAGE_APP_TOKEN"),
         inngage_authorization_configured: !!Deno.env.get("INNGAGE_API_BEARER"),
         test_mode: "single_authenticated_admin",
-        recurring_reminders_active: false });
+        recurring_reminders_active: settings?.saved_jobs_enabled === true });
     }
     if (action === "preview") {
       const preview = await eligibleCount(service);
       return json({ ok: true, mode: "preview", template_id: TEMPLATE_ID,
-        email_automation_active: false, ...preview });
+        email_automation_active: settings?.saved_jobs_enabled === true, ...preview });
     }
     if (action !== "send_test") return json({ error: "ACTION_NOT_ALLOWED" }, 400);
     // Teste liberado após confirmação de ativação do template. Admin autenticado deve solicitar o envio explicitamente.
@@ -101,47 +168,8 @@ async function handle(req: Request) {
     const user = auth.user;
     if (!user.email || !user.email_confirmed_at) return json({ error: "EMAIL_NOT_CONFIRMED" }, 400);
     const email = user.email.trim().toLowerCase();
-    const day = utcDate();
-    // Reserva antes de falar com o provedor para impedir duplo envio (inclusive concorrente).
-    const row = { user_id: user.id, campaign_key: TEST_CAMPAIGN, period_key: day, status: "reserved" };
-    const { error: reserveError } = await service.from("crm_inngage_saved_jobs_send_log").insert(row);
-    if (reserveError?.code === "23505") return json({ error: "TEST_ALREADY_ATTEMPTED_TODAY" }, 409);
-    if (reserveError) throw reserveError;
-    const payload = { sendPushRequest: {
-      app_token: config("INNGAGE_APP_TOKEN"),
-      api_template_id: TEMPLATE_ID,
-      tags: { "": [] },
-      identifier: email,
-      subscriber_email: email,
-    }};
-    let providerStatus = 0;
-    let status = "unknown";
-    try {
-      const response = await fetch("https://api.inngage.com.br/v1/message/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + config("INNGAGE_API_BEARER").replace(/^Bearer\s+/i, ""),
-        },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000),
-      });
-      providerStatus = response.status;
-      status = response.ok ? "accepted" : "rejected";
-      if (!response.ok) {
-        const providerText = (await response.text()).slice(0, 1500);
-        console.error("[crm-inngage-saved-jobs] Provider rejected", response.status, providerText.replace(/[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/g, "[email]"));
-      }
-    } catch (error) {
-      // Falhas de rede são ambíguas: nunca reenviar automaticamente.
-      console.error("[crm-inngage-saved-jobs] Falha de transporte no teste", error instanceof Error ? error.name : "unknown");
-    }
-    const { error: logError } = await service.from("crm_inngage_saved_jobs_send_log")
-      .update({ status, provider_status: providerStatus || null, updated_at: new Date().toISOString() })
-      .eq("user_id", user.id).eq("campaign_key", TEST_CAMPAIGN).eq("period_key", day);
-    if (logError) console.error("[crm-inngage-saved-jobs] Falha ao atualizar log", logError.code);
-    return json({ ok: status === "accepted", mode: "send_test", status,
-      provider_http_status: providerStatus || null, submitted_to_provider: status === "accepted" }, status === "accepted" ? 200 : 502);
+    const result = await deliver(service,user.id,email,TEST_CAMPAIGN);
+    return json({ok:result.status==="accepted",mode:"send_test",...result},result.status==="accepted"?200:502);
   } catch (error) {
     const code = error instanceof Error && error.message.startsWith("CONFIG_MISSING_")
       ? "CONFIGURATION_INCOMPLETE" : "INTERNAL_ERROR";

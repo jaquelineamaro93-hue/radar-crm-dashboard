@@ -1,0 +1,28 @@
+name: Lembretes de vagas salvas
+on:
+  schedule:
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: inngage-saved-jobs-dispatch
+  cancel-in-progress: false
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Executar rotina com bloqueio de homologação
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo '::error::SUPABASE_SERVICE_ROLE_KEY ausente nos secrets do workflow.'
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 240 \
+            --request POST 'https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-inngage-saved-jobs' \
+            --header "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            --header "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            --header 'Content-Type: application/json' --data '{"action":"run"}'

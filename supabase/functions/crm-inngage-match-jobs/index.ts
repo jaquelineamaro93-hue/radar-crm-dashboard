@@ -267,6 +267,10 @@ function fields(profile: { full_name?: string | null }, recs: Rec[]) {
     NOME: clean(profile.full_name).split(/\s+/)[0] || "profissional",
   };
   for (let i = 0; i < 5; i++) {
+    if (!recs[i]) {
+      for (const key of ["CARGO","EMPRESA","MODALIDADE","LOCAL","MATCH","URL"]) result[`VAGA_${i + 1}_${key}`] = "";
+      continue;
+    }
     const { job, score } = recs[i];
     const n = i + 1;
     const parsed = splitRoleAndCompany(job);
@@ -302,10 +306,10 @@ async function manualDigest(userId: string, data: Record<string, string>): Promi
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
   return Array.from(new Uint8Array(hash)).map(x => x.toString(16).padStart(2, "0")).join("");
 }
-function validFiveCards(recs: Rec[]): boolean {
-  return recs.length === 5 &&
-    new Set(recs.map(x => opportunityKey(x.job))).size === 5 &&
-    new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === 5 &&
+function validCards(recs: Rec[]): boolean {
+  return recs.length >= 1 && recs.length <= 5 &&
+    new Set(recs.map(x => opportunityKey(x.job))).size === recs.length &&
+    new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === recs.length &&
     recs.every(x => x.score >= 65 && validExternalUrl(x.job.url));
 }
 async function safeProviderDiagnostic(response: Response): Promise<{ reason: string; response_keys: string[] }> {
@@ -352,82 +356,65 @@ async function safeProviderDiagnostic(response: Response): Promise<{ reason: str
     "UNKNOWN_PROVIDER_VALIDATION";
   return { reason, response_keys: keys };
 }
+function escapeHtml(value: unknown) {
+  return clean(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+}
+function renderCards(profile: { full_name?: string | null }, recs: Rec[]) {
+  if (!validCards(recs)) throw Error("INVALID_CARDS");
+  const data = fields(profile, recs);
+  return recs.map((_, i) => {
+    const key = `VAGA_${i + 1}_`;
+    const mode = data[key + "MODALIDADE"];
+    const location = data[key + "LOCAL"];
+    const detail = norm(mode) === norm(location) ? mode : [mode, location].filter(Boolean).join(" · ");
+    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;border:1px solid #e6e7ec;border-radius:12px;background:#fafafc"><tr><td style="padding:19px 20px;font-family:Arial,Helvetica,sans-serif">
+<p style="margin:0 0 11px;color:#f97316;font-size:11px;font-weight:700">OPORTUNIDADE ${String(i+1).padStart(2,"0")}</p>
+<h2 style="margin:0 0 8px;color:#181921;font-size:19px;line-height:1.35">${escapeHtml(data[key+"CARGO"])}</h2>
+<p style="margin:0 0 7px;color:#414651;font-size:14px;font-weight:600">${escapeHtml(data[key+"EMPRESA"])}</p>
+<p style="margin:0 0 13px;color:#6c717d;font-size:13px">${escapeHtml(detail)}</p>
+<p style="margin:0 0 15px"><span style="display:inline-block;padding:7px 12px;border-radius:20px;background:#eaf5ef;color:#246946;font-size:12px;font-weight:700">${escapeHtml(data[key+"MATCH"])} de aderência ao perfil</span></p>
+<a href="${escapeHtml(data[key+"URL"])}" target="_blank" style="display:inline-block;padding:12px 19px;background:#17181f;border-radius:8px;color:#fff;text-decoration:none;font-size:13px;font-weight:700">Ver oportunidade →</a>
+</td></tr></table>`;
+  }).join("");
+}
 async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
-  if (!email || recs.length !== 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
+  if (!email || !validCards(recs)) return { state: "skipped", code: "NOT_ELIGIBLE" };
   const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
     user_id: userId, campaign_key: campaignKey, week_key: week,
     job_ids: recs.map(x => x.job.id), scores: recs.map(x => x.score), status: "reserved",
   });
   if (reserveError?.code === "23505") return { state: "skipped", code: "ALREADY_ATTEMPTED_THIS_WEEK" };
   if (reserveError) throw Error("RESERVATION_FAILED");
-  const appToken = Deno.env.get("INNGAGE_APP_TOKEN") || "";
-  const bearer = (Deno.env.get("INNGAGE_API_BEARER") || "").replace(/^Bearer\s+/i, "");
   let status = "unknown"; let providerStatus: number | null = null; let failure = "TRANSPORT_ERROR";
   try {
-    const cf = {
-      fieldsRequest: {
-        app_token: appToken,
-        identifier: email,
-        email: email,
-        custom_field: fields(profile, recs),
-      },
-    };
-    const cfResponse = await fetch(FIELDS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
-      body: JSON.stringify(cf), signal: AbortSignal.timeout(12000),
+    const payload = { sendPushRequest: {
+      app_token: Deno.env.get("INNGAGE_APP_TOKEN") || "", api_template_id: TEMPLATE_ID,
+      tags: { NOME: escapeHtml(clean(profile.full_name).split(/\s+/)[0] || "profissional"), VAGAS_HTML: renderCards(profile, recs) },
+      identifier: email,
+    }};
+    const response = await fetch(API_URL, {
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (Deno.env.get("INNGAGE_API_BEARER") || "").replace(/^Bearer\s+/i, "") },
+      body: JSON.stringify(payload), signal: AbortSignal.timeout(15000),
     });
-    providerStatus = cfResponse.status;
-    if (!cfResponse.ok) {
-      // Do not log the full provider body: it could contain user data or secrets.
-      const responseText = (await cfResponse.text()).slice(0, 3000);
-      let parsed: Record<string, unknown> | null = null;
-      try {
-        const data = JSON.parse(responseText);
-        if (data && typeof data === "object" && !Array.isArray(data)) parsed = data;
-      } catch { /* Body might be HTML or empty. */ }
-      const providerCode = [parsed?.code, parsed?.errorCode, parsed?.statusCode]
-        .find(value => typeof value === "number" || (typeof value === "string" && /^[A-Z][A-Z0-9_-]{1,35}$/.test(value))) ?? null;
-      console.error("[inngage-match] CUSTOM_FIELDS_REJECTED", JSON.stringify({
-        provider_http: cfResponse.status,
-        response_keys: parsed ? Object.keys(parsed).slice(0, 10) : [],
-        provider_code: providerCode,
-        body_is_json: parsed !== null,
-      }));
-      status = "rejected";
-      failure = "CUSTOM_FIELDS_" + cfResponse.status + (providerCode ? "_" + providerCode : "");
-    } else {
-      // Only after confirmed field update can a template be sent.
-      const payload = { sendPushRequest: {
-        app_token: appToken, api_template_id: TEMPLATE_ID,
-        tags: { "": [] }, identifier: email, subscriber_email: email,
-      }};
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
-        body: JSON.stringify(payload), signal: AbortSignal.timeout(15000),
-      });
-      providerStatus = response.status;
-      status = response.ok ? "accepted" : "rejected";
-      const providerMeta = response.ok ? null : await safeProviderDiagnostic(response);
-      if (providerMeta) console.warn("[inngage-match] MESSAGE_REJECTED", JSON.stringify({
-        http_status: response.status, provider_reason: providerMeta.reason,
-        response_keys: providerMeta.response_keys,
-      }));
-      failure = response.ok ? "" : "MESSAGE_" + response.status + "_" + (providerMeta?.reason || "UNKNOWN_PROVIDER_VALIDATION");
-    }
-  } catch (error) {
-    status = "unknown";
-    failure = error instanceof Error ? error.name.slice(0, 40) : "UNKNOWN";
-  }
-  const { error: updateError } = await db.from("crm_inngage_match_delivery").update({
-    status, provider_status: providerStatus, provider_error_code: failure || null,
-    updated_at: new Date().toISOString(),
-  }).eq("user_id", userId).eq("campaign_key", campaignKey).eq("week_key", week);
-  if (updateError) console.error("[inngage-match] UPDATE_LOG_FAILED", updateError.code);
+    providerStatus = response.status;
+    const raw = await response.clone().text();
+    let data: any = null;
+    try { data = JSON.parse(raw); } catch { /* Unexpected response is not confirmation. */ }
+    const provider = data?.saveResponse || data?.sendPushResponse || data;
+    const code = Number(provider?.status ?? provider?.statusCode ?? 0);
+    const rejectedBody = provider?.success === false || [3,4,5,10,99].includes(code) || code >= 400 || /error|failed|invalid/i.test(String(provider?.status || ""));
+    const confirmed = [1,2,200,201,202].includes(code) || !!provider?.details?.CM_id || !!provider?.details?.control;
+    status = !response.ok || rejectedBody ? "rejected" : confirmed ? "accepted" : "unknown";
+    const diagnostic = status === "accepted" ? null : await safeProviderDiagnostic(response);
+    failure = status === "accepted" ? "" : `MESSAGE_${response.status}_${diagnostic?.reason || "UNCONFIRMED_RESPONSE"}`;
+  } catch (error) { failure = error instanceof Error ? error.name.slice(0,40) : "TRANSPORT_ERROR"; }
+  const { error } = await db.from("crm_inngage_match_delivery").update({ status, provider_status: providerStatus, provider_error_code: failure || null, updated_at: new Date().toISOString() })
+    .eq("user_id", userId).eq("campaign_key", campaignKey).eq("week_key", week);
+  if (error) console.error("[inngage-match] UPDATE_LOG_FAILED", error.code);
   return { state: status, code: failure || "SUBMITTED", provider_http: providerStatus };
 }
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: HEADERS });
   if (req.method !== "POST") return reply({ error: "METHOD_NOT_ALLOWED" }, 405);
@@ -443,7 +430,7 @@ Deno.serve(async (req: Request) => {
       const { data: latest, error: historyError } = await db.from("crm_inngage_match_delivery")
         .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
         .eq("user_id", caller.id)
-        .eq("campaign_key", "matchvagas_2050_teste")
+        .eq("campaign_key", "matchvagas_2050_teste_cards_v2")
         .order("created_at", { ascending: false }).limit(1);
       const { data: probe, error: probeError } = await db.from("crm_inngage_match_delivery")
         .select("campaign_key,week_key,status,provider_status,provider_error_code,created_at,updated_at")
@@ -463,7 +450,7 @@ Deno.serve(async (req: Request) => {
         recent_test: historyError ? { error: "HISTORY_UNAVAILABLE" } : latest?.[0] ?? null,
         recent_probe: probeError ? { error: "HISTORY_UNAVAILABLE" } : probe?.[0] ?? null,
         recent_manual_test: manualError ? { error: "HISTORY_UNAVAILABLE" } : manualTest?.[0] ?? null,
-        advisory: "Verifique recent_manual_test: após importar o CSV, o envio do template 2050 recebeu HTTP 400. O motivo exato não foi capturado na tentativa antiga. Não repita o envio neste dia; para testar hoje use Envio em Massa visual com apenas seu e-mail.",
+        advisory: "Template revisado: NOME e VAGAS_HTML via tags, um único identifier e de 1 a 5 cards. O teste desta revisão possui reserva independente; o histórico anterior permanece preservado.",
       });
     }
     // Admin-only launch control. Never enable without accepted self-test and
@@ -477,13 +464,13 @@ Deno.serve(async (req: Request) => {
         if (error) throw Error("PAUSE_FAILED");
         return reply({ ok: true, dispatch_enabled: false });
       }
-      if (body.confirm !== "RECEBI_E_CONFIRMEI_OS_5_CARDS_2050") {
+      if (body.confirm !== "RECEBI_E_CONFIRMEI_CARDS_2050") {
         return reply({ error: "VISUAL_CONFIRMATION_REQUIRED" }, 403);
       }
       const { data: past, error: histError } = await db.from("crm_inngage_match_delivery")
         .select("provider_status,status,created_at")
         .eq("user_id", caller.id)
-        .eq("campaign_key", "matchvagas_2050_teste")
+        .eq("campaign_key", "matchvagas_2050_teste_cards_v2")
         .eq("status", "accepted")
         .gte("created_at", new Date(Date.now() - 14 * 86400000).toISOString())
         .order("created_at", { ascending: false }).limit(1);
@@ -501,102 +488,7 @@ Deno.serve(async (req: Request) => {
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
     const week = weekStartUtc();
-    if (action === "manual_csv" || action === "manual_template_test") {
-      // Manual, one-recipient contingency path. This does NOT call addCustomField;
-      // profile data must have been imported through Inngage before triggering 2050.
-      if (caller.mode !== "admin") return reply({ error: "ADMIN_ONLY" }, 403);
-      const profile = profiles.find(p => p.id === caller.id);
-      const email = await eligibleEmail(caller.id);
-      if (!profile || !email) return reply({ error: "NOT_ELIGIBLE_FOR_MANUAL_SEND" }, 403);
-      const matches = await prepare(caller.id, jobs, min);
-      if (!validFiveCards(matches)) return reply({
-        ok: false, status: "not_enough_matches", cards_available: matches.length,
-        jobs_analyzed: jobs.length, message: "Não há 5 oportunidades distintas verificadas. Sem CSV e sem envio.",
-      }, 200);
-      const attributes = fields(profile, matches);
-      const names = ["NOME", ...Array.from({ length: 5 }, (_, index) => {
-        const n = index + 1;
-        return ["CARGO", "EMPRESA", "MODALIDADE", "LOCAL", "MATCH", "URL"]
-          .map(field => "VAGA_" + n + "_" + field);
-      }).flat()];
-      if (names.length !== 31 || !names.every(name =>
-        typeof attributes[name] === "string" && attributes[name].trim().length > 0)) {
-        return reply({ error: "INVALID_MANUAL_ATTRIBUTES" }, 422);
-      }
-      const fingerprint = await manualDigest(caller.id, attributes);
-      if (action === "manual_csv") {
-        const columnNames = ["identifier", "email", ...names];
-        const row = [email, email, ...names.map(name => attributes[name])];
-        const csv = [columnNames.map(toCsvField).join(","),
-          row.map(toCsvField).join(",")].join("\r\n") + "\r\n";
-        return reply({
-          ok: true, template_id: TEMPLATE_ID, file_name: "matchvagas-2050-importacao-manual.csv",
-          csv, fingerprint, fields_count: names.length, cards_count: matches.length,
-          recipients: 1, sent_email: false, provider_contacted: false,
-          next_step: "Importe CSV em Público > Todo Público, mapeie identificador, e-mail e os 31 campos. Verifique os valores na aba Atributos do perfil antes de autorizar o teste.",
-        });
-      }
-      if (body.confirm !== "IMPORTEI_E_VALIDEI_31_CAMPOS_2050" ||
-          !body.fingerprint || body.fingerprint !== fingerprint) {
-        return reply({ error: "CSV_IMPORT_CONFIRMATION_OR_FINGERPRINT_REQUIRED",
-          sent_email: false }, 403);
-      }
-      const day = new Date().toISOString().slice(0, 10);
-      const key = "matchvagas_2050_csv_manual_test";
-      const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
-        user_id: caller.id, campaign_key: key, week_key: day,
-        job_ids: matches.map(x => x.job.id), scores: matches.map(x => x.score), status: "reserved",
-      });
-      if (reserveError?.code === "23505") return reply({
-        ok: false, status: "already_attempted_today", sent_email: false,
-        message: "Teste manual já solicitado hoje. Verifique os logs antes de repetir.",
-      }, 409);
-      if (reserveError) throw Error("MANUAL_RESERVATION_FAILED");
-      const appToken = Deno.env.get("INNGAGE_APP_TOKEN") || "";
-      const bearer = (Deno.env.get("INNGAGE_API_BEARER") || "").replace(/^Bearer\s+/i, "");
-      let state = "unknown";
-      let providerCode: number | null = null;
-      let errorCode: string | null = "MANUAL_SEND_TRANSPORT_ERROR";
-      if (!appToken || !bearer) {
-        state = "rejected"; errorCode = "INNGAGE_SECRETS_MISSING";
-      } else {
-        try {
-          const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
-            body: JSON.stringify({ sendPushRequest: {
-              app_token: appToken, api_template_id: TEMPLATE_ID,
-              tags: { "": [] }, identifier: email, subscriber_email: email,
-            }}),
-            signal: AbortSignal.timeout(15000),
-          });
-          providerCode = response.status;
-          state = response.ok ? "accepted" : "rejected";
-          const providerMeta = response.ok ? null : await safeProviderDiagnostic(response);
-          if (providerMeta) console.warn("[inngage-match] MANUAL_MESSAGE_REJECTED", JSON.stringify({
-            http_status: response.status, provider_reason: providerMeta.reason,
-            response_keys: providerMeta.response_keys,
-          }));
-          errorCode = response.ok ? null : "MESSAGE_" + response.status + "_" + (providerMeta?.reason || "UNKNOWN_PROVIDER_VALIDATION");
-        } catch (e) {
-          state = "unknown";
-          errorCode = e instanceof Error ? e.name.slice(0, 45) : "UNKNOWN_TRANSPORT_ERROR";
-        }
-      }
-      const { error: updateError } = await db.from("crm_inngage_match_delivery").update({
-        status: state, provider_status: providerCode, provider_error_code: errorCode,
-        updated_at: new Date().toISOString(),
-      }).eq("user_id", caller.id).eq("campaign_key", key).eq("week_key", day);
-      if (updateError) console.error("[matchvagas] MANUAL_LOG_UPDATE_FAILED", updateError.code);
-      return reply({
-        ok: state === "accepted", status: state, template_id: TEMPLATE_ID,
-        provider_http_status: providerCode, provider_error_code: errorCode,
-        recipient_count: 1, sent_email: state === "accepted",
-        message: state === "accepted"
-          ? "A Inngage aceitou a solicitação do teste manual. Confira o recebimento e as 31 variáveis."
-          : "A Inngage não confirmou o teste manual. Não tente novamente sem verificar o diagnóstico.",
-      }, state === "accepted" ? 200 : 502);
-    }
+    if (action === "manual_template_test" || action === "manual_csv") return reply({ error: "LEGACY_CSV_FLOW_RETIRED" }, 409);
     if (action === "probe_fields") {
       // Distinct from send_test: only writes attributes for the authenticated admin.
       // Never calls /v1/message/ and never enables campaign delivery.
@@ -677,10 +569,10 @@ Deno.serve(async (req: Request) => {
         sent_email: false, provider_contacted: false,
       });
       const picks = await prepare(caller.id, jobs, min);
-      if (picks.length !== 5) return reply({
+      if (!validCards(picks)) return reply({
         ok: true, status: "not_enough_matches", template_id: TEMPLATE_ID,
         cards_available: picks.length, jobs_analyzed: jobs.length,
-        reason: "O filtro não encontrou cinco vagas com senioridade e modalidade verificadas.",
+        reason: "Nenhuma vaga elegível com senioridade e modalidade verificadas.",
         sent_email: false, provider_contacted: false,
       });
       const mapped = fields(ownProfile, picks);
@@ -691,15 +583,15 @@ Deno.serve(async (req: Request) => {
       }).flat()];
       const valid = names.length === 31 &&
         Object.keys(mapped).length === 31 &&
-        names.every(name => typeof mapped[name] === "string" && mapped[name].length > 0);
-      const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === 5;
-      const uniqueOpportunities = new Set(picks.map(({ job }) => opportunityKey(job))).size === 5;
+        names.every(name => typeof mapped[name] === "string") && validCards(picks);
+      const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === picks.length;
+      const uniqueOpportunities = new Set(picks.map(({ job }) => opportunityKey(job))).size === picks.length;
       return reply({
         ok: true, status: valid && unique && uniqueOpportunities ? "mapping_ready" : "mapping_invalid",
         template_id: TEMPLATE_ID, cards_available: picks.length,
         custom_fields_count: Object.keys(mapped).length,
         custom_fields_valid: valid, unique_job_urls: unique, unique_opportunities: uniqueOpportunities,
-        fields: mapped,
+        fields: mapped, rendered_cards_html: renderCards(ownProfile, picks),
         matching_method: "strict_role_and_seniority_weighted_rules_not_probability",
         disclaimer: "Pontuações são indicadores heurísticos de aderência; não representam probabilidade de contratação.",
         provider_fields_verified: cfg.provider_fields_verified === true,
@@ -709,15 +601,15 @@ Deno.serve(async (req: Request) => {
     }
     if (action === "preview") {
       const stats = { marketing_optin_open_to_work: profiles.length, considered_jobs: jobs.length,
-        ready_with_5_matches: 0, without_5_matches: 0, sent_this_week: 0,
+        ready_with_matches: 0, without_matches: 0, sent_this_week: 0,
         template_id: TEMPLATE_ID, dispatch_enabled: enabled };
       const { data: attempted } = await db.from("crm_inngage_match_delivery").select("user_id")
         .eq("campaign_key", CAMPAIGN).eq("week_key", week);
       stats.sent_this_week = (attempted || []).length;
       for (const profile of profiles.slice(0, 50)) {
         const recs = await prepare(profile.id, jobs, min);
-        if (recs.length === 5) stats.ready_with_5_matches++;
-        else stats.without_5_matches++;
+        if (validCards(recs)) stats.ready_with_matches++;
+        else stats.without_matches++;
       }
       return reply({ ok: true, ...stats });
     }
@@ -734,8 +626,8 @@ Deno.serve(async (req: Request) => {
     const results: unknown[] = [];
     for (const profile of toProcess) {
       const matches = await prepare(profile.id, jobs, min);
-      if (matches.length !== 5) { skipped++; continue; }
-      const result = await send(profile.id, profile, matches, week, action === "send_test" ? "matchvagas_2050_teste" : CAMPAIGN);
+      if (!validCards(matches)) { skipped++; continue; }
+      const result = await send(profile.id, profile, matches, week, action === "send_test" ? "matchvagas_2050_teste_cards_v2" : CAMPAIGN);
       results.push(result);
       if (result.state === "accepted") accepted++;
       else if (result.state === "rejected") rejected++;
