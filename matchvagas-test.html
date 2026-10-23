@@ -27,6 +27,43 @@ code{color:#ffc08f}a{color:#fb923c}label{display:flex;align-items:flex-start;gap
 <div class="card"><h2>2. Validar público</h2>
 <button id="preview" disabled>Prévia das vagas elegíveis</button>
 <pre id="previewResult">Não executado.</pre></div>
+<div class="card">
+<h2>Campos personalizados exigidos no template 2050</h2>
+<p>Cadastre os seguintes 31 atributos como <strong>Texto</strong> em Inngage &gt; Configurações &gt; Estrutura de Dados &gt; Campos customizáveis. Os nomes são sensíveis a maiúsculas e minúsculas. Verifique também se os campos já existem com tipos compatíveis.</p>
+<button id="copyFields" type="button">Copiar lista dos 31 campos</button>
+<pre id="fieldsList">NOME
+VAGA_1_CARGO
+VAGA_1_EMPRESA
+VAGA_1_MODALIDADE
+VAGA_1_LOCAL
+VAGA_1_MATCH
+VAGA_1_URL
+VAGA_2_CARGO
+VAGA_2_EMPRESA
+VAGA_2_MODALIDADE
+VAGA_2_LOCAL
+VAGA_2_MATCH
+VAGA_2_URL
+VAGA_3_CARGO
+VAGA_3_EMPRESA
+VAGA_3_MODALIDADE
+VAGA_3_LOCAL
+VAGA_3_MATCH
+VAGA_3_URL
+VAGA_4_CARGO
+VAGA_4_EMPRESA
+VAGA_4_MODALIDADE
+VAGA_4_LOCAL
+VAGA_4_MATCH
+VAGA_4_URL
+VAGA_5_CARGO
+VAGA_5_EMPRESA
+VAGA_5_MODALIDADE
+VAGA_5_LOCAL
+VAGA_5_MATCH
+VAGA_5_URL</pre>
+<p><a href="https://docs.inngage.com.br/artigo/campos-personalizados-nao-aparecem" target="_blank" rel="noopener">Documentação oficial da Inngage sobre campos personalizados</a></p>
+</div>
 <div class="card"><h2>3. Enviar um teste controlado</h2>
 <p>Solicita uma única mensagem para sua própria conta autenticada, somente se seu perfil estiver elegível. Não confirma entrega por si só.</p>
 <label><input type="checkbox" id="confirm"> Confirmei que o HTML 2050 está publicado na Inngage e autorizei o teste em meu próprio e-mail.</label>
@@ -114,6 +151,11 @@ el("pause").onclick=function(){
  if(!who)return;
  if(!window.confirm("Pausar imediatamente os e-mails semanais 2050?"))return;
  run("pause","activationResult");
+};
+el("copyFields").onclick=function(){
+ var v=el("fieldsList").textContent;
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(function(){el("copyFields").textContent="Campos copiados"});
+ else el("copyFields").textContent="Selecione e copie a lista abaixo";
 };
 el("diagnostics").onclick=function(){run("diagnostics","diagnosticsResult")};
 el("preview").onclick=function(){run("preview","previewResult")};
