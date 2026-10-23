@@ -260,6 +260,37 @@ Deno.serve(async (req: Request) => {
         api_bearer: !!Deno.env.get("INNGAGE_API_BEARER"),
       }, dispatch_enabled: enabled, provider_fields_verified: cfg.provider_fields_verified === true,
     });
+    // Admin-only launch control. Never enable without accepted self-test and
+    // explicit confirmation that the five rendered cards and unsubscribe work.
+    if (action === "pause" || action === "activate") {
+      if (caller.mode !== "admin") return reply({ error: "ADMIN_ONLY" }, 403);
+      if (action === "pause") {
+        const { error } = await db.from("crm_inngage_match_config").update({
+          enabled: false, updated_at: new Date().toISOString(),
+        }).eq("id", 1);
+        if (error) throw Error("PAUSE_FAILED");
+        return reply({ ok: true, dispatch_enabled: false });
+      }
+      if (body.confirm !== "RECEBI_E_CONFIRMEI_OS_5_CARDS_2050") {
+        return reply({ error: "VISUAL_CONFIRMATION_REQUIRED" }, 403);
+      }
+      const { data: past, error: histError } = await db.from("crm_inngage_match_delivery")
+        .select("provider_status,status,created_at")
+        .eq("user_id", caller.id)
+        .eq("campaign_key", "matchvagas_2050_teste")
+        .eq("status", "accepted")
+        .gte("created_at", new Date(Date.now() - 14 * 86400000).toISOString())
+        .order("created_at", { ascending: false }).limit(1);
+      if (histError || !past || !past.length) return reply({ error: "ACCEPTED_TEST_REQUIRED" }, 403);
+      if (!Deno.env.get("INNGAGE_APP_TOKEN") || !Deno.env.get("INNGAGE_API_BEARER")) {
+        return reply({ error: "INNGAGE_SECRETS_MISSING" }, 503);
+      }
+      const { error: enableError } = await db.from("crm_inngage_match_config").update({
+        provider_fields_verified: true, enabled: true, updated_at: new Date().toISOString(),
+      }).eq("id", 1);
+      if (enableError) throw Error("ENABLE_FAILED");
+      return reply({ ok: true, dispatch_enabled: true, template_id: TEMPLATE_ID });
+    }
     const profiles = await loadProfiles();
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
