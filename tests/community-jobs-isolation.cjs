@@ -28,7 +28,7 @@ const radarCss=read('assets/radar-ux.css');
 assert(html.includes('class="section-head crm-radar-header"'),'Radar must render its header CTA without JavaScript insertion');
 assert(html.includes('class="crm-add-community-job" aria-label="Adicionar uma vaga ao Radar"'),'Add job action must be visible beside Radar heading');
 assert(/\/assets\/radar-ux\.js\?v=[\w-]+/.test(html)&&/\/assets\/radar-ux\.css\?v=[\w-]+/.test(html),'Radar compact assets must load with cache invalidation');
-const primaryFilters=(radarUx.match(/const visibleIds=\\[([^\\]]+)\\]/)||[])[1]||'';
+const primaryFilters=(radarUx.split('const visibleIds=')[1]||'').split('];')[0];
 for(const id of ['filtro-categoria','filtro-cargo','filtro-modalidade','filtro-abrangencia'])assert(primaryFilters.includes("'"+id+"'"),'Primary filter must stay visible: '+id);
 assert(radarUx.includes("el.id==='filtro-ordem-hub'"),'Default ordering must not expand advanced filters');
 assert(radarCss.includes('.crm-radar-filterbox:not(.is-expanded) .crm-filter-extra'),'Secondary filters must collapse');
