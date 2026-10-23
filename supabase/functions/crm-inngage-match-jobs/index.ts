@@ -118,6 +118,16 @@ function brazilEligible(job: Job) {
   }
   return true;
 }
+function verifiedWorkMode(job: Job): string {
+  const structured = workMode(job.modalidade_normalizada || job.modelo);
+  if (structured) return structured;
+  const title = norm(job.title || job.cargo);
+  // Only infer work arrangement when the job title states it explicitly.
+  if (/\b(remote|remoto|100 remoto|home office|work from home)\b/.test(title)) return "remoto";
+  if (/\b(hybrid|hibrido|hibrida)\b/.test(title)) return "hibrido";
+  if (/\b(on site|onsite|presencial)\b/.test(title)) return "presencial";
+  return "";
+}
 function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string, unknown>, skills: string[]): number | null {
   const { role, company } = splitRoleAndCompany(job);
   if (!role || !company || !validExternalUrl(job.url) || !brazilEligible(job)) return null;
@@ -128,7 +138,7 @@ function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string,
   if (jobLevel === "part_time" || jobLevel === "junior") return null;
   if (managementTarget && jobLevel !== "management") return null;
   if (managementTarget && /\b(director|diretor|vp|chief)\b/.test(norm(role))) return null;
-  const mode = workMode(job.modalidade_normalizada || job.modelo);
+  const mode = verifiedWorkMode(job);
   const desiredModes = list(pref.work_models || match.work_models).map(workMode).filter(Boolean);
   if (desiredModes.length && (!mode || !desiredModes.includes(mode))) return null;
   const workRegion = clean(job.location || job.regiao);
@@ -198,7 +208,7 @@ async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]>
   const scored: Rec[] = [];
   const seenUrls = new Set<string>();
   for (const job of pool) {
-    if (skip.has(job.id) || !validExternalUrl(job.url)) continue;
+    if (skip.has(job.id) || !validExternalUrl(job.url) || !verifiedWorkMode(job)) continue;
     const key = clean(job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
     if (seenUrls.has(key)) continue;
     const score = scoreJob(job, prefRes.data, matchRes.data, skills);
@@ -220,7 +230,7 @@ function fields(profile: { full_name?: string | null }, recs: Rec[]) {
     const parsed = splitRoleAndCompany(job);
     result["VAGA_" + n + "_CARGO"] = parsed.role;
     result["VAGA_" + n + "_EMPRESA"] = parsed.company;
-    result["VAGA_" + n + "_MODALIDADE"] = clean(job.modalidade_normalizada || job.modelo) || "A confirmar";
+    result["VAGA_" + n + "_MODALIDADE"] = verifiedWorkMode(job) === "remoto" ? "Remoto" : verifiedWorkMode(job) === "hibrido" ? "Híbrido" : "Presencial";
     result["VAGA_" + n + "_LOCAL"] = clean(job.location || job.regiao) || "Local a confirmar";
     result["VAGA_" + n + "_MATCH"] = score + "%";
     result["VAGA_" + n + "_URL"] = clean(job.url);
@@ -406,7 +416,7 @@ Deno.serve(async (req: Request) => {
         disclaimer: "Pontuações são indicadores heurísticos de aderência; não representam probabilidade de contratação.",
         provider_fields_verified: cfg.provider_fields_verified === true,
         dispatch_enabled: enabled, sent_email: false, provider_contacted: false,
-        explanation: "Simulação local. Não valida a API externa da Inngage nem a entrega por e-mail.",
+        explanation: "Prévia local com modalidade explícita no anúncio ou em campo normalizado. Resultados com modalidade não comprovada são excluídos. Não valida a API externa da Inngage nem a entrega por e-mail.",
       });
     }
     if (action === "preview") {
