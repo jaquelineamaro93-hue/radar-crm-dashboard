@@ -23,7 +23,7 @@ assert.match(html,/crm_is_admin/);
 
 assert.match(src,/if \(action === "dry_run"\)/);
 assert.match(src,/sent_email: false, provider_contacted: false/);
-assert.match(src,/status: "blocked_previous_attempt"/);
+assert.match(src,/status: skippedPreviously \? "blocked_previous_attempt"/);
 assert.match(html,/Simular sem enviar/);
 assert.match(html,/blocked_previous_attempt/);
 
