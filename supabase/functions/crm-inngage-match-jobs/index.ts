@@ -68,38 +68,88 @@ function validExternalUrl(v: unknown) {
     return ["https:", "http:"].includes(url.protocol) && !!url.hostname && !["localhost", "127.0.0.1"].includes(url.hostname);
   } catch { return false; }
 }
+function splitRoleAndCompany(job: Job): { role: string; company: string } {
+  const raw = clean(job.title || job.cargo);
+  const explicitCompany = clean(job.company || job.empresa);
+  const absent = !explicitCompany || ["nao informado", "n a", "undefined", "null", "desconhecida", "nao definida"].includes(norm(explicitCompany));
+  const match = raw.match(/^(.*?)\s+at\s+([^|]+)$/i);
+  const fromTitle = match ? clean(match[2]) : "";
+  return { role: (match ? clean(match[1]) : raw).slice(0, 150),
+    company: (absent ? fromTitle : explicitCompany).slice(0, 120) };
+}
+const ROLE_TERMS: Record<string, RegExp> = {
+  crm: /\bcrm\b|customer relationship|marketing de relacionamento/i,
+  cx: /\bcx\b|customer experience|experiencia do cliente/i,
+  cs: /\bcs\b|customer success|sucesso do cliente/i,
+  growth: /\bgrowth\b|demand generation|go to market|\bgtm\b|geracao de demanda/i,
+  lifecycle: /lifecycle|life cycle|retention|retencao|customer engagement|ciclo de vida/i,
+  insights: /customer insights|consumer insights|inteligencia de clientes/i,
+  automation: /marketing automation|marketing operations|marketing ops|\bmartech\b|automacao de marketing/i,
+  revops: /\brevops\b|revenue operations|operacoes de receita/i,
+};
+function requestedTracks(roles: string[], area: string): string[] {
+  const source = roles.join(" ") + " " + area;
+  const tracks: string[] = [];
+  for (const [name, regex] of Object.entries(ROLE_TERMS)) {
+    if (regex.test(norm(source))) tracks.push(name);
+  }
+  return tracks;
+}
+function titleLevel(role: string) {
+  const n = norm(role);
+  if (/\b(intern|internship|estagio|estagiario|trainee|aprendiz|assistente|junior|jr)\b/.test(n)) return "junior";
+  if (/\b(part time|part time contract|meio periodo|meia jornada)\b/.test(n)) return "part_time";
+  if (/\b(director|diretor|vice president|president|chief|cmo|cxo)\b/.test(n)) return "executive";
+  if (/\b(manager|gerente|coordenador|coordenadora|coordinator|coordination|lead|lider|lideranca|gestor|gestora|head|supervisor)\b/.test(n)) return "management";
+  if (/\b(senior|sr|specialist|especialista|principal|staff)\b/.test(n)) return "senior";
+  return "unspecified";
+}
+function brazilEligible(job: Job) {
+  const location = norm(job.location || job.regiao);
+  const description = norm(job.descricao_resumo || job.description);
+  if (/\b(usa only|us only|united states only|canada only|uk only|europe only|emea only|united states|north america only)\b/.test(location)) return false;
+  // International aggregation sites frequently label positions only "remote" even
+  // when candidates in Brazil are not eligible; do not assert geographic fit.
+  if (/startup\.jobs/i.test(clean(job.url))) {
+    const locationBrazil = /\b(brasil|brazil|latam|latin america|sao paulo|rio de janeiro)\b/.test(location);
+    const explicitlyWorldwide = /\b(worldwide|anywhere in the world|globally remote)\b/.test(location);
+    const descriptionBrazil = /\b(remote from brazil|based in brazil|candidates in brazil|brazil or latam|work from brazil)\b/.test(description);
+    if (!locationBrazil && !explicitlyWorldwide && !descriptionBrazil) return false;
+  }
+  return true;
+}
 function scoreJob(job: Job, pref: Record<string, unknown>, match: Record<string, unknown>, skills: string[]): number | null {
-  const title = clean(job.title || job.cargo);
-  const area = clean(job.trilha || "");
-  const modes = list(pref.work_models || match.work_models);
+  const { role, company } = splitRoleAndCompany(job);
+  if (!role || !company || !validExternalUrl(job.url) || !brazilEligible(job)) return null;
+  const jobLevel = titleLevel(role);
+  const desiredSeniority = list(pref.target_seniorities).join(" ") ||
+    clean(match.seniority) || clean(match.professional_headline);
+  const managementTarget = /\b(gestao|gerencia|gerente|coordenacao|coordenadora|coordenador|lideranca|lead|manager|head)\b/.test(norm(desiredSeniority));
+  if (jobLevel === "part_time" || jobLevel === "junior") return null;
+  if (managementTarget && jobLevel !== "management") return null;
+  if (managementTarget && /\b(director|diretor|vp|chief)\b/.test(norm(role))) return null;
   const mode = workMode(job.modalidade_normalizada || job.modelo);
-  const desiredModes = modes.map(workMode).filter(Boolean);
+  const desiredModes = list(pref.work_models || match.work_models).map(workMode).filter(Boolean);
   if (desiredModes.length && mode && !desiredModes.includes(mode)) return null;
-  const desiredSeniorities = list(pref.target_seniorities);
-  const jobSeniority = seniority(job.senioridade_normalizada || job.nivel || title);
-  if (desiredSeniorities.length && jobSeniority && !desiredSeniorities.some(s => seniority(s) === jobSeniority)) return null;
+  const workRegion = clean(job.location || job.regiao);
   const desiredLocations = list(pref.preferred_locations);
-  const jobLocation = clean(job.location || job.regiao);
-  if (mode !== "remoto" && desiredLocations.length && jobLocation && !desiredLocations.some(l => overlap(l, jobLocation))) return null;
-  const roles = list(pref.target_roles);
-  const areas = [...list(pref.target_areas), clean(match.primary_area)].filter(Boolean);
-  const matchesRole = roles.some(r => overlap(r, title));
-  const matchesArea = areas.some(a => overlap(a, title) || overlap(a, area));
-  if (!matchesRole && !matchesArea) return null;
-  const haystack = norm([title, area, clean(job.descricao_resumo || job.description)].join(" "));
-  const relevantSkills = skills.slice(0, 25).filter(s => s.length > 2);
-  const hits = relevantSkills.filter(s => haystack.includes(norm(s))).length;
-  let points = 0;
-  if (matchesRole) points += 48;
-  if (matchesArea) points += 30;
-  if (desiredModes.length && mode && desiredModes.includes(mode)) points += 9;
-  if (desiredSeniorities.length && jobSeniority && desiredSeniorities.some(s => seniority(s) === jobSeniority)) points += 7;
-  if (desiredLocations.length && jobLocation && desiredLocations.some(l => overlap(l, jobLocation))) points += 6;
-  if (hits) points += Math.min(16, 4 * hits);
-  if (!desiredModes.length) points += 4;
-  if (!desiredSeniorities.length) points += 4;
-  if (!desiredLocations.length || mode === "remoto") points += 4;
-  return Math.min(99, points);
+  if (mode !== "remoto" && desiredLocations.length && workRegion &&
+      !desiredLocations.some(l => overlap(l, workRegion))) return null;
+  const desired = requestedTracks(list(pref.target_roles), clean(match.primary_area));
+  if (!desired.length) return null;
+  const titleNorm = norm(role);
+  const matchingTracks = desired.filter(track => ROLE_TERMS[track].test(titleNorm));
+  if (!matchingTracks.length) return null;
+  const titleSignal = matchingTracks.some(t => ["crm", "cx", "cs", "revops", "lifecycle"].includes(t)) ? 48 : 43;
+  const levelScore = jobLevel === "management" ? 18 : jobLevel === "senior" ? 10 : 3;
+  const modeScore = desiredModes.length && mode && desiredModes.includes(mode) ? 12 : 2;
+  const regionScore = mode === "remoto" ? 4 :
+    desiredLocations.length && workRegion && desiredLocations.some(l => overlap(l, workRegion)) ? 9 : 2;
+  const haystack = norm([role, clean(job.trilha), clean(job.descricao_resumo || job.description)].join(" "));
+  const hits = skills.slice(0, 25).filter(x => norm(x).length > 2 && haystack.includes(norm(x))).length;
+  const skillScore = Math.min(10, hits * 2);
+  // A bounded rules-based ranking; not a statistically calibrated probability.
+  return Math.min(92, titleSignal + levelScore + modeScore + regionScore + skillScore);
 }
 async function authorize(req: Request) {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
@@ -136,7 +186,7 @@ async function loadJobPool(): Promise<Job[]> {
 async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]> {
   const [prefRes, matchRes, skillsRes, prevRes] = await Promise.all([
     db.from("match_preferences").select("*").eq("user_id", userId).maybeSingle(),
-    db.from("match_profiles").select("primary_area,work_models").eq("user_id", userId).maybeSingle(),
+    db.from("match_profiles").select("primary_area,work_models,seniority,professional_headline").eq("user_id", userId).maybeSingle(),
     db.from("match_skills").select("skill_name").eq("user_id", userId).limit(30),
     db.from("crm_inngage_match_delivery").select("job_ids").eq("user_id", userId)
       .eq("status", "accepted").gte("created_at", new Date(Date.now() - 42 * 86400000).toISOString()),
@@ -148,7 +198,7 @@ async function prepare(userId: string, pool: Job[], min: number): Promise<Rec[]>
   const scored: Rec[] = [];
   const seenUrls = new Set<string>();
   for (const job of pool) {
-    if (skip.has(job.id) || !validExternalUrl(job.url) || !clean(job.title || job.cargo) || !clean(job.company || job.empresa)) continue;
+    if (skip.has(job.id) || !validExternalUrl(job.url)) continue;
     const key = clean(job.url).toLowerCase().split("#")[0].replace(/\/$/, "");
     if (seenUrls.has(key)) continue;
     const score = scoreJob(job, prefRes.data, matchRes.data, skills);
@@ -167,8 +217,9 @@ function fields(profile: { full_name?: string | null }, recs: Rec[]) {
   for (let i = 0; i < 5; i++) {
     const { job, score } = recs[i];
     const n = i + 1;
-    result["VAGA_" + n + "_CARGO"] = clean(job.title || job.cargo).slice(0, 150);
-    result["VAGA_" + n + "_EMPRESA"] = clean(job.company || job.empresa).slice(0, 120);
+    const parsed = splitRoleAndCompany(job);
+    result["VAGA_" + n + "_CARGO"] = parsed.role;
+    result["VAGA_" + n + "_EMPRESA"] = parsed.company;
     result["VAGA_" + n + "_MODALIDADE"] = clean(job.modalidade_normalizada || job.modelo) || "A confirmar";
     result["VAGA_" + n + "_LOCAL"] = clean(job.location || job.regiao) || "Local a confirmar";
     result["VAGA_" + n + "_MATCH"] = score + "%";
@@ -351,7 +402,8 @@ Deno.serve(async (req: Request) => {
         custom_fields_count: Object.keys(mapped).length,
         custom_fields_valid: valid, unique_job_urls: unique,
         fields: mapped,
-        matching_method: "weighted_rules_not_ai_probability",
+        matching_method: "strict_role_and_seniority_weighted_rules_not_probability",
+        disclaimer: "Pontuações são indicadores heurísticos de aderência; não representam probabilidade de contratação.",
         provider_fields_verified: cfg.provider_fields_verified === true,
         dispatch_enabled: enabled, sent_email: false, provider_contacted: false,
         explanation: "Simulação local. Não valida a API externa da Inngage nem a entrega por e-mail.",
