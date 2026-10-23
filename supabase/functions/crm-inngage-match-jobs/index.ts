@@ -291,6 +291,23 @@ async function eligibleEmail(userId: string): Promise<string | null> {
   if ([...(byUser.data || []), ...(byEmail.data || [])].some(x => x.status !== "subscribed")) return null;
   return email;
 }
+function toCsvField(value: unknown): string {
+  let raw = clean(value);
+  // Prevent spreadsheet formula execution when opened in Excel/Google Sheets.
+  if (/^[=+\-@\t\r]/.test(raw)) raw = "'" + raw;
+  return '"' + raw.replace(/"/g, '""') + '"';
+}
+async function manualDigest(userId: string, data: Record<string, string>): Promise<string> {
+  const canonical = JSON.stringify({ userId, attributes: data });
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
+  return Array.from(new Uint8Array(hash)).map(x => x.toString(16).padStart(2, "0")).join("");
+}
+function validFiveCards(recs: Rec[]): boolean {
+  return recs.length === 5 &&
+    new Set(recs.map(x => opportunityKey(x.job))).size === 5 &&
+    new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === 5 &&
+    recs.every(x => x.score >= 65 && validExternalUrl(x.job.url));
+}
 async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
   if (!email || recs.length !== 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
@@ -430,6 +447,97 @@ Deno.serve(async (req: Request) => {
     const jobs = await loadJobPool();
     const min = cfg.minimum_match_score || 65;
     const week = weekStartUtc();
+    if (action === "manual_csv" || action === "manual_template_test") {
+      // Manual, one-recipient contingency path. This does NOT call addCustomField;
+      // profile data must have been imported through Inngage before triggering 2050.
+      if (caller.mode !== "admin") return reply({ error: "ADMIN_ONLY" }, 403);
+      const profile = profiles.find(p => p.id === caller.id);
+      const email = await eligibleEmail(caller.id);
+      if (!profile || !email) return reply({ error: "NOT_ELIGIBLE_FOR_MANUAL_SEND" }, 403);
+      const matches = await prepare(caller.id, jobs, min);
+      if (!validFiveCards(matches)) return reply({
+        ok: false, status: "not_enough_matches", cards_available: matches.length,
+        jobs_analyzed: jobs.length, message: "Não há 5 oportunidades distintas verificadas. Sem CSV e sem envio.",
+      }, 200);
+      const attributes = fields(profile, matches);
+      const names = ["NOME", ...Array.from({ length: 5 }, (_, index) => {
+        const n = index + 1;
+        return ["CARGO", "EMPRESA", "MODALIDADE", "LOCAL", "MATCH", "URL"]
+          .map(field => "VAGA_" + n + "_" + field);
+      }).flat()];
+      if (names.length !== 31 || !names.every(name =>
+        typeof attributes[name] === "string" && attributes[name].trim().length > 0)) {
+        return reply({ error: "INVALID_MANUAL_ATTRIBUTES" }, 422);
+      }
+      const fingerprint = await manualDigest(caller.id, attributes);
+      if (action === "manual_csv") {
+        const columnNames = ["identifier", "email", ...names];
+        const row = [email, email, ...names.map(name => attributes[name])];
+        const csv = [columnNames.map(toCsvField).join(","),
+          row.map(toCsvField).join(",")].join("\r\n") + "\r\n";
+        return reply({
+          ok: true, template_id: TEMPLATE_ID, file_name: "matchvagas-2050-importacao-manual.csv",
+          csv, fingerprint, fields_count: names.length, cards_count: matches.length,
+          recipients: 1, sent_email: false, provider_contacted: false,
+          next_step: "Importe CSV em Público > Todo Público, mapeie identificador, e-mail e os 31 campos. Verifique os valores na aba Atributos do perfil antes de autorizar o teste.",
+        });
+      }
+      if (body.confirm !== "IMPORTEI_E_VALIDEI_31_CAMPOS_2050" ||
+          !body.fingerprint || body.fingerprint !== fingerprint) {
+        return reply({ error: "CSV_IMPORT_CONFIRMATION_OR_FINGERPRINT_REQUIRED",
+          sent_email: false }, 403);
+      }
+      const day = new Date().toISOString().slice(0, 10);
+      const key = "matchvagas_2050_csv_manual_test";
+      const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
+        user_id: caller.id, campaign_key: key, week_key: day,
+        job_ids: matches.map(x => x.job.id), scores: matches.map(x => x.score), status: "reserved",
+      });
+      if (reserveError?.code === "23505") return reply({
+        ok: false, status: "already_attempted_today", sent_email: false,
+        message: "Teste manual já solicitado hoje. Verifique os logs antes de repetir.",
+      }, 409);
+      if (reserveError) throw Error("MANUAL_RESERVATION_FAILED");
+      const appToken = Deno.env.get("INNGAGE_APP_TOKEN") || "";
+      const bearer = (Deno.env.get("INNGAGE_API_BEARER") || "").replace(/^Bearer\s+/i, "");
+      let state = "unknown";
+      let providerCode: number | null = null;
+      let errorCode: string | null = "MANUAL_SEND_TRANSPORT_ERROR";
+      if (!appToken || !bearer) {
+        state = "rejected"; errorCode = "INNGAGE_SECRETS_MISSING";
+      } else {
+        try {
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + bearer },
+            body: JSON.stringify({ sendPushRequest: {
+              app_token: appToken, api_template_id: TEMPLATE_ID,
+              tags: { "": [] }, identifier: email, subscriber_email: email,
+            }}),
+            signal: AbortSignal.timeout(15000),
+          });
+          providerCode = response.status;
+          state = response.ok ? "accepted" : "rejected";
+          errorCode = response.ok ? null : "MESSAGE_" + response.status;
+        } catch (e) {
+          state = "unknown";
+          errorCode = e instanceof Error ? e.name.slice(0, 45) : "UNKNOWN_TRANSPORT_ERROR";
+        }
+      }
+      const { error: updateError } = await db.from("crm_inngage_match_delivery").update({
+        status: state, provider_status: providerCode, provider_error_code: errorCode,
+        updated_at: new Date().toISOString(),
+      }).eq("user_id", caller.id).eq("campaign_key", key).eq("week_key", day);
+      if (updateError) console.error("[matchvagas] MANUAL_LOG_UPDATE_FAILED", updateError.code);
+      return reply({
+        ok: state === "accepted", status: state, template_id: TEMPLATE_ID,
+        provider_http_status: providerCode, provider_error_code: errorCode,
+        recipient_count: 1, sent_email: state === "accepted",
+        message: state === "accepted"
+          ? "A Inngage aceitou a solicitação do teste manual. Confira o recebimento e as 31 variáveis."
+          : "A Inngage não confirmou o teste manual. Não tente novamente sem verificar o diagnóstico.",
+      }, state === "accepted" ? 200 : 502);
+    }
     if (action === "probe_fields") {
       // Distinct from send_test: only writes attributes for the authenticated admin.
       // Never calls /v1/message/ and never enables campaign delivery.
