@@ -2651,6 +2651,12 @@ crmShowSurveyReminder();
             <label style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;" for="filtro-modalidade">Modalidade</label>
             <select id="filtro-modalidade" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);"><option value="">Todas</option><option>Remoto</option><option>Híbrido</option><option>Presencial</option><option>A combinar</option></select>
           </div>
+          <div>
+            <label for="filtro-abrangencia" style="display:block; font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:6px;">Abrangência</label>
+            <select id="filtro-abrangencia" aria-label="Abrangência da vaga" style="width:100%;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel);color:var(--text);" onchange="crmSearchJobs()">
+              <option value="">Todas</option><option value="Nacional">Nacional</option><option value="Internacional">Internacional</option>
+            </select>
+          </div>
         </div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -3979,7 +3985,7 @@ function crmRadarSortUnique(jobs,sortMode){
 
 async function carregarVagasHub() {
   if(crmRadarRequestInFlight)return;
-  const activeFilters=['categoria','cargo','empresa','nivel','plataforma','estado','municipio','modalidade']
+  const activeFilters=['categoria','cargo','empresa','nivel','plataforma','estado','municipio','modalidade','abrangencia']
     .some(n=>Boolean(document.getElementById('filtro-'+n)?.value));
   if(activeFilters||document.getElementById('filtro-ordem-hub')?.value!=='recente'){
     return crmSearchJobs();
@@ -4246,6 +4252,7 @@ async function aplicarFiltrosVagas() {
 
     const categoria = document.getElementById('filtro-categoria')?.value || '';
     const modalidade = document.getElementById('filtro-modalidade')?.value || '';
+    const abrangencia = document.getElementById('filtro-abrangencia')?.value || '';
     const cargo = sanitizeInputVagas(document.getElementById('filtro-cargo-hub').value);
     const empresa = sanitizeInputVagas(document.getElementById('filtro-empresa-hub').value);
     const nivel = document.getElementById('filtro-nivel-hub').value;
@@ -4272,6 +4279,7 @@ async function aplicarFiltrosVagas() {
       }else query=query.ilike('title','%'+cargo+'%');
     }
     if(modalidade)query=query.eq('modalidade_normalizada',modalidade);
+    if(abrangencia)query=query.eq('abrangencia',abrangencia);
 
     if (empresa) {
       query = query.ilike('company', `%${empresa}%`);
@@ -4339,6 +4347,7 @@ function limparFiltrosVagas() {
   document.getElementById('filtro-plataforma-hub').value = '';
   if (document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = '';
   if (document.getElementById('filtro-municipio')) document.getElementById('filtro-municipio').value = '';
+  if (document.getElementById('filtro-abrangencia')) document.getElementById('filtro-abrangencia').value = '';
   document.getElementById('filtro-ordem-hub').value = 'recente';
   const period=document.getElementById('filtro-periodo-hub');if(period)period.value='14';
   carregarVagasHub();
@@ -9020,14 +9029,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 async function crmSearchJobs(){
  const seq=++crmJobSearchSequence;
- const searchProps={categoria:crmById('filtro-categoria')?.value||'',cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',estado:crmById('filtro-estado')?.value||'',municipio:crmById('filtro-municipio')?.value||'',modalidade:crmById('filtro-modalidade')?.value||''};
+ const searchProps={categoria:crmById('filtro-categoria')?.value||'',cargo:crmById('filtro-cargo')?.value||'',empresa:crmById('filtro-empresa')?.value||'',nivel:crmById('filtro-nivel')?.value||'',plataforma:crmById('filtro-plataforma')?.value||'',estado:crmById('filtro-estado')?.value||'',municipio:crmById('filtro-municipio')?.value||'',modalidade:crmById('filtro-modalidade')?.value||'',abrangencia:crmById('filtro-abrangencia')?.value||''};
  window.posthogTracker?.track('search_performed',{area:'vagas',...searchProps});
 
  for(const n of ['cargo','empresa','nivel','plataforma'])crmById('filtro-'+n+'-hub').value=crmById('filtro-'+n).value;
  const b=crmById('btn-buscar');b.disabled=true;b.textContent='Buscando…';
  try{await aplicarFiltrosVagas();if(seq===crmJobSearchSequence)crmFilterModality();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
 }
-function crmClearJobs(){if(crmById('filtro-categoria'))crmById('filtro-categoria').value='';for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
+function crmClearJobs(){if(crmById('filtro-categoria'))crmById('filtro-categoria').value='';for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade','abrangencia']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
 function crmFilterModality(){
  const container=crmById('vagasContainerHub'),value=crmById('filtro-modalidade').value;
  const cards=Array.from(container.children).filter(c=>c.querySelector('h3'));
