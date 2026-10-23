@@ -41,6 +41,9 @@ async function loadRegistration(){
  const r=await sb.rpc('crm_otw_registration');if(revision!==loadRevision)return;if(r.error)throw r.error;
  login.hidden=true;account.textContent='Conta vinculada: '+r.data.email;
  const existing=r.data.data||{};
+ const updating=r.data.mode==='update'||!!existing.nome;
+ form.querySelector('button[type=submit]').textContent=updating?'Atualizar meu cadastro':'Salvar meu perfil Open to Work';
+ account.textContent+=' · '+(updating?'Você já está no Open to Work. Atualize seu cadastro abaixo.':'Preencha seu perfil para entrar no Open to Work.');
  for(const [key,value]of Object.entries(existing)){const el=form.elements.namedItem(key);if(el&&el.type!=='checkbox'){el.value=value||'';if(el.type==='url'&&el.value&&!/^https?:\/\//i.test(el.value))el.value='https://'+el.value;}}
  if(!existing.nome){const p=await sb.from('profiles').select('full_name,seniority,headline,linkedin_url,whatsapp,work_model,tools').eq('id',data.user.id).single();if(p.error)throw p.error;const d=p.data||{};for(const[k,v]of Object.entries({nome:d.full_name,senioridade:d.seniority,area_atuacao:d.headline,linkedin:d.linkedin_url,whatsapp:d.whatsapp,condicao_trabalho:(d.work_model||[]).join(', '),ferramentas:(d.tools||[]).join(', ')})){if(v)form.elements.namedItem(k).value=v;}}
  form.elements.receive_community_updates.checked=r.data.receive_community_updates===true;if(revision!==loadRevision)return;form.hidden=false;
@@ -50,7 +53,8 @@ form.addEventListener('submit',async e=>{
  e.preventDefault();if(busy||!form.reportValidity())return;busy=true;const button=form.querySelector('button[type=submit]');button.disabled=true;message('Salvando seu perfil...');
  try{const payload=Object.fromEntries(new FormData(form));payload.publish_consent=form.elements.publish_consent.checked;payload.receive_community_updates=form.elements.receive_community_updates.checked;
  const r=await sb.rpc('crm_otw_registration',{p_data:payload});if(r.error)throw r.error;
- message('Perfil salvo. Você está no Open to Work. Sua preferência de avisos também foi registrada.');
+ button.textContent='Atualizar meu cadastro';
+ message(r.data?.mode==='updated'?'Cadastro atualizado. Seu perfil existente foi mantido, sem duplicação.':'Perfil salvo. Você está no Open to Work. Sua preferência de avisos também foi registrada.');
  }catch(e){message(e.code==='23505'?'Já existe um cadastro com esses dados. Peça à administração para conferir o vínculo, sem criar outro perfil.':e.message||'Não foi possível salvar. Tente novamente.',true);}
  finally{busy=false;button.disabled=false;}
 });
