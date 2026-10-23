@@ -15,7 +15,7 @@ export async function userFor(req:Request){const authorization=req.headers.get('
 export async function talents(){
  const source=[];
  for(let offset=0;;offset+=500){
-  const rows=await database('profissionais_open_to_work','select=id,nome,senioridade,area_atuacao,ferramentas,condicao_trabalho,localizacao,tempo_experiencia,linkedin,whatsapp,idioma,mudar_cidade,sheet_source_key&order=id&limit=500&offset='+offset);
+  const rows=await database('profissionais_open_to_work','select=id,nome,senioridade,area_atuacao,ferramentas,condicao_trabalho,localizacao,tempo_experiencia,linkedin,whatsapp,idioma,mudar_cidade,sheet_source_key&or=(sheet_source_key.not.is.null,portal_published.eq.true)&order=id&limit=500&offset='+offset);
   source.push(...rows);if(rows.length<500)break;
  }
  const edits=await database('crm_talent_claims','select=source_id,linkedin,whatsapp&status=eq.approved&limit=1000');

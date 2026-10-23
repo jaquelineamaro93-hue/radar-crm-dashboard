@@ -1,4 +1,5 @@
 begin;
+alter table public.profissionais_open_to_work add column if not exists portal_published boolean not null default false;
 create table if not exists crm_private.otw_profile_links (
  user_id uuid primary key references auth.users(id),
  talent_id bigint not null unique references public.profissionais_open_to_work(id),
@@ -55,7 +56,7 @@ begin
  end if;
  insert into crm_private.otw_profile_links(user_id,talent_id,method) values(uid,tid,'authenticated_form') on conflict(user_id) do nothing;
  update public.profissionais_open_to_work set
- nome=trim(p_data->>'nome'),senioridade=trim(p_data->>'senioridade'),area_atuacao=trim(p_data->>'area_atuacao'),
+ portal_published=true, nome=trim(p_data->>'nome'),senioridade=trim(p_data->>'senioridade'),area_atuacao=trim(p_data->>'area_atuacao'),
  localizacao=trim(p_data->>'localizacao'),condicao_trabalho=trim(p_data->>'condicao_trabalho'),
  ferramentas=nullif(trim(p_data->>'ferramentas'),''),tempo_experiencia=nullif(trim(p_data->>'tempo_experiencia'),''),
  whatsapp=nullif(crm_private.otw_phone(p_data->>'whatsapp'),''),linkedin=nullif(trim(p_data->>'linkedin'),''),
