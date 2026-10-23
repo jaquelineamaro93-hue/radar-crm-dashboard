@@ -267,7 +267,12 @@ function fields(profile: { full_name?: string | null }, recs: Rec[]) {
     NOME: clean(profile.full_name).split(/\s+/)[0] || "profissional",
   };
   for (let i = 0; i < 5; i++) {
-    const { job, score } = recs[i];
+    const item = recs[i];
+    if (!item) {
+      for (const suffix of ["CARGO", "EMPRESA", "MODALIDADE", "LOCAL", "MATCH", "URL"]) result["VAGA_" + (i + 1) + "_" + suffix] = "";
+      continue;
+    }
+    const { job, score } = item;
     const n = i + 1;
     const parsed = splitRoleAndCompany(job);
     result["VAGA_" + n + "_CARGO"] = parsed.role;
@@ -302,8 +307,8 @@ async function manualDigest(userId: string, data: Record<string, string>): Promi
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
   return Array.from(new Uint8Array(hash)).map(x => x.toString(16).padStart(2, "0")).join("");
 }
-function validFiveCards(recs: Rec[]): boolean {
-  return recs.length === 5 &&
+function validAvailableCards(recs: Rec[]): boolean {
+  return recs.length >= 1 && recs.length <= 5 &&
     new Set(recs.map(x => opportunityKey(x.job))).size === 5 &&
     new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === 5 &&
     recs.every(x => x.score >= 65 && validExternalUrl(x.job.url));
@@ -354,7 +359,7 @@ async function safeProviderDiagnostic(response: Response): Promise<{ reason: str
 }
 async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
-  if (!email || recs.length !== 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
+  if (!email || recs.length < 1 || recs.length > 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
   const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
     user_id: userId, campaign_key: campaignKey, week_key: week,
     job_ids: recs.map(x => x.job.id), scores: recs.map(x => x.score), status: "reserved",
@@ -509,7 +514,7 @@ Deno.serve(async (req: Request) => {
       const email = await eligibleEmail(caller.id);
       if (!profile || !email) return reply({ error: "NOT_ELIGIBLE_FOR_MANUAL_SEND" }, 403);
       const matches = await prepare(caller.id, jobs, min);
-      if (!validFiveCards(matches)) return reply({
+      if (!validAvailableCards(matches)) return reply({
         ok: false, status: "not_enough_matches", cards_available: matches.length,
         jobs_analyzed: jobs.length, message: "Não há 5 oportunidades distintas verificadas. Sem CSV e sem envio.",
       }, 200);
@@ -677,7 +682,7 @@ Deno.serve(async (req: Request) => {
         sent_email: false, provider_contacted: false,
       });
       const picks = await prepare(caller.id, jobs, min);
-      if (picks.length !== 5) return reply({
+      if (picks.length < 1) return reply({
         ok: true, status: "not_enough_matches", template_id: TEMPLATE_ID,
         cards_available: picks.length, jobs_analyzed: jobs.length,
         reason: "O filtro não encontrou cinco vagas com senioridade e modalidade verificadas.",
