@@ -154,8 +154,11 @@
     if(typeof crmSignedIn==='function'&&crmSignedIn()&&typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true){
       const page=ensureAwardAdminPage(route);
       const frame=page?.querySelector('iframe');
-      if(frame&&!frame.getAttribute('src'))openAwardAdminInside(route);
-      else syncAwardAdminNavSelection(route);
+      if(frame&&!frame.getAttribute('src')){
+        page.classList.add('crm-award-is-loading');
+        frame.setAttribute('src',awardAdminModules[route].url);
+      }
+      syncAwardAdminNavSelection(route);
     }
   }
   window.addEventListener('hashchange',activateAwardAdminHash);
