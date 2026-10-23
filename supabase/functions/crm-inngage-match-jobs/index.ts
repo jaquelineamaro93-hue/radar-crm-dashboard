@@ -309,8 +309,8 @@ async function manualDigest(userId: string, data: Record<string, string>): Promi
 }
 function validAvailableCards(recs: Rec[]): boolean {
   return recs.length >= 1 && recs.length <= 5 &&
-    new Set(recs.map(x => opportunityKey(x.job))).size === 5 &&
-    new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === 5 &&
+    new Set(recs.map(x => opportunityKey(x.job))).size === recs.length &&
+    new Set(recs.map(x => clean(x.job.url).toLowerCase())).size === recs.length &&
     recs.every(x => x.score >= 65 && validExternalUrl(x.job.url));
 }
 async function safeProviderDiagnostic(response: Response): Promise<{ reason: string; response_keys: string[] }> {
@@ -359,7 +359,7 @@ async function safeProviderDiagnostic(response: Response): Promise<{ reason: str
 }
 async function send(userId: string, profile: { full_name?: string | null }, recs: Rec[], week: string, campaignKey: string = CAMPAIGN) {
   const email = await eligibleEmail(userId);
-  if (!email || recs.length < 1 || recs.length > 5) return { state: "skipped", code: "NOT_ELIGIBLE" };
+  if (!email || !validAvailableCards(recs)) return { state: "skipped", code: "NOT_ELIGIBLE" };
   const { error: reserveError } = await db.from("crm_inngage_match_delivery").insert({
     user_id: userId, campaign_key: campaignKey, week_key: week,
     job_ids: recs.map(x => x.job.id), scores: recs.map(x => x.score), status: "reserved",
@@ -516,7 +516,7 @@ Deno.serve(async (req: Request) => {
       const matches = await prepare(caller.id, jobs, min);
       if (!validAvailableCards(matches)) return reply({
         ok: false, status: "not_enough_matches", cards_available: matches.length,
-        jobs_analyzed: jobs.length, message: "Não há 5 oportunidades distintas verificadas. Sem CSV e sem envio.",
+        jobs_analyzed: jobs.length, message: "Não há oportunidades verificadas. Sem CSV e sem envio.",
       }, 200);
       const attributes = fields(profile, matches);
       const names = ["NOME", ...Array.from({ length: 5 }, (_, index) => {
@@ -524,8 +524,12 @@ Deno.serve(async (req: Request) => {
         return ["CARGO", "EMPRESA", "MODALIDADE", "LOCAL", "MATCH", "URL"]
           .map(field => "VAGA_" + n + "_" + field);
       }).flat()];
-      if (names.length !== 31 || !names.every(name =>
-        typeof attributes[name] === "string" && attributes[name].trim().length > 0)) {
+      if (names.length !== 31 || !names.every((name) =>
+        typeof attributes[name] === "string" &&
+        (name === "NOME" || (() => {
+          const slot = Number(name.match(/^VAGA_(\d+)_/)?.[1] || 0);
+          return slot > matches.length ? attributes[name] === "" : attributes[name].trim().length > 0;
+        })()))) {
         return reply({ error: "INVALID_MANUAL_ATTRIBUTES" }, 422);
       }
       const fingerprint = await manualDigest(caller.id, attributes);
@@ -685,7 +689,7 @@ Deno.serve(async (req: Request) => {
       if (picks.length < 1) return reply({
         ok: true, status: "not_enough_matches", template_id: TEMPLATE_ID,
         cards_available: picks.length, jobs_analyzed: jobs.length,
-        reason: "O filtro não encontrou cinco vagas com senioridade e modalidade verificadas.",
+        reason: "Nenhuma vaga com senioridade e modalidade verificadas.",
         sent_email: false, provider_contacted: false,
       });
       const mapped = fields(ownProfile, picks);
@@ -696,9 +700,13 @@ Deno.serve(async (req: Request) => {
       }).flat()];
       const valid = names.length === 31 &&
         Object.keys(mapped).length === 31 &&
-        names.every(name => typeof mapped[name] === "string" && mapped[name].length > 0);
-      const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === 5;
-      const uniqueOpportunities = new Set(picks.map(({ job }) => opportunityKey(job))).size === 5;
+        names.every(name => {
+          const slot = Number(name.match(/^VAGA_(\d+)_/)?.[1] || 0);
+          return typeof mapped[name] === "string" &&
+            (slot > picks.length ? mapped[name] === "" : mapped[name].length > 0);
+        });
+      const unique = new Set(picks.map(({ job }) => clean(job.url).toLowerCase())).size === picks.length;
+      const uniqueOpportunities = new Set(picks.map(({ job }) => opportunityKey(job))).size === picks.length;
       return reply({
         ok: true, status: valid && unique && uniqueOpportunities ? "mapping_ready" : "mapping_invalid",
         template_id: TEMPLATE_ID, cards_available: picks.length,
@@ -714,15 +722,15 @@ Deno.serve(async (req: Request) => {
     }
     if (action === "preview") {
       const stats = { marketing_optin_open_to_work: profiles.length, considered_jobs: jobs.length,
-        ready_with_5_matches: 0, without_5_matches: 0, sent_this_week: 0,
+        ready_with_1_to_5_matches: 0, without_matches: 0, sent_this_week: 0,
         template_id: TEMPLATE_ID, dispatch_enabled: enabled };
       const { data: attempted } = await db.from("crm_inngage_match_delivery").select("user_id")
         .eq("campaign_key", CAMPAIGN).eq("week_key", week);
       stats.sent_this_week = (attempted || []).length;
       for (const profile of profiles.slice(0, 50)) {
         const recs = await prepare(profile.id, jobs, min);
-        if (recs.length === 5) stats.ready_with_5_matches++;
-        else stats.without_5_matches++;
+        if (validAvailableCards(recs)) stats.ready_with_1_to_5_matches++;
+        else stats.without_matches++;
       }
       return reply({ ok: true, ...stats });
     }
@@ -739,7 +747,7 @@ Deno.serve(async (req: Request) => {
     const results: unknown[] = [];
     for (const profile of toProcess) {
       const matches = await prepare(profile.id, jobs, min);
-      if (matches.length !== 5) { skipped++; continue; }
+      if (!validAvailableCards(matches)) { skipped++; continue; }
       const result = await send(profile.id, profile, matches, week, action === "send_test" ? "matchvagas_2050_teste" : CAMPAIGN);
       results.push(result);
       if (result.state === "accepted") accepted++;
