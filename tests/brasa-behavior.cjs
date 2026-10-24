@@ -11,6 +11,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  document.dispatchEvent(new window.Event('DOMContentLoaded'));
  window.CXCopilot.open();
  const root=document.getElementById('cxCopilot'),history=root.querySelector('[role=log]'),panel=document.getElementById('cxCopilotPanel');
+ assert.equal(root.querySelector('.cx-copilot-privacy'),null);
+ const expand=root.querySelector('[data-cx-expand]');
+ expand.click();assert.equal(root.classList.contains('cx-expanded'),true);assert.equal(expand.textContent,'Reduzir');
+ expand.click();assert.equal(root.classList.contains('cx-expanded'),false);
  const ask=text=>{const e=root.querySelector('textarea');e.value=text;root.querySelector('form').dispatchEvent(new window.Event('submit',{cancelable:true}));};
  const salary=[...root.querySelectorAll('[data-cx-quick] button')].find(b=>b.textContent==='Médias salariais');
  salary.click();assert.equal(routes.length,0,'suggestions must never navigate');assert.match(history.textContent,/7.500/);assert.match(history.textContent,/6 salários/);

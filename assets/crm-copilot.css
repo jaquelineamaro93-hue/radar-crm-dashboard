@@ -71,3 +71,23 @@
 #view-logada .search-tab-btn.active *,#view-logada .cx-tabs button.active *{color:inherit!important}
 #view-logada :is(button,a,[role="tab"],input,textarea,select):focus-visible{outline:3px solid #fdba74!important;outline-offset:3px!important;box-shadow:0 0 0 5px #211b18!important}
 @media(prefers-reduced-motion:reduce){#cxCopilot *,#view-logada .crm-sidebar{animation:none!important;transition:none!important}}
+
+/* Readable conversation with an optional expanded viewport. */
+#cxCopilot .cx-copilot-head{flex-direction:row!important;justify-content:flex-start!important;gap:10px!important;padding:10px 14px!important;min-height:64px!important;max-height:80px!important;margin:0!important;flex-shrink:0!important}
+#cxCopilot .cx-copilot-head>div{display:flex!important;flex-direction:column!important;align-items:flex-start!important;text-align:left!important}
+#cxCopilot .cx-copilot-head .brasa-fox{width:38px;height:38px;flex-basis:38px}
+#cxCopilot .cx-copilot-expand{flex:0 0 auto;min-height:44px;padding:8px;color:#fff;background:#363239;border:1px solid #635a62;border-radius:8px;font-size:12px}
+#cxCopilot .cx-copilot-panel{width:min(480px,calc(100vw - 32px));height:min(740px,calc(100dvh - 104px));max-height:calc(100dvh - 104px)}
+#cxCopilot .cx-copilot-history{min-height:0;padding:18px;flex:1 1 0%;overflow-y:auto}
+#cxCopilot .cx-copilot-message{font-size:16px;line-height:1.6;max-width:95%;flex-shrink:0}
+#cxCopilot .cx-copilot-consent{flex-shrink:0}
+#cxCopilot[data-started="true"] .cx-copilot-quick{display:none}
+#cxCopilot.cx-expanded .cx-copilot-panel{position:fixed;inset:24px 24px 24px auto;width:min(960px,calc(100vw - 48px));max-width:calc(100vw - 48px);height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}
+#cxCopilot.cx-expanded:has(.cx-copilot-panel:not([hidden])) .cx-copilot-launch{visibility:hidden}
+@media(max-width:600px){
+ #cxCopilot .cx-copilot-panel{right:0;width:calc(100vw - 24px);max-width:calc(100vw - 24px)}
+ #cxCopilot.cx-expanded .cx-copilot-panel{inset:8px 8px calc(8px + env(safe-area-inset-bottom,0px));width:calc(100vw - 16px);max-width:none;height:auto;max-height:none}
+ #cxCopilot .cx-copilot-head{padding:8px!important;gap:6px!important}
+ #cxCopilot .cx-copilot-head small{display:none}
+ #cxCopilot .cx-copilot-history{padding:12px}
+}

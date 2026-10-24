@@ -218,6 +218,7 @@ function process(question){
   // Nenhuma autorização antiga pode ser reaproveitada por uma nova pergunta.
   pendingDescription='';
   history?.querySelectorAll('.cx-copilot-consent').forEach(el=>el.remove());
+  root.dataset.started='true';
   addMessage('user',question);
   let found=classify(question);
   if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj/.test(normalize(question)))found={intent:'action',action:'salary'};
@@ -236,7 +237,7 @@ function process(question){
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;lastTopic='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
   showIntro();
 }
 function open(){
@@ -257,8 +258,7 @@ function mount(){
   root.innerHTML=
     '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa Copilot</span></button>'+
     '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
-     '<header class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong><small>Seu assistente no Conexão CRM</small></div><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></header>'+
-     '<div class="cx-copilot-privacy">Seu perfil não é enviado à IA. Consultas externas usam Jev primeiro e pedem sua confirmação.</div>'+
+     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong><small>Seu assistente no Conexão CRM</small></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
      '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
@@ -271,6 +271,13 @@ function mount(){
   entry=root.querySelector('[data-cx-input]');
   root.querySelector('[data-cx-open]').addEventListener('click',()=>drawer.hidden?open():close());
   root.querySelector('[data-cx-close]').addEventListener('click',close);
+  root.querySelector('[data-cx-expand]').addEventListener('click',()=>{
+    const expanded=root.classList.toggle('cx-expanded');
+    const button=root.querySelector('[data-cx-expand]');
+    button.textContent=expanded?'Reduzir':'Expandir';
+    button.setAttribute('aria-pressed',String(expanded));
+    button.setAttribute('aria-label',expanded?'Reduzir conversa':'Expandir conversa');
+  });
   root.querySelector('[data-cx-form]').addEventListener('submit',event=>{
     event.preventDefault();if(busy)return;const question=String(entry.value||'').trim();
     if(!question||question.length>2200)return;
