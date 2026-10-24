@@ -541,14 +541,29 @@
     const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
     const levelOk=(vaga,level)=>{
       if(!level)return true;
-      const title=normalize(vaga.title||vaga.cargo||''),n=normalize(level).replace(/[^a-z0-9]/g,'');
-      if(n.includes('clevel')||n==='executivo')return /(ceo|cto|cfo|coo|cro|cmo|chief|vice|\bvp\b|diretor|diretora|presidente)/.test(title);
-      if(n.includes('lideranca'))return /(gerente|coordenador|coordenad|supervisor|head|lider|manager)/.test(title);
-      if(n.includes('senior'))return /(senior|\bsr\b|lead)/.test(title);
-      if(n.includes('pleno'))return /(pleno|\bpl\b|mid-level|mid level)/.test(title);
-      if(n.includes('junior'))return /(junior|\bjr\b|trainee|iniciante)/.test(title);
-      if(n.includes('estagio'))return /(estagio|intern|aprendiz)/.test(title);
-      return true;
+      const t=normalize(vaga.title||vaga.cargo||'');
+      const n=normalize(level).replace(/[^a-z0-9]/g,'');
+      // Never use a description/tool mention or a broad regex to promote analysts to C-level.
+      const has=pattern=>pattern.test(t);
+      const classified=
+        has(/\b(c.level|ceo|cto|cfo|coo|cmo|cio|chro|cpo|chief\s+\w+(?:\s+\w+){0,3}\s+officer)\b/) ? 'clevel' :
+        has(/\b(diretor[a]?[es]?|diretoria|director|vice.president|vice.presidente|vp)\b/) ? 'diretoria' :
+        has(/\b(gerente|gerencia|manager|head)\b/) ? 'gerencia' :
+        has(/\b(coordenador[a]?|coordenacao|coordinator|supervisor[a]?)\b/) ? 'coordenacao' :
+        has(/\b(especialista|specialist|principal|staff)\b/) ? 'especialista' :
+        has(/\b(estagio|estagiario[a]?|intern|internship|trainee|aprendiz)\b/) ? 'estagio' :
+        has(/\b(junior|jr)\b/) ? 'junior' :
+        has(/\b(pleno|mid.level)\b/) ? 'pleno' :
+        has(/\b(senior|sr|lead)\b/) ? 'senior' :
+        has(/\b(analista|analyst|assistant|assistente)\b/) ? 'analista' : '';
+      if(n==='lideranca')return ['gerencia','coordenacao','diretoria','clevel'].includes(classified);
+      if(n==='executivo')return classified==='clevel';
+      if(n==='coordenador'||n==='coordenadora')return classified==='coordenacao';
+      if(n==='gerente')return classified==='gerencia';
+      if(n==='diretor'||n==='diretora')return classified==='diretoria';
+      if(n==='c-level')return classified==='clevel';
+      const aliases={clevel:'clevel',diretoria:'diretoria',gerencia:'gerencia',coordenacao:'coordenacao',especialista:'especialista',estagio:'estagio',junior:'junior',pleno:'pleno',senior:'senior',analista:'analista'};
+      return Boolean(aliases[n]) && classified===aliases[n];
     };
     window.aplicarFiltrosVagas=async function(){
       try{
