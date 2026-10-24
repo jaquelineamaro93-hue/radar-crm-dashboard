@@ -234,7 +234,7 @@ function salaryAnswer(question){
     'Para '+scope+', a média dos valores informados é '+money(mean)+' e a mediana é '+money(median)+'.\n\n'+
     'Esse cálculo usa '+n+' salário'+(n===1?' informado':'s informados')+' na pesquisa Cargos & Salários do portal.'+
     (n<5?' A amostra é pequena e não representa uma faixa típica do mercado.':' São valores declarados pelos participantes, não uma oferta salarial.')+
-    ' A base consultada não informa a periodicidade desses valores, portanto não posso afirmar que sejam salários mensais.';
+    ' A pesquisa não informa a periodicidade, então não posso chamar esses valores de salários mensais.'+(salaryContext.regionalFallback?' Se quiser, posso buscar referências públicas específicas de São Paulo.':'');
 
 }
 async function crmBrasaPublicJobs(question){
@@ -310,6 +310,19 @@ function process(question){
       }).catch(()=>{
         if(getUser()?.id===member&&canShow())addMessage('assistant','A consulta ao Radar não respondeu. Tente novamente em instantes.');
       });
+      return;
+    }
+    if(found.action==='salary'){
+      const answer=localAnswer('salary',question);
+      addMessage('assistant',answer,'salary');
+      // Once external research was authorized, proactively enrich a state-level
+      // request because the portal data only has macro-regions.
+      if(aiConsentSaved()&&/\b(?:sp|sao paulo)\b/.test(normalize(question))){
+        const seniority=salaryContext.nivel==='especialista'?'especialista em CRM':salaryContext.nivel==='coorden'?'coordenador(a) de CRM':salaryContext.nivel==='geren'?'gerente de CRM':'profissionais de CRM';
+        pendingDescription='Pesquise na internet referências públicas e datadas da remuneração mensal de '+seniority+' no estado de São Paulo (Brasil), deixando clara a moeda, a periodicidade, a amostra e se é salário CLT ou contrato PJ. Cite fontes com links. Não use perfis privados nem dados de outros membros.';
+        addMessage('assistant','Vou complementar com fontes públicas específicas de São Paulo.');
+        void analyze();
+      }
       return;
     }
     addMessage('assistant',localAnswer(found.action,question),found.action);return;
