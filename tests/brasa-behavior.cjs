@@ -25,8 +25,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  document.getElementById('view-logada').hidden=false;document.dispatchEvent(new window.Event('crm:route-changed'));
  assert.equal(document.getElementById('cxCopilot'),root);assert.equal(panel.hidden,false);
  history.lastElementChild.querySelector('button').click();assert.deepEqual(routes,['cargos']);assert.equal(panel.hidden,false);
- ask('quanto ganha em SP?');assert.match(history.lastElementChild.textContent,/não por cidade/);
- ask('salário de diretor remoto');assert.match(history.lastElementChild.textContent,/menos de cinco/);
+ ask('quanto ganha em SP?');assert.match(history.lastElementChild.textContent,/Sudeste/);assert.match(history.lastElementChild.textContent,/7.500/);
+ ask('salário de diretor remoto');assert.match(history.lastElementChild.textContent,/Não encontrei salários/);
  ask('<img src=x onerror=alert(1)>');assert.equal(history.querySelector('img'),null);
  ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/TypeSafe/);
  user={id:'second'};document.dispatchEvent(new window.Event('crm:auth-state'));

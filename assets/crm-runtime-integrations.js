@@ -26,10 +26,10 @@ addScript('/assets/open-to-work-excerpts.js?v=20261021-1','crm-otw-excerpts-runt
 if(!document.getElementById('crm-copilot-css')){
   const css=document.createElement('link');
   css.id='crm-copilot-css';css.rel='stylesheet';
-  css.href='/assets/crm-copilot.css?v=20261024-brasa3';
+  css.href='/assets/crm-copilot.css?v=20261024-brasa4';
   document.head.appendChild(css);
 }
-addScript('/assets/crm-copilot.js?v=20261024-brasa3','crm-copilot-runtime');
+addScript('/assets/crm-copilot.js?v=20261024-brasa4','crm-copilot-runtime');
 
 // O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.
 

@@ -91,3 +91,7 @@
  #cxCopilot .cx-copilot-head small{display:none}
  #cxCopilot .cx-copilot-history{padding:12px}
 }
+
+/* Expansion is immediate, independent of global page animation rules. */
+#cxCopilot .cx-copilot-panel,#cxCopilot .cx-copilot-head,#cxCopilot .cx-copilot-history{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+#cxCopilot .cx-copilot-panel{margin:0!important;padding:0!important}

@@ -15,7 +15,7 @@ const ACTIONS=Object.freeze({
   hybrid:{label:'Filtrar vagas híbridas',route:'vagas',filter:'hibrid'},
   events:{label:'Ver agenda de eventos',route:'eventos'},
   members:{label:'Conhecer membros',route:'membros'},
-  salary:{label:'Consultar salários',route:'cargos'},
+  salary:{label:'Ver pesquisa completa (opcional)',route:'cargos'},
   market:{label:'Ver dados do mercado',route:'mercado'},
   match:{label:'Ver Match de Vagas',route:'vagas'},
   avatar:{label:'Abrir meu Avatar',route:'xp-avatar'},
@@ -33,7 +33,7 @@ function canShow(){
     return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
   }catch{return false;}
 }
-let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='';
+let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={};
 const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
 const CTA=[
   ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
@@ -185,18 +185,28 @@ function salaryAnswer(question){
   const levels=[['estag','estag'],['junior','junior'],['pleno','pleno'],['senior','senior'],['especialista','especialista'],['coorden','coorden'],['geren','geren'],['diretor','diretor']];
   const selected=levels.filter(([word])=>q.includes(word));
   if(selected.length>1)return 'Você quer comparar esses níveis ou consultar apenas um? Informe uma senioridade por vez para eu calcular a média e a mediana da pesquisa.';
-  if(/\bsp\b|sao paulo|\brj\b|rio de janeiro/.test(q))return 'A pesquisa disponível agrupa localização por região, não por cidade ou estado. Posso consultar o Sudeste; quer esse recorte?';
+  const regionalFallback=/\bsp\b|sao paulo|\brj\b|rio de janeiro/.test(q);
+  if(/media.*salaria|salario.*geral|todos os niveis/.test(q)&&!selected.length)salaryContext={};
   const filters=[];
-  if(selected.length)filters.push(['nivel',selected[0][1]]);
-  for(const word of ['remot','hibrid','presencial'])if(q.includes(word))filters.push(['modelo',word]);
-  for(const word of ['sudeste','nordeste','centro-oeste','norte','sul'])if(new RegExp('\\b'+word+'\\b').test(q))filters.push(['regiao',word]);
-  for(const word of ['clt','pj'])if(new RegExp('\\b'+word+'\\b').test(q))filters.push(['contrato',word]);
+  if(selected.length)salaryContext.nivel=selected[0][1];
+  if(regionalFallback){salaryContext.regiao='sudeste';salaryContext.regionalFallback=true;}
+  for(const word of ['remot','hibrid','presencial'])if(q.includes(word))salaryContext.modelo=word;
+  for(const word of ['sudeste','nordeste','centro-oeste','norte','sul'])if(new RegExp('\\b'+word+'\\b').test(q)){salaryContext.regiao=word;if(!regionalFallback)salaryContext.regionalFallback=false;}
+  for(const word of ['clt','pj'])if(new RegExp('\\b'+word+'\\b').test(q))salaryContext.contrato=word;
+  for(const key of ['nivel','modelo','regiao','contrato'])if(salaryContext[key])filters.push([key,salaryContext[key]]);
   rows=rows.filter(r=>filters.every(([key,word])=>normalize(r[key]).includes(word)));
   const values=rows.map(r=>r.salario).filter(v=>typeof v==='number'&&Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
-  if(values.length<5)return 'Há menos de cinco salários informados nesse recorte. A amostra é insuficiente para uma comparação confiável. Tente ampliar a senioridade ou a modalidade.';
+  if(!values.length)return 'Não encontrei salários informados para essa combinação na pesquisa. Posso ampliar para outras modalidades ou regiões. Qual filtro você prefere retirar?';
   const n=values.length,mean=values.reduce((a,b)=>a+b,0)/n,median=n%2?values[(n-1)/2]:(values[n/2-1]+values[n/2])/2;
   const money=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
-  return 'Na pesquisa Cargos & Salários do portal'+(filters.length?' (recorte: '+filters.map(f=>f[1]).join(', ')+')':' (todos os níveis)')+':\nMédia: '+money(mean)+'\nMediana: '+money(median)+'\nAmostra: '+n+' salários informados.\nSão valores declarados na pesquisa, não uma previsão ou oferta salarial. Quer consultar uma senioridade ou modalidade específica?';
+  const labels={geren:'Gerência',coorden:'Coordenação',junior:'Júnior',pleno:'Pleno',senior:'Sênior',estag:'Estágio',diretor:'Diretoria',especialista:'Especialista',sudeste:'Sudeste',remot:'Remoto',hibrid:'Híbrido',presencial:'Presencial',clt:'CLT',pj:'PJ'};
+  const scope=filters.map(f=>labels[f[1]]||f[1]).join(', ')||'todos os níveis';
+  return (salaryContext.regionalFallback?'A base informa regiões, não estados. Usei o Sudeste como referência, mantendo os demais filtros.\n\n':'')+
+    'Para '+scope+', a média dos valores informados é '+money(mean)+' e a mediana é '+money(median)+'.\n\n'+
+    'Esse cálculo usa '+n+' salário'+(n===1?' informado':'s informados')+' na pesquisa Cargos & Salários do portal.'+
+    (n<5?' A amostra é pequena e não representa uma faixa típica do mercado.':' São valores declarados pelos participantes, não uma oferta salarial.')+
+    ' A base consultada não informa a periodicidade desses valores, portanto não posso afirmar que sejam salários mensais.';
+
 }
 function localAnswer(action,question){
   if(action==='salary')return salaryAnswer(question);
@@ -237,7 +247,7 @@ function process(question){
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
   showIntro();
 }
 function open(){
@@ -300,7 +310,7 @@ function mount(){
 // One mounted instance per authenticated session. Route visibility never clears messages.
 function reconcile(){
   if(!signed()){
-    pendingDescription='';lastTopic='';busy=false;lastUserId='';
+    pendingDescription='';lastTopic='';salaryContext={};busy=false;lastUserId='';
     if(root)root.remove();
     root=null;drawer=null;history=null;entry=null;
     return;
