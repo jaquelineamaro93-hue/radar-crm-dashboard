@@ -21,10 +21,13 @@ assert.match(loader,/crm-copilot\.css\?v=/);
 assert.match(css,/\.cx-copilot-panel\[hidden\]\{display:none!important;\}/);
 assert.match(css,/@media\(max-width:480px\)/);
 
-// Hard privacy boundaries and explicit third-party authorization.
-assert.doesNotMatch(script,/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|service_role/);
-// Array.from is safe; block Supabase query builders and all database mutations.
-assert.doesNotMatch(script,/\b(?:authSb|supabase|client|sb)\.from\(|\.rpc\(|\.upsert\(|\.insert\(|\.update\(|\.delete\(/);
+// A documentation mention of a privileged role is not a credential.
+const credentialSource=script.replace('  // Public-only browser read. Never use service_role, private member tables or user profiles.','');
+assert.doesNotMatch(credentialSource,/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|service_role|sb_secret_/);
+// Allow only the reviewed public-job read; private tables and all writes stay blocked.
+const publicJobRead="client.from('vagas_crm')\n      .select('title,company,location,url,source,published_at,modalidade_normalizada,senioridade_normalizada,availability_status')\n      .gte('published_at',since).or('availability_status.is.null,availability_status.neq.closed')\n      .order('published_at',{ascending:false}).limit(300)";
+assert.equal(script.split(publicJobRead).length,2,'exactly one bounded public-job query is allowed');
+assert.doesNotMatch(script.replace(publicJobRead,''),/\b(?:authSb|supabase|client|sb)\.from\(|\.rpc\(|\.upsert\(|\.insert\(|\.update\(|\.delete\(/);
 assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB/);
 assert.doesNotMatch(script,/eval\(|new Function\(|document\.write\(/);
 assert.match(script,/ph-no-capture/);
@@ -80,4 +83,4 @@ assert.equal(assistant.classify(description).intent,'analyze');
 const withSalary=description+' Faixa salarial de R$ 9.000.';
 assert.equal(assistant.classify(withSalary).intent,'analyze','Long job descriptions take priority over salary keywords');
 
-console.log('PASS: privacy-first copilot has allowlisted UI actions, no direct database access, optional external AI and validated intents.');
+console.log('PASS: privacy-first copilot has allowlisted UI actions, only allowlisted public-job reads, optional external AI and validated intents.');
