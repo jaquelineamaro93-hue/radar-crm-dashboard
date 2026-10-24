@@ -11,10 +11,13 @@ export async function handleRequest(req:Request){
   let body;try{body=JSON.parse(raw)}catch{return respond({error:'INVALID_JSON'},400)}
   const prompt=typeof body.prompt==='string'?body.prompt.trim():'';
   if(prompt.length<3||prompt.length>2200||body.consent!==true)return respond({error:'INVALID_REQUEST'},400);
-  if(/[\w.+-]+@[\w.-]+\.[a-z]{2,}|\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b|(?:senha|password|api[\s_-]?key|token de acesso|chave secreta)/i.test(prompt))return respond({error:'SENSITIVE_INPUT'},400);
+  const sensitive=/[\w.+-]+@[\w.-]+\.[a-z]{2,}|\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b|(?:senha|password|api[\s_-]?key|token de acesso|chave secreta)/i;
+  if(sensitive.test(prompt))return respond({error:'SENSITIVE_INPUT'},400);
+  const context=Array.isArray(body.context)?body.context:[];
+  if(context.length>2||context.some((x:unknown)=>typeof x!=='string'||x.length>320||sensitive.test(x)))return respond({error:'SENSITIVE_INPUT'},400);
   if(!Deno.env.get('TYPESAFE_API_KEY'))return respond({error:'CLASSIFIER_NOT_CONFIGURED'},503);
   if(!await consumeQuota(user.id))return respond({error:'RATE_LIMIT'},429);
-  const result=await answerBrasa(prompt,name=>Deno.env.get(name));
+  const result=await answerBrasa(prompt,name=>Deno.env.get(name),fetch,context);
   return respond(result,'error' in result?503:200);
  }catch{return respond({error:'SERVICE_UNAVAILABLE'},503)}
 }
