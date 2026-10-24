@@ -5663,57 +5663,64 @@ function evCardHTML(e){
 
 const EV_MO = ["Destaque","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro","Janeiro","Fevereiro","Março","Abril","2027","Ano todo"];
 
-function evGetFilt(){
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
+// Calendar date resolution uses the end of an event, so multi-day events remain visible
+// until their final day. Month-only entries expire at the end of that month.
+function evTodayKey(now=new Date()){
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+  const pick=type=>Number(parts.find(p=>p.type===type)?.value||0);
+  return pick('year')*10000+pick('month')*100+pick('day');
+}
+const EV_MONTH_NUM={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
+function evMonthEndKey(year,month){
+  if(year<2020||year>2100||month<1||month>12)return null;
+  return year*10000+month*100+new Date(Date.UTC(year,month,0)).getUTCDate();
+}
+function evEventEndKey(event,todayKey=evTodayKey()){
+  const raw=String(event.data||'').trim();
+  const normalized=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(event.mes==='Ano todo'||/^(continuo|ano todo|recorrente)$/i.test(normalized))return 99991231;
+  const todayYear=Math.floor(todayKey/10000);
+  const declaredYear=(raw.match(/\b20\d{2}\b/)||String(event.nome||'').match(/\b20\d{2}\b/)||String(event.mes||'').match(/\b20\d{2}\b/))?.[0];
+  const year=Number(declaredYear||todayYear);
+  const fullDates=[...raw.matchAll(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/g)];
+  if(fullDates.length){
+    const last=fullDates[fullDates.length-1],day=Number(last[1]),month=Number(last[2]),yr=Number(last[3]||year);
+    if(day<1||day>new Date(Date.UTC(yr,month,0)).getUTCDate()||month<1||month>12)return null;
+    return yr*10000+month*100+day;
+  }
+  // Covers "Set/2026", "Out/2026", and "Jun/2027" inside longer labels.
+  const monthText=normalized.match(/\b(jan(?:eiro)?|fev(?:ereiro)?|mar(?:co)?|abr(?:il)?|mai(?:o)?|jun(?:ho)?|jul(?:ho)?|ago(?:sto)?|set(?:embro)?|out(?:ubro)?|nov(?:embro)?|dez(?:embro)?)\s*\/\s*(20\d{2})\b/);
+  if(monthText)return evMonthEndKey(Number(monthText[2]),EV_MONTH_NUM[monthText[1].slice(0,3)]);
+  // "Data a confirmar" is not a firm date. The designated month is only a
+  // conservative visibility deadline; do not invent a specific event day.
+  const group=String(event.mes||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const groupMonth=EV_MONTH_NUM[group.slice(0,3)];
+  if(groupMonth)return evMonthEndKey(year,groupMonth);
+  if(/^(20\d{2})$/.test(normalized)||/^(20\d{2})$/.test(group))return evMonthEndKey(year,12);
+  // Entries without any identifiable date must not be advertised as upcoming.
+  return null;
+}
+function evIsUpcoming(event,todayKey=evTodayKey()){
+  const end=evEventEndKey(event,todayKey);
+  return end!==null&&end>=todayKey;
+}
+function evGetFilt(todayKey=evTodayKey()){
   return evAllEvents.filter(e=>{
-    const okA = evFA==="all" || (e.area||"").toLowerCase().includes(evFA);
-    const okT = evFT==="all" || (e.tipo||"").toLowerCase()===evFT;
-    const pr = (e.preco||"").toLowerCase();
-    const okP = evFP==="all"
-      || (evFP==="free" && (pr.includes("gratuit")||pr.includes("stream")))
-      || (evFP==="paid" && !pr.includes("gratuit") && !pr.includes("stream") && !pr.includes("consultar"))
-      || (evFP==="stream" && pr.includes("stream"));
-    const okMe = evFMe==="all" || ((evPresence[e.id]||[]).some(p=>p.status===evFMe));
-
-    // Filtro de datas passadas: mostra apenas eventos futuros.
-    // Usa a data de FIM do range (quando há "a" ou "e") para não descartar
-    // eventos de múltiplos dias que ainda estejam ocorrendo.
-    let okDate = true;
-    if(e.data && !['contínuo','continuo','ano todo'].includes((e.data||'').toLowerCase())){
-      try{
-        const raw = e.data;
-        // Pega a última data que aparecer no texto (data de fim do range)
-        const allDates = [...raw.matchAll(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/g)];
-        if(allDates.length > 0){
-          const last = allDates[allDates.length - 1];
-          const day = parseInt(last[1]);
-          const month = parseInt(last[2]) - 1;
-          // Ano: usa o do match se tiver, senão extrai do texto ou usa atual/próximo
-          let year;
-          if(last[3]){ year = parseInt(last[3]); }
-          else {
-            const yearM = raw.match(/\d{4}/);
-            year = yearM ? parseInt(yearM[0]) : new Date().getFullYear();
-          }
-          const eventDate = new Date(year, month, day);
-          okDate = eventDate >= today;
-        }
-      }catch(err){ /* ignora erro de parsing */ }
-    }
-
-    return okA && okT && okP && okMe && okDate;
+    const okA=evFA==="all"||(e.area||"").toLowerCase().includes(evFA);
+    const okT=evFT==="all"||(e.tipo||"").toLowerCase()===evFT;
+    const pr=(e.preco||"").toLowerCase();
+    const okP=evFP==="all"||(evFP==="free"&&(pr.includes("gratuit")||pr.includes("stream")))||
+      (evFP==="paid"&&!pr.includes("gratuit")&&!pr.includes("stream")&&!pr.includes("consultar"))||
+      (evFP==="stream"&&pr.includes("stream"));
+    const okMe=evFMe==="all"||(evPresence[e.id]||[]).some(p=>p.status===evFMe);
+    return okA&&okT&&okP&&okMe&&evIsUpcoming(e,todayKey);
   });
 }
-
-function evGetHotEvents(n){
-  n = n||3;
-  return evAllEvents
-    .filter(e=>e.mes!=="Destaque")
-    .map(e=>({...e, votos:(evPresence[e.id]||[]).filter(p=>p.status==="vou").length}))
+function evGetHotEvents(n=3,visible=evGetFilt()){
+  return visible.filter(e=>e.mes!=="Destaque")
+    .map(e=>({...e,votos:(evPresence[e.id]||[]).filter(p=>p.status==="vou").length}))
     .filter(e=>e.votos>0)
-    .sort((a,b)=>b.votos-a.votos)
+    .sort((a,b)=>b.votos-a.votos||evEventEndKey(a)-evEventEndKey(b))
     .slice(0,n);
 }
 
@@ -5737,7 +5744,7 @@ function evRenderAll(){
     const label = m==="2027" ? " 2027" : isDestaque ? "Em destaque" : m;
     html += '<div class="'+(isDestaque?'ev-mdiv-destaque':'ev-mdiv')+'">'+label+'</div>';
     if(isDestaque){
-      const hot = evGetHotEvents(3);
+      const hot = evGetHotEvents(3,list);
       if(hot.length){
         html += '<div class="ev-hot-banner"><span class="ev-hot-label">Mais confirmados:</span>' +
           hot.map(e=>{
@@ -5747,7 +5754,7 @@ function evRenderAll(){
           }).join('') + '</div>';
       }
     }
-    html += byM[m].map(evCardHTML).join("");
+    html += byM[m].sort((a,b)=>evEventEndKey(a)-evEventEndKey(b)).map(evCardHTML).join("");
   });
   grid.innerHTML = html;
   grid.querySelectorAll(".ev-btn-pres").forEach(b=>b.addEventListener("click",()=>evHandleP(b.dataset.id,b.dataset.s)));
@@ -5773,8 +5780,10 @@ function evSyncBtns(id){
   });
 }
 function evUpdateC(){
-  document.getElementById("evTotal").textContent = evAllEvents.length + " eventos";
-  const n = Object.values(evPresence).flat().filter(p=>p.status==="vou").length;
+  const upcoming=evAllEvents.filter(e=>evIsUpcoming(e));
+  document.getElementById("evTotal").textContent = upcoming.length + (upcoming.length===1?" evento disponível":" eventos disponíveis");
+  const activeIds=new Set(upcoming.map(e=>e.id));
+  const n = Object.entries(evPresence).filter(([id])=>activeIds.has(id)).flatMap(([,people])=>people).filter(p=>p.status==="vou").length;
   document.getElementById("evGoing").textContent = n + (n!==1?' pessoas marcadas como "vou"':' pessoa marcada como "vou"');
 }
 
