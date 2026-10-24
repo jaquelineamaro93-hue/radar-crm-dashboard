@@ -29,6 +29,10 @@ const publicJobRead="client.from('vagas_crm')\n      .select('title,company,loca
 assert.equal(script.split(publicJobRead).length,2,'exactly one bounded public-job query is allowed');
 assert.doesNotMatch(script.replace(publicJobRead,''),/\b(?:authSb|supabase|client|sb)\.from\(|\.rpc\(|\.upsert\(|\.insert\(|\.update\(|\.delete\(/);
 assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB/);
+assert.match(script,/Seu cadastro não será anexado\. Não inclua dados pessoais\./);
+assert.match(script,/Max-Age=15552000/);
+assert.match(script,/data-cx-privacy-settings/);
+assert.match(script,/recentQuestions\.slice\(0,-1\)\.slice\(-2\)/);
 assert.doesNotMatch(script,/eval\(|new Function\(|document\.write\(/);
 assert.match(script,/ph-no-capture/);
 assert.match(script,/functions\.invoke\('brasa-copilot'/);
