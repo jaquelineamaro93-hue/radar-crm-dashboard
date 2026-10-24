@@ -207,7 +207,7 @@ function salaryAnswer(question){
   const q=normalize(question);
   if(/\b(mensal|mensalmente|por mes|periodicidade|anual|ao ano)\b/.test(q)&&!/(media|mediana|salari|remuner)/.test(q))
     return 'A pesquisa do portal não informa se os valores são mensais ou anuais. Por isso não é correto apresentá-los como salário por mês. Posso buscar referências públicas com essa informação, se você quiser.';
-  if(/\b(sao paulo|\bsp\b)\b/.test(q)&&/\b(mas|so|apenas|exatamente|especificamente|mesmo|esses dados)\b/.test(q))
+  if(/\b(sao paulo|\bsp\b)\b/.test(q)&&/\b(mas|mais|so|apenas|exatamente|especificamente|mesmo|esses dados|e de)\b/.test(q))
     return 'Não especificamente. O cálculo anterior considera o Sudeste, que inclui São Paulo e outros estados. Não consigo afirmar que essa média seja exclusiva de SP. Posso procurar referências públicas específicas de São Paulo.';
   let rows;try{rows=typeof CARGOS_ROWS!=='undefined'?CARGOS_ROWS:null}catch{}
   if(!Array.isArray(rows))return 'Não consegui acessar os dados públicos da pesquisa salarial nesta tela. Não vou inventar valores. O relatório completo pode ser aberto pelo botão abaixo.';
