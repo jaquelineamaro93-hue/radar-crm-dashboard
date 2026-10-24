@@ -217,7 +217,7 @@ async function crmBrasaPublicJobs(question){
     const since=new Date(Date.now()-25*86400000).toISOString();
     const result=await client.from('vagas_crm')
       .select('title,company,location,url,source,published_at,modalidade_normalizada,senioridade_normalizada,availability_status')
-      .gte('published_at',since).neq('availability_status','closed')
+      .gte('published_at',since).or('availability_status.is.null,availability_status.neq.closed')
       .order('published_at',{ascending:false}).limit(300);
     return result;
   }
