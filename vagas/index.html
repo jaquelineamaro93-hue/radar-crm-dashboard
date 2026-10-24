@@ -3999,6 +3999,16 @@ function crmRadarSortUnique(jobs,sortMode){
  return rows.filter(job=>{const key=crmRadarUniqueKey(job);if(seen.has(key))return false;seen.add(key);return true;});
 }
 
+// Brasa pode ler apenas as vagas da view pública, jamais tabelas de perfis.
+window.crmBrasaReadPublicJobs=async function(){
+  if(!initVagasSupabase())return {data:[],error:{message:'Radar indisponível'}};
+  const cutoff=new Date(Date.now()-25*86400000).toISOString();
+  return vagasSb.from('crm_radar_jobs_public')
+    .select('title,company,location,modalidade_normalizada,published_at,url,availability_status')
+    .neq('availability_status','closed').gte('published_at',cutoff)
+    .order('published_at',{ascending:false}).limit(900);
+};
+
 async function carregarVagasHub() {
   if(crmRadarRequestInFlight)return;
   const activeFilters=['categoria','cargo','empresa','nivel','plataforma','estado','municipio','modalidade','abrangencia']
