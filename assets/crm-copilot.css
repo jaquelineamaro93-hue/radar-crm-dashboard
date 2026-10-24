@@ -95,3 +95,16 @@
 /* Expansion is immediate, independent of global page animation rules. */
 #cxCopilot .cx-copilot-panel,#cxCopilot .cx-copilot-head,#cxCopilot .cx-copilot-history{transition:none!important;animation:none!important;scroll-behavior:auto!important}
 #cxCopilot .cx-copilot-panel{margin:0!important;padding:0!important}
+
+/* Brasa: consentimento compacto, fontes verificáveis e opção de revogação. */
+#cxCopilot .cx-copilot-consent{gap:8px;padding:11px 13px;background:#292526;border-color:#63574f}
+#cxCopilot .cx-copilot-consent p{font-size:12px;line-height:1.5;color:#f1e8df;margin:0 0 3px}
+#cxCopilot .cx-copilot-consent button{min-height:37px}
+#cxCopilot .cx-copilot-privacy-settings{background:none;border:0;color:#fbc49c;font-size:11px;text-decoration:underline;text-underline-offset:3px;padding:5px;white-space:nowrap}
+#cxCopilot .cx-copilot-privacy-settings[hidden]{display:none!important}
+#cxCopilot .cx-copilot-sources{display:grid;gap:6px;border-top:1px solid #595257;margin-top:12px;padding-top:10px;font-size:12px}
+#cxCopilot .cx-copilot-sources strong{font-size:11px;color:#d9cbc3}
+#cxCopilot .cx-copilot-sources a{color:#ffbe8c;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+#cxCopilot .cx-copilot-bottom{flex-wrap:wrap}
+#cxCopilot .cx-copilot-bottom small{flex:1 1 170px}
+@media(max-width:480px){#cxCopilot .cx-copilot-privacy-settings{font-size:10px}}
