@@ -7,6 +7,21 @@ await answerBrasa('Ajude com CRM',()=>undefined,()=>{throw Error('must not call'
 for(const decision of [{type:'choice',choice:'advice',confidence:0.4},{type:'choice',choice:'injected',confidence:1},{type:'choice',choice:'salary',confidence:.95},{type:'choice',choice:'advice',confidence:'1'}]){calls=[];await answerBrasa('Ajude com CRM',env,sender(decision));assert.equal(calls.length,1);}
 calls=[];assert.equal((await answerBrasa('Ajude com CRM',env,sender({type:'choice',choice:'advice',confidence:.95}))).method,'jev_then_llm');assert.equal(calls.length,2);assert.match(calls[0],/typesafe/);assert.match(calls[1],/openai/);
 calls=[];await answerBrasa('Ajude com CRM',env,sender({},false));assert.equal(calls.length,1);
+
+calls=[];
+const webSender=async(url,opts)=>{
+ calls.push({url,body:JSON.parse(opts.body)});
+ if(url.includes('typesafe'))return new Response(JSON.stringify({answers:{intent:{type:'choice',choice:'research',confidence:.99}}}));
+ return new Response(JSON.stringify({output:[{type:'message',content:[{type:'output_text',text:'Encontrei uma referência recente para São Paulo.',annotations:[{type:'url_citation',url:'https://www.gov.br/trabalho-e-emprego',title:'Fonte oficial'}]}]}]}));
+};
+const webResult=await answerBrasa('Pesquise na internet a média salarial em São Paulo',env,webSender,['Quero consultar salários']);
+assert.equal(webResult.method,'jev_web_search');
+assert.equal(webResult.sources?.[0]?.url,'https://www.gov.br/trabalho-e-emprego');
+assert.equal(webSender&&calls.length,2);
+assert.equal(calls[1].body.store,false);
+assert.equal(calls[1].body.tools[0].type,'web_search_preview');
+assert.equal(calls[1].body.input.length,3,'Only bounded user context is sent with the request');
+
 console.log('PASS: missing key, classifier failure, low confidence and local routes never call OpenAI; advice calls Jev first');
 
 assert.equal(formatBrasaReply('  Olá — vamos revisar...  \n\n\n Próximo passo: de 8–13 vagas.  '),'Olá, vamos revisar.\n\nPróximo passo: de 8 a 13 vagas.');
