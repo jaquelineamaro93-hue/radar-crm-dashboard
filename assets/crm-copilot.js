@@ -181,7 +181,7 @@ async function analyze(){
 function salaryAnswer(question){
   const q=normalize(question);
   let rows;try{rows=typeof CARGOS_ROWS!=='undefined'?CARGOS_ROWS:null}catch{}
-  if(!Array.isArray(rows))return 'A pesquisa salarial não está disponível nesta tela. Não vou estimar valores sem a base. Você pode consultar o relatório completo.';
+  if(!Array.isArray(rows))return 'Não consegui acessar os dados públicos da pesquisa salarial nesta tela. Não vou inventar valores. O relatório completo pode ser aberto pelo botão abaixo.';
   const levels=[['estag','estag'],['junior','junior'],['pleno','pleno'],['senior','senior'],['especialista','especialista'],['coorden','coorden'],['geren','geren'],['diretor','diretor']];
   const selected=levels.filter(([word])=>q.includes(word));
   if(selected.length>1)return 'Você quer comparar esses níveis ou consultar apenas um? Informe uma senioridade por vez para eu calcular a média e a mediana da pesquisa.';
@@ -209,9 +209,20 @@ function salaryAnswer(question){
 
 }
 async function crmBrasaPublicJobs(question){
-  if(typeof window.crmBrasaReadPublicJobs!=='function')return 'O Radar não está disponível nesta tela agora.';
+  // Public-only browser read. Never use service_role, private member tables or user profiles.
+  async function readPublicJobs(){
+    if(typeof window.crmBrasaReadPublicJobs==='function')return window.crmBrasaReadPublicJobs();
+    const client=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
+    if(!client?.from)return {data:null,error:new Error('Supabase indisponível')};
+    const since=new Date(Date.now()-25*86400000).toISOString();
+    const result=await client.from('vagas_crm')
+      .select('title,company,location,url,source,published_at,modalidade_normalizada,senioridade_normalizada,availability_status')
+      .gte('published_at',since).or('availability_status.is.null,availability_status.neq.closed')
+      .order('published_at',{ascending:false}).limit(300);
+    return result;
+  }
   const q=normalize(question);
-  const {data,error}=await window.crmBrasaReadPublicJobs();
+  const {data,error}=await readPublicJobs();
   if(error)throw error;
   const executive=/\b(c.level|ceo|cto|cio|cdo|ciso|cmo|coo|cfo|chief|diretor|director|head|vp|vice.president|lideranca)\b/.test(q);
   const tech=/tecnologia|technology|tech|software|engenharia|engineering|ti\b|it\b|dados|data|ia\b|ai\b/.test(q);
@@ -223,7 +234,7 @@ async function crmBrasaPublicJobs(question){
     const mode=normalize(v.modalidade_normalizada||'');
     return seniorOk&&techOk&&(!remote||mode.includes('remot'))&&(!hybrid||mode.includes('hibrid'));
   }).slice(0,5);
-  if(!valid.length)return 'Consultei as vagas públicas do Radar publicadas nos últimos 25 dias, sem vagas comprovadamente encerradas, e não encontrei resultados para esses critérios. Posso tentar uma busca mais ampla. A disponibilidade precisa ser confirmada no anúncio original.';
+  if(!valid.length)return 'A consulta terminou sem vagas compatíveis com esses critérios. Posso ampliar a busca mantendo a senioridade exigida. A disponibilidade precisa ser confirmada no anúncio original.';
   return 'Encontrei '+valid.length+' oportunidade(s) no Radar publicadas nos últimos 25 dias. A disponibilidade deve ser confirmada no anúncio original:\n\n'+valid.map((v,i)=>{
     const safeUrl=typeof v.url==='string'&&/^https:\/\/[^\s]+$/i.test(v.url)?v.url:'';
     const company=String(v.company||'').trim();
