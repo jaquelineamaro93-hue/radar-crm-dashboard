@@ -50,7 +50,7 @@ function fields(profile={},user={}){
     open_to_work:profile.open_to_work===true,
     perfil_completo:complete,
     cadastro_incompleto:!complete,
-    diretorio_visivel:profile.directory_visible!==false,
+    diretorio_visivel:profile.directory_visible===true,
     recebe_novidades:profile.receive_community_updates===true,
     ...(typeof window.crmPushPreferenceFields==='function'?window.crmPushPreferenceFields():{}),
     origem:'conexao_crm'
