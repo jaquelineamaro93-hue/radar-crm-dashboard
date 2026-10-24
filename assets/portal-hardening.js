@@ -380,27 +380,25 @@
   document.addEventListener('crm:admin-ready',syncReportsAndIcons);
   document.addEventListener('crm:role-resolved',syncReportsAndIcons);
 
-  // Correção visual pontual: preserva o carregamento e a árvore da sidebar.
-  if(!document.getElementById('crm-sidebar-ux-fix')){
-    const css=document.createElement('style');css.id='crm-sidebar-ux-fix';
-    css.textContent='.crm-open-work-compact-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}.crm-open-work-compact-head .section-desc{flex:1 1 290px;min-width:0}.crm-open-work-compact-head #crmSkillRecommendationLink{margin-left:auto}@media(max-width:700px){.crm-open-work-compact-head{align-items:stretch}.crm-open-work-compact-head #crmSkillRecommendationLink{margin-left:0}}';
-    document.head.appendChild(css);
-  }
-
+  // O atalho do Hall acompanha o texto explicativo de Buscar profissional.
+  // Sem bloco adicional nem alteração na estrutura dos cards.
   function openToWorkRankShortcut(){
     const page=document.getElementById('pageSearch');
-    if(!page||document.getElementById('crmSkillRecommendationLink'))return;
+    if(!page)return;
     const desc=page.querySelector('.section-desc');
     if(!desc)return;
-    const link=document.createElement('a');link.id='crmSkillRecommendationLink';
-    link.href='/#xp-rankings';link.dataset.crmRoute='xp-rankings';link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
-    link.style.cssText='display:inline-flex;margin:0;padding:8px 12px;border:1px solid #544034;border-radius:11px;color:#f2b889;font-size:12px;text-decoration:none;white-space:normal;flex-shrink:0';
-    // Ação no cabeçalho, sem criar outra linha entre as abas e os cards.
-    const header=desc.parentElement;
-    if(header){
-      header.classList.add('crm-open-work-compact-head');
-      header.appendChild(link);
-    }else desc.after(link);
+    let link=document.getElementById('crmSkillRecommendationLink');
+    if(!link){
+      link=document.createElement('a');
+      link.id='crmSkillRecommendationLink';
+      link.href='/#xp-rankings';
+      link.dataset.crmRoute='xp-rankings';
+      link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
+    }
+    // Link textual inline, após a descrição. Não cria espaçamento vertical.
+    link.style.cssText='display:inline;color:#f2b889;font-size:inherit;text-decoration:underline;text-underline-offset:3px;border:0;background:transparent;padding:0;margin:0;white-space:normal';
+    desc.append(' ',link);
+    desc.parentElement?.classList.remove('crm-open-work-compact-head');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openToWorkRankShortcut,{once:true});
   else openToWorkRankShortcut();
