@@ -31,6 +31,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  ask('salário de diretor remoto');assert.match(history.lastElementChild.textContent,/Não encontrei salários/);
  ask('<img src=x onerror=alert(1)>');assert.equal(history.querySelector('img'),null);
  ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/Seu cadastro não será anexado/);
+ const consentCard=history.querySelector('.cx-copilot-consent');
+ assert.ok(consentCard,'first external request must ask for consent');
+ consentCard.querySelector('button').click();
+ assert.match(document.cookie,/crm_brasa_aceite_v2_/,'consent preference saved per account');
+ assert.equal(root.querySelector('[data-cx-privacy-settings]').hidden,false);
+ ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));
+ assert.equal(history.querySelector('.cx-copilot-consent'),null,'subsequent requests reuse consent');
+ root.querySelector('[data-cx-privacy-settings]').click();
+ assert.doesNotMatch(document.cookie,/crm_brasa_aceite_v2_/,'consent can be revoked');
+ ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));
+ assert.ok(history.querySelector('.cx-copilot-consent'),'revoked consent asks again');
  user={id:'second'};document.dispatchEvent(new window.Event('crm:auth-state'));
  assert.equal(history.children.length,1,'new account must clear conversation');
  user=null;document.dispatchEvent(new window.Event('crm:auth-state'));assert.equal(document.getElementById('cxCopilot'),null);
