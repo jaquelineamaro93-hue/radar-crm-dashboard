@@ -11,7 +11,7 @@ const css=fs.readFileSync(path.join(base,'assets/crm-copilot.css'),'utf8');
 const loader=fs.readFileSync(path.join(base,'assets/crm-runtime-integrations.js'),'utf8');
 const privacy=fs.readFileSync(path.join(base,'privacy-policy.html'),'utf8');
 assert.match(privacy,/Assistente Brasa Copilot/);
-assert.match(privacy,/somente o texto informado/);
+assert.match(privacy,/até duas mensagens anteriores/);
 
 // Syntax checks cover both the assistant and existing bootstrap.
 new vm.Script(script,{filename:'assets/crm-copilot.js'});
