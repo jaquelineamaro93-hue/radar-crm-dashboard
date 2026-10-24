@@ -26,9 +26,11 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert.equal(document.getElementById('cxCopilot'),root);assert.equal(panel.hidden,false);
  history.lastElementChild.querySelector('button').click();assert.deepEqual(routes,['cargos']);assert.equal(panel.hidden,false);
  ask('quanto ganha em SP?');assert.match(history.lastElementChild.textContent,/Sudeste/);assert.match(history.lastElementChild.textContent,/7.500/);
+ ask('e mensal?');assert.match(history.lastElementChild.textContent,/não informa se os valores são mensais ou anuais/);
+ ask('mas é de São Paulo?');assert.match(history.lastElementChild.textContent,/não consigo afirmar que essa média seja exclusiva de SP/i);
  ask('salário de diretor remoto');assert.match(history.lastElementChild.textContent,/Não encontrei salários/);
  ask('<img src=x onerror=alert(1)>');assert.equal(history.querySelector('img'),null);
- ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/TypeSafe/);
+ ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/Seu cadastro não será anexado/);
  user={id:'second'};document.dispatchEvent(new window.Event('crm:auth-state'));
  assert.equal(history.children.length,1,'new account must clear conversation');
  user=null;document.dispatchEvent(new window.Event('crm:auth-state'));assert.equal(document.getElementById('cxCopilot'),null);
