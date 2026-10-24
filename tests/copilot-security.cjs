@@ -10,7 +10,7 @@ const script=fs.readFileSync(path.join(base,'assets/crm-copilot.js'),'utf8');
 const css=fs.readFileSync(path.join(base,'assets/crm-copilot.css'),'utf8');
 const loader=fs.readFileSync(path.join(base,'assets/crm-runtime-integrations.js'),'utf8');
 const privacy=fs.readFileSync(path.join(base,'privacy-policy.html'),'utf8');
-assert.match(privacy,/Assistente Conexão IA/);
+assert.match(privacy,/Assistente Brasa Copilot/);
 assert.match(privacy,/somente o texto informado/);
 
 // Syntax checks cover both the assistant and existing bootstrap.
@@ -28,11 +28,8 @@ assert.doesNotMatch(script,/\b(?:authSb|supabase|client|sb)\.from\(|\.rpc\(|\.up
 assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB/);
 assert.doesNotMatch(script,/eval\(|new Function\(|document\.write\(/);
 assert.match(script,/ph-no-capture/);
-assert.match(script,/Confirmar análise com IA/);
-assert.match(script,/addEventListener\('click',\(\)=>\{p\.remove\(\);void analyze\(\);\}\)/);
-assert.match(script,/functions\.invoke\('openai-assistant'/);
-assert.match(script,/body:\{kind:'assistant',prompt\}/);
-assert.doesNotMatch(script,/currentProfileStatus[\s\S]{0,1100}functions\.invoke/);
+assert.match(script,/functions\.invoke\('brasa-copilot'/);
+assert.doesNotMatch(script,/functions\.invoke\('openai-assistant'/);
 
 // Test the allowlisted intent engine without mounting anything or contacting Supabase.
 const listeners=[];

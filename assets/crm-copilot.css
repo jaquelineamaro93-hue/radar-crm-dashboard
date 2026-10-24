@@ -42,3 +42,32 @@
  #cxCopilot .cx-copilot-launch{padding:11px 15px;}
 }
 @media(prefers-reduced-motion:reduce){#cxCopilot *,#cxCopilot *::before,#cxCopilot *::after{transition:none!important;animation:none!important;}}
+/* Brasa: isolated header, persistent layout, accessible states. */
+:root{--crm-layer-content:0;--crm-layer-assistant:780;--crm-layer-navigation:1000;--crm-layer-dialog:1200}
+#cxCopilot{z-index:var(--crm-layer-assistant);right:max(16px,env(safe-area-inset-right,0px))}
+#cxCopilot[hidden]{display:none!important}
+#cxCopilot .cx-copilot-head{position:static!important;display:flex!important;flex-wrap:nowrap!important;width:100%!important;min-height:76px!important;height:auto!important;transform:none!important;text-align:left!important}
+#cxCopilot .cx-copilot-head>div{flex:1;min-width:0}
+#cxCopilot .cx-copilot-close{flex:0 0 44px;width:44px;height:44px;align-self:center;display:grid;place-items:center;padding:0}
+#cxCopilot .brasa-fox{display:block;flex:0 0 48px;width:48px;height:48px;overflow:visible}
+#cxCopilot .cx-copilot-launch{padding:5px 16px 5px 7px;background:#ffc08b;color:#321e16;border-color:#e77f47}
+#cxCopilot .cx-copilot-launch .brasa-fox{width:40px;height:40px;flex-basis:40px}
+#cxCopilot .cx-copilot-form textarea{resize:none;font-size:16px}
+#cxCopilot .cx-copilot-quick button{min-height:36px}
+#cxCopilot .cx-copilot-history{scrollbar-gutter:stable}
+#cxCopilot .cx-copilot-panel{max-width:calc(100vw - 32px)}
+#cxCopilot[data-state="thinking"] .brasa-ember{animation:brasa-glow 1s ease-in-out infinite alternate}
+@keyframes brasa-glow{from{opacity:.5}to{opacity:1;filter:drop-shadow(0 0 4px #ffd36c)}}
+@media(min-width:901px){#cxCopilot .cx-copilot-panel{max-width:calc(100vw - 278px)}}
+@media(max-width:900px){body.crm-menu-open #cxCopilot{visibility:hidden;pointer-events:none}}
+@media(max-height:600px){#cxCopilot .cx-copilot-panel{height:calc(100dvh - 85px);bottom:55px}#cxCopilot .cx-copilot-privacy,#cxCopilot .cx-copilot-quick{display:none}}
+/* One sidebar scroll container; active colors apply equally to labels and glyphs. */
+#view-logada .crm-sidebar{overflow:hidden!important}
+#view-logada #crmNavSlot{overflow-y:auto!important;overflow-x:hidden!important;min-height:0;scrollbar-gutter:stable;overflow-anchor:none}
+#view-logada .crm-nav-items .tab-btn:is(.active,[aria-current="page"]),
+#view-logada .search-tab-btn.active,#view-logada .cx-tabs button.active,
+#view-logada [role="tab"][aria-selected="true"]{background:#7c2d12!important;color:#fff!important;border-color:#fdba74!important}
+#view-logada .crm-nav-items .tab-btn:is(.active,[aria-current="page"]) *,
+#view-logada .search-tab-btn.active *,#view-logada .cx-tabs button.active *{color:inherit!important}
+#view-logada :is(button,a,[role="tab"],input,textarea,select):focus-visible{outline:3px solid #fdba74!important;outline-offset:3px!important;box-shadow:0 0 0 5px #211b18!important}
+@media(prefers-reduced-motion:reduce){#cxCopilot *,#view-logada .crm-sidebar{animation:none!important;transition:none!important}}

@@ -1,6 +1,6 @@
-/* CONEXÃO IA — copiloto seguro, módulo isolado.
+/* BRASA COPILOT — copiloto seguro, módulo isolado.
  * Ações locais: navegação, abertura do próprio perfil e filtros visuais.
- * IA: exclusivamente análise de descrição de vaga após confirmação expressa.
+ * Jev classifica no servidor antes de qualquer chamada ao modelo de linguagem.
  * Nunca consulta diretórios privados, altera tabelas ou envia CURRENT_PROFILE à IA.
  */
 (()=>{'use strict';
@@ -8,6 +8,7 @@ if(window.CXCopilot)return;
 
 const ACTIONS=Object.freeze({
   login:{label:'Entrar com Google',route:null},
+  otw:{label:'Inscrição opentowork',route:'search'},
   profile:{label:'Abrir meu perfil',route:null},
   jobs:{label:'Abrir Radar de Vagas',route:'vagas'},
   remote:{label:'Filtrar vagas remotas',route:'vagas',filter:'remot'},
@@ -32,7 +33,8 @@ function canShow(){
     return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
   }catch{return false;}
 }
-let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='';
+let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='';
+const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
 const CTA=[
   ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
   ['salary','Médias salariais'],['rankings','Rankings']
@@ -56,7 +58,7 @@ function addMessage(type,message,action){
 }
 function showIntro(){
   if(history?.children.length)return;
-  addMessage('assistant','Olá, sou a Conexão IA. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.');
+  addMessage('assistant','Olá, sou a Brasa Copilot. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.');
 }
 function currentProfileStatus(){
   if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
@@ -74,6 +76,7 @@ function currentProfileStatus(){
 function classify(question){
   const s=normalize(question);
   if(!s)return {intent:'help'};
+  if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
   if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
     return {intent:'profile-status'};
   // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
@@ -101,7 +104,7 @@ function navigate(route){
   if(!Object.values(ACTIONS).some(a=>a.route===route&&a.route))return false;
   try{
     if(typeof crmNavigate==='function'){crmNavigate(route);return true;}
-    location.assign(typeof crmRoutePath==='function'?crmRoutePath(route):'/'+route);return true;
+    return false; // Never replace the document and lose the conversation.
   }catch{return false;}
 }
 function applyJobFilter(filter){
@@ -131,6 +134,7 @@ function runAction(id){
     navigate('membro');addMessage('assistant','Abri sua área de membro. A edição do perfil fica disponível nessa área.');
     return;
   }
+  if(id==='otw'){if(navigate('search'))document.getElementById('searchTabRegistration')?.click();return;}
   const item=ACTIONS[id];
   if(['avatar','rankings'].includes(id)&&!signed()){
     addMessage('assistant','Entre com Google para usar essa ferramenta.','login');return;
@@ -143,49 +147,71 @@ function runAction(id){
     },300);
   }else addMessage('assistant','Abri a seção solicitada. Você pode continuar usando as ferramentas normalmente.');
 }
-function addAnalysisConfirmation(){
-  const p=document.createElement('div');p.className='cx-copilot-consent';
-  const label=document.createElement('p');
-  label.textContent='Apenas a descrição que você digitou será enviada à OpenAI para análise. Seu perfil, e-mail, contatos e banco de dados não serão anexados. Não inclua informações pessoais, senhas ou dados confidenciais.';
-  const yes=document.createElement('button');yes.type='button';yes.textContent='Confirmar análise com IA';
-  const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
-  yes.addEventListener('click',()=>{p.remove();void analyze();});
-  no.addEventListener('click',()=>{pendingDescription='';p.remove();addMessage('assistant','Análise cancelada, nada foi enviado.');});
-  p.append(label,yes,no);history.append(p);history.scrollTop=history.scrollHeight;
-}
-function containsSensitive(s){
-  return /[\w.+-]+@[\w.-]+\.[a-z]{2,}/i.test(s)||
-   /\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b/.test(s)||
-   /(?:senha|password|api[\s_-]?key|token de acesso|chave secreta|cpf|rg|cart[aã]o de cr[eé]dito)/i.test(s)||
-   /(?:\+?\d[\d\s()\-]{10,}\d)/.test(s);
+function confirmExternal(question){
+ pendingDescription=question;
+ const card=document.createElement('div');card.className='cx-copilot-consent';
+ const label=document.createElement('p');label.textContent='Para responder, enviarei somente esta mensagem à TypeSafe (Jev) e, se necessário, à OpenAI. Seu cadastro não será anexado. Não inclua dados pessoais ou confidenciais.';
+ const yes=document.createElement('button');yes.type='button';yes.textContent='Consultar IA';
+ const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
+ yes.addEventListener('click',()=>{card.remove();void analyze();});
+ no.addEventListener('click',()=>{card.remove();pendingDescription='';});
+ card.append(label,yes,no);history.append(card);history.scrollTop=history.scrollHeight;
 }
 async function analyze(){
-  if(!canShow()){pendingDescription='';reconcile();return;}
-  const memberId=getUser()?.id;
-  const value=pendingDescription;pendingDescription='';
-  if(busy||!value)return;
-  if(containsSensitive(value)){
-    addMessage('assistant','Encontrei um possível dado pessoal ou credencial na descrição. Por segurança, remova essa informação e envie novamente. Nenhum texto foi enviado à IA.');
-    return;
-  }
-  if(!signed()){addMessage('assistant','Entre com Google antes de solicitar a análise, depois envie novamente a descrição.','login');return;}
-  const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
-  if(!sb?.functions?.invoke){addMessage('assistant','O serviço de análise não está disponível agora. O restante do portal segue funcionando.');return;}
-  busy=true;const submit=root?.querySelector('[data-cx-send]');if(submit)submit.disabled=true;
-  addMessage('assistant','Analisando a descrição com a IA do Conexão CRM. Aguarde um instante.');
-  try{
-    const prompt='Analise esta descrição de vaga, destaque requisitos e pontos de atenção para a entrevista. Não invente informações. Descrição:\n'+value;
-    const result=await sb.functions.invoke('openai-assistant',{body:{kind:'assistant',prompt}});
-    // Impede exibir resultado privado depois de logout, troca de conta ou rota.
-    if(!canShow()||getUser()?.id!==memberId)return;
-    if(result.error||!result.data?.resposta){
-      addMessage('assistant','Não foi possível concluir a análise. Confira se você está conectado e tente novamente. As outras funções continuam disponíveis.');return;
-    }
-    addMessage('assistant',String(result.data.resposta).slice(0,2600),'jobs');
-  }catch{
-    if(canShow()&&getUser()?.id===memberId)
-      addMessage('assistant','A IA não respondeu agora. Você pode continuar navegando pelo portal sem depender dela.');
-  }finally{busy=false;if(submit)submit.disabled=false;}
+ const question=pendingDescription;pendingDescription='';if(!question||busy||!signed())return;
+ const memberId=getUser()?.id;
+ const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
+ if(!sb?.functions?.invoke){addMessage('assistant','O serviço está indisponível. Tente novamente em instantes.');return;}
+ const activeRoot=root,activeHistory=history;
+ busy=true;activeRoot.dataset.state='thinking';activeHistory.setAttribute('aria-busy','true');
+ const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent='Brasa está pensando…';activeRoot.querySelector('form').before(waiting);
+ activeRoot.querySelector('[data-cx-send]').disabled=true;
+ try{
+  const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,consent:true}});
+  if(getUser()?.id!==memberId||root!==activeRoot)return;
+  if(result.error||result.data?.error)throw Error('unavailable');
+  const action=result.data?.action;
+  if(action==='profile'){const status=currentProfileStatus();addMessage('assistant',status.message,status.action);}
+  else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
+  else if(result.data?.resposta)addMessage('assistant',result.data.resposta);
+  else throw Error('empty');
+ }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
+ finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
+}
+function salaryAnswer(question){
+  const q=normalize(question);
+  let rows;try{rows=typeof CARGOS_ROWS!=='undefined'?CARGOS_ROWS:null}catch{}
+  if(!Array.isArray(rows))return 'A pesquisa salarial não está disponível nesta tela. Não vou estimar valores sem a base. Você pode consultar o relatório completo.';
+  const levels=[['estag','estag'],['junior','junior'],['pleno','pleno'],['senior','senior'],['especialista','especialista'],['coorden','coorden'],['geren','geren'],['diretor','diretor']];
+  const selected=levels.filter(([word])=>q.includes(word));
+  if(selected.length>1)return 'Você quer comparar esses níveis ou consultar apenas um? Informe uma senioridade por vez para eu calcular a média e a mediana da pesquisa.';
+  if(/\bsp\b|sao paulo|\brj\b|rio de janeiro/.test(q))return 'A pesquisa disponível agrupa localização por região, não por cidade ou estado. Posso consultar o Sudeste; quer esse recorte?';
+  const filters=[];
+  if(selected.length)filters.push(['nivel',selected[0][1]]);
+  for(const word of ['remot','hibrid','presencial'])if(q.includes(word))filters.push(['modelo',word]);
+  for(const word of ['sudeste','nordeste','centro-oeste','norte','sul'])if(new RegExp('\\b'+word+'\\b').test(q))filters.push(['regiao',word]);
+  for(const word of ['clt','pj'])if(new RegExp('\\b'+word+'\\b').test(q))filters.push(['contrato',word]);
+  rows=rows.filter(r=>filters.every(([key,word])=>normalize(r[key]).includes(word)));
+  const values=rows.map(r=>r.salario).filter(v=>typeof v==='number'&&Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
+  if(values.length<5)return 'Há menos de cinco salários informados nesse recorte. A amostra é insuficiente para uma comparação confiável. Tente ampliar a senioridade ou a modalidade.';
+  const n=values.length,mean=values.reduce((a,b)=>a+b,0)/n,median=n%2?values[(n-1)/2]:(values[n/2-1]+values[n/2])/2;
+  const money=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+  return 'Na pesquisa Cargos & Salários do portal'+(filters.length?' (recorte: '+filters.map(f=>f[1]).join(', ')+')':' (todos os níveis)')+':\nMédia: '+money(mean)+'\nMediana: '+money(median)+'\nAmostra: '+n+' salários informados.\nSão valores declarados na pesquisa, não uma previsão ou oferta salarial. Quer consultar uma senioridade ou modalidade específica?';
+}
+function localAnswer(action,question){
+  if(action==='salary')return salaryAnswer(question);
+  return ({
+    otw:'A Inscrição opentowork fica na própria área Open to Work. Entre na sua conta para preencher ou atualizar o perfil existente. E-mail de contato, WhatsApp e LinkedIn são opcionais. Você escolhe separadamente se deseja receber avisos.',
+    jobs:'Você busca uma vaga para se candidatar, trabalho freelancer ou quer publicar uma oportunidade? Para buscar vagas, posso ajudar a escolher modalidade e senioridade.',
+    remote:'Para buscar trabalho remoto, selecione Remoto no Radar e confira a modalidade no anúncio original. Qual cargo ou senioridade você procura?',
+    hybrid:'Em vagas híbridas, confira a cidade e a frequência presencial no anúncio. Qual cidade e senioridade você procura?',
+    events:'A agenda reúne eventos da comunidade. Você pode consultar os detalhes e salvar os que interessam. Quer encontrar um evento ou publicar uma proposta?',
+    members:'No diretório você encontra profissionais da comunidade e os contatos que cada pessoa escolheu compartilhar. Você busca uma especialidade ou quer atualizar seu próprio perfil?',
+    rankings:'Os Rankings ficam na área Conexão XP. Eles mostram a participação na comunidade. Seu avatar também pode ser personalizado nessa área.',
+    avatar:'Você pode personalizar seu avatar na área Conexão XP. As escolhas são feitas por você no editor; esta conversa não altera seu perfil.',
+    market:'O relatório Open to Work apresenta os dados agregados dos profissionais disponíveis. Ele complementa Cargos & Salários, que reúne a pesquisa de remuneração.',
+    match:'O Match compara informações profissionais com requisitos das vagas. A pontuação indica aderência por regras, não probabilidade de contratação. Confira senioridade, modalidade e requisitos no anúncio antes de se candidatar.'
+  })[action]||'Conte um pouco mais sobre o que você precisa.';
 }
 function process(question){
   if(!canShow()){reconcile();return;}
@@ -193,25 +219,24 @@ function process(question){
   pendingDescription='';
   history?.querySelectorAll('.cx-copilot-consent').forEach(el=>el.remove());
   addMessage('user',question);
-  const found=classify(question);
+  let found=classify(question);
+  if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj/.test(normalize(question)))found={intent:'action',action:'salary'};
   if(found.intent==='profile-status'){
     const status=currentProfileStatus();addMessage('assistant',status.message,status.action);return;
   }
   if(found.intent==='action'){
-    let msg='Posso abrir essa área para você. A ação usa apenas os recursos do portal e não modifica seus dados.';
-    if(found.action==='match')msg='O Match compara competências declaradas com requisitos de vagas. Posso abrir o Radar para você continuar por lá.';
-    addMessage('assistant',msg,found.action);return;
+    lastTopic=found.action;addMessage('assistant',localAnswer(found.action,question),found.action);return;
   }
   if(found.intent==='analyze'){
-    pendingDescription=question;addMessage('assistant','Posso analisar os requisitos desta vaga, mas preciso de sua autorização para enviar o texto ao serviço de IA.');
-    addAnalysisConfirmation();return;
+    confirmExternal(question);return;
   }
-  addMessage('assistant','Posso ajudar você a concluir o cadastro, buscar vagas, filtrar por remoto ou híbrido, conhecer membros, ver eventos, salários, rankings e analisar uma descrição de vaga com sua autorização. O que prefere?');
+  if(/^(oi|ola|bom dia|boa tarde|boa noite|obrigad[oa]|pode me ajudar)[?.! ]*$/.test(normalize(question))){addMessage('assistant','Olá. Posso ajudar com CRM, carreira e recursos do portal. O que você precisa?');return;}
+  confirmExternal(question);
 }
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;pendingDescription='';if(history)history.replaceChildren();
+  lastUserId=current;lastTopic='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
   showIntro();
 }
 function open(){
@@ -223,20 +248,21 @@ function open(){
 function close(){
   if(!drawer)return;
   drawer.hidden=true;root.querySelector('[data-cx-open]').setAttribute('aria-expanded','false');
+  if(canShow())root.querySelector('[data-cx-open]').focus({preventScroll:true});
 }
 function mount(){
   if(!canShow())return;
   if(document.getElementById('cxCopilot'))return;
   root=document.createElement('div');root.id='cxCopilot';root.className='ph-no-capture';root.setAttribute('data-ph-no-capture','true');
   root.innerHTML=
-    '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">✦ Conexão IA</button>'+
-    '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Conexão IA" hidden>'+
-     '<header class="cx-copilot-head"><div><strong>Conexão IA</strong><small>Seu copiloto dentro da comunidade</small></div><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></header>'+
-     '<div class="cx-copilot-privacy">Privacidade primeiro: seu perfil não é enviado à IA. Análises externas exigem confirmação e usam somente o texto autorizado.</div>'+
+    '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa Copilot</span></button>'+
+    '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
+     '<header class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong><small>Seu assistente no Conexão CRM</small></div><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></header>'+
+     '<div class="cx-copilot-privacy">Seu perfil não é enviado à IA. Consultas externas usam Jev primeiro e pedem sua confirmação.</div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
      '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
-     '<textarea id="cxCopilotInput" data-cx-input rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
+     '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
      '<div class="cx-copilot-bottom"><small>Não envie senhas, CPF ou informações confidenciais.</small><button data-cx-send type="submit">Enviar</button></div></form>'+
     '</section>';
   document.body.append(root);
@@ -248,37 +274,32 @@ function mount(){
   root.querySelector('[data-cx-form]').addEventListener('submit',event=>{
     event.preventDefault();if(busy)return;const question=String(entry.value||'').trim();
     if(!question||question.length>2200)return;
-    entry.value='';process(question);
+    entry.value='';entry.style.height='auto';process(question);
   });
+  entry.addEventListener('input',()=>{entry.style.height='auto';entry.style.height=Math.min(entry.scrollHeight,140)+'px';});
   entry.addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();root.querySelector('[data-cx-form]').requestSubmit();}
+    if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();root.querySelector('[data-cx-form]').requestSubmit();}
   });
   const quick=root.querySelector('[data-cx-quick]');
   CTA.forEach(([action,label])=>{
     const b=document.createElement('button');b.type='button';b.textContent=label;
     b.addEventListener('click',()=>{
-      if(action==='profile'){const s=currentProfileStatus();addMessage('assistant',s.message,s.action);}
-      else runAction(action);
+      process(label);
     });quick.append(b);
   });
   lastUserId=getUser()?.id||'';
   showIntro();
 }
-// Mesmo com troca de rota, logout ou expiração, o copiloto desaparece
-// e seus dados temporários de conversa são descartados.
+// One mounted instance per authenticated session. Route visibility never clears messages.
 function reconcile(){
-  if(!canShow()){
-    pendingDescription='';
-    if(root){
-      close();
-      root.remove();
-      root=null;drawer=null;history=null;entry=null;
-      lastUserId='';
-    }
+  if(!signed()){
+    pendingDescription='';lastTopic='';busy=false;lastUserId='';
+    if(root)root.remove();
+    root=null;drawer=null;history=null;entry=null;
     return;
   }
-  if(!root||!root.isConnected)mount();
-  clearOnAccountChange();
+  if(!root&&canShow())mount();
+  if(root){clearOnAccountChange();root.hidden=!canShow();}
 }
 function start(){
   const workspace=document.getElementById('view-logada');
@@ -290,6 +311,8 @@ function start(){
   document.addEventListener('crm:auth-state',reconcile);
   document.addEventListener('visibilitychange',reconcile);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer&&!drawer.hidden)close();});
+  document.addEventListener('crm:route-changed',reconcile);
+  window.addEventListener('popstate',reconcile);
   window.addEventListener('hashchange',reconcile);
   window.addEventListener('pageshow',reconcile);
   window.addEventListener('focus',reconcile);

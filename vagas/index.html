@@ -8866,6 +8866,7 @@ function crmSetLanding(show){
  if(show){crmById('publicHero').style.display='';document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));}
 }
 function crmNavigate(route,updateHash=true){
+ const sidebarScroll=crmById('crmNavSlot')?.scrollTop||0;
  if(document.body.classList.contains('crm-menu-open'))crmToggleMenu(false);
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
@@ -8904,6 +8905,8 @@ function crmNavigate(route,updateHash=true){
  crmById('crmBreadcrumb').textContent='CONEXÃO CRM / '+crmRoutes[route][1].toUpperCase();
  if(updateHash)history.pushState(null,'',crmRoutePath(route));
  crmToggleMenu(false);window.scrollTo(0,0);
+ if(crmById('crmNavSlot'))crmById('crmNavSlot').scrollTop=sidebarScroll;
+ document.dispatchEvent(new CustomEvent('crm:route-changed',{detail:{route}}));
 }
 function crmInitPublicTools(){if(typeof initCalcTab==='function'&&!calcInitialized)initCalcTab();if(typeof initEventosTab==='function'&&!eventosInitialized)Promise.resolve(initEventosTab()).catch(()=>{});}
 function crmJoin(message){
@@ -9017,10 +9020,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  crmById('comSubTabDiretorio').onclick=()=>crmOpenMemberTab('diretorio');
  window.addEventListener('hashchange',crmHandleLocation);window.addEventListener('popstate',crmHandleLocation);
  document.addEventListener('click',e=>{
-  if(e.detail>0){
-    const tapped=e.target.closest('.crm-nav-items .tab-btn,.crm-topic-card');
-    if(tapped)tapped.blur();
-  }
   const route=e.target.closest('[data-crm-route]');if(route){e.preventDefault();document.querySelector('.crm-solutions-menu')?.removeAttribute('open');crmNavigate(route.dataset.crmRoute);return;}
   if(!e.target.closest('.crm-solutions-menu'))document.querySelector('.crm-solutions-menu')?.removeAttribute('open');
   const contact=e.target.closest('[data-crm-contact]');if(contact){e.preventDefault();crmOpenContact(contact);return;}
@@ -9369,7 +9368,7 @@ async function crmSubmitReviewForm(event){
 }
 
 </script>
-<script src="/assets/google-login.js?v=20261001-1"></script>
+<script src="/assets/google-login.js?v=20261024-brasa1"></script>
 <script src="/assets/workspace.js?v=20261021-sidebar2"></script>
 <script src="/assets/connections.js?v=20261003-1"></script>
 <script src="/assets/talent-links.js?v=20260923-2"></script>

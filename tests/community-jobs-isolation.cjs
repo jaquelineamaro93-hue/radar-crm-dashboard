@@ -66,8 +66,8 @@ assert(!html.includes('setInterval(carregarVagasHub, 60000)')&&!html.includes('v
   'Do not repaint the Radar while visitors are scrolling: bot updates independently');
 assert(html.includes("if(route==='freelancers'){crmSelectFreelancerView('directory');if(!FREELANCERS.length"),
   'Freelancer data must not reload on every navigation');
-assert(html.includes("if(e.detail>0)")&&html.includes("if(tapped)tapped.blur();"),
-  'Pointer navigation must clear stale focus while preserving keyboard focus');
+assert(!html.includes("if(tapped)tapped.blur();"),
+  'Navigation must preserve focus; focus-visible controls keyboard styling');
 assert(html.includes("crmToggleMenu(false);window.scrollTo(0,0);"),
   'Route switch should not animate the previous page into view');
 assert(html.includes('if(renderSeq!==crmVagasRenderSeq)return;'),
