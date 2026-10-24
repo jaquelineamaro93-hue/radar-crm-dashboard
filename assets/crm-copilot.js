@@ -33,19 +33,41 @@ function canShow(){
     return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
   }catch{return false;}
 }
-let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={};
+let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={},recentQuestions=[];
+const aiConsentName=()=>{
+ const uid=String(getUser()?.id||'');if(!uid||!signed())return '';
+ let n=2166136261;for(let i=0;i<uid.length;i++)n=Math.imul(n^uid.charCodeAt(i),16777619);
+ return 'crm_brasa_aceite_v2_'+(n>>>0).toString(36);
+};
+const aiConsentSaved=()=>{try{const name=aiConsentName();return !!name&&document.cookie.split(';').some(p=>p.trim()===name+'=1')}catch{return false}};
+function updateAiConsentControl(){const button=root?.querySelector('[data-cx-privacy-settings]');if(button)button.hidden=!aiConsentSaved();}
+function saveAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=1; Max-Age=15552000; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
+function revokeAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=; Max-Age=0; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
 const CTA=[
   ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
   ['salary','Médias salariais'],['rankings','Rankings']
 ];
-function addMessage(type,message,action){
+function addMessage(type,message,action,sources=[]){
   if(!history)return;
   const item=document.createElement('div');
   item.className='cx-copilot-message cx-copilot-'+type;
   const text=document.createElement('p');
   text.textContent=String(message||'').slice(0,2800);
   item.append(text);
+  if(type==='assistant'&&Array.isArray(sources)&&sources.length){
+    const references=document.createElement('div');references.className='cx-copilot-sources';
+    const caption=document.createElement('strong');caption.textContent='Fontes públicas';references.append(caption);
+    sources.slice(0,4).forEach((ref,i)=>{
+      try{
+        const url=new URL(String(ref.url||''));
+        if(url.protocol!=='https:'||url.username||url.password)return;
+        const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';
+        link.textContent=String(ref.title||url.hostname).slice(0,75);references.append(link);
+      }catch{}
+    });
+    if(references.childElementCount>1)item.append(references);
+  }
   if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){
     const b=document.createElement('button');
     b.type='button';b.textContent=ACTIONS[action].label;
@@ -87,6 +109,7 @@ function classify(question){
   if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
   if(/(membros|networking|conhecer pessoas|fazer conexoes)/.test(s))
     return {intent:'action',action:'members'};
+  if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s))return {intent:'analyze'};
   if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
@@ -149,11 +172,12 @@ function runAction(id){
 }
 function confirmExternal(question){
  pendingDescription=question;
+ if(aiConsentSaved()){void analyze();return;}
  const card=document.createElement('div');card.className='cx-copilot-consent';
- const label=document.createElement('p');label.textContent='Para responder, enviarei somente esta mensagem à TypeSafe (Jev) e, se necessário, à OpenAI. Seu cadastro não será anexado. Não inclua dados pessoais ou confidenciais.';
- const yes=document.createElement('button');yes.type='button';yes.textContent='Consultar IA';
+ const label=document.createElement('p');label.textContent='Seu cadastro não será anexado. Não inclua dados pessoais.';
+ const yes=document.createElement('button');yes.type='button';yes.textContent='Aceitar e continuar';
  const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
- yes.addEventListener('click',()=>{card.remove();void analyze();});
+ yes.addEventListener('click',()=>{saveAiConsent();card.remove();void analyze();});
  no.addEventListener('click',()=>{card.remove();pendingDescription='';});
  card.append(label,yes,no);history.append(card);history.scrollTop=history.scrollHeight;
 }
@@ -167,19 +191,24 @@ async function analyze(){
  const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent='Brasa está pensando…';activeRoot.querySelector('form').before(waiting);
  activeRoot.querySelector('[data-cx-send]').disabled=true;
  try{
-  const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,consent:true}});
+  const context=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question).map(x=>x.slice(0,320));
+  const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved()}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error)throw Error('unavailable');
   const action=result.data?.action;
   if(action==='profile'){const status=currentProfileStatus();addMessage('assistant',status.message,status.action);}
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
-  else if(result.data?.resposta)addMessage('assistant',result.data.resposta);
+  else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources);
   else throw Error('empty');
  }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
 }
 function salaryAnswer(question){
   const q=normalize(question);
+  if(/\b(mensal|mensalmente|por mes|periodicidade|anual|ao ano)\b/.test(q)&&!/(media|mediana|salari|remuner)/.test(q))
+    return 'A pesquisa do portal não informa se os valores são mensais ou anuais. Por isso não é correto apresentá-los como salário por mês. Posso buscar referências públicas com essa informação, se você quiser.';
+  if(/\b(sao paulo|\bsp\b)\b/.test(q)&&/\b(mas|so|apenas|exatamente|especificamente|mesmo|esses dados)\b/.test(q))
+    return 'Não especificamente. O cálculo anterior considera o Sudeste, que inclui São Paulo e outros estados. Não consigo afirmar que essa média seja exclusiva de SP. Posso procurar referências públicas específicas de São Paulo.';
   let rows;try{rows=typeof CARGOS_ROWS!=='undefined'?CARGOS_ROWS:null}catch{}
   if(!Array.isArray(rows))return 'Não consegui acessar os dados públicos da pesquisa salarial nesta tela. Não vou inventar valores. O relatório completo pode ser aberto pelo botão abaixo.';
   const levels=[['estag','estag'],['junior','junior'],['pleno','pleno'],['senior','senior'],['especialista','especialista'],['coorden','coorden'],['geren','geren'],['diretor','diretor']];
@@ -264,9 +293,10 @@ function process(question){
   pendingDescription='';
   history?.querySelectorAll('.cx-copilot-consent').forEach(el=>el.remove());
   root.dataset.started='true';
+  recentQuestions.push(question.slice(0,320));if(recentQuestions.length>4)recentQuestions.shift();
   addMessage('user',question);
   let found=classify(question);
-  if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj/.test(normalize(question)))found={intent:'action',action:'salary'};
+  if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj|mensal|por mes|anual|periodicidade|sao paulo|\bsp\b/.test(normalize(question)))found={intent:'action',action:'salary'};
   if(found.intent==='profile-status'){
     const status=currentProfileStatus();addMessage('assistant',status.message,status.action);return;
   }
@@ -293,14 +323,14 @@ function process(question){
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
-  showIntro();
+  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  showIntro();updateAiConsentControl();
 }
 function open(){
   if(!canShow()){reconcile();return;}
   if(!drawer)return;
   clearOnAccountChange();drawer.hidden=false;root.querySelector('[data-cx-open]').setAttribute('aria-expanded','true');
-  showIntro();entry?.focus();
+  showIntro();updateAiConsentControl();entry?.focus();
 }
 function close(){
   if(!drawer)return;
@@ -319,7 +349,7 @@ function mount(){
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
      '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
      '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
-     '<div class="cx-copilot-bottom"><small>Não envie senhas, CPF ou informações confidenciais.</small><button data-cx-send type="submit">Enviar</button></div></form>'+
+     '<div class="cx-copilot-bottom"><small>Não envie senhas, CPF ou informações confidenciais.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
     '</section>';
   document.body.append(root);
   drawer=root.querySelector('[data-cx-open]')?.nextElementSibling;
@@ -327,6 +357,7 @@ function mount(){
   entry=root.querySelector('[data-cx-input]');
   root.querySelector('[data-cx-open]').addEventListener('click',()=>drawer.hidden?open():close());
   root.querySelector('[data-cx-close]').addEventListener('click',close);
+  root.querySelector('[data-cx-privacy-settings]').addEventListener('click',()=>{revokeAiConsent();addMessage('assistant','Autorização para consultas externas revogada. Vou pedir sua permissão antes da próxima consulta.');});
   root.querySelector('[data-cx-expand]').addEventListener('click',()=>{
     const expanded=root.classList.toggle('cx-expanded');
     const button=root.querySelector('[data-cx-expand]');
@@ -351,12 +382,12 @@ function mount(){
     });quick.append(b);
   });
   lastUserId=getUser()?.id||'';
-  showIntro();
+  showIntro();updateAiConsentControl();
 }
 // One mounted instance per authenticated session. Route visibility never clears messages.
 function reconcile(){
   if(!signed()){
-    pendingDescription='';lastTopic='';salaryContext={};busy=false;lastUserId='';
+    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];busy=false;lastUserId='';
     if(root)root.remove();
     root=null;drawer=null;history=null;entry=null;
     return;
