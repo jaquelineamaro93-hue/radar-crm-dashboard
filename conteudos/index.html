@@ -3072,7 +3072,7 @@ crmShowSurveyReminder();
       <p class="section-desc">Conheça os membros da comunidade, suas trajetórias e especialidades. Este diretório está disponível apenas para membros conectados.</p>
 
       <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <input type="text" class="search-input" id="comDirSearch" placeholder="Buscar por nome, ferramenta, área..." style="max-width:360px;" oninput="renderComDiretorio()">
+        <input type="text" class="search-input" id="comDirSearch" placeholder="Buscar por nome, ferramenta, área..." style="max-width:360px;" oninput="crmFilterMemberDirectory()">
         <button class="crm-button crm-outline" onclick="openProfileModal()" style="white-space:nowrap;">Editar meu perfil</button>
       </div>
 
@@ -7049,11 +7049,41 @@ function switchComunidadeTab(tab){
 }
 
 let crmMemberRequest=0;
-async function renderComDiretorio(){
- const grid=crmById('comDiretorioGrid'),epoch=crmAuthEpoch,request=++crmMemberRequest;crmSkeleton(grid);
- try{const members=await crmFetchDirectory('members',true);if(epoch!==crmAuthEpoch||request!==crmMemberRequest)return;renderComDiretorioCards(members,(crmById('comDirSearch').value||'').toLowerCase());}
- catch(e){if(epoch===crmAuthEpoch&&request===crmMemberRequest){grid.innerHTML='<p class="empty-state">Não foi possível carregar os membros. <button class="crm-text-button" onclick="renderComDiretorio()">Tentar novamente</button></p>';}}
- finally{if(epoch===crmAuthEpoch&&request===crmMemberRequest)grid.removeAttribute('aria-busy');}
+let crmMemberCache=null;
+let crmMemberSearchTimer=0;
+let crmMemberLoading=null;
+function crmFilterMemberDirectory(){
+  if(crmMemberSearchTimer)clearTimeout(crmMemberSearchTimer);
+  crmMemberSearchTimer=setTimeout(()=>{crmMemberSearchTimer=0;void renderComDiretorio();},140);
+}
+async function renderComDiretorio(force=false){
+ const grid=crmById('comDiretorioGrid'),epoch=crmAuthEpoch;
+ const userId=crmSignedIn()?CURRENT_USER?.id:null;
+ if(!grid||!userId)return;
+ const query=(crmById('comDirSearch')?.value||'').toLowerCase();
+ const cache=crmMemberCache;
+ if(!force&&cache?.userId===userId&&cache.epoch===epoch&&Date.now()<cache.expires){
+   renderComDiretorioCards(cache.rows,query);
+   grid.removeAttribute('aria-busy');
+   return;
+ }
+ if(!force&&crmMemberLoading?.userId===userId&&crmMemberLoading.epoch===epoch)return;
+ const request=++crmMemberRequest;
+ crmMemberLoading={userId,epoch,request};
+ const hadContent=!!grid.querySelector('.crm-member-card-v2');
+ // Keep usable cards visible while data refreshes; only show skeleton on first load.
+ if(!hadContent)crmSkeleton(grid);
+ try{
+   const members=await crmFetchDirectory('members',true);
+   if(epoch!==crmAuthEpoch||request!==crmMemberRequest||CURRENT_USER?.id!==userId)return;
+   crmMemberCache={userId,epoch,rows:members,expires:Date.now()+120000};
+   renderComDiretorioCards(members,(crmById('comDirSearch')?.value||'').toLowerCase());
+ }catch(e){
+   if(epoch===crmAuthEpoch&&request===crmMemberRequest){
+     if(!hadContent)grid.innerHTML='<p class="empty-state">Não foi possível carregar os membros. <button class="crm-text-button" onclick="renderComDiretorio(true)">Tentar novamente</button></p>';
+     else console.warn('[Conexao CRM] Falha ao atualizar membros; lista anterior preservada.');
+   }
+ }finally{if(crmMemberLoading?.request===request)crmMemberLoading=null;if(epoch===crmAuthEpoch&&request===crmMemberRequest)grid.removeAttribute('aria-busy');}
 }
 function crmMemberContactLinks(m){
  const allowed=Array.isArray(m.contact_channels)?m.contact_channels:[];
@@ -8790,7 +8820,7 @@ function crmClearPrivateData(){
  for(const id of ['membroDetalhes','membroAvatar'])document.getElementById(id)?.replaceChildren();
  for(const id of ['pfAdminControls','cxAdminBtn'])document.getElementById(id)?.remove();
  crmById('cxPublishOverlay')?.close();
- crmAuthEpoch++;if(typeof evPresence!=='undefined')evPresence={};PEOPLE=[];FREELANCERS=[];window.FL_REVIEWS=[];searchLoaded=false;
+ crmMemberCache=null;crmMemberLoading=null;if(crmMemberSearchTimer)clearTimeout(crmMemberSearchTimer);crmMemberSearchTimer=0;crmAuthEpoch++;if(typeof evPresence!=='undefined')evPresence={};PEOPLE=[];FREELANCERS=[];window.FL_REVIEWS=[];searchLoaded=false;
  for(const id of ['searchResults','freelancerResults','comDiretorioGrid','comunidadeMembros','aiMatchResults','freelancerChallengeResults','platformChallengeResults','membroVagasSalvas','membroVagasMatch','crmMyEventsList','crmSubmissionList']){const e=crmById(id);if(e)e.replaceChildren();}
  for(const id of ['jobDescription','freelancerChallenge','platformChallenge']){if(crmById(id))crmById(id).value='';}
  crmById('profileModalOverlay')?.remove();crmById('crmJobAnalysis')?.remove();
@@ -8857,6 +8887,11 @@ function crmNavigate(route,updateHash=true){
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
  if(route==='inicio'&&crmSignedIn())route='membros';
+ if(updateHash&&route===crmActiveRoute&&route!=='inicio'&&crmRoutes[route]&&crmSignedIn()&&!crmById('view-logada').hidden&&crmById(crmRoutes[route][0])?.classList.contains('active')){
+  // Already on this page. Do not restart loading or recreate the sidebar.
+  if(location.pathname!==crmRoutePath(route))history.replaceState(null,'',crmRoutePath(route));
+  return;
+ }
  if(route==='inicio'){
   crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';crmSyncRouteMeta('inicio');window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
  }
