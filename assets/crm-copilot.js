@@ -208,6 +208,36 @@ function salaryAnswer(question){
     ' A base consultada não informa a periodicidade desses valores, portanto não posso afirmar que sejam salários mensais.';
 
 }
+async function crmBrasaPublicJobs(question){
+  const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
+  if(!sb)return 'Não consegui consultar o Radar neste momento. Abra a página de vagas e tente novamente.';
+  const q=normalize(question);
+  const cutoff=new Date(Date.now()-25*86400000).toISOString();
+  let req=sb.from('crm_radar_jobs_public')
+    .select('title,company,location,modalidade_normalizada,published_at,url,availability_status')
+    .neq('availability_status','closed').gte('published_at',cutoff)
+    .order('published_at',{ascending:false}).limit(900);
+  const {data,error}=await req;
+  if(error)throw error;
+  const executive=/\b(c.level|ceo|cto|cio|cdo|ciso|cmo|coo|cfo|chief|diretor|director|head|vp|vice.president|lideranca)\b/.test(q);
+  const tech=/tecnologia|technology|tech|software|engenharia|engineering|ti\b|it\b|dados|data|ia\b|ai\b/.test(q);
+  const remote=/remot/.test(q),hybrid=/hibrid/.test(q);
+  const valid=(data||[]).filter(v=>{
+    const title=normalize(v.title||'');
+    const seniorOk=!executive||/\b(ceo|cto|cio|cdo|ciso|cmo|coo|cfo|chief|diretor|diretora|director|head|vice.president|vp)\b/.test(title);
+    const techOk=!tech||/tecnolog|technolog|tech|software|engenharia|engineer|developer|development|ti\b|it\b|dados|data|ia\b|ai\b|produto|product|infra|seguranca|security/.test(title);
+    const mode=normalize(v.modalidade_normalizada||'');
+    return seniorOk&&techOk&&(!remote||mode.includes('remot'))&&(!hybrid||mode.includes('hibrid'));
+  }).slice(0,5);
+  if(!valid.length)return 'Consultei as vagas públicas do Radar publicadas nos últimos 25 dias, sem vagas comprovadamente encerradas, e não encontrei resultados para esses critérios. Posso tentar uma busca mais ampla. A disponibilidade precisa ser confirmada no anúncio original.';
+  return 'Encontrei '+valid.length+' oportunidade(s) no Radar publicadas nos últimos 25 dias. A disponibilidade deve ser confirmada no anúncio original:\n\n'+valid.map((v,i)=>{
+    const safeUrl=typeof v.url==='string'&&/^https:\/\/[^\s]+$/i.test(v.url)?v.url:'';
+    const company=String(v.company||'').trim();
+    const label=company&&!/^(nao informado|não informado)$/i.test(company)?' · '+company:'';
+    const loc=v.location&&!/^(remoto|remote|não informado)$/i.test(v.location)?' · '+v.location:'';
+    return (i+1)+'. '+v.title+label+loc+(safeUrl?'\n'+safeUrl:'');
+  }).join('\n\n');
+}
 function localAnswer(action,question){
   if(action==='salary')return salaryAnswer(question);
   return ({
@@ -236,7 +266,18 @@ function process(question){
     const status=currentProfileStatus();addMessage('assistant',status.message,status.action);return;
   }
   if(found.intent==='action'){
-    lastTopic=found.action;addMessage('assistant',localAnswer(found.action,question),found.action);return;
+    lastTopic=found.action;
+    if(['jobs','remote','hybrid'].includes(found.action)){
+      const member=getUser()?.id;
+      addMessage('assistant','Consultando as vagas públicas do Radar...');
+      crmBrasaPublicJobs(question).then(answer=>{
+        if(getUser()?.id===member&&canShow())addMessage('assistant',answer,'jobs');
+      }).catch(()=>{
+        if(getUser()?.id===member&&canShow())addMessage('assistant','A consulta ao Radar não respondeu. Tente novamente em instantes.');
+      });
+      return;
+    }
+    addMessage('assistant',localAnswer(found.action,question),found.action);return;
   }
   if(found.intent==='analyze'){
     confirmExternal(question);return;
