@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.1'
       - name: Validate JS syntax, privacy boundaries and intent routing
         run: node tests/copilot-security.cjs
 
