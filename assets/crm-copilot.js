@@ -209,15 +209,9 @@ function salaryAnswer(question){
 
 }
 async function crmBrasaPublicJobs(question){
-  const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
-  if(!sb)return 'Não consegui consultar o Radar neste momento. Abra a página de vagas e tente novamente.';
+  if(typeof window.crmBrasaReadPublicJobs!=='function')return 'O Radar não está disponível nesta tela agora.';
   const q=normalize(question);
-  const cutoff=new Date(Date.now()-25*86400000).toISOString();
-  let req=sb.from('crm_radar_jobs_public')
-    .select('title,company,location,modalidade_normalizada,published_at,url,availability_status')
-    .neq('availability_status','closed').gte('published_at',cutoff)
-    .order('published_at',{ascending:false}).limit(900);
-  const {data,error}=await req;
+  const {data,error}=await window.crmBrasaReadPublicJobs();
   if(error)throw error;
   const executive=/\b(c.level|ceo|cto|cio|cdo|ciso|cmo|coo|cfo|chief|diretor|director|head|vp|vice.president|lideranca)\b/.test(q);
   const tech=/tecnologia|technology|tech|software|engenharia|engineering|ti\b|it\b|dados|data|ia\b|ai\b/.test(q);
