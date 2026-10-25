@@ -39,3 +39,9 @@ assert.match(brasa,/textContent=cxT\("Aceitar e continuar"\)/);
 assert.match(brasa,/textContent=cxT\("Fontes públicas"\)/);
 assert.match(script,/Brasa is thinking/);
 console.log('PASS audited public copilot and Open to Work locale labels');
+
+// Regression: Conexão orange brand must never be rewritten into legacy purple.
+const layout=read('assets/portal-layout.js');
+assert.doesNotMatch(layout, /'#f97316'\s*:\s*'#7f40b1'/i);
+assert.doesNotMatch(layout, /rgb\(127,\s*64,\s*177\)/i);
+console.log('PASS orange visual identity is not converted into purple');
