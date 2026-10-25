@@ -1,0 +1,268 @@
+/* Conexão CRM | Saved jobs, visual adaptation of the reference mockup.
+ * This stylesheet targets only the authenticated Saved Jobs page. */
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard{
+ --cx-saved-bg:#101729;--cx-saved-card:#182235;--cx-saved-line:#37445e;
+ --cx-saved-violet:#ce9cea;--cx-saved-violet-bg:#30203f;
+ width:100%;min-width:0;max-width:100%;color:#f4f6fb;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard *{box-sizing:border-box}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard>section{max-width:1160px;margin:0 auto;min-width:0}
+#view-logada #subpage-vagas-salvas .cx-saved-page-intro{
+ display:flex;flex-direction:column;align-items:flex-start;gap:7px;
+ margin:0 0 8px!important;padding:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-page-intro h2{
+ font-size:clamp(22px,2.6vw,30px)!important;line-height:1.2!important;
+ font-weight:750!important;letter-spacing:-.025em!important;color:#f4f6fb!important;
+ margin:0!important;text-transform:none!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-eyebrow{
+ font-size:10px!important;font-weight:750;letter-spacing:.12em;
+ color:var(--cx-saved-violet);margin:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-page-description{
+ font-size:14px!important;line-height:1.6!important;
+ margin:2px 0 24px!important;color:#b7c0d0!important;max-width:760px;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-resume{
+ display:flex!important;align-items:center!important;justify-content:space-between;
+ gap:14px!important;flex-wrap:wrap!important;
+ background:#182235!important;border:1px solid #37445e!important;
+ border-radius:13px!important;color:#f4f6fb!important;
+ box-shadow:none!important;padding:18px 20px!important;margin:0 0 24px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-resume>div{min-width:min(220px,100%)!important;flex:1 1 240px!important}
+#view-logada #subpage-vagas-salvas .cx-saved-resume>div>div:first-child{
+ color:var(--cx-saved-violet)!important;font-size:10px!important;font-weight:750!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-resume>div>div:nth-child(2){
+ color:#f4f6fb!important;font-size:16px!important;font-weight:700!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-resume #crmMatchResumeStatus{
+ color:#b7c0d0!important;font-size:12px!important;line-height:1.6!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-resume button{
+ min-height:42px!important;flex:0 1 auto;
+ color:#f4f6fb!important;background:#7f40b1!important;border:1px solid #7f40b1!important;
+ border-radius:8px!important;padding:9px 16px!important;white-space:normal!important;
+}
+#view-logada #subpage-vagas-salvas #crmSavedSlot{width:100%;max-width:100%;min-width:0}
+#view-logada #subpage-vagas-salvas #crmSavedSlot>.cx-saved-main{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ gap:26px!important;width:100%!important;min-width:0!important;max-width:100%!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-panel{
+ min-width:0!important;width:100%!important;max-width:100%!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-list-panel,
+#view-logada #subpage-vagas-salvas .cx-saved-communities{
+ border:1px solid var(--cx-saved-line)!important;background:var(--cx-saved-card)!important;
+ border-radius:14px!important;padding:20px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-list-panel>.fd,
+#view-logada #subpage-vagas-salvas .cx-saved-recommendations .fd{
+ font-size:19px!important;font-weight:720!important;letter-spacing:-.015em!important;
+ line-height:1.3!important;color:#f4f6fb!important;margin:0 0 14px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-list-panel #membroVagasSalvas{
+ display:grid;gap:9px;font-size:13px!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasSalvas>div{
+ background:#121a2b!important;border:1px solid #344058!important;
+ border-radius:10px!important;padding:14px 16px!important;
+ min-width:0!important;overflow-wrap:anywhere;
+}
+#view-logada #subpage-vagas-salvas #membroVagasSalvas>div>div:first-child{
+ font-size:14px!important;font-weight:700!important;line-height:1.35!important;
+ color:#f4f6fb!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasSalvas>div>div:nth-child(2){
+ font-size:12px!important;line-height:1.5!important;color:#b8c4d6!important;
+ margin-top:4px!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasSalvas a{
+ display:inline-flex;align-items:center;justify-content:center;min-height:40px;
+ background:#2d203f;color:#e3b9f5!important;
+ border:1px solid #6d4985;border-radius:8px;
+ text-decoration:none;font-size:12px!important;font-weight:650;
+ padding:9px 14px!important;margin-top:10px;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-rec-heading{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:12px!important;margin-bottom:4px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-rec-heading>.fd{margin:0!important}
+#view-logada #subpage-vagas-salvas .cx-saved-refresh{
+ min-height:42px!important;font-size:12px!important;white-space:normal;
+ padding:9px 14px!important;background:#7f40b1!important;
+ color:white!important;border:1px solid #7f40b1!important;border-radius:8px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-recommendations>div:nth-child(2){
+ color:#b8c4d6!important;font-size:12px!important;line-height:1.6!important;
+ max-width:720px!important;margin:0 0 10px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-score-note{
+ color:#94a3ba!important;font-size:11px!important;line-height:1.5!important;
+ margin:0 0 14px!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasMatch{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ align-items:stretch;gap:12px!important;min-width:0!important;
+ max-width:100%;font-size:13px!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasMatch>.cx-saved-job{
+ display:flex!important;flex-direction:column!important;gap:12px!important;
+ margin:0!important;min-height:0!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ border:1px solid var(--cx-saved-line)!important;
+ border-radius:12px!important;background:var(--cx-saved-card)!important;
+ padding:18px 20px!important;box-shadow:none!important;
+}
+#view-logada #subpage-vagas-salvas #membroVagasMatch>.cx-saved-featured{
+ border-color:#66427a!important;background:linear-gradient(110deg,#332342,#261f3b)!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-heading{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:16px!important;min-width:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-info{
+ flex:1 1 auto!important;min-width:0!important;overflow-wrap:anywhere!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-info>div:first-child{
+ font-size:15px!important;line-height:1.35!important;color:#f5f5fb!important;
+ font-weight:720!important;letter-spacing:-.015em!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-info>div:nth-child(2){
+ font-size:12px!important;line-height:1.5!important;color:#b8c4d6!important;margin-top:5px;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-score{
+ background:#2d203f!important;border:1px solid #65447d!important;
+ padding:7px 10px!important;min-width:100px;flex:0 0 auto;
+ border-radius:9px!important;font-size:12px!important;
+ text-align:center!important;font-weight:700!important;color:#dfb0f4!important;
+ white-space:normal!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-featured .cx-saved-job-heading{
+ display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;
+ grid-template-areas:"score job";align-items:center!important;gap:14px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-featured .cx-saved-job-info{
+ grid-area:job!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-featured .cx-saved-job-score{
+ grid-area:score!important;background:none!important;border:0!important;
+ color:var(--cx-saved-violet)!important;text-align:left!important;
+ padding:0!important;min-width:0!important;max-width:100%!important;
+ font-size:26px!important;font-weight:780!important;line-height:1.15!important;
+ letter-spacing:-.035em!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-match-details{
+ display:block!important;width:100%;min-width:0;
+ border-top:1px solid #45506b;padding-top:10px;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-match-details>summary{
+ cursor:pointer;font-size:12px!important;font-weight:650!important;line-height:1.5;
+ color:#d3a3eb!important;padding:8px 0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-match-details .cx-saved-match-body{
+ display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;
+ min-width:0!important;max-width:100%;margin-top:10px!important;
+ font-size:12px!important;line-height:1.55!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-match-details .cx-saved-match-body>div{
+ overflow-wrap:anywhere;min-width:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-actions{
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;
+ gap:10px!important;flex-wrap:wrap!important;margin:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-actions button,
+#view-logada #subpage-vagas-salvas .cx-saved-job-actions a{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:42px!important;padding:9px 14px!important;
+ border-radius:8px!important;font-size:12px!important;font-weight:700!important;
+ text-decoration:none!important;white-space:normal!important;max-width:100%;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-actions button{
+ background:transparent!important;color:#dcb3f1!important;border:1px solid #6d4985!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-job-actions a{
+ background:#7f40b1!important;color:white!important;border:1px solid #7f40b1!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-match-body .crm-match-skill-action{
+ background:transparent!important;color:#e5d4f2!important;
+ border:1px solid #745487!important;border-radius:7px!important;
+ padding:5px 10px!important;min-height:38px!important;font-size:11px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-communities>.fd{
+ text-transform:uppercase!important;letter-spacing:.1em!important;
+ color:var(--cx-saved-violet)!important;font-size:11px!important;font-weight:750!important;
+ margin:0 0 10px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-title{
+ font-size:clamp(19px,2.5vw,25px)!important;line-height:1.25!important;
+ font-weight:720!important;color:#f4f6fb!important;margin:0 0 8px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-desc{
+ color:#b8c4d6!important;font-size:13px!important;line-height:1.55!important;margin:0 0 16px!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:12px!important;font-size:inherit!important;line-height:normal!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-link{
+ display:flex!important;flex-direction:column!important;
+ align-items:flex-start!important;justify-content:flex-start!important;
+ gap:9px!important;min-width:0!important;max-width:100%!important;
+ padding:15px!important;border-radius:10px!important;
+ border:1px solid #2b3650!important;background:#101829!important;
+ color:#f5f5fb!important;text-decoration:none!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-link:hover,
+#view-logada #subpage-vagas-salvas .cx-saved-community-link:focus-visible{
+ border-color:#af79cb!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-medium{
+ color:#a9b3c6!important;font-size:11px!important;line-height:1.3!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-link strong{
+ font-size:14px!important;line-height:1.35!important;color:#f5f5fb!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-community-blurb{
+ color:#aeb8c9!important;font-size:12px!important;line-height:1.45!important;
+}
+#view-logada #subpage-vagas-salvas :is(button,a,summary):focus-visible{
+ outline:2px solid #d5a7f0!important;outline-offset:3px!important;
+}
+@media(max-width:900px){
+ #view-logada #subpage-vagas-salvas #crmSavedSlot>.cx-saved-main{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-community-grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))!important;
+ }
+}
+@media(max-width:600px){
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard>section{padding:0!important}
+ #view-logada #subpage-vagas-salvas .cx-saved-page-description{margin-bottom:18px!important}
+ #view-logada #subpage-vagas-salvas .cx-saved-resume,
+ #view-logada #subpage-vagas-salvas .cx-saved-list-panel,
+ #view-logada #subpage-vagas-salvas .cx-saved-communities{
+  padding:16px!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-resume button{
+  flex:1 1 100%;width:100%!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-featured .cx-saved-job-heading{
+  grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"score" "job"!important;gap:10px!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-job-heading{align-items:flex-start!important;flex-wrap:wrap!important}
+ #view-logada #subpage-vagas-salvas .cx-saved-job-score{min-width:0!important}
+ #view-logada #subpage-vagas-salvas .cx-saved-job-actions :is(a,button){
+  flex:1 1 130px!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-community-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #view-logada #subpage-vagas-salvas *{transition:none!important;animation:none!important}
+}
