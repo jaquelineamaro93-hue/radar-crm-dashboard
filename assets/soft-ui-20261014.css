@@ -291,3 +291,31 @@
 @media(max-width:600px){#view-logada #crmAdminAnalytics .crm-analytics-grid,#view-logada #crmAnalyticsSupabase .crm-mini-grid{gap:10px}#view-logada #crmAdminAnalytics .crm-analytics-card,#view-logada #crmAnalyticsSupabase .crm-mini-card{padding:16px;min-height:145px}#view-logada #crmAdminAnalytics .crm-analytics-card>b{font-size:24px!important}#view-logada #crmAdminAnalytics .crm-story-head h3{font-size:21px}#view-logada #crmAdminAnalytics .crm-rank-row,#view-logada #crmAdminAnalytics .crm-primary-ranking .crm-rank-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#view-logada #crmAdminAnalytics .crm-rank-row>b{grid-column:1/-1}#view-logada #crmAdminAnalytics .crm-rank-metric{text-align:left;white-space:normal}#view-logada #crmAdminAnalytics .crm-filter-row{gap:12px}#view-logada #crmAdminAnalytics .crm-analytics-panel{padding:16px}#view-logada #crmAdminAnalytics .crm-bar{grid-template-columns:minmax(90px,1fr) minmax(0,1fr) auto;font-size:11px;gap:8px}}
 #view-logada #crmAdminAnalytics .crm-delta.is-up{color:#10d6a0;font-size:11px!important;font-weight:450;margin-top:auto!important;padding-top:8px}
 #view-logada #crmAdminAnalytics .crm-delta.is-down{color:#fb7185;font-size:11px!important;font-weight:450;margin-top:auto!important;padding-top:8px}
+/* Shared interaction surfaces, including dialogs mounted outside the workspace. */
+#crmJoinDialog{width:min(440px,calc(100vw - 32px));padding:28px;background:#111827;color:#f5f6fa;border:1px solid #384254;border-radius:16px;box-shadow:0 24px 70px #0007}
+#crmJoinDialog::backdrop{background:#050914b8;backdrop-filter:blur(3px)}
+#crmJoinDialog .crm-close{display:block;margin:0 0 16px auto;min-height:36px;padding:6px 10px;background:transparent;border:0;color:#a8b3c5;font-size:12px}
+#crmJoinDialog h2{font-size:26px;line-height:1.25;letter-spacing:-.035em;margin:0 0 12px}
+#crmJoinDialog p{font-size:14px;line-height:1.65;color:#bfc9da;margin:0 0 20px}
+#crmJoinDialog .crm-button{width:100%;min-height:44px;border:1px solid #7f40b1;border-radius:8px;background:#7f40b1;color:white;font-size:13px;font-weight:600;letter-spacing:0;padding:12px 16px;transform:none;box-shadow:none}
+#crmJoinDialog small{display:block;font-size:12px;line-height:1.6;color:#a8b3c5;margin-top:16px}
+#crmJoinDialog :is(button,a):focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important;box-shadow:none!important}
+#view-logada #crmMatchResumeCard{background:#182131!important;border-color:#2b3547!important;border-radius:12px!important;padding:18px!important;color:#f5f6fa!important;gap:12px!important}
+#view-logada #crmMatchResumeCard>div>div{color:#f5f6fa!important;font-size:15px!important}
+#view-logada #crmMatchResumeCard>div>div:first-child{color:#ce9cea!important;font-size:10px!important}
+#view-logada #crmMatchResumeCard #crmMatchResumeStatus{font-size:12px!important;color:#a8b3c5!important}
+#view-logada #crmMatchResumeCard button,#view-logada #crmSavedSlot button,#view-logada #btnSubmitJD,#view-logada .ev-btn-suggest{background:#7f40b1!important;color:white!important;border:1px solid #7f40b1!important;border-radius:8px!important;min-height:36px;padding:8px 12px!important;font-size:12px!important;box-shadow:none!important}
+#view-logada .ev-btn-name{background:transparent!important;color:#ce9cea!important;border-color:#604178!important;font-size:12px!important}
+#view-logada .ev-cpill{background:#182131;color:#a8b3c5;border-color:#2b3547;font-size:11px;padding:6px 10px}
+#view-logada .ev-live{font-size:11px;color:#a8b3c5}
+#view-logada .ev-dot{background:#ce9cea;box-shadow:none}
+#view-logada .crm-event-filter-disclosure{margin:18px 0 24px;border:1px solid #384254;border-radius:10px;background:#111827;padding:12px 14px}
+#view-logada .crm-event-filter-disclosure>summary{cursor:pointer;color:#ce9cea;font-size:13px;min-height:24px}
+#view-logada .crm-event-filter-disclosure[open]>summary{margin-bottom:16px}
+#view-logada .ev-fgroup{gap:10px;margin-bottom:12px}
+#view-logada .ev-ftab{background:#182131!important;border:1px solid transparent!important;color:#bfc9da!important;font-size:12px;padding:7px 11px;min-height:34px;font-weight:500}
+#view-logada .ev-ftab.on{background:#2a1e3c!important;border-color:#9762bc!important;color:#ce9cea!important}
+#view-logada .crm-freelancer-tab.is-active{background:#2a1e3c!important;border-color:#704b8a!important;color:#ce9cea!important}
+#view-logada .crm-freelancer-tab:focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important}
+#view-logada #crmSavedSlot>div{grid-template-columns:minmax(0,1.8fr) minmax(250px,1fr)!important;gap:20px!important}
+@media(max-width:1000px){#view-logada #crmSavedSlot>div{grid-template-columns:minmax(0,1fr)!important}}

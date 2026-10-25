@@ -1272,7 +1272,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 .crm-xp-directory-recommend:hover{background:#ffd0a6}
 .crm-xp-directory-recommend:focus-visible{outline:2px solid #f97316;outline-offset:3px}
 </style>
-<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-analytics6">
+<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-radar7">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -2574,6 +2574,7 @@ crmShowSurveyReminder();
               <option value="Pleno">Pleno</option>
               <option value="Sênior">Sênior</option>
               <option value="Liderança">Liderança</option>
+              <option value="Diretoria">Diretoria</option>
               <option value="C-Level">C-Level</option>
             </select>
           <select id="filtro-nivel-hub" style="width:100%; font-size:14px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-family:inherit; background:var(--panel);" hidden="hidden" aria-hidden="true" tabindex="-1">
@@ -2582,6 +2583,7 @@ crmShowSurveyReminder();
               <option value="Pleno">Pleno</option>
               <option value="Sênior">Sênior</option>
               <option value="Liderança">Liderança</option>
+              <option value="Diretoria">Diretoria</option>
               <option value="C-Level">C-Level</option>
             </select>
           </div>
@@ -3943,6 +3945,24 @@ function crmRadarNormalized(value){
  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR')
    .replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 }
+function crmRadarLevelMatches(job,selected){
+ const level=crmRadarNormalized(selected).replace(/ /g,'');
+ if(!level)return true;
+ const title=crmRadarNormalized(job.title||job.cargo||'');
+ const individual=/^(analista|assistente|assistant|assessor|estagiario|intern|aprendiz|consultor|specialist|especialista)\b/.test(title);
+ if(level==='clevel'||level==='executivo')return !individual&&!/^(executive |personal )?assistant\b/.test(title)&&/\b(ceo|cto|cio|cfo|coo|cro|cmo|cpo|cdo|ciso|chro|cco|clo|presidente|chief (executive|technology|information|financial|operating|revenue|marketing|product|data|information security|security|people|human resources|commercial|legal) officer)\b/.test(title)&&!/^vice presidente\b/.test(title);
+ if(level==='diretoria')return !individual&&/\b(diretor|diretora|director|diretoria)\b/.test(title);
+ if(level==='lideranca')return !individual&&/\b(gerente|gerencia|manager|coordenador|coordenadora|coordenacao|head|diretor|diretora|director|supervisor|supervisora|lider|lead)\b/.test(title);
+ if(level==='senior')return /\b(senior|sr|lead|principal)\b/.test(title);
+ if(level==='pleno')return /\b(pleno|mid level|pl)\b/.test(title);
+ if(level==='junior')return /\b(junior|jr|trainee)\b/.test(title);
+ if(level==='estagio')return /\b(estagio|intern|aprendiz)\b/.test(title);
+ return false;
+}
+function crmRadarScopeMatches(job,selected){
+ if(!selected)return true;
+ return crmRadarNormalized(job.abrangencia)===crmRadarNormalized(selected);
+}
 function crmRadarPublishedMillis(job){
  const time=Date.parse(job?.published_at||'');
  return Number.isFinite(time)?time:0;
@@ -4302,12 +4322,14 @@ async function aplicarFiltrosVagas() {
     }
 
     if (nivel && nivel !== '') {
-      const nivelNorm = nivel.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const nivelNorm = crmRadarNormalized(nivel).replace(/ /g, '');
 
       if (nivelNorm.includes('clevel') || nivelNorm === 'executivo') {
-        query = query.or('title.ilike.%ceo%,title.ilike.%cto%,title.ilike.%cfo%,title.ilike.%coo%,title.ilike.%cro%,title.ilike.%cmo%,title.ilike.%chief%,title.ilike.%presidente%');
+        query = query.or('title.ilike.%ceo%,title.ilike.%cto%,title.ilike.%cio%,title.ilike.%cfo%,title.ilike.%coo%,title.ilike.%cro%,title.ilike.%cmo%,title.ilike.%cpo%,title.ilike.%cdo%,title.ilike.%ciso%,title.ilike.%chro%,title.ilike.%cco%,title.ilike.%clo%,title.ilike.%chief%,title.ilike.%presidente%');
+      } else if (nivelNorm==='diretoria') {
+        query=query.or('title.ilike.%diretor%,title.ilike.%director%');
       } else if (nivelNorm.includes('lideranca')) {
-        query = query.or('title.ilike.%gerente%,title.ilike.%coordenador%,title.ilike.%coordenad%,title.ilike.%supervisor%,title.ilike.%head%,title.ilike.%líder%,title.ilike.%lider%,title.ilike.%manager%');
+        query = query.or('title.ilike.%gerente%,title.ilike.%coordenador%,title.ilike.%coordenad%,title.ilike.%supervisor%,title.ilike.%head%,title.ilike.%líder%,title.ilike.%lider%,title.ilike.%manager%,title.ilike.%diretor%,title.ilike.%director%');
       } else if (nivelNorm.includes('senior')) {
         query = query.or('title.ilike.%sênior%,title.ilike.%senior%,title.ilike.%sr%,title.ilike.%lead%');
       } else if (nivelNorm.includes('pleno')) {
@@ -4333,29 +4355,14 @@ async function aplicarFiltrosVagas() {
     const { data, error } = await query;
     if(renderSeq!==crmVagasRenderSeq)return;
     if (error) {
-      if(keepCards)return;
+      document.getElementById('vagasCountHub').textContent='0';
       console.error('[VAGAS FILTRO] Erro ao buscar vagas:', error.message);
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(error.message || 'Erro desconhecido') + '</p></div>';
       return;
     }
 
-    const crmSeniorityMatches=(vaga)=>{
-      if(!nivel)return true;
-      const title=String(vaga.title||vaga.cargo||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
-      const level=String(nivel).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
-      const matches=(pattern)=>pattern.test(title);
-      if(level.includes('c-level')||level.includes('clevel')||level==='executivo')
-        return matches(/\\b(ceo|cto|cio|cfo|coo|cmo|cdo|ciso|chief executive|chief technology|chief information|chief financial|chief operating|chief marketing|chief product|chief data|presidente)\\b/i);
-      if(level.includes('lideranca'))
-        return matches(/\\b(gerente|gerencia|manager|coordenador|coordenadora|coordenacao|head|diretor|diretora|director|supervisor|supervisora|lider|lead)\\b/i);
-      if(level.includes('senior'))return matches(/\\b(senior|sr|lead|principal)\\b/i);
-      if(level.includes('pleno'))return matches(/\\b(pleno|mid.level|pl)\\b/i);
-      if(level.includes('junior'))return matches(/\\b(junior|jr|trainee)\\b/i);
-      if(level.includes('estagio'))return matches(/\\b(estagio|intern|aprendiz)\\b/i);
-      return true;
-    };
-    const filtradas=(data||[]).filter(vaga=>crmJobMatchesLocation(vaga,estado,municipio)&&crmSeniorityMatches(vaga));
-    document.getElementById('totalVagasHub').textContent=Number.isFinite(count)?String(count):String(filtradas.length);
+    const filtradas=(data||[]).filter(vaga=>crmJobMatchesLocation(vaga,estado,municipio)&&crmRadarLevelMatches(vaga,nivel)&&crmRadarScopeMatches(vaga,abrangencia));
+    document.getElementById('totalVagasHub').textContent=String(filtradas.length);
     if (!filtradas.length) {
       container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Nenhuma vaga encontrada com esses critérios.</p></div>';
       document.getElementById('vagasCountHub').textContent = '0';
@@ -4366,7 +4373,7 @@ async function aplicarFiltrosVagas() {
     crmLoadClosedJobs(categoria);
   } catch (err) {
     console.error('[VAGAS FILTRO] Erro inesperado:', err.message);
-    if(keepCards)return;
+    document.getElementById('vagasCountHub').textContent='0';
     container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:32px 16px;"><div style="font-size:28px; margin-bottom:8px;"></div><p style="font-size:12px; color:var(--muted);">Erro ao buscar vagas: ' + escapeHtml(err.message || 'Erro desconhecido') + '</p></div>';
   }
 }
@@ -8731,6 +8738,7 @@ function openAnunciarVagaModal(){
               <option value="Coordenação">Coordenação</option>
               <option value="Gestão">Gestão</option>
               <option value="Liderança">Liderança</option>
+              <option value="Diretoria">Diretoria</option>
             </select>
           </div>
         </div>
@@ -10061,7 +10069,7 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261025-analytics6"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script src="/assets/portal-hardening.js?v=20261025-radar7"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-figma2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261023-header-2">
