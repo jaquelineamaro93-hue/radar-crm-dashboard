@@ -3928,7 +3928,7 @@ function crmRadarLevelMatches(job,selected){
  if(!level)return true;
  const title=crmRadarNormalized(job.title||job.cargo||'');
  const individual=/^(analista|assistente|assistant|assessor|estagiario|intern|aprendiz|consultor|specialist|especialista)\b/.test(title);
- if(level==='clevel'||level==='executivo')return !individual&&!/^(executive |personal )?assistant\b/.test(title)&&/\b(ceo|cto|cio|cfo|coo|cro|cmo|cpo|cdo|ciso|chro|cco|clo|presidente|chief (executive|technology|information|financial|operating|revenue|marketing|product|data|information security|security|people|human resources|commercial|legal) officer)\b/.test(title)&&!/^vice presidente\b/.test(title);
+ if(level==='clevel'||level==='executivo')return !individual&&!/^(senior|sr|junior|jr|pleno|analyst|consultant|executive assistant|personal assistant|assistant)\b/.test(title)&&/\b(ceo|cto|cio|cfo|coo|cro|cmo|cpo|cdo|ciso|chro|cco|clo|presidente|chief (executive|technology|information|financial|operating|revenue|marketing|product|data|information security|security|people|human resources|commercial|legal) officer)\b/.test(title)&&!/^vice presidente\b/.test(title);
  if(level==='diretoria')return !individual&&/\b(diretor|diretora|director|diretoria)\b/.test(title);
  if(level==='lideranca')return !individual&&/\b(gerente|gerencia|manager|coordenador|coordenadora|coordenacao|head|diretor|diretora|director|supervisor|supervisora|lider|lead)\b/.test(title);
  if(level==='senior')return /\b(senior|sr|lead|principal)\b/.test(title);
