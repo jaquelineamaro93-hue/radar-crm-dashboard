@@ -383,3 +383,10 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #crmPersonalDashboard .crm-preferences label{font-size:14px;line-height:1.6}
 #view-logada #crmPersonalDashboard .crm-preferences p{font-size:12px;color:#a8b3c5;line-height:1.6}
 @media(max-width:650px){#view-logada #crmPersonalDashboard .crm-dashboard-heading{flex-direction:column;gap:16px}#view-logada #crmPersonalDashboard .crm-dashboard-heading>.crm-field{max-width:none;width:100%}#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:minmax(0,1fr)}}
+#view-logada #crmPersonalDashboard .crm-dashboard-heading .crm-eyebrow{margin:0 0 6px!important}
+#view-logada #crmPersonalDashboard #crmDashboardContext{margin:8px 0 0;font-size:13px;line-height:1.6;color:#a8b3c5}
+#view-logada #crmPersonalDashboard .crm-solution-card>span:empty{display:none}
+#view-logada #crmPersonalDashboard .crm-solution-card h3{margin:0 0 6px}
+#view-logada #crmPersonalDashboard .crm-solution-card p{margin:0}
+#view-logada #crmPersonalDashboard .crm-preferences>.crm-button{display:none}
+#view-logada :is(input[type=checkbox],input[type=radio]){accent-color:#7f40b1}
