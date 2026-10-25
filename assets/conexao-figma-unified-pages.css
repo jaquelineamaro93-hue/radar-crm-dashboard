@@ -1,0 +1,340 @@
+/* Conexão CRM | 2026-10-25 complete visual pass for legacy public and workspace screens.
+ * Scope is visual only: no changes to data, auth, payments or notification logic. */
+#view-logada{--cx-ui-bg:#0d1324;--cx-ui-panel:#1a2536;--cx-ui-inner:#111a2b;--cx-ui-stroke:#45536c;--cx-ui-text:#f4f5fb;--cx-ui-muted:#b5c0d3;--cx-ui-accent:#cfa5e9;}
+#view-logada #crmPages :is(#subpage-vagas-salvas,#pageCourses,#pageConteudos,#pageMembro),
+#view-logada #crmPages .cx-work{max-width:1200px!important;min-width:0!important;margin-inline:auto!important;}
+#view-logada #crmPages :is(#pageCourses,#pageConteudos,#subpage-vagas-salvas) :is(h1,h2,h3),
+#view-logada #crmPages .cx-work :is(h1,h2,h3){letter-spacing:-.02em;overflow-wrap:anywhere;}
+#view-logada #crmPages :is(#pageCourses,#pageConteudos) .section-desc{max-width:68ch!important;font-size:13px!important;line-height:1.55!important;color:var(--cx-ui-muted)!important;}
+#view-logada #crmPages :is(#pageCourses,#pageConteudos) button:focus-visible,
+#view-logada #crmPages :is(#pageCourses,#pageConteudos) a:focus-visible,
+#view-logada #crmPages .cx-work :is(button,a,summary,select):focus-visible{
+ outline:2px solid #d5a7ed!important;outline-offset:3px!important;
+}
+/* The saved-job page renders this exact Figma-inspired structure in HTML now.
+   Readable resume statuses even when dynamic status text changes. */
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #crmMatchResumeCard #crmMatchResumeStatus{
+ color:#e2e8f0!important;font-size:13px!important;line-height:1.55!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #crmMatchResumeCard>div>div:nth-child(2){
+ color:#f5f6fc!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasMatch .cx-saved-empty{
+ padding:18px!important;margin:0!important;border:1px dashed #48546c!important;
+ border-radius:10px!important;color:#bbc5d6!important;background:#111a2b!important;
+ font-size:13px!important;line-height:1.55!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-panel{
+ min-width:0!important;max-width:100%!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasSalvas>div{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+ grid-template-rows:auto auto!important;align-items:center!important;
+ gap:4px 12px!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasSalvas>div>div:first-child{
+ grid-column:1/-1;font-size:14px!important;line-height:1.4!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasSalvas>div>div:nth-child(2){grid-column:1;grid-row:2;}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasSalvas>div>a{
+ grid-column:2;grid-row:2;margin:0!important;white-space:nowrap!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-rec-heading h3{
+ margin:0!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard #crmSavedSlot>.cx-saved-main{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-recommendations{
+ background:transparent!important;border:0!important;padding:0!important;
+}
+#view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-recommendations>p{
+ color:#b8c5d8!important;font-size:12px!important;line-height:1.6!important;
+ margin:8px 0!important;max-width:70ch!important;
+}
+/* Contents: turn the five large legacy bricks into compact category tiles.
+   Keep all search/filter buttons and empty-state text readable. */
+#view-logada #pageConteudos .cx-hub{width:100%!important;max-width:1160px!important;min-width:0!important;gap:22px!important;}
+#view-logada #pageConteudos .cx-hub-hero{
+ display:flex!important;flex-wrap:wrap!important;align-items:flex-end!important;
+ gap:12px 24px!important;border-bottom:1px solid #46516a!important;
+ margin-bottom:16px!important;padding:0 0 20px!important;
+}
+#view-logada #pageConteudos .cx-hub-hero-copy{max-width:760px!important;min-width:0!important;flex:1 1 330px!important;}
+#view-logada #pageConteudos .cx-hub-hero-copy h1{font-size:clamp(23px,3vw,29px)!important;line-height:1.22!important;margin:6px 0!important;}
+#view-logada #pageConteudos .cx-hub-hero-copy p{
+ font-size:13px!important;line-height:1.55!important;color:#bbc5d5!important;margin:0!important;
+}
+#view-logada #pageConteudos :is(.cx-suggest-btn,.cx-curation-note button){
+ min-height:42px!important;border-radius:8px!important;font-size:12px!important;
+ background:#7f40b1!important;border:1px solid #8454a4!important;color:#fff!important;
+}
+#view-logada #pageConteudos .cx-format-links{
+ display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ gap:10px!important;width:100%!important;max-width:100%!important;margin:0!important;
+}
+#view-logada #pageConteudos .cx-format-links button{
+ min-width:0!important;min-height:72px!important;display:flex!important;
+ flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;
+ gap:7px!important;padding:12px!important;
+ background:#192335!important;border:1px solid #44516a!important;
+ border-radius:10px!important;color:#edf0f8!important;font-size:12px!important;
+}
+#view-logada #pageConteudos .cx-format-links button:hover,
+#view-logada #pageConteudos .cx-format-links button:focus-visible{
+ border-color:#9b6bb7!important;
+}
+#view-logada #pageConteudos .cx-curation-note{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) auto!important;
+ align-items:center!important;gap:14px!important;min-width:0!important;
+ margin:0!important;padding:15px 18px!important;border-radius:12px!important;
+ background:#192335!important;border:1px solid #45516a!important;
+}
+#view-logada #pageConteudos .cx-curation-note p{
+ font-size:12px!important;line-height:1.5!important;color:#b7c3d6!important;margin:0!important;
+}
+#view-logada #pageConteudos .cx-library{display:grid!important;gap:12px!important;min-width:0!important;margin-top:8px!important;}
+#view-logada #pageConteudos .cx-library-heading{margin:0!important;}
+#view-logada #pageConteudos .cx-section-heading h2{
+ font-size:clamp(19px,2.5vw,24px)!important;line-height:1.25!important;
+}
+#view-logada #pageConteudos .cx-search-row,
+#view-logada #pageConteudos .cx-search-box{
+ width:100%!important;max-width:760px!important;min-width:0!important;
+}
+#view-logada #pageConteudos .cx-search-box input{width:100%!important;min-width:0!important;max-width:100%!important;font-size:15px!important;}
+#view-logada #pageConteudos .cx-filter-group{
+ display:grid!important;grid-template-columns:68px minmax(0,1fr)!important;
+ align-items:start!important;gap:8px!important;min-width:0!important;
+}
+#view-logada #pageConteudos .cx-filter-group .cx-filter-label{
+ font-size:11px!important;font-weight:700!important;line-height:30px!important;color:#aebbd0!important;
+}
+#view-logada #pageConteudos .crm-content-filters{
+ display:flex!important;flex-wrap:wrap!important;gap:6px!important;min-width:0!important;
+}
+#view-logada #pageConteudos .crm-content-filters button{
+ background:#172032!important;color:#d0d6e3!important;
+ border:1px solid #45516a!important;border-radius:18px!important;
+ font-size:11px!important;min-height:34px!important;padding:6px 10px!important;
+}
+#view-logada #pageConteudos .crm-content-filters button.active,
+#view-logada #pageConteudos .crm-content-filters button[aria-pressed="true"]{
+ background:#332344!important;border-color:#a36ac8!important;color:#edccff!important;
+}
+#view-logada #pageConteudos #cxGrid .empty-state,
+#view-logada #pageConteudos #cxGrid .cx-empty{
+ border:1px dashed #45516a!important;border-radius:12px!important;
+ color:#b8c4d6!important;min-height:90px!important;padding:22px!important;
+}
+/* Courses: one reusable navy card (not the old black/orange course grid).
+   All course links and source labels remain intact. */
+#view-logada #pageCourses :is(#courseResults,#communityCourseResults){width:100%!important;max-width:100%!important;min-width:0!important;}
+#view-logada #pageCourses :is(#courseResults,#communityCourseResults) .result-grid{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:12px!important;max-width:100%!important;align-items:stretch!important;
+}
+#view-logada #pageCourses :is(#courseResults,#communityCourseResults) .course-card{
+ display:flex!important;flex-direction:column!important;gap:10px!important;
+ border:1px solid #45516a!important;border-radius:12px!important;
+ background:#192335!important;box-shadow:none!important;padding:18px!important;
+ min-height:0!important;max-width:100%!important;min-width:0!important;
+}
+#view-logada #pageCourses .course-card .c-name{
+ font-size:16px!important;line-height:1.35!important;font-weight:680!important;
+ color:#f2f4fb!important;overflow-wrap:anywhere!important;
+}
+#view-logada #pageCourses .course-card .c-inst{
+ font-size:12px!important;color:#b8c4d6!important;line-height:1.5!important;
+}
+#view-logada #pageCourses .course-card .course-tags{
+ display:flex!important;gap:6px!important;flex-wrap:wrap!important;
+}
+#view-logada #pageCourses .course-card .c-tag{
+ font-size:10px!important;line-height:1.35!important;padding:5px 8px!important;
+ border-radius:14px!important;color:#cfb1e2!important;
+ background:#2d203c!important;border:1px solid #695080!important;
+}
+#view-logada #pageCourses .course-card .c-tag.free{
+ color:#a2ecd0!important;border-color:#22624e!important;background:#123a32!important;
+}
+#view-logada #pageCourses .course-card .course-meta{
+ background:#131d2e!important;border:1px solid #354560!important;
+ border-radius:9px!important;padding:10px 12px!important;
+ color:#b8c5d8!important;font-size:11px!important;line-height:1.6!important;
+}
+#view-logada #pageCourses .course-card .course-meta strong{color:#e2e8f0!important;}
+#view-logada #pageCourses .course-card .c-link{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ min-height:42px!important;border:1px solid #8454a4!important;border-radius:8px!important;
+ background:#7f40b1!important;color:#fff!important;text-decoration:none!important;
+ font-size:12px!important;font-weight:700!important;margin-top:auto!important;
+ padding:10px 14px!important;white-space:normal!important;
+}
+#view-logada #pageCourses .course-card .c-link.disabled{
+ pointer-events:none!important;color:#aab5c8!important;
+ background:#141d2d!important;border-color:#45516a!important;
+}
+#view-logada #pageCourses .search-bar .filter-bar{
+ max-width:100%!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ background:#192335!important;border:1px solid #45516a!important;
+ border-radius:12px!important;padding:14px!important;gap:12px!important;
+}
+#view-logada #pageCourses .search-input{
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ background:#131d2d!important;border:1px solid #45516a!important;
+ border-radius:9px!important;color:#f4f6fb!important;
+}
+#view-logada #pageCourses .search-bar :is(label,select){min-width:0!important;max-width:100%!important;}
+#view-logada #pageCourses .search-bar :is(select,button){
+ background:#111a2a!important;border:1px solid #45516a!important;color:#e5eaf3!important;
+ border-radius:8px!important;min-height:40px!important;
+}
+/* Sales pipeline/work area. Only colors, geometry and density; operations untouched. */
+#view-logada .cx-work{--cx-orange:#cfa5e9;--cx-ink:#f1f5fb;--cx-paper:#151e30;max-width:1160px!important;color:#f4f6fb!important;}
+#view-logada .cx-work h1{
+ font-size:clamp(23px,2.8vw,34px)!important;line-height:1.16!important;
+ max-width:800px!important;margin:4px 0 10px!important;
+}
+#view-logada .cx-work h2{font-size:clamp(19px,2.3vw,24px)!important;line-height:1.3!important;}
+#view-logada .cx-work .cx-intro{font-size:13px!important;line-height:1.55!important;color:#b9c5d7!important;max-width:730px!important;}
+#view-logada .cx-work .cx-top{
+ padding:0 0 16px!important;margin:0 0 18px!important;border-color:#45516a!important;
+}
+#view-logada .cx-work .cx-tabs{gap:8px!important;margin:14px 0!important;}
+#view-logada .cx-work :is(button,.cx-link){
+ font-size:12px!important;border:1px solid #46516a!important;border-radius:8px!important;
+ background:#141d2e!important;color:#e5eaf5!important;padding:9px 13px!important;min-height:42px!important;
+}
+#view-logada .cx-work :is(button,.cx-link):hover{border-color:#9f72c1!important;}
+#view-logada .cx-work :is(.cx-primary,button.active,.cx-tabs button[aria-current="page"]){
+ background:#7f40b1!important;color:#fff!important;border-color:#8d55b6!important;
+}
+#view-logada .cx-work .cx-stats{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ border:0!important;gap:12px!important;margin:18px 0!important;
+}
+#view-logada .cx-work .cx-stat{
+ background:#192335!important;border:1px solid #45516a!important;
+ padding:16px!important;border-radius:11px!important;min-width:0!important;
+}
+#view-logada .cx-work .cx-stat strong{
+ color:#d4a7ed!important;font-size:clamp(21px,2.7vw,29px)!important;
+ overflow-wrap:anywhere!important;
+}
+#view-logada .cx-work :is(.cx-sheet,.cx-column,.cx-deal){
+ background:#192335!important;border:1px solid #45516a!important;
+ border-radius:11px!important;box-shadow:none!important;
+}
+#view-logada .cx-work .cx-sheet{padding:18px!important;}
+#view-logada .cx-work .cx-deal{background:#111b2c!important;margin:10px 0!important;padding:14px!important;}
+#view-logada .cx-work .cx-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;}
+#view-logada .cx-work .cx-board{
+ grid-template-columns:repeat(4,minmax(210px,1fr))!important;
+ gap:12px!important;overflow-x:auto!important;scrollbar-color:#7f40b1 #111b2c;
+}
+#view-logada .cx-work .cx-column{border-top:2px solid #7f40b1!important;padding:14px!important;min-height:180px!important;}
+#view-logada .cx-work :is(.cx-kicker,.cx-badge,.cx-tools-nav summary){
+ color:#ce9cea!important;
+}
+#view-logada .cx-work .cx-badge{border-color:#705187!important;}
+#view-logada .cx-work :is(input,select,textarea){
+ border:1px solid #46516a!important;border-radius:8px!important;
+ background:#111a2b!important;color:#eff1f8!important;min-width:0!important;
+}
+#view-logada .cx-work .cx-row{
+ border-color:#35435a!important;padding:12px 0!important;gap:12px!important;
+}
+#view-logada .cx-work .cx-preview{
+ background:#f8f6fd!important;color:#172033!important;border-top:4px solid #7f40b1!important;
+}
+/* Public hero and Conexômetro should use the same compact hierarchy. Preserve live figures. */
+#view-publica #publicHero .crm-hero{min-height:500px!important;background:#101727!important;}
+#view-publica #publicHero .crm-hero-content{padding:50px max(24px,5vw) 75px!important;}
+#view-publica #publicHero .crm-hero h1{font-size:clamp(46px,8vw,108px)!important;color:#f5f5fb!important;line-height:.94!important;}
+#view-publica #publicHero .crm-hero .hero-dot{color:#ce9cea!important;}
+#view-publica #publicHero .crm-conexometro{
+ background:#0d1324!important;color:#f4f6fb!important;padding:40px 0!important;
+}
+#view-publica #publicHero .crm-conexo-wrap{max-width:1120px!important;margin-inline:auto!important;}
+#view-publica #publicHero .crm-conexo-heading{
+ font-size:clamp(24px,3.4vw,37px)!important;line-height:1.2!important;letter-spacing:-.03em!important;
+}
+#view-publica #publicHero .crm-conexo-feature,
+#view-publica #publicHero .crm-conexo-card{
+ border:1px solid #44516b!important;background:#192335!important;border-radius:13px!important;
+ box-shadow:none!important;min-width:0!important;
+}
+#view-publica #publicHero :is(.crm-conexo-feature-value,.crm-conexo-card-value){
+ color:#cf9ee7!important;font-size:clamp(25px,4vw,39px)!important;
+}
+#view-publica #publicHero .crm-conexo-stats{gap:12px!important;}
+#view-publica #publicHero .crm-conexo-secondary{gap:12px!important;}
+#view-publica #publicHero .crm-conexo-feature-desc,
+#view-publica #publicHero .crm-conexo-card-desc{color:#bec8d8!important;}
+#view-publica #publicHero .crm-conexo-feature-label,
+#view-publica #publicHero .crm-conexo-card-label{color:#d9dce7!important;}
+/* Existing notifications/announcements should not float over Brasa or translated content. */
+#crmExperiencePrompt.crm-float-prompt,#crmProfilePrompt.crm-float-prompt{
+ background:#192335!important;border:1px solid #5a6982!important;border-top:2px solid #8e59b5!important;
+ border-radius:12px!important;color:#f4f6fb!important;
+ box-shadow:0 18px 40px rgba(0,0,0,.4)!important;
+}
+#crmExperiencePrompt .crm-float-label,#crmProfilePrompt .crm-float-label{color:#cca3e8!important;}
+#crmExperiencePrompt .crm-float-primary,#crmProfilePrompt .crm-float-primary{
+ background:#7f40b1!important;color:#fff!important;
+}
+/* Safari/Chrome phone widths, 100% browser zoom and compact-device detection. */
+@media(max-width:900px){
+ #view-logada #pageConteudos .cx-format-links{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ #view-logada #pageConteudos .cx-curation-note{grid-template-columns:minmax(0,1fr)!important;}
+ #view-logada #pageCourses .search-bar .filter-bar{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+ #view-logada .cx-work .cx-board{grid-template-columns:repeat(4,minmax(190px,1fr))!important;}
+ #view-publica #publicHero .crm-conexo-stats{grid-template-columns:minmax(0,1fr)!important;}
+}
+@media(max-width:640px){
+ #view-logada #pageConteudos .cx-format-links{
+  display:flex!important;gap:8px!important;overflow-x:auto!important;
+  max-width:calc(100vw - 32px)!important;padding:2px 0 8px!important;
+ }
+ #view-logada #pageConteudos .cx-format-links button{
+  min-width:130px!important;min-height:62px!important;flex:0 0 130px!important;
+ }
+ #view-logada #pageConteudos .cx-filter-group{grid-template-columns:minmax(0,1fr)!important;gap:4px!important;}
+ #view-logada #pageConteudos .crm-content-filters{
+  flex-wrap:nowrap!important;overflow-x:auto!important;
+  padding:0 0 7px!important;max-width:calc(100vw - 32px)!important;
+ }
+ #view-logada #pageConteudos .crm-content-filters button{flex:0 0 auto!important;white-space:nowrap!important;}
+ #view-logada #pageCourses :is(#courseResults,#communityCourseResults) .result-grid{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ #view-logada #pageCourses .search-bar .filter-bar{grid-template-columns:minmax(0,1fr)!important;}
+ #view-logada .cx-work .cx-grid,
+ #view-logada .cx-work .cx-stats{grid-template-columns:minmax(0,1fr)!important;}
+ #view-logada .cx-work .cx-top{padding-bottom:12px!important;}
+ #view-logada .cx-work .cx-row{flex-direction:column!important;align-items:stretch!important;}
+ #view-logada .cx-work .cx-row-actions{justify-content:flex-start!important;}
+ #view-publica #publicHero .crm-hero{min-height:410px!important;}
+ #view-publica #publicHero .crm-hero-content{padding:36px 20px 60px!important;}
+ #view-publica #publicHero .crm-conexo-secondary{grid-template-columns:minmax(0,1fr)!important;}
+ #crmExperiencePrompt.crm-float-prompt,#crmProfilePrompt.crm-float-prompt{
+  width:auto!important;left:14px!important;right:14px!important;
+  bottom:calc(74px + env(safe-area-inset-bottom,0px))!important;
+  max-height:40dvh!important;overflow:auto!important;z-index:1050!important;
+ }
+}
+html.crm-compact-device #view-logada #pageCourses :is(#courseResults,#communityCourseResults) .result-grid,
+html.crm-compact-device #view-logada .cx-work .cx-grid{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+html.crm-compact-device #view-logada #pageConteudos .cx-format-links{
+ display:flex!important;overflow-x:auto!important;
+}
+html.crm-compact-device #view-logada #pageConteudos .cx-format-links button{
+ min-width:130px!important;flex:0 0 130px!important;
+}
+html.crm-compact-device #view-publica #publicHero .crm-conexo-stats,
+html.crm-compact-device #view-publica #publicHero .crm-conexo-secondary{
+ grid-template-columns:minmax(0,1fr)!important;
+}
