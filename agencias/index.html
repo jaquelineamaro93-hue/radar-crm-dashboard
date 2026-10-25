@@ -8936,7 +8936,7 @@ function crmNavigate(route,updateHash=true){
  const sidebarScroll=crmById('crmNavSlot')?.scrollTop||0;
  if(document.body.classList.contains('crm-menu-open'))crmToggleMenu(false);
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
- if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
+ if(route==='dashboard'&&!crmSignedIn())route='mercado';
  if(route==='inicio'&&crmSignedIn())route='membros';
  if(updateHash&&route===crmActiveRoute&&route!=='inicio'&&crmRoutes[route]&&crmSignedIn()&&!crmById('view-logada').hidden&&crmById(crmRoutes[route][0])?.classList.contains('active')){
   // Already on this page. Do not restart loading or recreate the sidebar.
