@@ -275,3 +275,23 @@
  display:block;margin-top:4px;color:#cbb3d9!important;font-size:10px!important;
  line-height:1.25!important;font-weight:650!important;letter-spacing:.04em!important;
 }
+
+/* Compact-device fallback: some iPhones request a desktop CSS viewport. */
+html.crm-compact-device #view-logada #subpage-vagas-salvas #crmSavedSlot>.cx-saved-main,
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-community-grid{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;min-width:0!important;
+}
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-resume,
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-list-panel,
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-communities{
+ padding:16px!important;
+}
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-featured .cx-saved-job-heading{
+ grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"score" "job"!important;
+}
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-job-heading{
+ flex-wrap:wrap!important;
+}
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-job-actions :is(a,button){
+ flex:1 1 130px!important;
+}
