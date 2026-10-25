@@ -1,0 +1,26 @@
+name: Cases and language regression
+on:
+  pull_request:
+    paths:
+      - 'assets/site-i18n.js'
+      - 'assets/portal-layout.js'
+      - 'assets/crm-copilot.js'
+      - 'cases/**'
+      - 'tests/cases-i18n.cjs'
+      - '.github/workflows/cases-i18n.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/site-i18n.js'
+      - 'cases/**'
+      - 'tests/cases-i18n.cjs'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - run: node tests/cases-i18n.cjs
