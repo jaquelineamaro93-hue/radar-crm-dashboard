@@ -17,3 +17,11 @@ let resolve;const ctx={CURRENT_USER:{id:'a'},crmValidatedUserId:'a',crmAuthEpoch
  profileCtx.activateLoggedArea();const image=dom.window.document.querySelector('#loggedAvatar img');profileCtx.activateLoggedArea();assert.equal(dom.window.document.querySelector('#loggedAvatar img'),image,'unchanged avatar must not be recreated');
  console.log('PASS sidebar stability: same-account menu preserved, pending authorization denied, revocation and account change hide items, avatar node stable');
 })().catch(e=>{console.error(e);process.exitCode=1});
+// Route changes must not retrigger root-hidden observers for an unchanged shell.
+const routeSource=source.match(/const publicView=crmById\('view-publica'\),memberView=crmById\('view-logada'\);if\(publicView.hidden===isPublic\)publicView.hidden=!isPublic;if\(memberView.hidden!==isPublic\)memberView.hidden=isPublic;/)?.[0];
+assert(routeSource,'route visibility is conditional');
+const shells={'view-publica':{_hidden:true,writes:0},'view-logada':{_hidden:false,writes:0}};
+for(const shell of Object.values(shells))Object.defineProperty(shell,'hidden',{get(){return this._hidden},set(value){this._hidden=value;this.writes++}});
+vm.runInNewContext(routeSource,{isPublic:false,crmById:id=>shells[id]});
+assert.equal(shells['view-publica'].writes+shells['view-logada'].writes,0,'member navigation leaves shell visibility untouched');
+assert(source.indexOf('id="cx-soft-ui-20261014"')<source.indexOf('</head>'),'theme blocks first paint');
