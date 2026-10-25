@@ -466,3 +466,17 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #pageSearch #searchResults .result-grid,
 #crmPublicWorkspace #pageSearch #searchResults .result-grid{gap:18px!important;align-items:start}
 @media(max-width:640px){#view-logada #pageSearch #searchResults .result-grid,#crmPublicWorkspace #pageSearch #searchResults .result-grid{grid-template-columns:minmax(0,1fr)!important}#view-logada #pageSearch #searchResults .p-card :is(a,button){min-height:44px!important}}
+/* Content hierarchy: shortcuts remain compact; secondary filters disclose. */
+#view-logada .crm-filter-disclosure{margin:12px 0 20px;border:1px solid #69758d;border-radius:10px;background:#182131}
+#view-logada .crm-filter-disclosure>summary{cursor:pointer;min-height:44px;padding:12px 16px;font-size:13px;font-weight:600;color:#e5eaf2}
+#view-logada .crm-filter-selection{color:#ce9cea;font-weight:400}
+#view-logada .crm-filter-disclosure>.filter-bar{position:static!important;margin:0!important;border:0!important;border-top:1px solid #46516a!important;border-radius:0 0 10px 10px;padding:14px!important;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#view-logada .crm-filter-disclosure .filter-field{min-width:0;width:auto}
+#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+#view-logada #crmPersonalDashboard .crm-solution-card{min-height:0;padding:14px 16px;justify-content:flex-start;border-radius:10px;gap:4px}
+#view-logada #crmPersonalDashboard .crm-solution-card h3{font-size:15px!important;margin:0}
+#view-logada #crmPersonalDashboard .crm-solution-card p{font-size:12px;line-height:1.5}
+#view-logada #crmPersonalDashboard .crm-solution-card>span{margin:0!important;font-size:12px}
+#view-logada #crmPersonalDashboard .crm-preferences{padding:16px;border-radius:10px;margin-top:16px}
+@media(max-width:1000px){#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:1fr}#view-logada .crm-filter-disclosure>.filter-bar{grid-template-columns:1fr}}
