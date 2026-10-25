@@ -49,3 +49,10 @@ Também incluídos: seis módulos workspace, três aprovações administrativas,
 - Não é uma certificação de 100% das telas/dispositivos. Revisão individual e comparação móvel continuam necessárias.
 - O formulário existente mantém os campos e a persistência atuais. Um questionário novo sobre objetivos requer definição das perguntas e do destino dos dados.
 - Sem mudanças em autenticação, RLS, consultas privadas ou Copilot.
+
+## Conferência logada da revisão
+
+- 18 destinos principais e seis subpáginas de gestão percorridos em sequência no desktop. Uma seleção ativa e sem overflow horizontal no documento principal em cada captura DOM.
+- Conferência visual de Open to Work identificou regras próprias de `.p-card`, diferentes de `.pro-card`; correção explícita incluída no complemento.
+- Faixas de tópico movidas para o topo; report de Open to Work incluído no grupo de ferramentas.
+- Revisão móvel, subestados de cada formulário e questionário inicial completo ainda pendentes.
