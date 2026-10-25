@@ -20,3 +20,15 @@ assert.match(script,/contenteditable/);
 assert.match(script,/cx-copilot-history/);
 assert.doesNotMatch(script,/innerHTML\s*=.*CURRENT_PROFILE/i);
 console.log('PASS Conexão localized case page, selector, Brasa locale and privacy exclusions');
+
+new vm.Script(read('assets/case-videos.js'),{filename:'assets/case-videos.js'});
+new vm.Script(read('assets/site-i18n.js'),{filename:'assets/site-i18n.js'});
+const videoConfig=JSON.parse(read('cases/video-manifest.json'));
+assert.deepEqual(videoConfig.videos,[],'No public video without permission');
+assert.match(read('assets/case-videos.js'),/authorized===true/);
+assert.match(read('assets/case-videos.js'),/approvedPath\(v\.src,'mp4'\)/);
+assert.match(cases,/id="case-videos"/);
+assert.match(script,/\.cx-copilot-message/);
+assert.match(script,/\[data-private\]/);
+assert.match(read('assets/site-i18n.js'),/translate:\(key\)/);
+console.log('PASS expanded Conexão UI, static translations and guarded case video gallery');
