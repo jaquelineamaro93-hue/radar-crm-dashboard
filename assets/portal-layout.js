@@ -7,6 +7,16 @@
   if(page?.id!=='crmAdminPage')return;
   const analytics=page.querySelector('#crmAdminAnalytics');if(!analytics)return;
   page.classList.add('crm-admin-rebrand');
+  const icons={analytics:'analytics',members:'members',approvals:'approvals',newsletter:'newsletter'};
+  page.querySelectorAll('#crmAdminTabs [data-a]').forEach(button=>{
+   const icon=icons[button.dataset.a];if(!icon||button.querySelector('.crm-admin-design-icon'))return;
+   const img=document.createElement('img');img.className='crm-admin-design-icon';img.src='/assets/rebrand/'+icon+'.svg';img.alt='';
+   button.textContent=button.textContent.replace(/^[^\p{L}]+/u,'');button.prepend(img);
+  });
+  analytics.querySelectorAll('.crm-info').forEach(button=>{
+   if(button.querySelector('img'))return;
+   const img=document.createElement('img');img.src='/assets/rebrand/info.svg';img.alt='';button.replaceChildren(img);
+  });
   const body=analytics.querySelector('#crmAnalyticsPeriodBody');if(!body)return;
   const conversion=body.querySelector('.crm-story-section:has(#crmAnalyticsSupabase)');
   const behavior=body.querySelector('.crm-story-section:has(#crmAnalyticsBehavior)');
@@ -89,7 +99,22 @@
    }
   });
  }
+ function normalizePublicNavigation(){
+  const nav=document.querySelector('#view-publica .crm-navbar .crm-navlinks');if(!nav)return;
+  const wrapper=nav.closest('.crm-public-menu');
+  const mobile=!!window.matchMedia?.('(max-width:760px)').matches;
+  if(mobile&&!wrapper){
+   const details=document.createElement('details');details.className='crm-public-menu';
+   const summary=document.createElement('summary');summary.textContent='Menu';
+   nav.before(details);details.append(summary,nav);
+  }else if(!mobile&&wrapper)wrapper.replaceWith(nav);
+  const title=document.getElementById('crmPublicTitle');
+  const page=document.querySelector('#crmPublicPages .tab-page.active');
+  const heading=page?.querySelector('.section-head h2');
+  if(heading&&title&&heading.textContent.trim()===title.textContent.trim())heading.classList.add('crm-public-repeated-title');
+ }
  function sync(){
+  normalizePublicNavigation();
   if(!root)return;
   root.dataset.layoutVersion='20261025-figma2';
   const page=root.querySelector('.tab-page.active');normalize(page);
@@ -107,6 +132,7 @@
    else{link.classList.remove('crm-award-selected');link.removeAttribute('aria-current');}
   }
  }
+ window.addEventListener('resize',normalizePublicNavigation);
  document.addEventListener('crm:route-changed',sync);
  document.addEventListener('crm:admin-ready',sync);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
