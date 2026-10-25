@@ -7,14 +7,14 @@
     const style=document.createElement('link');
     style.id='cx-soft-ui-20261014';
     style.rel='stylesheet';
-    style.href='/assets/soft-ui-20261014.css?v=20261025-radar7';
+    style.href='/assets/soft-ui-20261014.css?v=20261025-clean8';
     document.head.appendChild(style);
   }
 
   if(!document.getElementById('cx-portal-layout-runtime')){
     const script=document.createElement('script');
     script.id='cx-portal-layout-runtime';script.defer=true;
-    script.src='/assets/portal-layout.js?v=20261025-radar7';
+    script.src='/assets/portal-layout.js?v=20261025-clean8';
     document.head.append(script);
   }
 
@@ -222,7 +222,11 @@
       if(groups.nextElementSibling!==publicLink)groups.after(publicLink);
       publicLink.onclick=event=>{event.preventDefault();event.stopPropagation();openTeamInside(false);};
     }
-    const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
+    const adminButton=document.getElementById('crmAdminNav');
+    const sameVerifiedOwner=typeof CURRENT_USER!=='undefined'&&typeof crmValidatedUserId!=='undefined'&&CURRENT_USER?.id&&crmValidatedUserId===CURRENT_USER.id&&adminButton?.dataset.crmRoleOwner===CURRENT_USER.id&&!adminButton.hidden;
+    // Geometry may survive same-account revalidation; route authorization still
+    // checks crmAdminVerified in the existing navigation handlers.
+    const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true)||!!sameVerifiedOwner;
     let dreamAdmin=document.getElementById('crmDreamGardenAdminNav');
     if(verified){
       if(!dreamAdmin){
@@ -234,8 +238,7 @@
         dreamAdmin.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14c-3 0-4-2-4-5 4 0 6 1 7 4M17 14c3 0 4-2 4-5-4 0-6 1-7 4"/><path d="M8 21h8"/></svg></span>Jardim dos Sonhos';
       }
       const adminAnchor=document.getElementById('crmTeamAdminNav')||document.getElementById('crmAdminNav');
-      if(adminAnchor?.parentElement===nav&&dreamAdmin.parentElement!==nav)adminAnchor.after(dreamAdmin);
-      else if(adminAnchor?.parentElement===nav&&adminAnchor.nextElementSibling!==dreamAdmin)adminAnchor.after(dreamAdmin);
+      if(adminAnchor&&[nav,document.getElementById('crmManagementNav')].includes(adminAnchor.parentElement)&&adminAnchor.nextElementSibling!==dreamAdmin)adminAnchor.after(dreamAdmin);
     }else dreamAdmin?.remove();
 
     if(verified){
@@ -249,7 +252,7 @@
         speakersNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h5l8-4v12l-8-4H5zM8 15v5"/></svg></span>Propostas de palestras';
       }
       const anchor=document.getElementById('crmDreamGardenAdminNav')||document.getElementById('crmAdminNav');
-      if(anchor?.parentElement===nav&&anchor.nextElementSibling!==speakersNav)anchor.after(speakersNav);
+      if(anchor&&[nav,document.getElementById('crmManagementNav')].includes(anchor.parentElement)&&anchor.nextElementSibling!==speakersNav)anchor.after(speakersNav);
     }else document.getElementById('crmSpeakersAdminNav')?.remove();
 
     if(verified){
@@ -263,7 +266,7 @@
         creatorNav.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 10V7a4 4 0 0 1 4-4h3M14 3h3a4 4 0 0 1 4 4v3M21 14v3a4 4 0 0 1-4 4h-3M10 21H7a4 4 0 0 1-4-4v-3"/></svg></span>Creators Parceiros';
       }
       const anchor=document.getElementById('crmSpeakersAdminNav')||document.getElementById('crmAdminNav');
-      if(anchor?.parentElement===nav&&anchor.nextElementSibling!==creatorNav)anchor.after(creatorNav);
+      if(anchor&&[nav,document.getElementById('crmManagementNav')].includes(anchor.parentElement)&&anchor.nextElementSibling!==creatorNav)anchor.after(creatorNav);
     }else document.getElementById('crmCreatorsAdminNav')?.remove();
     for(const [id,route] of [['crmDreamGardenAdminNav','award-dreams'],['crmSpeakersAdminNav','award-speakers'],['crmCreatorsAdminNav','award-creators']]){
       const link=document.getElementById(id);
@@ -274,6 +277,19 @@
         link.dataset.crmAwardWired=route;
         link.onclick=event=>{event.preventDefault();event.stopPropagation();openAwardAdminInside(route)};
       }
+    }
+    // Group secondary admin routes without recreating their controls or listeners.
+    const adminNodes=['crmTeamAdminNav','crmDreamGardenAdminNav','crmSpeakersAdminNav','crmCreatorsAdminNav'].map(id=>document.getElementById(id)).filter(Boolean);
+    let management=document.getElementById('crmManagementNav');
+    if(adminNodes.length&&!management){
+      management=document.createElement('details');management.id='crmManagementNav';
+      const summary=document.createElement('summary');summary.textContent='Gestão da comunidade';management.append(summary);
+      const anchor=document.getElementById('crmAdminNav');if(anchor?.parentElement===nav)anchor.after(management);else nav.prepend(management);
+    }
+    if(management){
+      for(const node of adminNodes)if(node.parentElement!==management)management.append(node);
+      const visible=verified&&adminNodes.some(node=>!node.hidden);
+      if(management.hidden===visible)management.hidden=!visible;
     }
     syncAwardAdminNavSelection();
     activateAwardAdminHash();
