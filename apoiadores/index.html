@@ -8897,7 +8897,7 @@ function crmNavigate(route,updateHash=true){
  const sidebarScroll=crmById('crmNavSlot')?.scrollTop||0;
  if(document.body.classList.contains('crm-menu-open'))crmToggleMenu(false);
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
- if(route==='dashboard')route=crmSignedIn()?'membro':'mercado';
+ if(route==='dashboard'&&!crmSignedIn())route='mercado';
  if(route==='inicio'&&crmSignedIn())route='membros';
  if(route==='inicio'){
   crmById('view-publica').hidden=false;crmById('view-logada').hidden=true;crmActiveRoute='inicio';crmSyncRouteMeta('inicio');window.posthogTracker?.pageView('inicio');if(crmSignedIn())crmTrackMemberActivity('inicio');crmSetLanding(true);crmToggleMenu(false);if(updateHash)history.pushState(null,'',crmRoutePath(route));(crmById(route)||crmById('view-publica')).scrollIntoView({behavior:'smooth'});return;
