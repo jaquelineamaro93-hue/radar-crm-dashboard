@@ -88,14 +88,14 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
       ['conteudos','▤','Conteúdos'],['courses','□','Cursos'],['pesquisa','⌁','Pesquisas & Censo']
     ]},
     ferramentas:{label:'FERRAMENTAS',title:'Acesse os outros temas desta área',items:[
-      ['cargos','≋','Cargos & Salários'],['calc','±','CLT x PJ'],['plataformas','⬡','Plataformas'],['agencias','△','Agências & Consultorias']
+      ['mercado','≋','Report Open to Work'],['cargos','≋','Cargos & Salários'],['calc','±','CLT x PJ'],['plataformas','⬡','Plataformas'],['agencias','△','Agências & Consultorias']
     ]}
   };
   const AREA_BY_ROUTE={
     'vagas-salvas':'trabalho',vagas:'trabalho',search:'trabalho',freelancers:'trabalho','match-recrutador':'trabalho','public-match':'trabalho',
     membros:'comunidade',eventos:'comunidade','meus-eventos':'comunidade',comunidade:'comunidade',
     conteudos:'conhecimento',courses:'conhecimento',pesquisa:'conhecimento',
-    cargos:'ferramentas',calc:'ferramentas',plataformas:'ferramentas',agencias:'ferramentas'
+    mercado:'ferramentas',cargos:'ferramentas',calc:'ferramentas',plataformas:'ferramentas',agencias:'ferramentas'
   };
   // Lightweight inline stroke icons. No font dependency or emoji glyphs.
   const paths={
@@ -132,6 +132,7 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function routePath(route){try{return crmRoutePath(route);}catch{return '/'+route;}}
   function pageFor(route){try{return document.getElementById(crmRoutes?.[route]?.[0]||'');}catch{return null;}}
   function mount(nav,page){
+    if(typeof crmSignedIn==='function'&&crmSignedIn()){page.prepend(nav);return;}
     const memberHeader=page.querySelector(':scope > .crm-members-heading-row');
     if(memberHeader){memberHeader.insertAdjacentElement('afterend',nav);return;}
 

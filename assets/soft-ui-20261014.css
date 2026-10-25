@@ -438,3 +438,10 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada .pro-metric-bar{background:#384254;height:6px;display:block}
 #view-logada .pro-metric-bar>span{background:#ce9cea}
 #view-logada .crm-topic-disclosure>.crm-topic-nav__head{pointer-events:auto}
+#view-logada #crmPages .crm-topic-card::before,#view-logada #crmPages .crm-topic-card::after{display:none!important}
+#view-logada #pageSearch #searchResults .p-card{padding:16px!important;background:#182131!important;border:1px solid #384254!important;border-radius:12px!important;box-shadow:none!important}
+#view-logada #pageSearch #searchResults .p-name{font-size:16px!important;line-height:1.4;font-weight:600;color:#f5f6fa!important;margin:0 0 6px}
+#view-logada #pageSearch #searchResults .p-role{background:#2a1e3c!important;color:#ce9cea!important;border:1px solid #604178!important;font-size:11px!important;padding:4px 7px!important;margin:0 0 8px}
+#view-logada #pageSearch #searchResults .p-card p{font-size:13px!important;line-height:1.6;color:#cbd5e1!important;margin:8px 0}
+#view-logada #pageSearch #searchResults .p-card :is(a,button){font-size:12px!important;min-height:36px;padding:8px 10px!important;color:#ce9cea!important;background:transparent!important;border:1px solid #604178!important;border-radius:7px}
+#view-logada #pageSearch #searchResults .result-grid{gap:16px!important}
