@@ -196,6 +196,17 @@
 "Cases de carreira, oportunidades e networking":["Career, opportunity and networking stories","Historias de carrera, oportunidades y networking"],
 "Conheça experiências que mostram como conexões e ferramentas podem abrir caminhos profissionais.":["Explore how community connections and tools can help people find their next steps.","Descubre cómo las conexiones y herramientas pueden abrir nuevos caminos profesionales."],
 "Explorar cases":["Explore stories","Explorar casos"],
+"Aceitar e continuar":["Accept and continue","Aceptar y continuar"],
+"Brasa está pensando…":["Brasa is thinking…","Brasa está pensando…"],
+"Ex.: encontre vagas remotas de CRM":["E.g. find remote CRM jobs","Ej.: encuentra vacantes remotas de CRM"],
+"CARREIRA E CONEXÕES":["CAREER AND CONNECTIONS","CARRERA Y CONEXIONES"],
+"Atualizar meu cadastro":["Update my registration","Actualizar mi registro"],
+"Salvar meu perfil Open to Work":["Save my Open to Work profile","Guardar mi perfil Open to Work"],
+"Conta vinculada:":["Linked account:","Cuenta vinculada:"],
+"Seu cadastro não será anexado. Não inclua dados pessoais.":["Your profile won't be attached. Do not include personal data.","Tu perfil no se adjuntará. No incluyas datos personales."],
+"Entre na sua conta para cadastrar ou atualizar seu perfil.":["Sign in to create or update your profile.","Ingresa para crear o actualizar tu perfil."],
+"Não foi possível carregar seu cadastro.":["Unable to load your registration.","No se pudo cargar tu registro."],
+"Uma conversa de cada vez, com direção":["One conversation at a time, with direction","Una conversación a la vez, con dirección"],
  };
  const originals=new WeakMap();
  function read(){try{const v=localStorage.getItem(STORE);return OPTIONS.includes(v)?v:'pt-BR';}catch{return 'pt-BR';}}
@@ -265,7 +276,9 @@
      '#crmPages .tab-page.active .filter-bar',
      '#crmPages .tab-page.active .crm-tabs',
      '#cxCopilot .cx-copilot-head',
-     '#cxCopilot .cx-copilot-actions'
+     '#cxCopilot .cx-copilot-actions',
+     '#otwRegistrationPanel .otw-eyebrow',
+     '#otwRegistrationPanel .intro'
    ]){
      document.querySelectorAll(selector).forEach(translateSection);
    }

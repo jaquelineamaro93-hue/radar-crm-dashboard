@@ -32,3 +32,10 @@ assert.match(script,/\.cx-copilot-message/);
 assert.match(script,/\[data-private\]/);
 assert.match(read('assets/site-i18n.js'),/translate:\(key\)/);
 console.log('PASS expanded Conexão UI, static translations and guarded case video gallery');
+
+// Checked in audit 2026-10-25: public labels, never user profile values.
+assert.match(script,/#otwRegistrationPanel \.intro/);
+assert.match(brasa,/textContent=cxT\("Aceitar e continuar"\)/);
+assert.match(brasa,/textContent=cxT\("Fontes públicas"\)/);
+assert.match(script,/Brasa is thinking/);
+console.log('PASS audited public copilot and Open to Work locale labels');
