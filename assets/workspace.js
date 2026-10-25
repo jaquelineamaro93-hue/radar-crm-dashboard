@@ -165,7 +165,8 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     // e criar uma nova cópia a cada navegação.
     const generated=[...page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]')];
     const same=generated.filter(el=>el.dataset.route===route&&el.dataset.area===areaKey);
-    if(generated.length===1&&same.length===1)return;
+    const signedNow=typeof crmSignedIn==='function'&&crmSignedIn();
+    if(generated.length===1&&same.length===1&&same[0].tagName===(signedNow?'NAV':'DETAILS')){if(signedNow&&page.firstElementChild!==same[0])page.prepend(same[0]);return;}
     generated.forEach(el=>el.remove());
 
     const signed=typeof crmSignedIn==='function'&&crmSignedIn();
