@@ -295,3 +295,26 @@ html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-job-heading
 html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-job-actions :is(a,button){
  flex:1 1 130px!important;
 }
+
+#view-logada #subpage-vagas-salvas .cx-saved-rec-actions{
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;
+ flex-wrap:wrap!important;gap:8px!important;min-width:0!important;
+}
+#view-logada #subpage-vagas-salvas .cx-saved-all-jobs{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ background:transparent!important;color:#dfb4f2!important;border:1px solid #6e4e87!important;
+ min-height:42px!important;border-radius:8px!important;
+ font-size:12px!important;font-weight:650!important;padding:9px 13px!important;
+ white-space:normal!important;text-align:center!important;
+}
+@media(max-width:600px){
+ #view-logada #subpage-vagas-salvas .cx-saved-rec-actions{
+  width:100%!important;justify-content:stretch!important;
+ }
+ #view-logada #subpage-vagas-salvas .cx-saved-rec-actions>button{
+  flex:1 1 145px!important;
+ }
+}
+html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-rec-actions{
+ justify-content:flex-start!important;max-width:100%!important;flex-wrap:wrap!important;
+}
