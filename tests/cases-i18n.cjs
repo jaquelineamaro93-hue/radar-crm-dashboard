@@ -45,3 +45,6 @@ const layout=read('assets/portal-layout.js');
 assert.doesNotMatch(layout, /'#f97316'\s*:\s*'#7f40b1'/i);
 assert.doesNotMatch(layout, /rgb\(127,\s*64,\s*177\)/i);
 console.log('PASS orange visual identity is not converted into purple');
+
+assert.match(script, /@media\(max-width:760px\)\{\.cx-language-host\{bottom:auto;left:auto;right:12px;top:calc\(env\(safe-area-inset-top, 0px\) \+ 68px\)/);
+console.log('PASS mobile language selector stays above bottom logout/menu');
