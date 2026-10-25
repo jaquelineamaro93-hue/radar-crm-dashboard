@@ -115,6 +115,39 @@ function updateTranslations(){
 function enhance(){
  const page=document.getElementById(rootId);
  if(!page||page.dataset.cxSavedDesign==='v1')return;
+ // The page now ships accessible, responsive markup directly from index.html.
+ // Enhance dynamic match cards only. Do not reparent content or hide the sidebar.
+ if(page.classList.contains('cx-saved-dashboard')){
+   const match=page.querySelector('#membroVagasMatch');
+   if(!match)return;
+   page.dataset.cxSavedDesign='v1';locale=currentLocale();
+   const labels=[
+    ['.cx-saved-page-intro h2','title'],
+    ['.cx-saved-page-description','subtitle'],
+    ['.cx-saved-eyebrow','eyebrow'],
+    ['.cx-saved-list-panel>.fd','saved'],
+    ['.cx-saved-rec-heading>.fd','suggested'],
+    ['.cx-saved-refresh','refresh'],
+    ['.cx-saved-all-jobs','allJobs'],
+    ['.cx-saved-communities>.fd','communities'],
+    ['.cx-saved-community-title','communityTitle'],
+    ['.cx-saved-community-desc','communityDesc'],
+    ['.cx-saved-score-note','explanation']
+   ];
+   for(const [selector,key] of labels)label(page.querySelector(selector),key);
+   const descriptions=['chat','network','professional'];
+   page.querySelectorAll('.cx-saved-community-blurb').forEach((element,index)=>label(element,descriptions[index]||'chat'));
+   match.setAttribute('aria-live','polite');
+   if(typeof MutationObserver==='function'){
+     matchObserver?.disconnect();
+     matchObserver=new MutationObserver(()=>{
+       if(pending)return;pending=true;
+       requestAnimationFrame(()=>{pending=false;tidyMatches();});
+     });
+     matchObserver.observe(match,{childList:true}); // avoid recursive observers
+   }
+   tidyMatches();return;
+ }
  const slot=page.querySelector('#crmSavedSlot');
  const grid=slot?.firstElementChild;
  const match=page.querySelector('#membroVagasMatch');
