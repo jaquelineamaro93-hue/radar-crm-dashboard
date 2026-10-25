@@ -3,8 +3,28 @@
  'use strict';
  if(window.CXPortalLayout)return;
  const root=document.getElementById('view-logada');
+ function normalizeAnalytics(page){
+  if(page?.id!=='crmAdminPage')return;
+  const analytics=page.querySelector('#crmAdminAnalytics');if(!analytics)return;
+  page.classList.add('crm-admin-rebrand');
+  const body=analytics.querySelector('#crmAnalyticsPeriodBody');if(!body)return;
+  const conversion=body.querySelector('.crm-story-section:has(#crmAnalyticsSupabase)');
+  const behavior=body.querySelector('.crm-story-section:has(#crmAnalyticsBehavior)');
+  if(conversion&&behavior&&conversion.nextElementSibling!==behavior){behavior.before(conversion);}
+  if(conversion){const label=conversion.querySelector('.crm-kicker');if(label&&!label.textContent.startsWith('03'))label.textContent='03 · A comunidade vira base própria?';}
+  if(behavior){const label=behavior.querySelector('.crm-kicker');if(label&&!label.textContent.startsWith('04'))label.textContent='04 · Como as pessoas se comportam?';}
+  analytics.querySelectorAll('.crm-delta').forEach(delta=>{delta.classList.toggle('is-up',delta.textContent.trim().startsWith('↑'));delta.classList.toggle('is-down',delta.textContent.trim().startsWith('↓'));});
+  const supabase=analytics.querySelector('#crmAnalyticsSupabase');
+  const ranking=supabase?.querySelector(':scope > .crm-analytics-two');
+  if(ranking&&!ranking.classList.contains('crm-primary-ranking')){
+   ranking.classList.add('crm-primary-ranking');
+   const recurring=[...ranking.children].find(card=>card.querySelector('h3')?.textContent.includes('recorrentes'));
+   if(recurring)ranking.prepend(recurring);
+  }
+ }
  function normalize(page){
   if(!page)return;
+  normalizeAnalytics(page);
   // Preserve nodes and event handlers. Build a single heading row per page.
   const heading=page.querySelector(':scope > h1');
   if(heading&&!heading.parentElement.classList.contains('crm-page-heading')){
