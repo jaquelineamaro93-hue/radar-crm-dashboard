@@ -11,6 +11,7 @@ const messages={
    eyebrow:'SEU ESPAÇO / CARREIRA',
    saved:'Minhas vagas salvas',
    suggested:'Vagas recomendadas',
+   best:'MELHOR MATCH',
    refresh:'Buscar Match',
    communities:'COMUNIDADES',
    communityTitle:'Conecte-se. Troque. Evolua.',
@@ -28,6 +29,7 @@ const messages={
    eyebrow:'YOUR SPACE / CAREER',
    saved:'My saved jobs',
    suggested:'Recommended jobs',
+   best:'BEST MATCH',
    refresh:'Find matches',
    communities:'COMMUNITIES',
    communityTitle:'Connect. Share. Grow.',
@@ -45,6 +47,7 @@ const messages={
    eyebrow:'TU ESPACIO / CARRERA',
    saved:'Mis vacantes guardadas',
    suggested:'Vacantes recomendadas',
+   best:'MEJOR MATCH',
    refresh:'Buscar coincidencias',
    communities:'COMUNIDADES',
    communityTitle:'Conecta. Comparte. Evoluciona.',
@@ -80,7 +83,14 @@ function tidyMatches(){
   const score=heading.lastElementChild;
   if(score&&score!==heading.firstElementChild){
    score.classList.add('cx-saved-job-score');
-   score.setAttribute('aria-label',score.textContent.trim());
+   const phrase=score.textContent.trim();
+   score.setAttribute('aria-label',phrase);
+   const scoreNumber=phrase.match(/^(\\d{1,3}%)\\s+compatibilidade$/);
+   if(index===0&&scoreNumber){
+     const number=el('strong','cx-saved-number');number.textContent=scoreNumber[1];
+     const best=el('small','cx-saved-best');label(best,'best');
+     score.replaceChildren(number,best);
+   }
   }
   const explanation=heading.nextElementSibling;
   if(explanation&&!explanation.classList.contains('cx-saved-match-details')){
