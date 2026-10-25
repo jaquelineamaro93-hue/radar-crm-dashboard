@@ -42,3 +42,28 @@
 @media(prefers-reduced-motion:reduce){
  .crm-topic-card,.crm-button,.tab-btn,.cx-tabs button,.cx-work button{transition:none!important;transform:none!important}
 }
+
+/* 2026-10-24 • refinamento progressivo, visual apenas.
+   Não modifica autenticação, consultas, permissões nem #cxCopilot. */
+:root{
+ --cx-clean-bg:#0b1020;
+ --cx-clean-surface:#1b2433;
+ --cx-clean-ink:#f5f5f7;
+ --cx-clean-muted:#ce9cea;
+ --cx-clean-accent:#a855f7;
+}
+#view-logada .crm-topic-nav{margin-block:12px 16px!important}
+#view-logada .crm-topic-nav__head{margin-bottom:8px!important}
+#view-logada .crm-topic-nav__grid{gap:8px!important}
+#view-logada .crm-topic-card{padding:10px 12px!important;border-radius:11px!important;box-shadow:none!important}
+#view-logada .crm-topic-card__state{opacity:1!important;color:#ce9cea!important;font-size:12px!important}
+#view-logada .crm-topic-card.is-current{outline:none!important;border-color:#a855f7!important;box-shadow:none!important}
+#view-logada .crm-topic-card__name{line-height:1.35}
+#view-logada .cx-work .cx-top{padding-bottom:10px}
+#view-logada .cx-work .cx-stats{gap:8px}
+#view-logada .cx-work .cx-sheet,#view-logada .cx-work .cx-column{padding:clamp(14px,1.5vw,20px)}
+@media(max-width:700px){
+ #view-logada .crm-topic-nav{margin-block:10px 14px!important}
+ #view-logada .crm-topic-nav__grid{gap:8px!important}
+ #view-logada .crm-topic-card{padding:11px!important}
+}
