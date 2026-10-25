@@ -1272,7 +1272,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 .crm-xp-directory-recommend:hover{background:#ffd0a6}
 .crm-xp-directory-recommend:focus-visible{outline:2px solid #f97316;outline-offset:3px}
 </style>
-<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-brand9">
+<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-clean10">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -1699,7 +1699,7 @@ crmShowSurveyReminder();
     </section>
   </div></div></section>
 <footer class="crm-footer"><a href="/" class="crm-brand"><img src="/assets/rebrand/brand.svg" alt="Conexão CRM." width="200" height="23"></a><div><p>Estratégia, dados e pessoas conectadas.</p><p>CRM Academy + Mulheres de CRM</p><p>Criado por <a href="https://www.linkedin.com/in/jaquelineamaro/" target="_blank" rel="noopener">Jaqueline Amaro</a></p></div><button class="crm-button" onclick="crmJoin()">FAÇA PARTE </button></footer>
-</main><div id="view-logada" hidden><aside id="crmSidebar" class="crm-sidebar" aria-label="Menu da comunidade"><a class="crm-brand" href="/membros" onclick="crmNavigate('membros');return false"><img src="/assets/rebrand/brand.svg" alt="Conexão CRM." width="200" height="23"></a><div id="crmProfileSlot"><div id="loggedHeader" style="display:none; background:var(--panel); border:1px solid #e4ddc8; border-radius:12px; padding:20px; margin-bottom:24px;">
+</main><div id="view-logada" hidden><aside id="crmSidebar" class="crm-sidebar" aria-label="Menu da comunidade"><a class="crm-brand" href="/dashboard" onclick="crmNavigate('dashboard');return false"><img src="/assets/rebrand/brand.svg" alt="Conexão CRM." width="200" height="23"></a><div id="crmProfileSlot"><div id="loggedHeader" style="display:none; background:var(--panel); border:1px solid #e4ddc8; border-radius:12px; padding:20px; margin-bottom:24px;">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
       <div style="display:flex;align-items:center;gap:14px;">
         <div id="loggedAvatar" style="width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;"></div>
@@ -1717,7 +1717,7 @@ crmShowSurveyReminder();
   </div>
 
   </div><nav id="crmNavSlot" aria-label="Áreas do portal"><div class="tab-nav crm-nav-items crm-nav-clean">
-<button class="tab-btn crm-nav-home" id="navMembro" onclick="crmNavigate('membro')"><span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-8h6v8"/></svg></span>Visão Geral</button>
+<button class="tab-btn crm-nav-home" id="navMembro" onclick="crmNavigate('dashboard')"><span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-8h6v8"/></svg></span>Visão Geral</button>
 <span class="crm-nav-section">Trabalho</span>
 <button class="tab-btn" id="navSaved" onclick="crmNavigate('vagas-salvas')"><span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 4h14v17l-7-4-7 4z"/></svg></span>Vagas Salvas</button>
 <button class="tab-btn" id="navVagas" onclick="crmNavigate('vagas')"><span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></span>Radar de Vagas</button>
@@ -8846,7 +8846,7 @@ document.addEventListener('DOMContentLoaded', authInit);
 
 </script>
 <script id="crm-rebrand-ui">/* Public browsing is separate from Supabase-authenticated member actions. */
-const crmRoutes={'patrocinio/apoiadores':['pageApoiadores','Quem nos apoia'],'quem-somos':['quem-somos','Quem somos'],solucoes:['solucoes','Soluções'],'public-match':['crmPublicMatch','Open to Work'],dashboard:['crmPersonalDashboard','Dashboard'],mercado:['pageDashboard','Dashboard executivo'],vagas:['pageVagas','Radar de Vagas'],'vagas-salvas':['subpage-vagas-salvas','Vagas salvas & Match IA'],search:['pageSearch','Open to Work'],membros:['subpage-membros','Membros da Comunidade'],freelancers:['pageFreelancers','Freelancers'],membro:['pageMembro','Meu Painel'],cargos:['pageCargos','Cargos & Salários'],calc:['pageCalc','CLT x PJ'],plataformas:['pagePlataformas','Plataformas'],agencias:['pageAgencias','Agências & Consultorias'],courses:['pageCourses','Cursos'],conteudos:['pageConteudos','Conteúdos'],eventos:['pageEventos','Eventos da Comunidade'],comunidade:['pageComunidade','Comunidade / Grupos'],patrocinio:['pagePatrocinio','Seja Patrocinador'],pesquisa:['pagePesquisa','Pesquisas & Censo'],ferramentas:['pageFerramentas','Comparativo de CRMs'],'match-recrutador':['crmRecruiterAI','Match por IA'],'meus-eventos':['crmMyEvents','Meus Eventos'],publicar:['crmPublish','Publicar Vaga / Anunciar Agência']};
+const crmRoutes={'patrocinio/apoiadores':['pageApoiadores','Quem nos apoia'],'quem-somos':['quem-somos','Quem somos'],solucoes:['solucoes','Soluções'],'public-match':['crmPublicMatch','Open to Work'],dashboard:['crmPersonalDashboard','Visão Geral'],mercado:['pageDashboard','Dashboard executivo'],vagas:['pageVagas','Radar de Vagas'],'vagas-salvas':['subpage-vagas-salvas','Vagas salvas & Match IA'],search:['pageSearch','Open to Work'],membros:['subpage-membros','Membros da Comunidade'],freelancers:['pageFreelancers','Freelancers'],membro:['pageMembro','Meu Painel'],cargos:['pageCargos','Cargos & Salários'],calc:['pageCalc','CLT x PJ'],plataformas:['pagePlataformas','Plataformas'],agencias:['pageAgencias','Agências & Consultorias'],courses:['pageCourses','Cursos'],conteudos:['pageConteudos','Conteúdos'],eventos:['pageEventos','Eventos da Comunidade'],comunidade:['pageComunidade','Comunidade / Grupos'],patrocinio:['pagePatrocinio','Seja Patrocinador'],pesquisa:['pagePesquisa','Pesquisas & Censo'],ferramentas:['pageFerramentas','Comparativo de CRMs'],'match-recrutador':['crmRecruiterAI','Match por IA'],'meus-eventos':['crmMyEvents','Meus Eventos'],publicar:['crmPublish','Publicar Vaga / Anunciar Agência']};
 const crmPublicRoutes=new Set(['patrocinio/apoiadores','quem-somos','solucoes','mercado','vagas','search','freelancers','cargos','calc','plataformas','agencias','courses','conteudos','eventos','ferramentas','patrocinio','pesquisa','comunidade','public-match']);
 const crmById=id=>document.getElementById(id);
 const CRM_PORTAL_URL='https://rwkbpafpniwzvlkfngag.supabase.co/functions/v1/crm-portal';
@@ -10049,7 +10049,7 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261025-brand9"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script src="/assets/portal-hardening.js?v=20261025-clean10"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-figma2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261023-header-2">

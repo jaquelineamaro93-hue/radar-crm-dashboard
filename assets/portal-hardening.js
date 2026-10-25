@@ -7,14 +7,14 @@
     const style=document.createElement('link');
     style.id='cx-soft-ui-20261014';
     style.rel='stylesheet';
-    style.href='/assets/soft-ui-20261014.css?v=20261025-brand9';
+    style.href='/assets/soft-ui-20261014.css?v=20261025-clean10';
     document.head.appendChild(style);
   }
 
   if(!document.getElementById('cx-portal-layout-runtime')){
     const script=document.createElement('script');
     script.id='cx-portal-layout-runtime';script.defer=true;
-    script.src='/assets/portal-layout.js?v=20261025-brand9';
+    script.src='/assets/portal-layout.js?v=20261025-clean10';
     document.head.append(script);
   }
 

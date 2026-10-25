@@ -121,7 +121,7 @@
   // There is only one active link in the sidebar; structural wrappers never
   // become selected and inactive elements never retain a stale active class.
   const route=typeof crmActiveRoute==='string'?crmActiveRoute:'';
-  const ids={membro:'navMembro',vagas:'navVagas',search:'navSearch',freelancers:'navFreelancers','vagas-salvas':'navSaved',admin:'crmAdminNav',equipe:'crmTeamPublicNav'};
+  const ids={dashboard:'navMembro',membro:'navMembro',vagas:'navVagas',search:'navSearch',freelancers:'navFreelancers','vagas-salvas':'navSaved',admin:'crmAdminNav',equipe:'crmTeamPublicNav'};
   const links=[...root.querySelectorAll('#crmNavSlot .tab-btn')];
   const winner=links.find(link=>link.dataset.crmRoute===route||link.id===ids[route])
    ||links.find(link=>link.getAttribute('aria-current')==='page'&&!link.hidden);
