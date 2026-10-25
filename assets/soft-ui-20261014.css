@@ -371,3 +371,15 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 }
 #view-logada #crmTeamEmbedPage .crm-team-embed-head :is(span,a),#view-logada .crm-award-embed-top>span{color:#ce9cea!important}
 #view-logada #crmTeamEmbedPage .crm-team-embed-head{padding:0 0 18px;border-color:#2b3547}
+/* Route changes should not dim and move the content on every click. */
+#view-logada .tab-page.active{animation:none!important;transform:none!important}
+#view-logada #crmPersonalDashboard .crm-dashboard-heading{display:flex;justify-content:space-between;align-items:start;gap:24px;margin-bottom:24px}
+#view-logada #crmPersonalDashboard .crm-dashboard-heading>.crm-field{max-width:240px;min-width:180px;margin:0;font-size:12px}
+#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#view-logada #crmPersonalDashboard .crm-solution-card{padding:20px;min-height:120px;display:flex;flex-direction:column;justify-content:center}
+#view-logada #crmPersonalDashboard .crm-solution-card h3{font-size:17px;font-weight:600}
+#view-logada #crmPersonalDashboard .crm-preferences{max-width:100%;margin-top:24px}
+#view-logada #crmPersonalDashboard .crm-preferences h2{font-size:20px;font-weight:600;margin-bottom:16px}
+#view-logada #crmPersonalDashboard .crm-preferences label{font-size:14px;line-height:1.6}
+#view-logada #crmPersonalDashboard .crm-preferences p{font-size:12px;color:#a8b3c5;line-height:1.6}
+@media(max-width:650px){#view-logada #crmPersonalDashboard .crm-dashboard-heading{flex-direction:column;gap:16px}#view-logada #crmPersonalDashboard .crm-dashboard-heading>.crm-field{max-width:none;width:100%}#view-logada #crmPersonalDashboard .crm-solution-grid{grid-template-columns:minmax(0,1fr)}}
