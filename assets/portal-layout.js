@@ -21,6 +21,24 @@
    summary.textContent='Cadastrar meu perfil no Open to Work';
    signup.before(disclosure);disclosure.append(summary,signup);
   }
+  // Retire hardcoded orange inline colors from legacy page templates.
+  // This is styling only, and never visits Brasa or changes content/actions.
+  const colors={'#f97316':'#7f40b1','#ff8a3d':'#b782d9','#fb923c':'#ce9cea','#ff9b54':'#ce9cea','#f2b889':'#ce9cea','#fdba74':'#ce9cea','#7c2d12':'#1d273a','#8c3514':'#1d273a'};
+  page.querySelectorAll('[style]').forEach(el=>{
+   if(el.closest('#cxCopilot')||!/(?:#(?:f97316|ff8a3d|fb923c|ff9b54|f2b889|fdba74|7c2d12|8c3514)|(?:249,\s*115,\s*22|255,\s*138,\s*61|251,\s*146,\s*60|255,\s*155,\s*84))/i.test(el.getAttribute('style')||''))return;
+   for(const property of ['color','background','background-color','border','border-color','border-left','border-top','border-bottom']){
+    const old=el.style.getPropertyValue(property);if(!old)continue;
+    let next=old.replace(/#[0-9a-f]{6}/gi,hex=>colors[hex.toLowerCase()]||hex)
+     .replace(/rgba\(249,\s*115,\s*22([,)])/g,'rgba(127,64,177$1')
+     .replace(/rgba\(255,\s*138,\s*61([,)])/g,'rgba(127,64,177$1');
+    // CSSOM serializes hex colors as rgb(), so normalize those exact colors too.
+    next=next.replace(/rgb\(249,\s*115,\s*22\)/g,'rgb(127, 64, 177)')
+     .replace(/rgb\(255,\s*138,\s*61\)/g,'rgb(183, 130, 217)')
+     .replace(/rgb\(251,\s*146,\s*60\)/g,'rgb(206, 156, 234)')
+     .replace(/rgb\(255,\s*155,\s*84\)/g,'rgb(206, 156, 234)');
+    if(next!==old)el.style.setProperty(property,next,el.style.getPropertyPriority(property));
+   }
+  });
   // Data tables retain every column, with their own keyboard-scrollable region.
   page.querySelectorAll('table').forEach(table=>{
    if(table.closest('.crm-table-region'))return;
@@ -52,5 +70,12 @@
  document.addEventListener('crm:route-changed',sync);
  document.addEventListener('crm:admin-ready',sync);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+ // Watch only page insertions (async lists and admin tables), never sidebar,
+ // style attributes, private stores or Copilot. One update per animation frame.
+ const pages=document.getElementById('crmPages');let frame=0;
+ if(pages&&typeof MutationObserver==='function')new MutationObserver(()=>{
+  if(frame)return;
+  frame=requestAnimationFrame(()=>{frame=0;sync();});
+ }).observe(pages,{childList:true,subtree:true});
  window.CXPortalLayout={sync};
 })();
