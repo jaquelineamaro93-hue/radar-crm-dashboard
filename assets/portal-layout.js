@@ -31,6 +31,15 @@
    const row=document.createElement('header');row.className='crm-page-heading';
    heading.before(row);row.append(heading);
   }
+  // Preserve the event filter buttons and their listeners, behind one disclosure.
+  if(page.id==='pageEventos'&&!page.querySelector('.crm-event-filter-disclosure')){
+   const groups=[...page.querySelectorAll('.ev-fgroup')];
+   if(groups.length){
+    const details=document.createElement('details');details.className='crm-event-filter-disclosure';
+    const summary=document.createElement('summary');summary.textContent='Filtrar eventos por área, tipo, preço e minha lista';
+    groups[0].before(details);details.append(summary,...groups);
+   }
+  }
   // The directory is the task. Registration remains available without a
   // marketing panel pushing the search below the fold for signed-in members.
   const signup=page.querySelector('.crm-otw-signup');
