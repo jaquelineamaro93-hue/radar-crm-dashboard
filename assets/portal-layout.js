@@ -132,8 +132,8 @@
   // Clean visible HTML tags from third-party job excerpts, never alter source data.
   if(page.id==='pageVagas')page.querySelectorAll('.crm-job-snippet').forEach(snippet=>{
    const raw=snippet.textContent||'';
-   if(/<\\/?[a-z][^>]*>/i.test(raw))
-    snippet.textContent=raw.replace(/<[^>]*>/g,' ').replace(/&(?:nbsp|amp|quot|lt|gt);/gi,' ').replace(/\\s+/g,' ').trim();
+   if(/<\/?[a-z][^>]*>/i.test(raw))
+    snippet.textContent=raw.replace(/<[^>]*>/g,' ').replace(/&(?:nbsp|amp|quot|lt|gt);/gi,' ').replace(/\s+/g,' ').trim();
   });
   // Preserve the Conexão CRM brand palette in authored UI. Do not recolor source styles.
   // Data tables retain every column, with their own keyboard-scrollable region.
