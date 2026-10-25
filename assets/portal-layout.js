@@ -104,16 +104,37 @@
     for(const section of sections){const label=section.querySelector('h3')?.textContent;if(label==='Sobre mim'||label==='Ferramentas')section.classList.add('crm-profile-wide');}
    }
   }
-  // The directory is the task. Registration remains available without a
-  // marketing panel pushing the search below the fold for signed-in members.
+  // Public registration must be visible. Existing private workspace behavior stays.
   const signup=page.querySelector('.crm-otw-signup');
-  if(signup&&!signup.closest('.crm-otw-signup-details')){
-   const disclosure=document.createElement('details');
-   disclosure.className='crm-otw-signup-details';
-   const summary=document.createElement('summary');
-   summary.textContent='Cadastrar meu perfil no Open to Work';
-   signup.before(disclosure);disclosure.append(summary,signup);
+  if(signup){
+   const disclosure=signup.closest('.crm-otw-signup-details');
+   if(page.closest('#crmPublicWorkspace')){
+    if(disclosure)disclosure.replaceWith(signup);
+   }else if(!disclosure){
+    const details=document.createElement('details');details.className='crm-otw-signup-details';
+    const summary=document.createElement('summary');summary.textContent='Cadastrar meu perfil no Open to Work';
+    signup.before(details);details.append(summary,signup);
+   }
   }
+  // Hide only duplicate legacy public work shortcuts (keep real destinations).
+  if(page.closest('#crmPublicWorkspace')&&(page.id==='pageSearch'||page.id==='pageVagas')){
+   for(const label of page.querySelectorAll('summary,span,small,p,h2,h3,label')){
+    if(label.textContent?.trim().toLocaleLowerCase('pt-BR')!=='explorar trabalho')continue;
+    let block=label.parentElement;
+    for(let depth=0;block&&block!==page&&depth<5;depth++,block=block.parentElement){
+     const copy=block.textContent||'',links=block.querySelectorAll('a,button');
+     if(copy.length<750&&/radar de vagas/i.test(copy)&&/open to work/i.test(copy)&&/freelancers/i.test(copy)&&links.length>=2&&links.length<=9){
+      block.hidden=true;break;
+     }
+    }
+   }
+  }
+  // Clean visible HTML tags from third-party job excerpts, never alter source data.
+  if(page.id==='pageVagas')page.querySelectorAll('.crm-job-snippet').forEach(snippet=>{
+   const raw=snippet.textContent||'';
+   if(/<\\/?[a-z][^>]*>/i.test(raw))
+    snippet.textContent=raw.replace(/<[^>]*>/g,' ').replace(/&(?:nbsp|amp|quot|lt|gt);/gi,' ').replace(/\\s+/g,' ').trim();
+  });
   // Preserve the Conexão CRM brand palette in authored UI. Do not recolor source styles.
   // Data tables retain every column, with their own keyboard-scrollable region.
   page.querySelectorAll('table').forEach(table=>{
@@ -128,11 +149,16 @@
  function normalizePublicNavigation(){
   const nav=document.querySelector('#view-publica .crm-navbar .crm-navlinks');if(!nav)return;
   const wrapper=nav.closest('.crm-public-menu');
-  const mobile=!!window.matchMedia?.('(max-width:760px)').matches;
+  const compactViewport=!!window.matchMedia?.('(max-width:900px)').matches;
+  const compactPhone=!!window.matchMedia?.('(pointer:coarse)').matches&&Number(window.screen?.width||0)>0&&window.screen.width<=600;
+  const mobile=compactViewport||compactPhone;
+  document.documentElement.classList.toggle('crm-compact-device',mobile);
   if(mobile&&!wrapper){
    const details=document.createElement('details');details.className='crm-public-menu';
    const summary=document.createElement('summary');summary.textContent='Menu';
+   summary.setAttribute('aria-label','Abrir navegação principal');
    nav.before(details);details.append(summary,nav);
+   nav.addEventListener('click',event=>{if(event.target.closest('a'))details.open=false;});
   }else if(!mobile&&wrapper)wrapper.replaceWith(nav);
   const title=document.getElementById('crmPublicTitle');
   const page=document.querySelector('#crmPublicPages .tab-page.active');
@@ -171,6 +197,12 @@
   if(frame)return;
   frame=requestAnimationFrame(()=>{frame=0;sync();});
  }).observe(pages,{childList:true,subtree:true});
+ // Async public talent/job cards also need layout normalization.
+ const publicPages=document.getElementById('crmPublicPages');let publicFrame=0;
+ if(publicPages&&typeof MutationObserver==='function')new MutationObserver(()=>{
+  if(publicFrame)return;
+  publicFrame=requestAnimationFrame(()=>{publicFrame=0;sync();});
+ }).observe(publicPages,{childList:true,subtree:true});
  // Load public-language UI without changing auth, data or portal routing.
  if(!document.getElementById('cx-site-i18n-script')){
    const script=document.createElement('script');
