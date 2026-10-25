@@ -192,7 +192,7 @@ async function analyze(){
  activeRoot.querySelector('[data-cx-send]').disabled=true;
  try{
   const context=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question).map(x=>x.slice(0,320));
-  const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved()}});
+  const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error)throw Error('unavailable');
   const action=result.data?.action;
