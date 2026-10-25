@@ -40,6 +40,17 @@
     groups[0].before(details);details.append(summary,...groups);
    }
   }
+  if(page.id==='pageMembro'){
+   const profile=page.querySelector('.crm-profile-details');
+   if(profile&&!profile.querySelector('.crm-profile-secondary')){
+    const sections=[...profile.querySelectorAll(':scope > section')];
+    if(sections.length>6){
+     const details=document.createElement('details');details.className='crm-profile-secondary';
+     const summary=document.createElement('summary');summary.textContent='Contato e preferências';details.append(summary,...sections.slice(6));profile.append(details);
+    }
+    for(const section of sections){const label=section.querySelector('h3')?.textContent;if(label==='Sobre mim'||label==='Ferramentas')section.classList.add('crm-profile-wide');}
+   }
+  }
   // The directory is the task. Registration remains available without a
   // marketing panel pushing the search below the fold for signed-in members.
   const signup=page.querySelector('.crm-otw-signup');

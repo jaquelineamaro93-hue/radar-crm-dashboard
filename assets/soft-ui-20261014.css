@@ -319,3 +319,35 @@
 #view-logada .crm-freelancer-tab:focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important}
 #view-logada #crmSavedSlot>div{grid-template-columns:minmax(0,1.8fr) minmax(250px,1fr)!important;gap:20px!important}
 @media(max-width:1000px){#view-logada #crmSavedSlot>div{grid-template-columns:minmax(0,1fr)!important}}
+/* Secondary navigation and account details stay available on demand. */
+#view-logada #crmManagementNav{margin:4px 0 8px;color:#a8b3c5;border:0;padding:0;background:transparent}
+#view-logada #crmManagementNav>summary{font-size:12px;padding:9px 10px;cursor:pointer;line-height:1.5;border-radius:7px}
+#view-logada #crmManagementNav>summary:hover{background:#1d273a;color:white}
+#view-logada #crmManagementNav>.tab-btn{margin-left:8px;width:calc(100% - 8px);font-size:12px!important}
+#view-logada #pageMembro>div{max-width:none!important;padding:0!important}
+#view-logada #membroHeader{padding-bottom:18px!important;margin-bottom:20px!important}
+#view-logada #membroAvatar{width:44px!important;height:44px!important}
+#view-logada #membroDetalhes .crm-profile-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;padding:24px;background:#182131;border:1px solid #2b3547;border-radius:12px}
+#view-logada #membroDetalhes .crm-profile-details>section{margin:0;padding:0;border:0;min-width:0}
+#view-logada #membroDetalhes .crm-profile-details h3{font-size:12px;color:#a8b3c5;margin:0 0 5px}
+#view-logada #membroDetalhes .crm-profile-details p{font-size:13px;line-height:1.65;margin:0;color:#e2e8f0}
+#view-logada #membroDetalhes .crm-profile-wide,#view-logada #membroDetalhes .crm-profile-secondary{grid-column:1/-1}
+#view-logada #membroDetalhes .crm-profile-secondary{border-top:1px solid #384254;padding-top:16px}
+#view-logada #membroDetalhes .crm-profile-secondary>summary{font-size:13px;color:#ce9cea;cursor:pointer;min-height:28px}
+#view-logada #membroDetalhes .crm-profile-secondary section{margin:16px 0 0;padding:0;border:0}
+#view-logada:has(#pageMembro.active) .crm-workbar>button[onclick="openProfileModal()"]{display:none}
+#view-logada #membroHeader .crm-profile-top-actions .crm-outline{display:none}
+#view-logada #crmAnalyticsRefreshNow{font-size:0!important;width:36px;min-width:36px;padding:8px!important}
+#view-logada #crmAnalyticsRefreshNow::after{content:'↻';font-size:18px;line-height:1}
+#view-logada #crmAnalyticsPeriodBody>p:first-child{display:none}
+#view-logada #crmAdminAnalytics .crm-filter-row strong{font-size:clamp(20px,1.65vw,24px)}
+dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;color:#f5f6fa}
+.cx-xp-tour .cx-xp-visual{background:#182131;border-color:#384254}
+.cx-xp-tour :is(.cx-xp-brand,.cx-xp-kicker,.cx-xp-visual svg,.cx-xp-spark){color:#ce9cea;border-color:#604178}
+.cx-xp-tour .cx-xp-dismiss{color:#a8b3c5;border-color:#384254}
+@media(max-width:600px){#view-logada #membroDetalhes .crm-profile-details{grid-template-columns:minmax(0,1fr);gap:18px;padding:18px}#view-logada #membroHeader .crm-profile-top-actions{width:100%}}
+.cx-xp-tour .cx-xp-primary{background:#7f40b1;border-color:#7f40b1;color:white;font-weight:600}
+.cx-xp-tour .cx-xp-primary:hover{background:#9054be}
+.cx-xp-tour .cx-xp-dot.active{background:#ce9cea}
+.cx-xp-tour .cx-xp-spark,.cx-xp-tour .cx-xp-back{color:#ce9cea;border-color:#604178;background:transparent}
+.cx-xp-tour button:focus-visible{outline:2px solid #ce9cea;outline-offset:2px}

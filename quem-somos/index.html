@@ -1272,7 +1272,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 .crm-xp-directory-recommend:hover{background:#ffd0a6}
 .crm-xp-directory-recommend:focus-visible{outline:2px solid #f97316;outline-offset:3px}
 </style>
-<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-radar7">
+<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-clean8">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -8512,9 +8512,11 @@ async function crmRenderSavedProfile(){
   }
   if(CURRENT_USER?.id!==user.id)return;
   for(const id of ['membroAvatar','loggedAvatar']){
-    const el=document.getElementById(id);if(!el)continue;el.replaceChildren();
-    if(photo){const img=document.createElement('img');img.src=photo;img.alt='Foto do perfil';img.style.cssText='width:100%;height:100%;object-fit:cover';el.append(img);}
-    else el.textContent=(p.full_name||user.email||'M').charAt(0).toUpperCase();
+    const el=document.getElementById(id);if(!el)continue;
+    const current=el.querySelector('img');
+    if(photo){
+      if(current?.getAttribute('src')!==photo){const img=document.createElement('img');img.src=photo;img.alt='Foto do perfil';img.style.cssText='width:100%;height:100%;object-fit:cover';el.replaceChildren(img);}
+    }else{const initial=(p.full_name||user.email||'M').charAt(0).toUpperCase();if(current||el.textContent!==initial)el.textContent=initial;}
   }
 }
 
@@ -10003,7 +10005,7 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261025-radar7"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script src="/assets/portal-hardening.js?v=20261025-clean8"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-figma2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261023-header-2">

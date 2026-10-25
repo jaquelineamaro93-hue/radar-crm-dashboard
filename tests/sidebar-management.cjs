@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),{JSDOM}=require('jsdom');
+const source=fs.readFileSync('assets/portal-hardening.js','utf8');
+const d=new JSDOM('<nav><button id="crmAdminNav" hidden></button><button id="crmTeamAdminNav" hidden></button><button id="navComunidade"></button></nav>');const doc=d.window.document,nav=doc.querySelector('nav'),admin=doc.getElementById('crmAdminNav'),team=doc.getElementById('crmTeamAdminNav');
+const ctx={document:doc,CURRENT_USER:{id:'a'},crmValidatedUserId:'a',crmAdminVerified:false,openTeamInside(){},openAwardAdminInside(){},syncAwardAdminNavSelection(){},activateAwardAdminHash(){},awardAdminModules:Object.fromEntries(['award-dreams','award-speakers','award-creators'].map(r=>[r,{path:'/'+r}]))};vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('  function syncTeamNavigation('),source.indexOf('  // Sidebar glyphs')),ctx);
+ctx.syncTeamNavigation(nav);let group=doc.getElementById('crmManagementNav');assert(group.hidden,'unverified admin controls stay hidden');
+ctx.crmAdminVerified=true;admin.hidden=false;team.hidden=false;admin.dataset.crmRoleOwner='a';ctx.syncTeamNavigation(nav);assert(!group.hidden);assert.equal(group.querySelectorAll('.tab-btn,button').length,4);assert.equal(group.open,false,'secondary routes start collapsed');const nodes=[...group.children];ctx.syncTeamNavigation(nav);assert(nodes.every((n,i)=>group.children[i]===n),'no rebuild or reorder on sync');
+ctx.crmAdminVerified=false;ctx.syncTeamNavigation(nav);assert(!group.hidden,'same account retains geometry during verification');assert(nodes.every((n,i)=>group.children[i]===n));
+admin.hidden=true;team.hidden=true;ctx.syncTeamNavigation(nav);assert(group.hidden,'revocation hides group');assert(!doc.getElementById('crmCreatorsAdminNav'));
+ctx.CURRENT_USER={id:'b'};ctx.crmValidatedUserId='b';ctx.syncTeamNavigation(nav);assert(group.hidden,'another account cannot retain management links');
+d.window.close();console.log('PASS management navigation: async creation, collapsed controls, node identity, pending same-account stability, revocation and account isolation');
