@@ -61,6 +61,7 @@ const icons={
 for(const [route,label] of Object.entries(routes)){
  const button=document.createElement('button');button.type='button';button.className='tab-btn';
  button.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+icons[route]+'</svg></span>'+label;
+ button.dataset.crmRoute='workspace-'+route;
  button.addEventListener('click',()=>crmNavigate('workspace-'+route));nav.append(button);
 }
 document.querySelector('.crm-nav-items')?.append(nav);
@@ -158,6 +159,12 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function render(route){
     const areaKey=AREA_BY_ROUTE[route],area=AREAS[areaKey],page=pageFor(route);
     if(!page||!area)return;
+    // A sidebar e seu menu móvel já oferecem os mesmos destinos.
+    // Remover a estrutura redundante em vez de escondê-la com outra camada de CSS.
+    if(typeof crmSignedIn==='function' && crmSignedIn()){
+      page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
+      return;
+    }
 
     // O card pode ser montado dentro de sections/containers da página.
     // Procurar apenas com :scope > fazia o runtime não enxergar o card já existente
@@ -167,12 +174,12 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     if(generated.length===1&&same.length===1)return;
     generated.forEach(el=>el.remove());
 
-    const nav=document.createElement('nav');
-    nav.className='crm-topic-nav';nav.dataset.crmGenerated='1';nav.dataset.route=route;nav.dataset.area=areaKey;
+    const nav=document.createElement('details');
+    nav.className='crm-topic-nav crm-topic-disclosure';nav.dataset.crmGenerated='1';nav.dataset.route=route;nav.dataset.area=areaKey;
     nav.setAttribute('aria-label',area.label+': navegação entre temas');
-    const head=document.createElement('div');head.className='crm-topic-nav__head';
+    const head=document.createElement('summary');head.className='crm-topic-nav__head';
     const intro=document.createElement('div');
-    intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('h2','crm-topic-nav__title',area.title));head.append(intro);
+    intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('span','crm-topic-nav__title','Explorar '+area.label.toLowerCase()));head.append(intro);
     const grid=document.createElement('div');grid.className='crm-topic-nav__grid';
     area.items.filter(([target])=>canOpen(target)).forEach(([target,icon,name])=>{
       const current=target===route||(route==='public-match'&&target==='search');

@@ -117,3 +117,17 @@
 #pageVagas .crm-radar-quick select:focus-visible{outline:2px solid #fbbf91;outline-offset:2px}
 #pageVagas .crm-radar-fields>div:has(#filtro-nivel){order:0}
 @media(max-width:360px){#pageVagas .crm-radar-fields,#pageVagas .crm-radar-quick,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:minmax(0,1fr)!important}}
+
+/* Estrutura de busca: região principal e filtros adicionais separados. */
+#pageVagas .crm-radar-filter-disclosure{margin:12px 0 20px;border-block:1px solid var(--line)}
+#pageVagas .crm-radar-filter-disclosure>summary{padding:12px 0;cursor:pointer;font-size:14px;font-weight:650;color:var(--text)}
+#pageVagas .crm-radar-filter-disclosure>summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#pageVagas .crm-radar-filterbox{border:0!important;background:transparent!important;padding:0 0 14px!important;margin:0!important}
+#pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+#pageVagas .crm-radar-extra-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+#pageVagas .crm-radar-extra-fields[hidden]{display:none!important}
+#pageVagas .crm-radar-extra-fields input,#pageVagas .crm-radar-extra-fields select{width:100%;box-sizing:border-box;min-width:0}
+#pageVagas .crm-radar-extra-fields label{font-size:12px!important}
+@media(max-width:1100px){#pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:760px){#pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields,#pageVagas .crm-radar-extra-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}#pageVagas .crm-radar-fields input,#pageVagas .crm-radar-fields select{min-height:44px;font-size:16px!important}#pageVagas .crm-radar-actions button{min-height:44px!important}}
+@media(max-width:380px){#pageVagas .crm-radar-fields,#pageVagas .crm-radar-filterbox.is-expanded .crm-radar-fields,#pageVagas .crm-radar-extra-fields,#pageVagas .crm-radar-quick{grid-template-columns:minmax(0,1fr)!important}}

@@ -54,3 +54,10 @@ body:has(#view-logada:not([hidden])) #crmSurveyReminder{display:none!important}
 #crmExperienceAdminPanel .crm-admin-members-table thead{position:sticky;top:0;z-index:1;background:#191817}
 @media(max-width:850px){#crmExperienceAdminPanel .crm-analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}#crmExperienceAdminPanel .crm-experience-distribution{grid-column:1/-1}#crmExperienceAdminPanel .crm-story-head button{width:auto;max-width:100%}}
 @media(max-width:480px){#crmExperienceAdminPanel .crm-analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}#crmExperienceAdminPanel .crm-analytics-card{padding:14px!important;min-height:100px}#crmExperienceAdminPanel .crm-experience-distribution{min-height:210px}#crmExperienceAdminPanel .crm-story-head h3{font-size:20px;line-height:1.3}#crmExperienceAdminPanel .crm-admin-members-table{min-width:670px}}
+
+/* Public pages retain optional related links without a second page heading. */
+.crm-topic-disclosure{padding:0!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}
+.crm-topic-disclosure>.crm-topic-nav__head{cursor:pointer;padding:10px 0;margin:0!important}
+.crm-topic-disclosure .crm-topic-nav__eyebrow{display:none}
+.crm-topic-disclosure .crm-topic-nav__title{display:inline;font-size:13px!important;color:var(--muted)}
+.crm-topic-disclosure .crm-topic-nav__grid{padding-bottom:12px}
