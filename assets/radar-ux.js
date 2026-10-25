@@ -73,7 +73,7 @@
     if(!box||box.parentElement?.classList.contains('crm-radar-filter-disclosure'))return;
     const disclosure=document.createElement('details');
     disclosure.className='crm-radar-filter-disclosure';
-    disclosure.open=!window.matchMedia('(max-width:760px)').matches;
+    disclosure.open=!(window.matchMedia('(max-width:900px)').matches||(window.matchMedia('(pointer:coarse)').matches&&window.screen?.width>0&&window.screen.width<=600));
     const summary=document.createElement('summary');
     summary.textContent='Filtrar oportunidades';
     box.before(disclosure);disclosure.append(summary,box);
