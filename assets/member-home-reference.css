@@ -1,0 +1,233 @@
+/* Conexão CRM - one consistent authenticated home from user-supplied references.
+   No design-only salary, fictitious matches, forced onboarding or duplicate sidebars. */
+#view-logada #crmPersonalDashboard.cx-home-reference{
+ --cx-home-panel:#192335;--cx-home-ink:#f2f3f9;--cx-home-line:#45516a;
+ --cx-home-purple:#ce9cea;--cx-home-mute:#afbace;
+ max-width:1160px!important;margin-inline:auto!important;
+ color:var(--cx-home-ink);min-width:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference *{box-sizing:border-box}
+#view-logada #crmPersonalDashboard.cx-home-reference>.crm-dashboard-heading{
+ display:flex!important;justify-content:space-between!important;
+ align-items:flex-start!important;gap:16px!important;
+ padding:0 0 20px!important;margin:0 0 4px!important;
+ max-width:100%!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .crm-dashboard-heading>div{
+ min-width:0;max-width:740px;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmWelcome{
+ font-size:clamp(22px,3vw,30px)!important;line-height:1.2!important;
+ font-weight:700!important;letter-spacing:-.025em!important;
+ color:var(--cx-home-ink)!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardContext{
+ font-size:13px!important;line-height:1.6!important;
+ color:var(--cx-home-mute)!important;margin:8px 0 0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .crm-dashboard-heading>.crm-field{
+ flex:0 0 auto;max-width:240px!important;width:100%;
+ color:var(--cx-home-mute)!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .crm-dashboard-heading select{
+ min-height:44px!important;width:100%!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-layout{
+ display:grid!important;grid-template-columns:minmax(0,1.75fr) minmax(240px,1fr)!important;
+ gap:16px!important;align-items:start!important;max-width:100%!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-main,
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-aside{
+ display:flex;flex-direction:column;gap:16px;min-width:0;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference :is(
+ .cx-home-next,.cx-home-shortcuts,.cx-home-preferences,.cx-home-more,.cx-home-communities){
+ background:var(--cx-home-panel)!important;
+ border:1px solid var(--cx-home-line)!important;
+ border-radius:12px!important;padding:20px!important;
+ box-shadow:none!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-next{
+ background:linear-gradient(130deg,#302140,#1c2337)!important;
+ border-color:#67517d!important;display:flex!important;flex-direction:column!important;
+ gap:10px!important;min-height:190px!important;justify-content:center!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-kicker{
+ margin:0!important;color:var(--cx-home-purple)!important;font-size:10px!important;
+ text-transform:uppercase!important;letter-spacing:.1em!important;font-weight:750!important;
+ line-height:1.4!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-next h2{
+ font-size:clamp(20px,2.3vw,26px)!important;color:#f4f3fb!important;
+ line-height:1.25!important;letter-spacing:-.025em!important;
+ margin:0!important;font-weight:720!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-next-desc{
+ color:#c8bed9!important;font-size:13px!important;line-height:1.6!important;
+ margin:0!important;max-width:58ch!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-next .cx-home-primary{
+ align-self:flex-start!important;min-height:44px!important;
+ font-size:12px!important;font-weight:700!important;
+ padding:10px 16px!important;border-radius:8px!important;
+ border:1px solid #9258ba!important;background:#7f40b1!important;
+ color:#fff!important;cursor:pointer!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference :is(
+ .cx-home-shortcuts,.cx-home-preferences,.cx-home-more,.cx-home-communities)>h2{
+ margin:0 0 6px!important;font-size:18px!important;
+ line-height:1.3!important;font-weight:700!important;
+ color:#f4f3fb!important;letter-spacing:-.02em!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-help{
+ margin:0 0 14px!important;font-size:12px!important;
+ line-height:1.55!important;color:var(--cx-home-mute)!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards.crm-solution-grid{
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:10px!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards .crm-solution-card{
+ min-width:0!important;width:100%!important;max-width:100%!important;
+ min-height:104px!important;gap:6px!important;display:flex!important;
+ flex-direction:column!important;justify-content:center!important;
+ background:#11192a!important;border:1px solid #35425c!important;
+ border-radius:10px!important;padding:15px 16px!important;
+ text-decoration:none!important;box-shadow:none!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards .crm-solution-card:hover,
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards .crm-solution-card:focus-visible{
+ border-color:#9f6cc2!important;background:#1b2238!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards .crm-solution-card h3{
+ color:#f4f3fb!important;font-size:14px!important;line-height:1.35!important;
+ font-weight:680!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards .crm-solution-card p{
+ color:#b3bed0!important;font-size:12px!important;
+ line-height:1.5!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences{
+ display:flex!important;flex-direction:column!important;align-items:stretch;
+ gap:8px!important;min-width:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences h2{
+ font-size:17px!important;line-height:1.3!important;
+ color:#f4f3fb!important;margin:0 0 6px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences label{
+ display:flex!important;gap:9px!important;align-items:flex-start!important;
+ color:#e5e8f0!important;font-size:13px!important;
+ line-height:1.5!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences label input{
+ flex:0 0 auto!important;margin-top:3px!important;min-width:16px!important;
+ min-height:16px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences p{
+ color:var(--cx-home-mute)!important;font-size:12px!important;
+ line-height:1.55!important;margin:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences .cx-home-privacy-note{
+ border-top:1px solid #39465d!important;padding-top:12px!important;margin-top:4px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-preferences .cx-home-edit-profile{
+ display:inline-flex!important;justify-content:center!important;align-items:center!important;
+ align-self:stretch!important;min-height:44px!important;
+ padding:10px 14px!important;background:transparent!important;
+ border:1px solid #7c5694!important;color:#d9aeef!important;
+ border-radius:8px!important;margin-top:4px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-more-actions{
+ display:flex;flex-direction:column;gap:9px;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-secondary{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ min-height:44px!important;width:100%!important;
+ padding:10px 12px!important;background:#11192a!important;
+ border:1px solid #46516a!important;border-radius:9px!important;
+ color:#e3dbf0!important;text-align:left!important;
+ font-size:13px!important;font-weight:650!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-secondary:hover{
+ border-color:#9961b8!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-communities{
+ margin-top:16px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-communities>.cx-home-kicker{
+ margin-bottom:7px!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:10px!important;margin-top:12px!important;min-width:0!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-card{
+ display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+ gap:8px!important;min-width:0!important;width:100%!important;
+ border:1px solid #39445b!important;border-radius:10px!important;
+ background:#11192a!important;color:#f5f5fa!important;
+ padding:16px!important;text-decoration:none!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-card small{
+ font-size:11px!important;color:#a9b7ce!important;line-height:1.3!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-card strong{
+ font-size:14px!important;line-height:1.35!important;color:#f5f5fa!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-desc{
+ font-size:12px!important;color:#aeb9cb!important;line-height:1.5!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-card:is(:hover,:focus-visible){
+ border-color:#a377c2!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference :is(a,button,select):focus-visible{
+ outline:2px solid #d6a6f0!important;outline-offset:3px!important;
+}
+@media(max-width:1050px){
+ #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-layout{
+  grid-template-columns:minmax(0,1.3fr) minmax(220px,1fr)!important;gap:12px!important;
+ }
+}
+@media(max-width:780px){
+ #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-layout{
+  grid-template-columns:minmax(0,1fr)!important;gap:12px!important;
+ }
+ #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:560px){
+ #view-logada #crmPersonalDashboard.cx-home-reference>.crm-dashboard-heading{
+  flex-direction:column!important;align-items:stretch!important;gap:12px!important;
+ }
+ #view-logada #crmPersonalDashboard.cx-home-reference>.crm-dashboard-heading>.crm-field{
+  max-width:100%!important;min-width:0!important;
+ }
+ #view-logada #crmPersonalDashboard.cx-home-reference :is(
+  .cx-home-next,.cx-home-shortcuts,.cx-home-preferences,.cx-home-more,.cx-home-communities){
+  padding:16px!important;
+ }
+ #view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards.crm-solution-grid,
+ #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-grid{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-next .cx-home-primary{width:100%!important;}
+}
+/* Existing mobile-shell class is also set on iOS Safari with desktop viewport. */
+html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-layout{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-community-grid{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference #crmDashboardCards.crm-solution-grid{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference>.crm-dashboard-heading{
+ flex-direction:column!important;align-items:stretch!important;
+}
+@media(prefers-reduced-motion:reduce){
+ #view-logada #crmPersonalDashboard.cx-home-reference *{transition:none!important;animation:none!important;}
+}
