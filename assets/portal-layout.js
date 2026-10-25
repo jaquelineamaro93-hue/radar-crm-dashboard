@@ -35,6 +35,32 @@
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  if(page.id==='pageCourses'){
+   const feature=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]')?.closest('section')?.querySelector('div[style*="linear-gradient"]');
+   if(feature)feature.classList.add('crm-course-feature');
+   page.querySelectorAll(':scope > section').forEach((section,index)=>{
+    if(!index||section.querySelector(':scope > .crm-course-secondary'))return;
+    const heading=section.querySelector('.section-head h2');if(!heading)return;
+    const details=document.createElement('details');details.className='crm-course-secondary';
+    const summary=document.createElement('summary');summary.textContent=heading.textContent;
+    const head=heading.closest('.section-head');head.hidden=true;
+    details.append(summary);while(section.firstChild)details.append(section.firstChild);section.append(details);
+   });
+  }
+
+  // Keep the original controls and listeners; disclose long filter groups.
+  if(page.id!=='crmAdminPage')page.querySelectorAll('.filter-bar').forEach(bar=>{
+   if(bar.closest('.crm-filter-disclosure')||bar.querySelectorAll('select').length<3)return;
+   const details=document.createElement('details');details.className='crm-filter-disclosure';
+   const summary=document.createElement('summary');summary.textContent='Filtros';
+   const label=document.createElement('span');label.className='crm-filter-selection';summary.append(label);
+   const selects=[...bar.querySelectorAll('select')];
+   const defaults=new Map(selects.map(select=>[select,select.querySelector('option')?.value||'']));
+   const refresh=()=>{const n=selects.filter(select=>select.value!==defaults.get(select)).length;label.textContent=n?' · '+n+' selecionado'+(n>1?'s':''):'';};
+   bar.before(details);details.append(summary,bar);
+   details.addEventListener('change',refresh);details.addEventListener('click',()=>setTimeout(refresh,0));refresh();
+  });
+
   const dashboard=page.id==='crmPersonalDashboard';
   if(dashboard&&!page.querySelector('.crm-goals-entry')){
    const panel=document.createElement('section');panel.className='crm-goals-entry';
