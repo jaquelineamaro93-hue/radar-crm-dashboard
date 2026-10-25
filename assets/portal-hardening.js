@@ -7,7 +7,7 @@
     const style=document.createElement('link');
     style.id='cx-soft-ui-20261014';
     style.rel='stylesheet';
-    style.href='/assets/soft-ui-20261014.css?v=2';
+    style.href='/assets/soft-ui-20261014.css?v=20261024-clean1';
     document.head.appendChild(style);
   }
 
