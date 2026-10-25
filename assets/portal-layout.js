@@ -158,6 +158,8 @@
  }
  function sync(){
   normalizePublicNavigation();
+  const publicPage=document.querySelector("#crmPublicPages > .tab-page.active");
+  if(publicPage)normalize(publicPage);
   if(!root)return;
   root.dataset.layoutVersion='20261025-figma2';
   const page=root.querySelector('.tab-page.active');normalize(page);
