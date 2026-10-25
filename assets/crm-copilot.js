@@ -5,6 +5,7 @@
  */
 (()=>{'use strict';
 if(window.CXCopilot)return;
+const cxT=(value)=>window.CXLanguage?.translate?.(value)||value;
 
 const ACTIONS=Object.freeze({
   login:{label:'Entrar com Google',route:null},
@@ -57,7 +58,7 @@ function addMessage(type,message,action,sources=[]){
   item.append(text);
   if(type==='assistant'&&Array.isArray(sources)&&sources.length){
     const references=document.createElement('div');references.className='cx-copilot-sources';
-    const caption=document.createElement('strong');caption.textContent='Fontes públicas';references.append(caption);
+    const caption=document.createElement('strong');caption.textContent=cxT("Fontes públicas");references.append(caption);
     sources.slice(0,4).forEach((ref,i)=>{
       try{
         const url=new URL(String(ref.url||''));
@@ -174,8 +175,8 @@ function confirmExternal(question){
  pendingDescription=question;
  if(aiConsentSaved()){void analyze();return;}
  const card=document.createElement('div');card.className='cx-copilot-consent';
- const label=document.createElement('p');label.textContent='Seu cadastro não será anexado. Não inclua dados pessoais.';
- const yes=document.createElement('button');yes.type='button';yes.textContent='Aceitar e continuar';
+ const label=document.createElement('p');label.textContent=cxT("Seu cadastro não será anexado. Não inclua dados pessoais.");
+ const yes=document.createElement('button');yes.type='button';yes.textContent=cxT("Aceitar e continuar");
  const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
  yes.addEventListener('click',()=>{saveAiConsent();card.remove();void analyze();});
  no.addEventListener('click',()=>{card.remove();pendingDescription='';});
@@ -188,7 +189,7 @@ async function analyze(){
  if(!sb?.functions?.invoke){addMessage('assistant','O serviço está indisponível. Tente novamente em instantes.');return;}
  const activeRoot=root,activeHistory=history;
  busy=true;activeRoot.dataset.state='thinking';activeHistory.setAttribute('aria-busy','true');
- const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent='Brasa está pensando…';activeRoot.querySelector('form').before(waiting);
+ const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent=cxT("Brasa está pensando…");activeRoot.querySelector('form').before(waiting);
  activeRoot.querySelector('[data-cx-send]').disabled=true;
  try{
   const context=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question).map(x=>x.slice(0,320));
