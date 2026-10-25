@@ -17,7 +17,7 @@ export async function handleRequest(req:Request){
   if(context.length>2||context.some((x:unknown)=>typeof x!=='string'||x.length>320||sensitive.test(x)))return respond({error:'SENSITIVE_INPUT'},400);
   if(!Deno.env.get('TYPESAFE_API_KEY'))return respond({error:'CLASSIFIER_NOT_CONFIGURED'},503);
   if(!await consumeQuota(user.id))return respond({error:'RATE_LIMIT'},429);
-  const result=await answerBrasa(prompt,name=>Deno.env.get(name),fetch,context);
+  const result=await answerBrasa(prompt,name=>Deno.env.get(name),fetch,context,body.locale);
   return respond(result,'error' in result?503:200);
  }catch{return respond({error:'SERVICE_UNAVAILABLE'},503)}
 }
