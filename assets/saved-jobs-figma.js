@@ -18,6 +18,9 @@ const messages={
    communityTitle:'Conecte-se. Troque. Evolua.',
    communityDesc:'Compartilhe experiências e amplie suas conexões com a comunidade.',
    resume:'Currículo para Match · privado',
+   resumeTitle:'Seu currículo profissional',
+   editResume:'Editar currículo',
+   empty:'Complete seu currículo e escolha Buscar Match para consultar vagas compatíveis.',
    details:'Por que esta vaga combina com meu perfil?',
    explanation:'A pontuação é uma estimativa de aderência, não uma previsão de contratação. Confira a vaga original.',
    chat:'Conversas e troca de experiências.',
@@ -37,6 +40,9 @@ const messages={
    communityTitle:'Connect. Share. Grow.',
    communityDesc:'Share experiences and build connections with the community.',
    resume:'Matching resume · private',
+   resumeTitle:'Your professional resume',
+   editResume:'Edit resume',
+   empty:'Complete your resume and choose Find matches to see compatible jobs.',
    details:'Why does this job match my profile?',
    explanation:'Match scores are estimates, not hiring predictions. Always verify the original posting.',
    chat:'Conversations and shared experiences.',
@@ -56,6 +62,9 @@ const messages={
    communityTitle:'Conecta. Comparte. Evoluciona.',
    communityDesc:'Comparte experiencias y amplía tus conexiones con la comunidad.',
    resume:'Currículum para match · privado',
+   resumeTitle:'Tu currículum profesional',
+   editResume:'Editar currículum',
+   empty:'Completa tu currículum y selecciona Buscar coincidencias para consultar vacantes afines.',
    details:'¿Por qué esta vacante coincide con mi perfil?',
    explanation:'El porcentaje es una estimación, no una predicción de contratación. Revisa el anuncio original.',
    chat:'Conversaciones e intercambio de experiencias.',
@@ -132,7 +141,11 @@ function enhance(){
     ['.cx-saved-communities>.fd','communities'],
     ['.cx-saved-community-title','communityTitle'],
     ['.cx-saved-community-desc','communityDesc'],
-    ['.cx-saved-score-note','explanation']
+    ['.cx-saved-score-note','explanation'],
+    ['.cx-saved-resume>div>div:first-child','resume'],
+    ['.cx-saved-resume>div>div:nth-child(2)','resumeTitle'],
+    ['.cx-saved-resume>button','editResume'],
+    ['#membroVagasMatch>.cx-saved-empty','empty']
    ];
    for(const [selector,key] of labels)label(page.querySelector(selector),key);
    const descriptions=['chat','network','professional'];
