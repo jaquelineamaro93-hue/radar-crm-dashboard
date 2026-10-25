@@ -1,0 +1,24 @@
+/* Shared rebrand presentation for isolated administration documents. */
+html.crm-module-rebrand{--orange:#7f40b1;--ink:#f5f6fa;--cream:#0b1020;--line:#384254;--dark:#111827;background:#0b1020!important;color-scheme:dark}
+html.crm-module-rebrand body{background:#0b1020!important;color:#f5f6fa!important;font-family:Inter,Arial,sans-serif;font-size:14px}
+html.crm-module-rebrand body main{background:#0b1020!important;color:#f5f6fa!important;padding-top:28px!important;border-radius:0!important;min-width:0}
+html.crm-module-rebrand h1{font-family:inherit!important;font-size:30px!important;line-height:1.25!important;letter-spacing:-.035em!important;font-weight:650!important;margin:8px 0 16px!important}
+html.crm-module-rebrand h1 em,html.crm-module-rebrand .eyebrow,html.crm-module-rebrand header b,html.crm-module-rebrand .list-head span,html.crm-module-rebrand .content>small{color:#ce9cea!important;font-style:normal}
+html.crm-module-rebrand :is(.lead,.notice,.list-head p,.subtitle){color:#a8b3c5!important;font-size:13px!important;line-height:1.65}
+html.crm-module-rebrand :is(.card,.dream-card,.item,.stat,.metric,.gate){background:#182131!important;border-color:#2b3547!important;color:#f5f6fa!important;border-radius:12px!important;box-shadow:none!important}
+html.crm-module-rebrand :is(.content h2,.dream-card h2,.item h2){font-family:inherit!important;font-size:22px!important;font-weight:650!important;line-height:1.3!important;letter-spacing:-.025em!important}
+html.crm-module-rebrand :is(.metric b,.stat b){font-family:inherit!important;font-size:26px!important;font-weight:650!important;color:#f5f6fa!important}
+html.crm-module-rebrand :is(.metric small,.stat small,.review small){color:#a8b3c5!important;font-size:11px!important}
+html.crm-module-rebrand :is(input,select,textarea){background:#111827!important;color:#f5f6fa!important;border:1px solid #384254!important;font-family:inherit!important;font-size:13px!important;border-radius:8px!important;min-height:40px}
+html.crm-module-rebrand :is(.filters button,#filters button,.toolbar button){background:transparent!important;border:1px solid #384254!important;color:#bfc9da!important;padding:9px 12px!important;font-size:12px!important;min-height:38px!important;border-radius:8px!important;box-shadow:none!important;font-weight:550!important}
+html.crm-module-rebrand :is(.filters button.active,#filters button.active){background:#2a1e3c!important;color:#ce9cea!important;border-color:#9762bc!important}
+html.crm-module-rebrand .filters b{color:inherit!important}
+html.crm-module-rebrand .review{background:#111827!important;color:#e2e8f0!important}
+html.crm-module-rebrand .review button{background:#7f40b1!important;color:white!important;border:1px solid #7f40b1!important;font-weight:600!important;min-height:40px}
+html.crm-module-rebrand .content a{color:#ce9cea!important}
+html.crm-module-rebrand :is(header,.topbar){background:#111827!important;color:#e2e8f0!important;border-color:#384254!important}
+html.crm-module-rebrand.crm-award-embedded :is(header,.topbar){display:none!important}
+html.crm-module-rebrand.crm-award-embedded main>h1,html.crm-module-rebrand.crm-award-embedded main>.eyebrow,html.crm-module-rebrand.crm-award-embedded .hero h1,html.crm-module-rebrand.crm-award-embedded .hero .eyebrow{display:none!important}
+html.crm-module-rebrand.crm-award-embedded body main{width:100%!important;padding:16px 0 40px!important}
+html.crm-module-rebrand :is(button,a,summary):focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important;box-shadow:none!important}
+@media(max-width:760px){html.crm-module-rebrand .card{grid-template-columns:minmax(0,1fr)!important}html.crm-module-rebrand .toolbar{align-items:stretch!important}html.crm-module-rebrand .toolbar label{max-width:none!important}html.crm-module-rebrand :is(input,select,textarea){font-size:16px!important;min-height:44px!important}html.crm-module-rebrand .content,html.crm-module-rebrand .review{padding:18px!important}}

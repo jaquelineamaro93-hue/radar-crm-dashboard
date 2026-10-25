@@ -351,3 +351,23 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 .cx-xp-tour .cx-xp-dot.active{background:#ce9cea}
 .cx-xp-tour .cx-xp-spark,.cx-xp-tour .cx-xp-back{color:#ce9cea;border-color:#604178;background:transparent}
 .cx-xp-tour button:focus-visible{outline:2px solid #ce9cea;outline-offset:2px}
+#view-logada .crm-sidebar>.crm-brand{margin-inline:4px;min-height:28px;align-items:center}
+.crm-brand>img{display:block;flex:none}
+#crmGoogleDialog{background:#111827;border:1px solid #384254;border-radius:16px;color:#f5f6fa;width:min(440px,calc(100vw - 32px));padding:24px}
+#crmGoogleDialog h2{font-size:24px;line-height:1.3;letter-spacing:-.03em}
+#crmGoogleDialog p{font-size:13px;line-height:1.6;color:#a8b3c5}
+#crmGoogleDialog .crm-close{color:#a8b3c5;background:transparent;border:0;font-size:12px;min-height:36px}
+#view-publica .crm-public-repeated-title{display:none!important}
+@media(max-width:760px){
+ #view-publica .crm-navbar .crm-navbar-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;align-items:center}
+ #view-publica .crm-navbar-left{display:contents}
+ #view-publica .crm-navbar-left>.crm-brand{grid-column:1;grid-row:1}
+ #view-publica .crm-navbar-actions{grid-column:2;grid-row:1}
+ #view-publica .crm-public-menu{grid-column:1/-1;grid-row:2;min-width:0}
+ #view-publica .crm-public-menu>summary{font-size:14px;color:#ce9cea;min-height:44px;padding:10px 0;cursor:pointer}
+ #view-publica .crm-public-menu[open]>.crm-navlinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;padding:12px 0;border-top:1px solid #384254;align-items:start}
+ #view-publica .crm-public-menu .crm-navlinks>a,#view-publica .crm-public-menu .crm-solutions-menu>summary{display:flex!important;align-items:center;font-size:13px!important;min-height:44px;padding:8px 0}
+ #view-publica .crm-public-menu .crm-solutions-menu>div{position:static;width:auto;max-width:100%;padding:8px}
+}
+#view-logada #crmTeamEmbedPage .crm-team-embed-head :is(span,a),#view-logada .crm-award-embed-top>span{color:#ce9cea!important}
+#view-logada #crmTeamEmbedPage .crm-team-embed-head{padding:0 0 18px;border-color:#2b3547}
