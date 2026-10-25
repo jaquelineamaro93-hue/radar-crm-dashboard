@@ -180,3 +180,50 @@
 #view-logada .cx-feature-card::before{background:#7f40b1!important}
 #view-logada .cx-format-links button span{background:#2a1e3c!important;color:#ce9cea!important}
 #view-logada .cx-curation-note{border-color:#344057!important;background:#182131!important}
+
+/* Keep keyboard focus inside each menu item; adjacent rows must not overlap. */
+#view-logada #crmNavSlot :is(button,a,[role=tab]):focus-visible{outline:2px solid #ce9cea!important;outline-offset:-2px!important;box-shadow:none!important}
+#view-logada #crmNavSlot .tab-btn{transition:none!important;transform:none!important;animation:none!important}
+#view-logada #pageFreelancers .ev-header-row{position:static!important;float:none!important;margin:16px 0;min-height:36px}
+#view-logada #pageFreelancers .note{margin-bottom:12px;background:#182131;border-color:#384254;color:#bfc9da}
+
+/* Public entrance shares the Figma foundations; preserve existing links and login. */
+#view-publica{--bg:#0b1020;--panel:#182131;--panel-2:#111827;--line:#2b3547;--text:#f5f6fa;--muted:#a8b3c5;--accent:#ce9cea;--accent-tint:rgba(127,64,177,.12);background:var(--bg);color:var(--text);font-size:14px}
+#view-publica *,#view-publica *::before,#view-publica *::after{box-sizing:border-box}
+#view-publica .crm-navbar{height:auto;min-height:76px;padding:16px max(24px,5vw);background:#111827;border-color:#202a3b}
+#view-publica .crm-navbar-inner{max-width:1440px;margin:auto;width:100%;gap:24px}
+#view-publica .crm-brand{flex-direction:row;align-items:baseline;gap:5px;font-size:19px;letter-spacing:-.05em;white-space:nowrap;color:#f5f6fa}
+#view-publica .crm-brand>span{font-size:inherit;letter-spacing:inherit;color:inherit}
+#view-publica .crm-navbar .crm-navlinks{gap:20px}
+#view-publica .crm-navbar .crm-navlinks>a,#view-publica .crm-solutions-menu>summary{font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:#bfc9da}
+#view-publica .crm-navbar .crm-navlinks>a:hover,#view-publica .crm-navbar .crm-navlinks>[aria-current=page]{color:#ce9cea}
+#view-publica .crm-button,#view-publica .crm-navbar-actions #loginBtn{min-height:40px;padding:10px 17px;gap:12px;font-size:12px;font-weight:600;letter-spacing:0;border-radius:8px;background:#7f40b1;border:1px solid #7f40b1;color:#fff;box-shadow:none;transform:none}
+#view-publica .crm-button:hover,#view-publica .crm-navbar-actions #loginBtn:hover{background:#9054be;border-color:#9054be;transform:none}
+#view-publica .crm-button.crm-outline{background:transparent;border-color:#604178;color:#ce9cea}
+#view-publica .crm-solutions-menu>div{background:#111827;border-color:#384254;border-radius:10px;z-index:30}
+#view-publica .crm-hero{min-height:520px;background:#0b1020}
+#view-publica .crm-hero-image{opacity:.4}
+#view-publica .crm-hero-content{max-width:1440px;padding:72px 5vw 112px;margin:auto}
+#view-publica .crm-hero h1{font-size:clamp(48px,7vw,96px);line-height:1;letter-spacing:-.055em;color:#f5f6fa;margin-bottom:24px}
+#view-publica .hero-dot{color:#ce9cea}
+#view-publica .crm-eyebrow{font-size:11px;letter-spacing:.1em;color:#ce9cea;margin-bottom:20px}
+#view-publica .crm-hero-subtitle{font-size:clamp(13px,1.3vw,17px);line-height:1.65;letter-spacing:.035em;color:#c4ccda;max-width:540px}
+#view-publica .crm-hero-foot{font-size:10px;letter-spacing:.06em;color:#a8b3c5;border-color:#384254}
+#view-publica .crm-section{padding:56px 5vw;max-width:1536px;margin:auto}
+#view-publica .crm-section-label{margin-bottom:32px}
+#view-publica .crm-manifesto h2,#view-publica .crm-tool-heading h2{font-size:clamp(28px,3.5vw,48px);line-height:1.2;margin-bottom:32px}
+#view-publica .crm-manifesto h2 em,#view-publica .crm-tool-heading h2 em,#view-publica .crm-card-number,#view-publica .crm-purpose-grid h3{color:#ce9cea}
+#view-publica .crm-manifesto-intro{font-size:20px;position:static}
+#view-publica .crm-manifesto-copy,#view-publica .crm-purpose-grid p,#view-publica .crm-values-grid p{font-size:14px;line-height:1.75;color:#a8b3c5}
+#view-publica .crm-beliefs{margin-top:40px}
+#view-publica .crm-belief-grid article{padding:24px;min-height:170px;background:#111827}
+#view-publica .crm-belief-grid p{font-size:16px}
+#view-publica .crm-purpose-grid{margin-top:40px;background:#2b3547}
+#view-publica .crm-purpose-grid article,#view-publica .crm-values-grid article{background:#111827;border-radius:8px}
+#view-publica .crm-tools{background:#111827;max-width:none}
+#view-publica .crm-tools-nav a{background:#182131;border:1px solid #384254;border-radius:8px;color:#ce9cea;padding:16px 20px;font-size:14px}
+#view-publica .crm-footer{padding:32px 5vw;background:#111827;border-color:#2b3547}
+#view-publica .crm-footer .crm-brand>span{color:#ce9cea;font-size:inherit}
+#view-publica :is(button,a,summary):focus-visible{outline:2px solid #ce9cea!important;outline-offset:3px!important;box-shadow:none!important}
+@media(max-width:1000px){#view-publica .crm-navbar .crm-navlinks{gap:12px;flex-wrap:wrap}#view-publica .crm-navbar-left{min-width:0;gap:16px;flex-wrap:wrap}#view-publica .crm-navbar-inner{align-items:flex-start}#view-publica .crm-hero{min-height:480px}}
+@media(max-width:600px){#view-publica .crm-navbar{padding:16px}#view-publica .crm-navbar-inner{gap:12px}#view-publica .crm-navbar .crm-navlinks{gap:12px;row-gap:10px}#view-publica .crm-navbar-actions{flex-shrink:0}#view-publica .crm-navbar .crm-navlinks>a{font-size:10px}#view-publica .crm-hero-content{padding:48px 20px 100px}#view-publica .crm-hero{min-height:460px}#view-publica .crm-hero-foot{left:20px;right:20px;font-size:9px}#view-publica .crm-section{padding:36px 20px}#view-publica .crm-manifesto-body,#view-publica .crm-purpose-grid,#view-publica .crm-belief-grid,#view-publica .crm-values-grid{grid-template-columns:1fr}#view-publica .crm-tool-heading{display:block}#view-publica .crm-tools-nav{grid-template-columns:1fr}#view-publica .crm-footer{padding:28px 20px;flex-wrap:wrap}}

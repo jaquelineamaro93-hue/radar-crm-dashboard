@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conexão CRM, Estratégia, dados e pessoas conectadas</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260930-1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261025-purple4">
 <meta name="theme-color" content="#0d0d0d">
 
 
@@ -1272,6 +1272,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 .crm-xp-directory-recommend:hover{background:#ffd0a6}
 .crm-xp-directory-recommend:focus-visible{outline:2px solid #f97316;outline-offset:3px}
 </style>
+<link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-stable4">
 </head>
 <body>
 <aside id="crmSurveyReminder" aria-labelledby="crmSurveyReminderTitle">
@@ -8967,7 +8968,7 @@ function crmNavigate(route,updateHash=true){
  if(!crmSignedIn()&&!crmPublicRoutes.has(route)){crmPendingRoute=route;crmJoin('Faça login gratuito para acessar esta área.');return;}
  crmActiveRoute=route;crmSyncRouteMeta(route);window.posthogTracker?.pageView(route);crmTrackMemberActivity(route);const id=crmRoutes[route][0];
  document.querySelectorAll('.crm-public-tabs [data-crm-route], .crm-navlinks > [data-crm-route]').forEach(link=>{if(link.dataset.crmRoute===route||(route==='patrocinio/apoiadores'&&link.dataset.crmRoute==='patrocinio')||(route==='public-match'&&link.dataset.crmRoute==='search'))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
- const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));crmById('view-publica').hidden=!isPublic;crmById('view-logada').hidden=isPublic;
+ const isPublic=crmPublicRoutes.has(route)&&(!crmSignedIn()||['quem-somos','solucoes','patrocinio','patrocinio/apoiadores'].includes(route));const publicView=crmById('view-publica'),memberView=crmById('view-logada');if(publicView.hidden===isPublic)publicView.hidden=!isPublic;if(memberView.hidden!==isPublic)memberView.hidden=isPublic;
  if(isPublic){crmSetLanding(false);crmById('crmPublicPages').append(crmById(id));crmById(id).hidden=false;crmById('crmPublicTitle').textContent=crmRoutes[route][1];}else{const dest=crmById(id),host=crmById('crmPages');if(dest&&dest.parentElement!==host)host.append(dest);}
  const base=route==='mercado'?'dashboard':route==='vagas-salvas'?'membro':route==='membros'?'comunidade':route;
  if(!window.CXWorkspace?.handles(route)&&!['admin','membros','patrocinio/apoiadores','quem-somos','solucoes','dashboard','match-recrutador','public-match','meus-eventos','publicar'].includes(route))switchTab(base);
@@ -10060,7 +10061,7 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261025-purple3"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script src="/assets/portal-hardening.js?v=20261025-stable4"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-figma2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261023-header-2">
