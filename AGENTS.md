@@ -14,3 +14,10 @@ Interprete essas regras sem remover textos exigidos por privacidade/LGPD, consen
 - Use referências e skills externas somente após examinar licença, atualização, procedência, segurança e compatibilidade. Não executar código desconhecido de forma automática.
 - UX: jornadas simples e acessíveis. DX: código legível, desacoplado e testável. AX: fronteiras de permissão e contratos explícitos, sem autonomia irrestrita.
 - Antes de publicar, valide regressões, acessibilidade, foco, estados vazios, nomes extensos, responsividade e fluxos reais. Não declare produção saudável sem verificar deploy.
+
+## Biblioteca de habilidades — Claude Code, Codex e ChatGPT
+
+- Use `.agents/skills/biblioteca-de-habilidades/SKILL.md` (Codex) e a cópia idêntica em `.claude/skills/biblioteca-de-habilidades/SKILL.md` (Claude Code) para tarefas recorrentes, criação de skills e correções repetidas. Leia o conteúdo apenas quando for pertinente à solicitação.
+- Para ChatGPT com acesso autorizado ao repositório, consulte essas mesmas regras e o guia `CHATGPT_PROJECT_INSTRUCTIONS.md`. Isso não configura automaticamente todos os chats ou instruções globais do ChatGPT.
+- Mantenha os dois diretórios e históricos sincronizados após atualizações aprovadas. Nenhum agente aprende ou grava mudanças fora da sessão sem acesso e permissão.
+- Essas regras complementam as proteções acima; nunca substituem permissões, limites dos produtos ou validações antes de publicar.
