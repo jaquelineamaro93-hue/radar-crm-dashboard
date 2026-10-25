@@ -35,6 +35,14 @@
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  if(page.id==='pagePesquisa')page.querySelectorAll('iframe').forEach(frame=>{
+   if(frame.closest('.crm-survey-form'))return;
+   const details=document.createElement('details');details.className='crm-survey-form';
+   const summary=document.createElement('summary');summary.textContent='Abrir formulário da pesquisa';
+   frame.before(details);details.append(summary,frame);frame.loading='lazy';
+   frame.title=frame.closest('.subpage-content')?.querySelector('h3')?.textContent||'Formulário da comunidade';
+  });
+
   if(page.id==='pageCourses'){
    const feature=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]')?.closest('section')?.querySelector('div[style*="linear-gradient"]');
    if(feature)feature.classList.add('crm-course-feature');
