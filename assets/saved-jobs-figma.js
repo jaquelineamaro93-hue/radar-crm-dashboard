@@ -69,7 +69,7 @@ function currentLocale(){const lang=document.documentElement.lang;return validLo
 function t(k){return(messages[locale]||messages['pt-BR'])[k]||k;}
 function label(el,key){if(!el)return;el.dataset.cxSavedKey=key;el.textContent=t(key);}
 function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
-let matchObserver=null,savedObserver=null,pending=false;
+let matchObserver=null,pending=false;
 function tidyMatches(){
  const host=document.getElementById('membroVagasMatch');
  if(!host)return;
@@ -198,5 +198,9 @@ function init(){enhance();updateTranslations();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 document.addEventListener('crm:route-changed',init);
 document.addEventListener('cx:locale-change',updateTranslations);
+// The global language component can initialize after this script. Follow its
+// document.lang change without reading private data or creating a polling loop.
+if(typeof MutationObserver==='function')new MutationObserver(updateTranslations)
+ .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 window.CXSavedJobsDesign={refresh:init};
 })();
