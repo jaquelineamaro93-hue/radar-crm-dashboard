@@ -178,5 +178,13 @@
   if(frame)return;
   frame=requestAnimationFrame(()=>{frame=0;sync();});
  }).observe(pages,{childList:true,subtree:true});
+ // Load public-language UI without changing auth, data or portal routing.
+ if(!document.getElementById('cx-site-i18n-script')){
+   const script=document.createElement('script');
+   script.id='cx-site-i18n-script';
+   script.src='/assets/site-i18n.js';
+   script.defer=true;
+   document.head.append(script);
+ }
  window.CXPortalLayout={sync};
 })();
