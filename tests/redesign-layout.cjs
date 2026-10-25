@@ -31,7 +31,7 @@ for(const mobile of [false,true]){const d=dom(mobile),w=d.window;w.eval(fs.readF
   const d=dom(),w=d.window,doc=w.document;
   w.crmSignedIn=()=>signed;w.crmPublicRoutes=new Set(['vagas','search','freelancers']);w.crmRoutePath=r=>'/'+r;w.crmRoutes={vagas:['pageVagas','Radar']};w.crmActiveRoute='vagas';w.crmNavigate=()=>{};
   const source=fs.readFileSync('assets/workspace.js','utf8').split('/* Contextual topic cards')[1];w.eval('/* Contextual topic cards'+source);w.CXTopicNav.render('vagas');await new Promise(r=>setTimeout(r,30));
-  assert.equal(doc.querySelectorAll('#pageVagas .crm-topic-nav').length,signed?0:1);if(!signed){assert(doc.querySelector('#pageVagas details.crm-topic-nav'));assert.equal(doc.querySelector('#pageVagas details.crm-topic-nav').open,false);}w.close();
+  assert.equal(doc.querySelectorAll('#pageVagas .crm-topic-nav').length,1);assert(doc.querySelector('#pageVagas '+(signed?'nav':'details')+'.crm-topic-nav'));if(!signed)assert.equal(doc.querySelector('#pageVagas details.crm-topic-nav').open,false);w.close();
  }
  console.log('PASS redesign: desktop/mobile filters, original nodes/listeners/values, public disclosure, no authenticated duplicate navigation, single selection, stable sidebar, accessible tables');
 })().catch(e=>{console.error(e);process.exitCode=1});

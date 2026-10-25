@@ -159,13 +159,6 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
   function render(route){
     const areaKey=AREA_BY_ROUTE[route],area=AREAS[areaKey],page=pageFor(route);
     if(!page||!area)return;
-    // A sidebar e seu menu móvel já oferecem os mesmos destinos.
-    // Remover a estrutura redundante em vez de escondê-la com outra camada de CSS.
-    if(typeof crmSignedIn==='function' && crmSignedIn()){
-      page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]').forEach(el=>el.remove());
-      return;
-    }
-
     // O card pode ser montado dentro de sections/containers da página.
     // Procurar apenas com :scope > fazia o runtime não enxergar o card já existente
     // e criar uma nova cópia a cada navegação.
@@ -174,10 +167,12 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     if(generated.length===1&&same.length===1)return;
     generated.forEach(el=>el.remove());
 
-    const nav=document.createElement('details');
+    const signed=typeof crmSignedIn==='function'&&crmSignedIn();
+    const nav=document.createElement(signed?'nav':'details');
+    nav.open=typeof crmSignedIn==='function'&&crmSignedIn();
     nav.className='crm-topic-nav crm-topic-disclosure';nav.dataset.crmGenerated='1';nav.dataset.route=route;nav.dataset.area=areaKey;
     nav.setAttribute('aria-label',area.label+': navegação entre temas');
-    const head=document.createElement('summary');head.className='crm-topic-nav__head';
+    const head=document.createElement(signed?'div':'summary');head.className='crm-topic-nav__head';
     const intro=document.createElement('div');
     intro.append(text('span','crm-topic-nav__eyebrow',area.label),text('span','crm-topic-nav__title','Explorar '+area.label.toLowerCase()));head.append(intro);
     const grid=document.createElement('div');grid.className='crm-topic-nav__grid';

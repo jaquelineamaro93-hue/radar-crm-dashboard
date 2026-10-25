@@ -22,3 +22,8 @@ html.crm-module-rebrand.crm-award-embedded main>h1,html.crm-module-rebrand.crm-a
 html.crm-module-rebrand.crm-award-embedded body main{width:100%!important;padding:16px 0 40px!important}
 html.crm-module-rebrand :is(button,a,summary):focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important;box-shadow:none!important}
 @media(max-width:760px){html.crm-module-rebrand .card{grid-template-columns:minmax(0,1fr)!important}html.crm-module-rebrand .toolbar{align-items:stretch!important}html.crm-module-rebrand .toolbar label{max-width:none!important}html.crm-module-rebrand :is(input,select,textarea){font-size:16px!important;min-height:44px!important}html.crm-module-rebrand .content,html.crm-module-rebrand .review{padding:18px!important}}
+html.crm-module-rebrand{--bg:#0b1020;--panel:#182131;--text:#f5f6fa;--muted:#a8b3c5;--accent:#ce9cea}
+html.crm-module-rebrand :is(h2,h3,label){color:#f5f6fa}
+html.crm-module-rebrand :is(.panel,.preview,.customization,.tab-panel){background:#182131!important;border:1px solid #384254!important;border-radius:12px}
+html.crm-module-rebrand :is(button,.btn){font-family:Inter,Arial,sans-serif;min-height:36px;border-radius:8px;font-size:12px}
+html.crm-module-rebrand :is(.tab.active,.tab[aria-selected=true],button.primary,.btn-primary){background:#7f40b1!important;border-color:#9762bc!important;color:white!important}
