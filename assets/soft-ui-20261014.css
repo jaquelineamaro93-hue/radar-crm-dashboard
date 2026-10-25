@@ -145,3 +145,14 @@
 #view-logada #pageVagas #btn-buscar{min-height:36px!important;padding:8px 16px!important;font-size:12px!important;border-radius:7px}
 #view-logada #pageVagas #btn-limpar{min-height:36px!important;font-size:12px!important;background:transparent!important;color:var(--muted)!important}
 @media(max-width:900px){#view-logada #pageVagas .crm-radar-quick>div{flex:1 1 180px}#view-logada #pageVagas #btn-buscar,#view-logada #pageVagas #btn-limpar,#view-logada #pageVagas .crm-radar-more-filters{min-height:44px!important}}
+
+#view-logada .crm-page-heading{flex-direction:row;padding:0;border:0}
+#view-logada .search-tabs-container{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0 0 12px;margin:16px 0;width:100%}
+#view-logada .search-tab-btn{font-size:13px;padding:9px 13px;min-height:36px;border-radius:7px}
+#view-logada .crm-otw-signup-details{margin:0 0 16px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+#view-logada .crm-otw-signup-details>summary{padding:11px 14px;cursor:pointer;font-size:12px;color:#d7b5ed}
+#view-logada .crm-otw-signup{margin:0!important;padding:16px!important;border:0!important;background:transparent!important;border-radius:0!important;gap:12px!important}
+#view-logada .crm-otw-signup h3{font-size:18px!important}
+#view-logada .crm-otw-signup p{font-size:13px!important;color:var(--muted)!important}
+#view-logada .crm-otw-signup>a{min-height:36px!important;padding:9px 14px!important;font-size:12px!important}
+@media(max-width:900px){#view-logada .search-tab-btn,#view-logada .crm-otw-signup-details>summary{min-height:44px}}

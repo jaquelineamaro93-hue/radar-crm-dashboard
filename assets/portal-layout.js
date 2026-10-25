@@ -11,6 +11,16 @@
    const row=document.createElement('header');row.className='crm-page-heading';
    heading.before(row);row.append(heading);
   }
+  // The directory is the task. Registration remains available without a
+  // marketing panel pushing the search below the fold for signed-in members.
+  const signup=page.querySelector('.crm-otw-signup');
+  if(signup&&!signup.closest('.crm-otw-signup-details')){
+   const disclosure=document.createElement('details');
+   disclosure.className='crm-otw-signup-details';
+   const summary=document.createElement('summary');
+   summary.textContent='Cadastrar meu perfil no Open to Work';
+   signup.before(disclosure);disclosure.append(summary,signup);
+  }
   // Data tables retain every column, with their own keyboard-scrollable region.
   page.querySelectorAll('table').forEach(table=>{
    if(table.closest('.crm-table-region'))return;
