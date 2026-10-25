@@ -8075,13 +8075,24 @@ function activateLoggedArea(userProfile){
   const foto = escapeHtml(crmSafeUrl(CURRENT_USER?.user_metadata?.avatar_url || ''));
 
   const nomeEl = document.getElementById('loggedUserName');
-  if(nomeEl) nomeEl.textContent = `Olá, ${nome.split(' ')[0]}!`;
+  const greeting=`Olá, ${nome.split(' ')[0]}!`;
+  if(nomeEl&&nomeEl.textContent!==greeting)nomeEl.textContent=greeting;
 
   const headlineEl = document.getElementById('loggedUserHeadline');
   if(headlineEl) headlineEl.textContent = profile.headline || (profile.tools && profile.tools.length ? `Ferramentas: ${profile.tools.slice(0,3).join(', ')}` : 'Complete suas ferramentas para atualizar o Match Score de vagas.');
 
   const avatarEl = document.getElementById('loggedAvatar');
-  if(avatarEl) avatarEl.innerHTML = foto ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer">` : nome.charAt(0);
+  if(avatarEl){
+    const avatarSource=crmSafeUrl(CURRENT_USER?.user_metadata?.avatar_url||'');
+    const image=avatarEl.querySelector('img');
+    if(avatarSource){
+      if(!image||image.getAttribute('src')!==avatarSource){
+        const next=document.createElement('img');next.src=avatarSource;
+        next.style.cssText='width:100%;height:100%;object-fit:cover';next.referrerPolicy='no-referrer';
+        avatarEl.replaceChildren(next);
+      }
+    }else if(image||avatarEl.textContent!==nome.charAt(0))avatarEl.textContent=nome.charAt(0);
+  }
   crmRenderSavedProfile();
 
   // Atualiza botão fixo
@@ -8831,7 +8842,10 @@ function crmTrackMemberActivity(route){
  }).catch(()=>{});
 }
 function crmSyncAuth(){
- const signed=crmSignedIn();crmById('view-publica').hidden=signed;crmById('view-logada').hidden=!signed;
+ const signed=crmSignedIn();
+ const publicView=crmById('view-publica'),memberView=crmById('view-logada');
+ if(publicView.hidden!==signed)publicView.hidden=signed;
+ if(memberView.hidden===signed)memberView.hidden=!signed;
  if(signed!==crmWasSignedIn){crmWasSignedIn=signed;
   if(signed){crmById('crmJoinDialog')?.close();for(const [id] of Object.values(crmRoutes)){const p=crmById(id),host=crmById('crmPages');if(p&&p.parentElement!==host)host.append(p);}crmSetLanding(false);
    // Keep the visitor on the requested page after session restoration.
@@ -9173,16 +9187,19 @@ let crmAdminVerified=false,crmSubmitBusy=false;
 const crmModerationTables={cursos_sugeridos:'Cursos',eventos_sugeridos:'Eventos',plataformas_sugeridas:'Plataformas',freelancers_sugeridos:'Freelancers',freelancers_edicoes:'Pedidos de edição',agencias_sugeridas:'Agências',conteudos_comunidade:'Conteúdos',crm_submission_requests:'Solicitações de publicação',crm_partner_communities:'Comunidades parceiras',crm_freelancer_claims:'Vínculos de freelancers',crm_talent_claims:'Vínculos do Open to Work'};
 async function crmRefreshAdmin(){
  const epoch=crmAuthEpoch;
- crmAdminVerified=false;isAdminLoggedIn=false;
  const button=crmById('crmAdminNav'),teamButton=crmById('crmTeamAdminNav');
- if(button)button.hidden=true;
- if(teamButton)teamButton.hidden=true;
+ const owner=CURRENT_USER?.id||'';
+ const sameAccount=!!owner&&crmValidatedUserId===owner&&button?.dataset.crmRoleOwner===owner;
+ // Revalidation still closes the authorization gate immediately. Only the
+ // already verified account's menu geometry is preserved while RPC is pending.
+ crmAdminVerified=false;isAdminLoggedIn=false;
+ if(!sameAccount){if(button&&!button.hidden)button.hidden=true;if(teamButton&&!teamButton.hidden)teamButton.hidden=true;}
  if(!crmSignedIn())return;
  const {data,error}=await authSb.rpc('crm_is_admin');
  if(epoch!==crmAuthEpoch)return;
  crmAdminVerified=!error&&data===true;isAdminLoggedIn=crmAdminVerified;
- if(button)button.hidden=!crmAdminVerified;
- if(teamButton)teamButton.hidden=!crmAdminVerified;
+ if(button){button.dataset.crmRoleOwner=owner;if(button.hidden===crmAdminVerified)button.hidden=!crmAdminVerified;}
+ if(teamButton&&teamButton.hidden===crmAdminVerified)teamButton.hidden=!crmAdminVerified;
  document.dispatchEvent(new Event('crm:role-resolved'));
 }
 async function crmVerificationAPI(body,session){
@@ -9960,7 +9977,7 @@ async function crmSubmitExperienceRating(rating){
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261025-figma2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+<script src="/assets/portal-hardening.js?v=20261025-purple3"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-figma2"></script>
 <script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261023-header-2">
