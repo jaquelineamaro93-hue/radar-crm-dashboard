@@ -3004,50 +3004,46 @@ crmShowSurveyReminder();
         </div>
       </div>
     </section>
-  </div><div class="tab-page" id="subpage-vagas-salvas"><section><div class="section-head"><h2>Seu Match profissional</h2></div><p class="section-desc">Seu perfil público continua separado. Aqui ficam, de forma privada, os dados profissionais usados para comparar você com as vagas.</p>
-<div id="crmMatchResumeCard" style="background:#fffdf8;border:1px solid #e7ded2;border-radius:14px;padding:18px 20px;margin-bottom:20px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;color:#171717;">
-  <div style="min-width:240px;flex:1;">
-    <div style="font-size:11px;font-weight:800;color:#f97316;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Currículo para Match · privado</div>
-    <div style="font-size:17px;font-weight:750;color:#171717;margin-bottom:5px;">Complete seu currículo profissional</div>
-    <div id="crmMatchResumeStatus" style="font-size:13px;color:#57534e;line-height:1.55;">Carregando informações do Match...</div>
+  </div><div class="tab-page cx-saved-dashboard" id="subpage-vagas-salvas"><section>
+<div class="section-head cx-saved-page-intro"><p class="cx-saved-eyebrow">SEU ESPAÇO / CARREIRA</p><h2>Vagas salvas e recomendações</h2></div>
+<p class="section-desc cx-saved-page-description">Acompanhe as oportunidades salvas e compare vagas reais com seu Currículo para Match. Seus dados profissionais permanecem privados.</p>
+<div id="crmMatchResumeCard" class="cx-saved-resume">
+  <div>
+    <div>CURRÍCULO PARA MATCH · PRIVADO</div>
+    <div>Seu currículo profissional</div>
+    <div id="crmMatchResumeStatus" aria-live="polite">Carregando informações do Match...</div>
   </div>
-  <button type="button" onclick="crmOpenMatchResume()" style="background:var(--text);color:#fffff3;border:0;border-radius:8px;padding:10px 16px;font:600 13px inherit;cursor:pointer;">Editar currículo</button>
+  <button type="button" onclick="crmOpenMatchResume()">Editar currículo</button>
 </div>
-<div id="crmSavedSlot"><div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
-
-        <!-- Coluna esquerda: Vagas recomendadas -->
-        <div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-            <div class="fd" style="font-size:15px;font-weight:700;color:var(--text);">Vagas para você</div>
-            <button onclick="crmRunMatch()" style="background:var(--text);color:#fffff3;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;">
-
-              Buscar Match
-            </button>
-          </div>
-          <div style="font-size:14px;color:var(--muted);margin-bottom:14px;">Baseado no seu Currículo para Match: competências, experiência, senioridade e preferências.</div>
-          <div id="membroVagasMatch" style="display:flex;flex-direction:column;gap:12px;">
-            <div style="font-size:14px;color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;">Clique em <strong>Buscar Match</strong> para ver vagas compatíveis com seu perfil.</div>
-          </div>
-        </div>
-
-        <!-- Coluna direita: Vagas salvas + Perfil resumo -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;">
-            <div class="fd" style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;">Vagas salvas</div>
-            <div id="membroVagasSalvas" style="font-size:14px;color:var(--muted);">Carregando...</div>
-          </div>
-          <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;">
-            <div class="fd" style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;">Comunidade</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.6;">
-              <a href="https://chat.whatsapp.com/By6Zdhf3QDrGNJ5tJnCqvf" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;margin-bottom:4px;"> CRM Academy (WhatsApp)</a>
-              <a href="https://chat.whatsapp.com/GPJ5Pti7gVd5m6BuJmhewf" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;margin-bottom:4px;"> Mulheres de CRM (WhatsApp)</a>
-              <a href="https://www.linkedin.com/company/crmacademy-community" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;"> CRM Academy (LinkedIn)</a>
-            </div>
-          </div>
-          <button onclick="handleLogout()" style="background:none;border:1px solid #fca5a5;border-radius:8px;padding:8px;font-size:14px;cursor:pointer;font-family:inherit;color:#ef4444;width:100%;">Sair da conta</button>
-        </div>
-      </div>
-    </div></section></div><div class="tab-page" id="subpage-membros"><header class="crm-members-heading crm-members-heading-row"><div><p class="crm-eyebrow">COMUNIDADE / NETWORKING</p><h1>Membros da comunidade</h1><p class="crm-muted">Descubra quem faz parte da Conexão CRM e encontre pessoas por atuação, senioridade e ferramentas.</p></div><button type="button" class="crm-button" onclick="openProfileModal()">EDITAR MEU PERFIL</button></header><section id="comPanelCadastro" style="display:none;">
+<div id="crmSavedSlot">
+ <div class="cx-saved-main">
+  <section class="cx-saved-panel cx-saved-list-panel">
+   <h3 class="fd">Minhas vagas salvas</h3>
+   <div id="membroVagasSalvas" aria-live="polite"><span>Carregando vagas salvas...</span></div>
+  </section>
+  <section class="cx-saved-panel cx-saved-recommendations">
+   <div class="cx-saved-rec-heading">
+    <h3 class="fd">Vagas recomendadas</h3>
+    <div class="cx-saved-rec-actions">
+     <button type="button" class="cx-saved-refresh" onclick="crmRunMatch()">Buscar Match</button>
+     <button type="button" class="cx-saved-all-jobs" onclick="crmNavigate('vagas')">Ver todas as vagas</button>
+    </div>
+   </div>
+   <p>Baseado no seu Currículo para Match: competências, experiência, senioridade e preferências.</p>
+   <p class="cx-saved-score-note">As porcentagens são estimativas de aderência, não previsões de contratação. Confira a disponibilidade na vaga original.</p>
+   <div id="membroVagasMatch" aria-live="polite"><p class="cx-saved-empty">Complete seu currículo e escolha Buscar Match para consultar vagas compatíveis.</p></div>
+  </section>
+  <section class="cx-saved-panel cx-saved-communities">
+   <p class="fd">COMUNIDADES</p>
+   <h3 class="cx-saved-community-title">Conecte-se. Troque. Evolua.</h3>
+   <p class="cx-saved-community-desc">Amplie suas conexões com as comunidades.</p>
+   <div class="cx-saved-community-grid"><a class="cx-saved-community-link" href="https://chat.whatsapp.com/By6Zdhf3QDrGNJ5tJnCqvf" target="_blank" rel="noopener noreferrer"><small class="cx-saved-community-medium">WhatsApp</small><strong>CRM Academy</strong><span class="cx-saved-community-blurb">Conversas e troca de experiências.</span></a>
+<a class="cx-saved-community-link" href="https://chat.whatsapp.com/GPJ5Pti7gVd5m6BuJmhewf" target="_blank" rel="noopener noreferrer"><small class="cx-saved-community-medium">WhatsApp</small><strong>Mulheres de CRM</strong><span class="cx-saved-community-blurb">Uma rede para crescer juntas.</span></a>
+<a class="cx-saved-community-link" href="https://www.linkedin.com/company/crmacademy-community" target="_blank" rel="noopener noreferrer"><small class="cx-saved-community-medium">LinkedIn</small><strong>CRM Academy</strong><span class="cx-saved-community-blurb">Conteúdo e conexões profissionais.</span></a></div>
+  </section>
+ </div>
+</div>
+</section></div><div class="tab-page" id="subpage-membros"><header class="crm-members-heading crm-members-heading-row"><div><p class="crm-eyebrow">COMUNIDADE / NETWORKING</p><h1>Membros da comunidade</h1><p class="crm-muted">Descubra quem faz parte da Conexão CRM e encontre pessoas por atuação, senioridade e ferramentas.</p></div><button type="button" class="crm-button" onclick="openProfileModal()">EDITAR MEU PERFIL</button></header><section id="comPanelCadastro" style="display:none;">
       <div class="section-head"><span class="section-num">03</span><h2>Cadastrar meu perfil no diretório</h2></div>
       <p class="section-desc">Apareça no diretório da comunidade para networking, oportunidades e visibilidade no ecossistema de CRM brasileiro.</p>
 
