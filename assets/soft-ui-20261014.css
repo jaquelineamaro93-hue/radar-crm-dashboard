@@ -390,3 +390,51 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #crmPersonalDashboard .crm-solution-card p{margin:0}
 #view-logada #crmPersonalDashboard .crm-preferences>.crm-button{display:none}
 #view-logada :is(input[type=checkbox],input[type=radio]){accent-color:#7f40b1}
+/* Audit: one compact topic strip, shared focus/contrast and bounded spacing. */
+#view-logada{font-size:13px;--accent:#ce9cea;--coral:#ce9cea}
+#view-logada #crmPages{padding-top:22px}
+#view-logada #crmPages section{margin-bottom:24px}
+#view-logada #crmPages .tab-page>section{margin-top:0}
+#view-logada .crm-topic-disclosure{margin:0 0 20px!important;padding:10px 0 14px!important;border:0!important;border-bottom:1px solid #384254!important;background:transparent!important}
+#view-logada .crm-topic-disclosure>.crm-topic-nav__head{padding:0!important;margin:0 0 8px!important;list-style:none;pointer-events:none}
+#view-logada .crm-topic-nav__head::-webkit-details-marker{display:none}
+#view-logada .crm-topic-nav__title,#view-logada .crm-topic-card__state{display:none!important}
+#view-logada .crm-topic-nav__eyebrow{display:block!important;color:#a8b3c5;font-size:10px;letter-spacing:.07em}
+#view-logada .crm-topic-nav__grid{display:flex!important;flex-wrap:wrap;gap:8px!important;padding:0!important}
+#view-logada .crm-topic-card{width:auto!important;min-width:0;min-height:36px!important;display:inline-flex!important;align-items:center;gap:8px;padding:8px 12px!important;border:1px solid #384254!important;border-radius:8px!important;background:transparent!important;color:#cbd5e1!important;text-decoration:none;box-shadow:none!important;transform:none!important}
+#view-logada .crm-topic-card.is-current{background:#1d273a!important;border-color:#604178!important;color:#ce9cea!important}
+#view-logada .crm-topic-card__icon{background:transparent!important;border:0!important;padding:0!important;width:18px!important;height:18px!important;min-width:18px!important;color:inherit!important}
+#view-logada .crm-topic-card__copy{display:block!important}
+#view-logada .crm-topic-card__name{font-size:12px!important;font-weight:500!important;color:inherit!important;line-height:1.4}
+#view-logada :is(a,button,summary,[role=tab]):focus-visible{outline:2px solid #ce9cea!important;outline-offset:2px!important;box-shadow:0 0 0 3px #111827!important}
+#view-logada #crmNavSlot :is(a,button):focus-visible{outline-offset:-2px!important;box-shadow:none!important}
+#view-logada :is(.crm-topic-card,.card,.pro-card,.pf-card,.p-card,.ev-card,.cx-sheet):hover{border-color:#74548d!important}
+#view-logada #crmPages .filter-count{color:#ce9cea!important;padding:0!important}
+#view-logada #pageSearch .search-tabs-container{border-bottom:1px solid #384254!important;margin:12px 0 16px!important;padding-bottom:10px!important}
+#view-logada #pageSearch .search-tabs{padding:0;gap:8px}
+#view-logada #pageSearch .search-tab-btn{background:transparent!important;border:1px solid #384254!important;color:#bfc9da!important;font-size:12px!important;font-weight:500!important;padding:8px 12px!important;min-height:36px}
+#view-logada #pageSearch .search-tab-btn.active{background:#2a1e3c!important;border-color:#9762bc!important;color:#ce9cea!important}
+#view-logada #pageSearch .filter-bar,#view-logada #pageFreelancers .filter-bar{position:static!important;gap:12px;padding:14px;margin-bottom:16px;background:#182131;border:1px solid #384254;border-radius:10px}
+#view-logada #pageSearch .pro-card,#view-logada .pf-card{padding:18px!important;border:1px solid #384254!important;border-radius:12px!important;box-shadow:none!important}
+#view-logada :is(.pro-name,.pf-name){font-size:16px!important;color:#f5f6fa!important}
+#view-logada :is(.pro-desc,.pf-bio,.pf-desc){font-size:13px!important;line-height:1.6!important;color:#cbd5e1!important}
+#view-logada :is(.pro-card,.pf-card) :is(a,button){font-size:12px!important;min-height:36px;padding:8px 12px!important;color:#ce9cea!important;border-color:#604178!important;background:transparent!important}
+#view-logada :is(.pro-level,.pro-badge,.pf-cat,.p-badge,.pf-tag){background:#2a1e3c!important;color:#ce9cea!important;border-color:#604178!important;font-size:11px!important}
+#view-logada #crmAnalyticsBehavior{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#view-logada #crmAnalyticsBehavior>*{grid-column:1/-1;min-width:0}
+#view-logada #crmAnalyticsBehavior>.crm-behavior-wide{grid-column:auto;margin:0!important;width:100%}
+#view-logada #crmAnalyticsBehavior .crm-bar-wide{grid-template-columns:minmax(85px,1fr) minmax(0,1.5fr) auto;gap:10px;font-size:12px}
+#view-logada .crm-goals-entry{padding:18px 20px;border:1px solid #384254;border-radius:12px;background:#182131;margin:0 0 20px!important}
+#view-logada .crm-goals-entry h2{font-size:19px;margin:0 0 8px;color:#f5f6fa}
+#view-logada .crm-goals-entry p{font-size:13px;line-height:1.6;color:#a8b3c5;margin:0 0 14px}
+#view-logada .cx-tabs{border-bottom:1px solid #384254!important;padding-bottom:12px!important;margin-bottom:20px!important;gap:8px!important}
+#view-logada :is(.cx-row,.cx-column,.cx-deal,.calc-panel,.p-card){border:1px solid #384254!important}
+#view-logada .calc-info,#view-logada .calc-hint{color:#cbd5e1!important}
+@media(min-width:901px){#view-logada #crmAdminAnalytics .crm-analytics-two{grid-template-columns:repeat(2,minmax(0,1fr))}#view-logada .crm-nav-items .tab-btn{min-height:34px;font-size:12px!important}#view-logada #crmPages{padding-inline:24px}}
+@media(max-width:900px){#view-logada #crmAnalyticsBehavior{grid-template-columns:minmax(0,1fr)}#view-logada .crm-topic-card{min-height:44px!important}}
+#view-logada #pageSearch .pro-card{padding:0!important}
+#view-logada .pro-tag{background:#2a1e3c!important;color:#ce9cea!important;border-color:#604178!important}
+#view-logada .pro-name{white-space:normal;overflow-wrap:anywhere}
+#view-logada .pro-metric-bar{background:#384254;height:6px;display:block}
+#view-logada .pro-metric-bar>span{background:#ce9cea}
+#view-logada .crm-topic-disclosure>.crm-topic-nav__head{pointer-events:auto}

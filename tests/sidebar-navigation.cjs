@@ -11,7 +11,7 @@ const team=read('quem-faz/index.html');
 new vm.Script(nav,{filename:'assets/portal-hardening.js'});
 
 // O shell usa a versão atual, evitando scripts obsoletos por cache.
-assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261025-clean11/);
+assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261025-audit12/);
 assert.match(shell,/id="view-logada"/);
 assert.match(shell,/id="crmPages"/);
 

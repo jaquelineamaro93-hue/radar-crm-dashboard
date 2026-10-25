@@ -35,6 +35,15 @@
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  const dashboard=page.id==='crmPersonalDashboard';
+  if(dashboard&&!page.querySelector('.crm-goals-entry')){
+   const panel=document.createElement('section');panel.className='crm-goals-entry';
+   const title=document.createElement('h2');title.textContent='O que você busca na comunidade?';
+   const text=document.createElement('p');text.textContent='Revise seu cargo ou objetivo, ferramentas e preferências para orientar seu uso do portal.';
+   const button=document.createElement('button');button.type='button';button.className='crm-button crm-outline';button.textContent='Preencher meu perfil e objetivos';button.addEventListener('click',()=>{if(typeof openProfileModal==='function')openProfileModal();});
+   panel.append(title,text,button);page.querySelector('.crm-dashboard-heading')?.after(panel);
+  }
+
   // Preserve nodes and event handlers. Build a single heading row per page.
   const heading=page.querySelector(':scope > h1');
   if(heading&&!heading.parentElement.classList.contains('crm-page-heading')){
