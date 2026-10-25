@@ -1,9 +1,9 @@
 /* Portal system, extracted from Figma 202:1499 and 73:1377.
    Scoped to the member workspace: public landing and Copilot keep their contracts. */
 #view-logada{
- --bg:#0b1020;--panel:#182131;--panel-2:#111827;--line:#2b3547;
+ --bg:#0b1020;--panel:#182131;--panel-2:#111827;--line:#46516a;
  --text:#f5f6fa;--muted:#a8b3c5;--accent:#7f40b1;--accent-tint:rgba(127,64,177,.12);--cx-purple:#7f40b1;
- --cx-soft-radius:12px;--cx-soft-stroke:#2b3547;
+ --cx-soft-radius:12px;--cx-soft-stroke:#46516a;
  color:var(--text);background:var(--bg);font-size:14px;line-height:1.5;
 }
 #view-logada *,#view-logada *::before,#view-logada *::after{box-sizing:border-box}
@@ -55,7 +55,7 @@
 #view-logada input:focus-visible,#view-logada textarea:focus-visible,#view-logada select:focus-visible{outline:2px solid #b782d9;outline-offset:2px}
 #view-logada .filter-bar{padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;gap:12px;box-shadow:none}
 #view-logada .filter-field{min-width:0}
-#view-logada .card,#view-logada .stat,#view-logada .pro-card,#view-logada .vaga-card,#view-logada .ev-card,#view-logada .crm-panel,#view-logada .cx-sheet,#view-logada .cx-column,#view-logada .cx-deal,#view-logada .cx-row,#view-logada .crm-solution-card{background:var(--panel)!important;border:1px solid #273246!important;border-radius:12px!important;box-shadow:none!important;min-width:0}
+#view-logada .card,#view-logada .stat,#view-logada .pro-card,#view-logada .vaga-card,#view-logada .ev-card,#view-logada .crm-panel,#view-logada .cx-sheet,#view-logada .cx-column,#view-logada .cx-deal,#view-logada .cx-row,#view-logada .crm-solution-card{background:var(--panel)!important;border:1px solid #46516a!important;border-radius:12px!important;box-shadow:none!important;min-width:0}
 #view-logada .card{padding:20px}
 #view-logada .card h3,#view-logada .pro-card h3,#view-logada .ev-card h3{font-size:17px;line-height:1.4}
 #view-logada .stat-grid,#view-logada .crm-analytics-grid{gap:14px}
@@ -79,7 +79,7 @@
 #view-logada .crm-admin-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 18px;margin:16px 0 22px;border-bottom:1px solid var(--line)}
 #view-logada .crm-admin-tab{font-size:12px!important;min-height:34px;padding:7px 11px!important;border-radius:7px!important;background:transparent;color:#b4bfd1;border:1px solid var(--line)}
 #view-logada .crm-admin-tab.active{background:#2a1e3c;color:#ce9cea;border-color:#6b4588;box-shadow:none}
-#view-logada .crm-analytics-panel,#view-logada .crm-analytics-card{background:var(--panel)!important;border:1px solid #273246!important;border-radius:12px!important;box-shadow:none!important;padding:20px!important}
+#view-logada .crm-analytics-panel,#view-logada .crm-analytics-card{background:var(--panel)!important;border:1px solid #46516a!important;border-radius:12px!important;box-shadow:none!important;padding:20px!important}
 #view-logada .crm-analytics-panel h3{font-size:18px}
 #view-logada .crm-analytics-note,#view-logada .crm-analytics-panel p{font-size:12px;line-height:1.6;color:var(--muted)}
 #view-logada .crm-filter-row{gap:16px;align-items:center;margin:0 0 18px}
@@ -132,7 +132,7 @@
 @media(prefers-reduced-motion:reduce){#view-logada *{scroll-behavior:auto!important;transition:none!important}}
 /* Radar uses the same surfaces as the member and admin views. */
 #view-logada #pageVagas #vagasContainerHub{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:14px!important}
-#view-logada #pageVagas #vagasContainerHub>.crm-job-card{background:var(--panel)!important;border:1px solid #273246!important;border-radius:12px!important;padding:20px!important;min-height:230px}
+#view-logada #pageVagas #vagasContainerHub>.crm-job-card{background:var(--panel)!important;border:1px solid #46516a!important;border-radius:12px!important;padding:20px!important;min-height:230px}
 #view-logada #pageVagas #vagasContainerHub>.crm-job-card:hover{border-color:#704099!important}
 #view-logada #pageVagas #vagasContainerHub .crm-job-snippet{font-size:13px!important;line-height:1.6!important;color:var(--muted)!important}
 #view-logada #pageVagas #vagasContainerHub .crm-job-clean-apply{background:#7f40b1!important;border-color:#7f40b1!important;color:#fff!important;border-radius:7px!important;min-height:36px!important}
@@ -188,7 +188,7 @@
 #view-logada #pageFreelancers .note{margin-bottom:12px;background:#182131;border-color:#384254;color:#bfc9da}
 
 /* Public entrance shares the Figma foundations; preserve existing links and login. */
-#view-publica{--bg:#0b1020;--panel:#182131;--panel-2:#111827;--line:#2b3547;--text:#f5f6fa;--muted:#a8b3c5;--accent:#ce9cea;--accent-tint:rgba(127,64,177,.12);background:var(--bg);color:var(--text);font-size:14px}
+#view-publica{--bg:#0b1020;--panel:#182131;--panel-2:#111827;--line:#46516a;--text:#f5f6fa;--muted:#a8b3c5;--accent:#ce9cea;--accent-tint:rgba(127,64,177,.12);background:var(--bg);color:var(--text);font-size:14px}
 #view-publica *,#view-publica *::before,#view-publica *::after{box-sizing:border-box}
 #view-publica .crm-navbar{height:auto;min-height:76px;padding:16px max(24px,5vw);background:#111827;border-color:#202a3b}
 #view-publica .crm-navbar-inner{max-width:1440px;margin:auto;width:100%;gap:24px}
@@ -445,3 +445,11 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #pageSearch #searchResults .p-card p{font-size:13px!important;line-height:1.6;color:#cbd5e1!important;margin:8px 0}
 #view-logada #pageSearch #searchResults .p-card :is(a,button){font-size:12px!important;min-height:36px;padding:8px 10px!important;color:#ce9cea!important;background:transparent!important;border:1px solid #604178!important;border-radius:7px}
 #view-logada #pageSearch #searchResults .result-grid{gap:16px!important}
+
+/* Consistent card separation and compact headings throughout the portal. */
+#view-logada :is(.card,.stat,.pro-card,.pf-card,.p-card,.vaga-card,.ev-card,.crm-panel,.crm-solution-card,.crm-analytics-panel,.crm-analytics-card,.crm-mini-card,.cx-sheet,.cx-column,.cx-deal,.cx-row,.calc-panel,.crm-preferences){border:1px solid #46516a!important}
+#view-logada :is(.card,.pro-card,.pf-card,.p-card,.vaga-card,.ev-card,.crm-panel,.crm-solution-card,.cx-sheet,.cx-column) :is(h3,.pro-name,.pf-name,.p-name){font-size:16px!important;line-height:1.4;font-weight:600}
+#view-logada :is(.pro-tag,.pro-level,.pro-badge,.pf-cat,.p-badge,.pf-tag,.p-role){color:#ce9cea!important;background:#2a1e3c!important;border-color:#795494!important}
+#view-logada #crmAnalyticsBehavior{align-items:stretch}
+#view-logada #crmAnalyticsBehavior>.crm-behavior-wide{align-self:stretch}
+#view-logada #crmAdminAnalytics .crm-analytics-two{align-items:stretch;gap:16px}
