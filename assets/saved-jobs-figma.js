@@ -85,7 +85,7 @@ function tidyMatches(){
    score.classList.add('cx-saved-job-score');
    const phrase=score.textContent.trim();
    score.setAttribute('aria-label',phrase);
-   const scoreNumber=phrase.match(/^(\\d{1,3}%)\\s+compatibilidade$/);
+   const scoreNumber=phrase.match(/^(\d{1,3}%)\s+compatibilidade$/);
    if(index===0&&scoreNumber){
      const number=el('strong','cx-saved-number');number.textContent=scoreNumber[1];
      const best=el('small','cx-saved-best');label(best,'best');
