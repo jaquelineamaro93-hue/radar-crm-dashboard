@@ -13,6 +13,7 @@ const messages={
    suggested:'Vagas recomendadas',
    best:'MELHOR MATCH',
    refresh:'Buscar Match',
+   allJobs:'Ver todas as vagas',
    communities:'COMUNIDADES',
    communityTitle:'Conecte-se. Troque. Evolua.',
    communityDesc:'Compartilhe experiências e amplie suas conexões com a comunidade.',
@@ -31,6 +32,7 @@ const messages={
    suggested:'Recommended jobs',
    best:'BEST MATCH',
    refresh:'Find matches',
+   allJobs:'View all jobs',
    communities:'COMMUNITIES',
    communityTitle:'Connect. Share. Grow.',
    communityDesc:'Share experiences and build connections with the community.',
@@ -49,6 +51,7 @@ const messages={
    suggested:'Vacantes recomendadas',
    best:'MEJOR MATCH',
    refresh:'Buscar coincidencias',
+   allJobs:'Ver todas las vacantes',
    communities:'COMUNIDADES',
    communityTitle:'Conecta. Comparte. Evoluciona.',
    communityDesc:'Comparte experiencias y amplía tus conexiones con la comunidad.',
@@ -147,6 +150,15 @@ function enhance(){
  recommended.querySelector('div:has(> .fd)')?.classList.add('cx-saved-rec-heading');
  const refresh=recommended.querySelector('button[onclick*="crmRunMatch"]');
  if(refresh){refresh.classList.add('cx-saved-refresh');label(refresh,'refresh');}
+ const header=recommended.querySelector('.cx-saved-rec-heading');
+ if(header&&refresh){
+   const actions=el('div','cx-saved-rec-actions');
+   const allJobs=el('button','cx-saved-all-jobs');
+   allJobs.type='button';
+   label(allJobs,'allJobs');
+   allJobs.addEventListener('click',()=>{if(typeof window.crmNavigate==='function')window.crmNavigate('vagas');else window.location.assign('/vagas');});
+   refresh.before(actions);actions.append(refresh,allJobs);
+ }
  const explanation=el('p','cx-saved-score-note');label(explanation,'explanation');
  match.before(explanation);
  saved.setAttribute('aria-live','polite');
