@@ -111,8 +111,9 @@
    next.append(textEl('p','priority','cx-home-kicker'));
    const nextTitle=textEl('h2','memberTitle','cx-home-next-title');
    const nextDesc=textEl('p','memberDesc','cx-home-next-desc');
-   const nextAction=routedButton('memberAction','vagas-salvas','cx-home-primary');
-   nextAction.dataset.cxMemberRoute='true';
+   const nextAction=textEl('button','memberAction','cx-home-primary');
+   nextAction.type='button';nextAction.dataset.cxMemberRoute='true';
+   nextAction.addEventListener('click',()=>route(nextAction.dataset.destination||'vagas-salvas'));
    next.append(nextTitle,nextDesc,nextAction);
    main.append(next);
    const shortcuts=node('section','cx-home-shortcuts');
@@ -176,7 +177,7 @@
    if(button){
      button.dataset.cxHomeKey=recruiter?'recruiterAction':'memberAction';
      // Use the same route as the real dashboard action; no new member lookup.
-     button.onclick=()=>route(recruiter?'membros':'vagas-salvas');
+     button.dataset.destination=recruiter?'membros':'vagas-salvas';
    }
    page.querySelectorAll('[data-cx-home-key]').forEach(e=>{
      e.textContent=t(e.dataset.cxHomeKey);
