@@ -21,7 +21,6 @@
  'Entrar':['Log in','Ingresar'],'Sair':['Log out','Salir'],
  'Buscar vagas':['Find jobs','Buscar vacantes'],'Networking':['Networking','Networking'],
  'Minha conta':['My account','Mi cuenta'],'Profissionais':['Professionals','Profesionales'],
- };
 "Primeiros passos":["Getting started","Primeros pasos"],
 "Meu perfil":["My profile","Mi perfil"],
 "Editar perfil":["Edit profile","Editar perfil"],
@@ -129,6 +128,7 @@
 "Digite sua pergunta":["Type your question","Escribe tu pregunta"],
 "Seu cadastro não será anexado, não inclua dados pessoais":["Your profile won't be attached. Do not include personal data.","No se adjuntará tu perfil. No incluyas datos personales."],
 "Cases":["Stories","Casos"],
+ };
  const originals=new WeakMap();
  function read(){try{const v=localStorage.getItem(STORE);return OPTIONS.includes(v)?v:'pt-BR';}catch{return 'pt-BR';}}
  let locale=read();
