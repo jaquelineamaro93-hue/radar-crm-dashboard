@@ -77,6 +77,15 @@
     const summary=document.createElement('summary');
     summary.textContent='Filtrar oportunidades';
     box.before(disclosure);disclosure.append(summary,box);
+    // Scope is a primary decision and stays visible even with mobile filters closed.
+    const scope=box.querySelector('#filtro-abrangencia');
+    if(scope){
+      const field=scope.parentElement;field.classList.add('crm-radar-scope');
+      const label=field.querySelector('label');if(label)label.textContent='Local das vagas';
+      disclosure.before(field);
+      field.style.cssText='display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0';
+      scope.style.maxWidth='280px';scope.style.minHeight='44px';
+    }
     box.querySelector(':scope > h3')?.remove();
     // Não ocultar filtros preenchidos ao restaurar uma busca.
     if(box.querySelector('input:not([hidden])')?.value||box.classList.contains('is-expanded'))disclosure.open=true;
