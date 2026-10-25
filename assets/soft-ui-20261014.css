@@ -453,3 +453,16 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #crmAnalyticsBehavior{align-items:stretch}
 #view-logada #crmAnalyticsBehavior>.crm-behavior-wide{align-self:stretch}
 #view-logada #crmAdminAnalytics .crm-analytics-two{align-items:stretch;gap:16px}
+/* Resolve legacy directory specificity and empty metadata spacing. */
+#view-logada #pageSearch #searchResults .p-card,
+#crmPublicWorkspace #pageSearch #searchResults .p-card{background:#1b2537!important;border:1px solid #69758d!important;box-shadow:0 3px 10px #0002!important;gap:8px!important;min-height:0!important;justify-content:flex-start!important;align-self:start;padding:16px!important}
+#view-logada #pageSearch #searchResults .p-card p,
+#crmPublicWorkspace #pageSearch #searchResults .p-card p{margin:0!important;min-height:0!important;line-height:1.5!important;font-size:13px!important;color:#d8e0ed!important}
+#pageSearch #searchResults .p-card p:empty{display:none!important}
+#view-logada #pageSearch #searchResults .p-actions,
+#crmPublicWorkspace #pageSearch #searchResults .p-actions{margin-top:4px!important;padding-top:10px!important;border-top:1px solid #46516a;gap:8px!important}
+#view-logada #pageSearch #searchResults .p-card:hover,
+#view-logada #pageSearch #searchResults .p-card:focus-within{border-color:#ce9cea!important}
+#view-logada #pageSearch #searchResults .result-grid,
+#crmPublicWorkspace #pageSearch #searchResults .result-grid{gap:18px!important;align-items:start}
+@media(max-width:640px){#view-logada #pageSearch #searchResults .result-grid,#crmPublicWorkspace #pageSearch #searchResults .result-grid{grid-template-columns:minmax(0,1fr)!important}#view-logada #pageSearch #searchResults .p-card :is(a,button){min-height:44px!important}}
