@@ -61,6 +61,7 @@ const icons={
 for(const [route,label] of Object.entries(routes)){
  const button=document.createElement('button');button.type='button';button.className='tab-btn';
  button.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+icons[route]+'</svg></span>'+label;
+ button.dataset.crmRoute='workspace-'+route;
  button.addEventListener('click',()=>crmNavigate('workspace-'+route));nav.append(button);
 }
 document.querySelector('.crm-nav-items')?.append(nav);
