@@ -63,7 +63,7 @@
     '.crm-census-inline .crm-census-inline-dismiss{background:transparent;border-color:transparent;color:#b6c0d0}',
     '.crm-census-inline button:focus-visible{outline:2px solid #d6adf0;outline-offset:2px}',
     '@media(max-width:600px){.crm-census-inline{padding:9px 10px}.crm-census-inline>span{flex-basis:100%}}'
-   ].join('\\n');
+   ].join('\n');
    document.head.append(style);
   }
   sync();
