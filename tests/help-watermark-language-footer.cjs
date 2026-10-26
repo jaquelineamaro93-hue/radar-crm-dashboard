@@ -32,7 +32,7 @@ assert(read('docs/inngage-templates/revised2049.html').includes('{{cf.NOME}}'),'
 const shell=read('index.html'),fallback=read('404.html');
 for(const html of [shell,fallback]){
  assert(html.includes('portal-hardening.js?v=20261026-language-top-1'),'bust layout runtime');
- assert(html.includes('push-preferences.js?v=20261026-watermark-1'),'bust notifications runtime');
+ assert(html.includes('push-preferences.js?v=20261026-adoption1'),'bust notifications runtime');
 }
 assert(read('assets/portal-hardening.js').includes('portal-layout.js?v=20261026-topnav-1'));
 assert(read('assets/portal-layout.js').includes('site-i18n.js?v=20261026-topnav-1'));
