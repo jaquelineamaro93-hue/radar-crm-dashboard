@@ -7,6 +7,19 @@
  const ROOT='crmPersonalDashboard';
  const dict={
   'pt-BR':{
+   editInterests:'Editar interesses da pesquisa inicial',
+   goalLearnTitle:'Desenvolva suas competências em CRM.',
+   goalLearnDesc:'Explore cursos e conteúdos da comunidade para avançar no seu ritmo.',
+   goalLearnAction:'Explorar cursos',
+   goalProjectsTitle:'Conecte seus serviços a novos projetos.',
+   goalProjectsDesc:'Conheça as oportunidades e profissionais da comunidade.',
+   goalProjectsAction:'Explorar freelancers',
+   goalNetworkTitle:'Conheça pessoas que ampliam possibilidades.',
+   goalNetworkDesc:'Troque experiências e construa conexões com outros profissionais.',
+   goalNetworkAction:'Conhecer membros',
+   goalResearchTitle:'Dados e tendências para suas decisões.',
+   goalResearchDesc:'Acompanhe pesquisas e conteúdos para evoluir no mercado de CRM.',
+   goalResearchAction:'Explorar pesquisas',
    tag:'SEU ESPAÇO / CONEXÃO CRM',
    priority:'SEU PRÓXIMO PASSO',
    memberTitle:'Sua carreira, suas próximas conexões.',
@@ -32,6 +45,19 @@
    privacy:'Ajustar disponibilidade'
   },
   'en':{
+   editInterests:'Edit my onboarding interests',
+   goalLearnTitle:'Grow your CRM skills.',
+   goalLearnDesc:'Explore community courses and resources at your own pace.',
+   goalLearnAction:'Explore courses',
+   goalProjectsTitle:'Connect your services with new projects.',
+   goalProjectsDesc:'Discover opportunities and professionals in the community.',
+   goalProjectsAction:'Explore freelancers',
+   goalNetworkTitle:'Meet people who open opportunities.',
+   goalNetworkDesc:'Share experiences and build professional connections.',
+   goalNetworkAction:'Meet members',
+   goalResearchTitle:'Data and insights for your next decision.',
+   goalResearchDesc:'Browse reports and resources about the CRM job market.',
+   goalResearchAction:'Explore research',
    tag:'YOUR SPACE / CONEXÃO CRM',
    priority:'YOUR NEXT STEP',
    memberTitle:'Your career. Your next connections.',
@@ -57,6 +83,19 @@
    privacy:'Update availability'
   },
   'es-419':{
+   editInterests:'Editar mis intereses iniciales',
+   goalLearnTitle:'Desarrolla tus competencias en CRM.',
+   goalLearnDesc:'Explora cursos y recursos de la comunidad a tu ritmo.',
+   goalLearnAction:'Explorar cursos',
+   goalProjectsTitle:'Conecta tus servicios con nuevos proyectos.',
+   goalProjectsDesc:'Conoce oportunidades y profesionales de la comunidad.',
+   goalProjectsAction:'Explorar freelancers',
+   goalNetworkTitle:'Conoce personas que abren oportunidades.',
+   goalNetworkDesc:'Comparte experiencias y construye conexiones profesionales.',
+   goalNetworkAction:'Conocer miembros',
+   goalResearchTitle:'Datos y tendencias para tus decisiones.',
+   goalResearchDesc:'Descubre estudios y recursos sobre el mercado de CRM.',
+   goalResearchAction:'Explorar estudios',
    tag:'TU ESPACIO / CONEXÃO CRM',
    priority:'TU PRÓXIMO PASO',
    memberTitle:'Tu carrera y tus próximas conexiones.',
@@ -122,6 +161,10 @@
    pref.classList.add('cx-home-preferences');
    const existingPrefTitle=pref.querySelector('h2');
    if(existingPrefTitle){existingPrefTitle.dataset.cxHomeKey='preferences';existingPrefTitle.textContent=t('preferences');}
+   const interests=textEl('button','editInterests','cx-home-edit-interests');
+   interests.type='button';
+   interests.addEventListener('click',()=>window.CXFirstAccessInterests?.edit?.());
+   pref.append(interests);
    const note=textEl('p','prefNote','cx-home-privacy-note');pref.append(note);
    const profileButton=pref.querySelector('button[onclick*="openProfileModal"]');
    if(profileButton)profileButton.classList.add('cx-home-edit-profile');
@@ -172,12 +215,22 @@
    const title=page.querySelector('.cx-home-next-title');
    const description=page.querySelector('.cx-home-next-desc');
    const button=page.querySelector('[data-cx-member-route]');
-   if(title)title.dataset.cxHomeKey=recruiter?'recruiterTitle':'memberTitle';
-   if(description)description.dataset.cxHomeKey=recruiter?'recruiterDesc':'memberDesc';
+   // Preserve the recruiter/member split while tailoring members by their
+   // own private onboarding priority. Never infer third-party member data.
+   const primary=(typeof CURRENT_PROFILE!=='undefined'&&
+     Array.isArray(CURRENT_PROFILE?.onboarding_goals))?CURRENT_PROFILE.onboarding_goals[0]:null;
+   const destination={
+     aprender:['goalLearn','cursos'],
+     projetos:['goalProjects','freelancers'],
+     networking:['goalNetwork','membros'],
+     pesquisa:['goalResearch','pesquisa']
+   }[primary];
+   const type=recruiter?'recruiter':destination?destination[0]:'member';
+   if(title)title.dataset.cxHomeKey=type+'Title';
+   if(description)description.dataset.cxHomeKey=type+'Desc';
    if(button){
-     button.dataset.cxHomeKey=recruiter?'recruiterAction':'memberAction';
-     // Use the same route as the real dashboard action; no new member lookup.
-     button.dataset.destination=recruiter?'membros':'vagas-salvas';
+     button.dataset.cxHomeKey=type+'Action';
+     button.dataset.destination=recruiter?'membros':destination?destination[1]:'vagas-salvas';
    }
    page.querySelectorAll('[data-cx-home-key]').forEach(e=>{
      e.textContent=t(e.dataset.cxHomeKey);
