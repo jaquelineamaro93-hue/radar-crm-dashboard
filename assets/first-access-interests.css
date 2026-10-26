@@ -173,3 +173,27 @@
 @media(prefers-reduced-motion:reduce){
  #crmGoalsOnboarding *{animation:none!important;transition:none!important;}
 }
+
+/* iOS Safari desktop-view emulation still uses a wide CSS viewport. */
+html.crm-compact-device #crmGoalsOnboarding.crm-goals-overlay{
+ align-items:flex-start!important;justify-content:center!important;
+ padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))!important;
+}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-dialog{
+ width:100%!important;max-width:560px!important;max-height:none!important;
+ display:flex!important;flex-direction:column!important;overflow:visible!important;
+}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-introduction{
+ padding:18px!important;gap:8px!important;overflow:visible!important;
+}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-benefits,
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-side-note{display:none!important;}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-intro-heading{
+ font-size:22px!important;max-width:100%!important;
+}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-form{
+ padding:18px!important;overflow:visible!important;
+}
+html.crm-compact-device #crmGoalsOnboarding .crm-goals-form>h2{
+ font-size:21px!important;
+}
