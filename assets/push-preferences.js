@@ -15,10 +15,11 @@ function mount(){
  if(header){
   let news=header.querySelector('[data-crm-news-link]');
   if(!news){news=document.createElement('a');news.href='/novidades/';news.dataset.crmNewsLink='1';news.className='crm-text-button';header.appendChild(news);}
-  news.textContent=t.notice;news.setAttribute('aria-label',t.aria);
+  if(news.textContent!==t.notice)news.textContent=t.notice;
+  if(news.getAttribute('aria-label')!==t.aria)news.setAttribute('aria-label',t.aria);
   let help=header.querySelector('[data-crm-help-link]');
   if(!help){help=document.createElement('a');help.href='/ajuda/';help.dataset.crmHelpLink='1';help.className='crm-text-button';header.appendChild(help);}
-  help.textContent=t.help;
+  if(help.textContent!==t.help)help.textContent=t.help;
  }
  const opt=document.querySelector('#pf_receive_updates');
  const span=opt?.closest('label')?.querySelector('span');
