@@ -424,8 +424,8 @@ dialog.cx-xp-tour{background:#111827;border-color:#384254;border-radius:16px;col
 #view-logada #crmAnalyticsBehavior>*{grid-column:1/-1;min-width:0}
 #view-logada #crmAnalyticsBehavior>.crm-behavior-wide{grid-column:auto;margin:0!important;width:100%}
 #view-logada #crmAnalyticsBehavior .crm-bar-wide{grid-template-columns:minmax(85px,1fr) minmax(0,1.5fr) auto;gap:10px;font-size:12px}
-#view-logada .crm-goals-entry{padding:18px 20px;border:1px solid #384254;border-radius:12px;background:#182131;margin:0 0 20px!important}
-#view-logada .crm-goals-entry h2{font-size:19px;margin:0 0 8px;color:#f5f6fa}
+#view-logada .crm-goals-entry{padding:clamp(24px,2.6vw,32px) clamp(20px,2.4vw,30px)!important;border:1px solid #384254;border-radius:12px;background:#182131;margin:0 0 20px!important;box-sizing:border-box}
+#view-logada .crm-goals-entry h2{font-size:clamp(19px,1.5vw,24px)!important;line-height:1.28!important;margin:0 0 12px!important;color:#f5f6fa}
 #view-logada .crm-goals-entry p{font-size:13px;line-height:1.6;color:#a8b3c5;margin:0 0 14px}
 #view-logada .cx-tabs{border-bottom:1px solid #384254!important;padding-bottom:12px!important;margin-bottom:20px!important;gap:8px!important}
 #view-logada :is(.cx-row,.cx-column,.cx-deal,.calc-panel,.p-card){border:1px solid #384254!important}
