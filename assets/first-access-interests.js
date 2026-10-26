@@ -263,15 +263,27 @@ function scheduleRetry(){
   if(root()||retryCount>=20){clearInterval(retryTimer);retryTimer=null;}
  },1200);
 }
-for(const eventName of ['crm:route-changed','crm:role-resolved','crm:auth-state']){
+for(const eventName of ['crm:route-changed','crm:role-resolved']){
  document.addEventListener(eventName,scheduleRetry);
 }
+// A sign-out or account switch must never leave a previous member's survey open.
+document.addEventListener('crm:auth-state',()=>{
+ if(root()&&(typeof CURRENT_USER==='undefined'||CURRENT_USER?.id!==subjectId||!window.crmSignedIn?.()))close();
+ scheduleRetry();
+});
+// Some native dialogs close without being removed from the DOM. Listen for
+// the removal of their open attribute, even if a modal stayed open longer
+// than the short initial retry window.
 if(typeof MutationObserver==='function'&&document.body){
  new MutationObserver(records=>{
-  if(records.some(record=>Array.from(record.removedNodes).some(node=>node.nodeType===1&&(
-    node.id==='profileModalOverlay'||node.querySelector?.('#profileModalOverlay')||node.matches?.('dialog,.crm-login-overlay')))))
-   scheduleRetry();
- }).observe(document.body,{childList:true,subtree:true});
+  if(records.some(record=>
+   (record.type==='attributes'&&record.attributeName==='open'&&
+    record.target?.matches?.('dialog')&&!record.target.hasAttribute('open'))||
+   (record.type==='childList'&&Array.from(record.removedNodes).some(node=>node.nodeType===1&&(
+    node.id==='profileModalOverlay'||node.querySelector?.('#profileModalOverlay')||
+    node.matches?.('dialog,.crm-login-overlay'))))
+  ))scheduleRetry();
+ }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleRetry,{once:true});
 else scheduleRetry();
