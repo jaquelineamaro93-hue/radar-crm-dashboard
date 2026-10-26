@@ -84,7 +84,7 @@ function canOffer(user,profile){
  if(!Number.isFinite(Date.parse(user.created_at||'')))return false;
  return !Array.isArray(profile?.onboarding_goals);
 }
-let subjectId=null,selection=[],busy=false,previousFocus=null,previousOverflow='', priorityOpen=false;
+let subjectId=null,selection=[],busy=false,previousFocus=null,previousOverflow='',priorityOpen=false,editing=false;
 function root(){return document.getElementById(ROOT_ID);}
 function text(k,tag='span',className=''){
  const n=document.createElement(tag);
@@ -186,7 +186,7 @@ function update(){
  overlay.querySelectorAll('input[name="crm_onboarding_goal"]').forEach(input=>input.disabled=busy);
 }
 function close(){
- const n=root();if(!n)return;n.remove();subjectId=null;selection=[];busy=false;priorityOpen=false;
+ const n=root();if(!n)return;n.remove();subjectId=null;selection=[];busy=false;priorityOpen=false;editing=false;
  document.body.style.overflow=previousOverflow;
  previousFocus?.focus?.();previousFocus=null;
 }
@@ -207,21 +207,30 @@ async function persist(skipped){
   const {data,error}=await authSb.from('profiles').upsert({id,onboarding_goals:goals},{onConflict:'id'}).select('id,onboarding_goals').single();
   if(error||data?.id!==id||!Array.isArray(data.onboarding_goals))throw Error('save failed');
   if(typeof CURRENT_PROFILE!=='undefined')CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id,onboarding_goals:data.onboarding_goals};
+  const shouldNavigate=!editing;
   close();
   window.CXMemberHomeReference?.refresh?.();
-  window.crmNavigate?.('membros');
+  if(shouldNavigate)window.crmNavigate?.('dashboard');
  }catch(error){
   if(status)status.textContent=t('error');
  }finally{busy=false;update();}
 }
-function offer(user,profile){
- if(!canOffer(user,profile)||root()||busy)return false;
+function show(user,profile,isEdit){
+ if(!user?.id||root()||busy||typeof CURRENT_USER==='undefined'||CURRENT_USER?.id!==user.id)return false;
  // Avoid fighting another modal or the login dialog.
  if(document.querySelector('dialog[open],#profileModalOverlay'))return false;
- subjectId=user.id;selection=[];priorityOpen=false;previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;
+ subjectId=user.id;editing=!!isEdit;
+ selection=isEdit&&Array.isArray(profile?.onboarding_goals)
+   ?[...new Set(profile.onboarding_goals)].filter(id=>OPTIONS.some(o=>o.id===id)): [];
+ priorityOpen=false;previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;
  const overlay=build();document.body.append(overlay);document.body.style.overflow='hidden';
  update();overlay.querySelector('input[name="crm_onboarding_goal"]')?.focus();
  return true;
+}
+function offer(user,profile){return canOffer(user,profile)?show(user,profile,false):false;}
+function edit(){
+ if(!window.crmSignedIn?.()||typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id)return false;
+ return show(CURRENT_USER,typeof CURRENT_PROFILE==='undefined'?null:CURRENT_PROFILE,true);
 }
 function translate(){
  const overlay=root();if(!overlay)return;
@@ -232,5 +241,5 @@ function translate(){
 document.addEventListener('cx:locale-change',translate);
 if(typeof MutationObserver==='function')new MutationObserver(translate)
  .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-window.CXFirstAccessInterests={offer,close,refresh:translate};
+window.CXFirstAccessInterests={offer,edit,close,refresh:translate};
 })();
