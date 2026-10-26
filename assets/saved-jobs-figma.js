@@ -78,7 +78,7 @@ function currentLocale(){const lang=document.documentElement.lang;return validLo
 function t(k){return(messages[locale]||messages['pt-BR'])[k]||k;}
 function label(el,key){if(!el)return;el.dataset.cxSavedKey=key;el.textContent=t(key);}
 function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
-let matchObserver=null,pending=false;
+let matchObserver=null,languageObserver=null,pending=false,disposed=false;
 function tidyMatches(){
  const host=document.getElementById('membroVagasMatch');
  if(!host)return;
@@ -120,7 +120,7 @@ function tidyMatches(){
 function updateTranslations(){
  // The document may be detached while a pending MutationObserver callback runs
  // (e.g. logout/navigation or a component test closing its DOM).
- if(typeof document==='undefined'||!document?.documentElement)return;
+ if(disposed||typeof document==='undefined'||!document?.documentElement)return;
  locale=currentLocale();
  document.querySelectorAll('#'+rootId+' [data-cx-saved-key]').forEach(node=>node.textContent=t(node.dataset.cxSavedKey));
 }
@@ -157,8 +157,8 @@ function enhance(){
    if(typeof MutationObserver==='function'){
      matchObserver?.disconnect();
      matchObserver=new MutationObserver(()=>{
-       if(pending)return;pending=true;
-       requestAnimationFrame(()=>{pending=false;tidyMatches();});
+       if(disposed||pending)return;pending=true;
+       requestAnimationFrame(()=>{pending=false;if(!disposed)tidyMatches();});
      });
      matchObserver.observe(match,{childList:true}); // avoid recursive observers
    }
@@ -238,7 +238,7 @@ function enhance(){
  // Only mount watchers inside this private panel. Do not watch session, profile or Copilot nodes.
  if(typeof MutationObserver==='function'){
    matchObserver?.disconnect();
-   matchObserver=new MutationObserver(()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;tidyMatches();});});
+   matchObserver=new MutationObserver(()=>{if(disposed||pending)return;pending=true;requestAnimationFrame(()=>{pending=false;if(!disposed)tidyMatches();});});
    matchObserver.observe(match,{childList:true,subtree:true});
  }
  tidyMatches();
@@ -262,6 +262,7 @@ function autoLoadOnSavedRoute(){
  }catch{matchTriggeredAt=0}
 }
 function init(){
+ if(disposed)return;
  enhance();updateTranslations();
  // crmNavigate dispatches the event after the page has become active.
  autoLoadOnSavedRoute();
@@ -271,7 +272,9 @@ document.addEventListener('crm:route-changed',init);
 document.addEventListener('cx:locale-change',updateTranslations);
 // The global language component can initialize after this script. Follow its
 // document.lang change without reading private data or creating a polling loop.
-if(typeof MutationObserver==='function')new MutationObserver(updateTranslations)
- .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-window.CXSavedJobsDesign={refresh:init};
+if(typeof MutationObserver==='function'){
+ languageObserver=new MutationObserver(updateTranslations);
+ languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+}
+window.CXSavedJobsDesign={refresh:init,dispose(){disposed=true;matchObserver?.disconnect();languageObserver?.disconnect();}};
 })();
