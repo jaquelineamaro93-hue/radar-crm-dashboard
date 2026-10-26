@@ -231,3 +231,15 @@ html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference>.cr
 @media(prefers-reduced-motion:reduce){
  #view-logada #crmPersonalDashboard.cx-home-reference *{transition:none!important;animation:none!important;}
 }
+/* Private onboarding goals can be revised without leaving the dashboard. */
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-edit-interests{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:100%!important;min-height:44px!important;
+ padding:10px 12px!important;background:#241c35!important;
+ border:1px solid #75568f!important;border-radius:8px!important;
+ color:#e3bef4!important;font-size:12px!important;font-weight:650!important;
+ white-space:normal!important;
+}
+#view-logada #crmPersonalDashboard.cx-home-reference .cx-home-edit-interests:hover{
+ border-color:#b889da!important;background:#312342!important;
+}
