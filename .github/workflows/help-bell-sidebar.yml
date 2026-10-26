@@ -16,6 +16,12 @@ on:
       - 'tests/help-bell-sidebar.cjs'
       - 'tests/help-guide-reader.cjs'
       - 'tests/feedback-sidebar-email.cjs'
+      - 'tests/portal-shell-route-sync.cjs'
+      - 'assets/member-home-reference.js'
+      - 'assets/member-home-reference.css'
+      - '**/index.html'
+      - 'index.html'
+      - '404.html'
       - 'tests/figma-unified-pages-static.cjs'
       - 'tests/saved-jobs-figma.cjs'
       - 'assets/saved-jobs-figma.*'
@@ -51,6 +57,7 @@ jobs:
         with:
           node-version: '22.23.4'
       - run: node tests/help-bell-sidebar.cjs
+      - run: node tests/portal-shell-route-sync.cjs
       - run: node tests/feedback-sidebar-email.cjs
       - name: Install isolated DOM test dependency
         run: npm install --prefix "$RUNNER_TEMP/crm-help-dom" jsdom@26.1.0 --ignore-scripts --no-audit --no-fund
