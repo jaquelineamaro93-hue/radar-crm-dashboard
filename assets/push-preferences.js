@@ -32,7 +32,12 @@ function init(){
    style.id='crm-help-workspace-style';style.rel='stylesheet';
    style.href='/assets/crm-help-workspace.css?v=20261026-release2';document.head.append(style);
  }
- if(!document.getElementById('crm-help-workspace-script')){
+ if(!document.getElementById('crm-contextual-prompts-script')){
+ const script=document.createElement('script');script.id='crm-contextual-prompts-script';
+ script.src='/assets/contextual-prompts.js?v=20261026-adoption1';script.defer=true;
+ document.head.append(script);
+}
+if(!document.getElementById('crm-help-workspace-script')){
    const script=document.createElement('script');script.id='crm-help-workspace-script';
    script.src='/assets/crm-help-workspace.js?v=20261026-release2';script.async=true;
    document.head.append(script);
