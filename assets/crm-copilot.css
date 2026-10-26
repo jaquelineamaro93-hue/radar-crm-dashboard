@@ -126,3 +126,42 @@
 #cxCopilot .cx-copilot-feedback-status{margin:3px 0 0;font:12px/1.5 system-ui,sans-serif;color:#e8d7f0}
 #cxCopilot .cx-copilot-feedback.is-sent{padding-top:8px}
 @media(max-width:600px){#cxCopilot .cx-copilot-feedback{gap:7px}#cxCopilot .cx-copilot-feedback-form textarea{font-size:16px}}
+
+/* Brasa v2: ritmo de conversa, tipografia e controles discretos. */
+#cxCopilot .cx-copilot-panel{width:min(430px,calc(100vw - 24px));height:min(660px,calc(100dvh - 94px));border:1px solid #45404c;border-radius:22px;background:#17171d;box-shadow:0 20px 65px #0008}
+#cxCopilot .cx-copilot-head{min-height:58px!important;max-height:64px!important;padding:9px 14px!important;background:#1d1b24;border-bottom:1px solid #39343f}
+#cxCopilot .cx-copilot-head .brasa-fox{width:34px;height:34px;flex-basis:34px}
+#cxCopilot .cx-copilot-head strong{font-size:14px;font-weight:700;letter-spacing:-.015em}
+#cxCopilot .cx-copilot-expand{font-size:0;min-height:40px;min-width:40px;padding:0;background:transparent;border:0;color:#ded5e7}
+#cxCopilot .cx-copilot-expand::after{content:"⤢";font-size:22px}
+#cxCopilot.cx-expanded .cx-copilot-expand::after{content:"⤡"}
+#cxCopilot .cx-copilot-close{font-size:21px;flex-basis:40px;width:40px;height:40px}
+#cxCopilot .cx-copilot-history{padding:16px;gap:13px;scrollbar-gutter:auto}
+#cxCopilot .cx-copilot-message{font-size:14px;line-height:1.55;padding:11px 13px;max-width:91%;border-radius:15px}
+#cxCopilot .cx-copilot-assistant{background:#27252e;border:1px solid #3d3945;border-bottom-left-radius:5px}
+#cxCopilot .cx-copilot-user{background:#5a3a65;border:1px solid #795486;border-bottom-right-radius:5px}
+#cxCopilot .cx-copilot-action{display:inline-flex;width:auto;max-width:100%;min-height:34px;margin-top:9px;padding:7px 11px;font-size:12px;border-radius:8px;background:#34263b;color:#f5d6ff;border:1px solid #865896;font-weight:650}
+#cxCopilot .cx-copilot-action:hover{background:#46304f}
+#cxCopilot .cx-copilot-quick{padding:0 15px 12px;gap:8px;border:0;background:#17171d}
+#cxCopilot .cx-copilot-quick button{min-height:34px;background:#25212c;color:#e6dbe9;border-color:#47404f;font-size:12px;padding:7px 11px}
+#cxCopilot .cx-copilot-form{padding:10px 12px 11px;background:#1d1b24;border-top:1px solid #39343f}
+#cxCopilot .cx-copilot-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#cxCopilot .cx-copilot-form textarea{min-height:48px;max-height:140px;border-radius:13px;background:#292730;border:1px solid #56505d;padding:12px 14px;font-size:14px;line-height:1.45}
+#cxCopilot .cx-copilot-bottom{margin-top:7px;gap:8px}
+#cxCopilot .cx-copilot-bottom small{font-size:10px;color:#b9b0be}
+#cxCopilot .cx-copilot-bottom button[data-cx-send]{min-height:36px;background:#cfa5e9;border-color:#cfa5e9;color:#211729;font-size:12px;padding:8px 14px;border-radius:9px}
+#cxCopilot .cx-copilot-feedback{margin-top:7px;padding-top:0;border-top:0;gap:4px}
+#cxCopilot .cx-copilot-feedback-question{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
+#cxCopilot .cx-copilot-feedback-actions{gap:2px;align-self:flex-start}
+#cxCopilot .cx-copilot-feedback-actions button{width:30px;min-width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#b5adba;font-size:15px;filter:grayscale(1);opacity:.68}
+#cxCopilot .cx-copilot-feedback-actions button:hover,#cxCopilot .cx-copilot-feedback-actions button[aria-pressed=true]{background:#38313e;color:#fff;filter:none;opacity:1}
+#cxCopilot .cx-copilot-feedback.is-sent{padding-top:2px}
+#cxCopilot .cx-copilot-feedback-status{font-size:11px}
+#cxCopilot .cx-copilot-status{margin:2px 0 0 4px;color:#c7bbc8;font-size:12px}
+@media(max-width:600px){
+ #cxCopilot .cx-copilot-panel{width:calc(100vw - 16px);max-width:calc(100vw - 16px);height:min(670px,calc(100dvh - 85px));border-radius:18px}
+ #cxCopilot .cx-copilot-head{padding:9px 12px!important}
+ #cxCopilot .cx-copilot-history{padding:12px}
+ #cxCopilot .cx-copilot-form textarea{font-size:16px}
+ #cxCopilot .cx-copilot-message{font-size:14px}
+}
