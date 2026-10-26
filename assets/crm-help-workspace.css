@@ -52,3 +52,29 @@
 #crmPersonalDashboard .crm-help-release-dismiss{background:transparent;border-color:transparent;color:#c0c9d7}
 #crmPersonalDashboard .crm-help-release-inline button:focus-visible{outline:2px solid #cfa5e9;outline-offset:2px}
 @media(max-width:600px){#crmPersonalDashboard .crm-help-release-inline{padding:10px}#crmPersonalDashboard .crm-help-release-actions{width:100%}}
+
+/* Avisos e novidades: nao reintroduzir o cartao legado na Visao Geral. */
+#crmPersonalDashboard .crm-help-release-inline{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px 12px!important;
+  border:1px solid #46536b!important;border-left:3px solid #a875ce!important;
+  border-radius:10px!important;background:#1a2536!important;color:#edf0f8!important;
+  margin:8px 0 16px!important;padding:10px 13px!important;box-shadow:none!important;
+  font-size:12px!important;line-height:1.5!important;
+}
+#crmPersonalDashboard .crm-help-release-inline>span{min-width:0!important;flex:1 1 180px!important;overflow-wrap:anywhere!important}
+#crmPersonalDashboard .crm-help-release-actions{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px!important}
+#crmPersonalDashboard .crm-help-release-actions button{
+  min-height:36px!important;border:1px solid #6d5089!important;border-radius:8px!important;
+  background:#30253f!important;color:#ead2f8!important;padding:7px 10px!important;font-size:11px!important
+}
+#crmPersonalDashboard .crm-help-release-dismiss{min-height:36px!important;background:transparent!important;border:0!important;color:#c2cbd8!important}
+.crm-help-popover{background:#192335!important;border-color:#46536b!important;border-radius:13px!important;box-shadow:0 16px 40px #0006!important;padding:13px!important}
+.crm-help-popover-head h2{font-size:15px!important}
+.crm-help-news-item{background:#1d2a3d!important;border-color:#3b4a61!important;border-radius:10px!important;padding:12px!important}
+.crm-help-news-item:hover{background:#27354b!important;border-color:#a875ce!important}
+.crm-help-popover-footer button{color:#d5b1ea!important;font-size:12px!important}
+@media(max-width:600px){
+  #crmPersonalDashboard .crm-help-release-inline{padding:10px!important;gap:8px!important}
+  #crmPersonalDashboard .crm-help-release-actions{width:100%!important}
+  .crm-help-popover{box-sizing:border-box!important;width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;left:12px!important;right:12px!important}
+}
