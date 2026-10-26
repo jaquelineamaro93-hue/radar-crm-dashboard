@@ -1,0 +1,174 @@
+/* Profile hub and Freelancer directory, production 2026-10-26.
+   Scoped visual updates preserve database access and original forms. */
+:root{--cx-editor-bg:#121b2b;--cx-editor-field:#0d1524;--cx-editor-stroke:#43516b;--cx-editor-accent:#cda6e3;--cx-editor-text:#f2f4fb;--cx-editor-muted:#afbdd0}
+#view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle){
+ border:1px solid #43516b!important;
+ border-radius:10px!important;
+ background:#101827!important;
+ padding:0 14px!important;
+ font-family:inherit!important;
+ font-size:12px!important;
+ font-weight:600!important;
+}
+#view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle):hover{background:#1a2538!important;border-color:#9576b2!important}
+#view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle):focus-visible{outline:2px solid #cda6e3!important;outline-offset:2px!important}
+body #profileModalOverlay{padding:20px!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;background:rgba(5,10,19,.75)!important;z-index:10100!important}
+body #profileModalOverlay .crm-profile-modal{
+ background:var(--cx-editor-bg)!important;
+ color:var(--cx-editor-text)!important;
+ width:min(760px,100%)!important;
+ max-width:760px!important;
+ border:1px solid #40516a!important;
+ border-radius:16px!important;
+ padding:clamp(20px,3vw,30px)!important;
+ margin:auto!important;
+ box-shadow:0 24px 70px #0009!important;
+ max-height:calc(100dvh - 36px)!important;
+ overflow-y:auto!important;
+ box-sizing:border-box!important;
+}
+body #profileModalOverlay .crm-profile-modal-head{margin-bottom:18px!important;padding-bottom:14px!important;border-bottom:1px solid #33425b!important}
+body #profileModalOverlay .crm-profile-modal-head h2{font-size:clamp(21px,2vw,26px)!important;line-height:1.25!important;color:var(--cx-editor-text)!important}
+body #profileModalOverlay .crm-profile-modal :is(h3,strong,label){color:var(--cx-editor-text)!important}
+body #profileModalOverlay .crm-profile-modal :is(p,small,.crm-profile-field-help){color:var(--cx-editor-muted)!important;line-height:1.5!important}
+body #profileModalOverlay .crm-profile-modal .crm-eyebrow{font-size:10px!important;letter-spacing:.07em!important;color:var(--cx-editor-accent)!important}
+body #profileModalOverlay .crm-profile-modal :is(.ev-ifield,textarea,select,input[type=text],input[type=url],input[type=tel]){
+ background:var(--cx-editor-field)!important;
+ border:1px solid var(--cx-editor-stroke)!important;
+ border-radius:9px!important;
+ color:var(--cx-editor-text)!important;
+ min-height:40px!important;
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ padding:10px 12px!important;
+ font:inherit!important;
+ font-size:13px!important;
+}
+body #profileModalOverlay .crm-profile-modal textarea{min-height:90px!important}
+body #profileModalOverlay .crm-profile-modal .crm-profile-step-title{margin:20px 0 16px!important;gap:12px!important}
+body #profileModalOverlay .crm-profile-modal :is(.crm-profile-chips label,.crm-directory-visibility,.crm-profile-preview){
+ border:1px solid #37485f!important;background:#182438!important;border-radius:10px!important;color:#f2f4fb!important
+}
+body #profileModalOverlay .crm-profile-modal :is(.crm-button,.crm-profile-close,.cx-profile-action){
+ min-height:40px!important;box-sizing:border-box!important;
+ background:#222d42!important;border:1px solid #71518d!important;
+ border-radius:9px!important;color:#e3caef!important;padding:9px 14px!important;
+ font-size:12px!important;font-weight:650!important;
+}
+body #profileModalOverlay .crm-profile-modal :is(.crm-button,.cx-profile-action):hover{background:#302744!important;border-color:#aa81c6!important}
+body #profileModalOverlay .crm-profile-modal :is(button,input,select,textarea):focus-visible{outline:2px solid #cda6e3!important;outline-offset:2px!important}
+#profileModalOverlay .cx-profile-tabs{
+ display:flex;flex-wrap:wrap;gap:7px;
+ padding:0 0 12px;margin:0 0 16px;
+ border-bottom:1px solid #37465c;
+}
+#profileModalOverlay .cx-profile-tab{
+ appearance:none;background:transparent;border:1px solid #40516a;
+ border-radius:9px;color:#bbc7d8;min-height:40px;
+ font-size:12px;font-weight:600;padding:9px 14px;cursor:pointer
+}
+#profileModalOverlay .cx-profile-tab.is-active{color:#eacbf5!important;border-color:#9460b1!important;background:#2b233e!important}
+#profileModalOverlay .cx-profile-tab-panel{padding:12px 0 30px;min-height:180px;max-width:100%}
+#profileModalOverlay .cx-profile-tab-panel[hidden]{display:none!important}
+#profileModalOverlay .cx-profile-tab-panel h3{margin:0 0 10px!important;font-size:18px!important}
+#profileModalOverlay .cx-profile-tab-panel p{margin:0 0 18px!important;font-size:13px!important}
+#profileModalOverlay .cx-profile-tab-panel .cx-profile-action{margin:0 8px 8px 0!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers{min-width:0}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers>section{max-width:100%!important;min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .section-head{margin:0!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .section-desc{margin:6px 0 15px!important;max-width:66ch}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .crm-freelancer-subnav{
+ margin:0 0 14px!important;padding:0 0 12px!important;gap:8px!important;
+ border-bottom:1px solid #35435b!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .crm-freelancer-tab{
+ background:transparent!important;border:1px solid #40516a!important;border-radius:9px!important;min-height:38px!important;font-size:12px!important;padding:9px 14px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .crm-freelancer-tab.is-active{background:#2c2441!important;border-color:#9169ae!important;color:#e4c8ee!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .ev-header-row{
+ display:flex!important;justify-content:flex-end!important;margin:0 0 14px!important;align-items:center!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #btnOpenFreelancerModal{
+ min-height:40px!important;padding:9px 15px!important;
+ border-radius:9px!important;background:#332349!important;
+ color:#f0d9fd!important;border:1px solid #9a6fbc!important;
+ font-size:12px!important;font-weight:650!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .search-bar{
+ display:grid!important;grid-template-columns:1fr!important;
+ gap:11px!important;padding:0!important;margin:0 0 20px!important;
+ background:transparent!important;box-shadow:none!important;border:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .search-input{
+ min-height:44px!important;background:#111a2a!important;border:1px solid #43516a!important;border-radius:10px!important;padding:11px 13px!important;width:100%!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .filter-bar{
+ display:flex!important;flex-wrap:wrap!important;align-items:end!important;
+ gap:10px!important;padding:12px 15px!important;
+ background:#172133!important;border:1px solid #39485f!important;
+ border-radius:11px!important;margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .filter-bar .filter-field{flex:1 1 180px!important;max-width:360px!important;min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerCount{margin-left:auto!important;font-size:12px!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:16px!important;align-items:stretch!important;margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .pro-card{
+ display:flex!important;flex-direction:column!important;
+ min-width:0!important;max-width:100%!important;height:auto!important;
+ padding:18px!important;border:1px solid #3d4d65!important;
+ border-radius:13px!important;background:#171f30!important;box-shadow:none!important;
+ gap:12px!important;overflow-wrap:anywhere!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-head{
+ display:flex!important;gap:11px!important;align-items:center!important;
+ min-height:45px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-head>div:last-child{flex:1;min-width:0}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-head h3{font-size:14px!important;line-height:1.3!important;overflow-wrap:anywhere!important;margin:0 0 5px!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-body{
+ flex:1!important;min-width:0!important;max-width:100%!important;margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-body p{
+ font-size:12px!important;line-height:1.6!important;color:#c2cede!important;
+ margin:0!important;white-space:normal!important;overflow-wrap:anywhere!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-footer{
+ display:flex!important;flex:0 0 auto!important;flex-wrap:wrap!important;
+ align-items:center!important;justify-content:flex-start!important;
+ gap:8px!important;margin-top:auto!important;padding-top:14px!important;
+ border-top:1px solid #36445a!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-footer :is(.p-btn,button,a){
+ min-height:34px!important;font-size:11px!important;
+ padding:7px 10px!important;border-radius:8px!important;
+ box-shadow:none!important;max-width:100%!important;white-space:normal!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-footer .crm-review-box{
+ width:100%!important;flex:1 1 100%!important;
+ border-top:1px solid #334056!important;padding-top:10px!important;
+ margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-footer :is(.crm-review-actions,.crm-review-box details){
+ width:100%!important;min-width:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .cx-freelancer-mine{border-color:#9170b1!important}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .cx-freelancer-edit{
+ display:inline-flex!important;align-items:center!important;
+ background:#30233e!important;color:#eed4fa!important;border:1px solid #8a63ae!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers details{
+ border-color:#3e4e63!important;border-radius:10px!important
+}
+@media(max-width:1150px){
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:720px){
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid{grid-template-columns:minmax(0,1fr)!important}
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerCount{margin-left:0!important}
+ body #profileModalOverlay{padding:9px!important}
+ body #profileModalOverlay .crm-profile-modal{padding:17px!important;max-height:calc(100dvh - 18px)!important}
+ #profileModalOverlay .cx-profile-tab{flex:1 1 auto!important}
+}
