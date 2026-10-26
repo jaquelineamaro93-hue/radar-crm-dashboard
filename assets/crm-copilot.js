@@ -49,7 +49,7 @@ const CTA=[
   ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
   ['salary','Médias salariais'],['rankings','Rankings']
 ];
-function addMessage(type,message,action,sources=[]){
+function addMessage(type,message,action,sources=[],options={}){
   if(!history)return;
   const item=document.createElement('div');
   item.className='cx-copilot-message cx-copilot-'+type;
@@ -75,13 +75,14 @@ function addMessage(type,message,action,sources=[]){
     b.className='cx-copilot-action';b.addEventListener('click',()=>runAction(action));
     item.append(b);
   }
+  if(type==='assistant'&&options.feedback!==false)window.CRMBrasaFeedback?.attach(item,{kind:options.replyKind||'assistant',userId:getUser()?.id});
   history.append(item);
   while(history.children.length>18)history.firstElementChild.remove();
   history.scrollTop=history.scrollHeight;
 }
 function showIntro(){
   if(history?.children.length)return;
-  addMessage('assistant','Olá, sou a Brasa Copilot. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.');
+  addMessage('assistant','Olá, sou a Brasa Copilot. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.',null,[],{feedback:false});
 }
 function currentProfileStatus(){
   if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
@@ -199,7 +200,7 @@ async function analyze(){
   const action=result.data?.action;
   if(action==='profile'){const status=currentProfileStatus();addMessage('assistant',status.message,status.action);}
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
-  else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources);
+  else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai'});
   else throw Error('empty');
  }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
@@ -305,7 +306,7 @@ function process(question){
     lastTopic=found.action;
     if(['jobs','remote','hybrid'].includes(found.action)){
       const member=getUser()?.id;
-      addMessage('assistant','Consultando as vagas públicas do Radar...');
+      addMessage('assistant','Consultando as vagas públicas do Radar...',null,[],{feedback:false});
       crmBrasaPublicJobs(question).then(answer=>{
         if(getUser()?.id===member&&canShow())addMessage('assistant',answer,'jobs');
       }).catch(()=>{

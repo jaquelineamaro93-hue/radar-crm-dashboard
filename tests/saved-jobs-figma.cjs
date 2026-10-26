@@ -51,7 +51,7 @@ test('Reorganizes saved jobs without deleting data or event handlers',()=>{
  assert.equal(sections[2].classList.contains('cx-saved-communities'),true);
  doc.querySelector('.cx-saved-all-jobs').click();
  assert.equal(w.lastRoute,'vagas');
- w.close();
+ w.CXSavedJobsDesign.dispose();w.close();
 });
 test('Only the actual match score is highlighted and detailed reasons stay readable',()=>{
  const {w,doc}=fixture();
@@ -62,7 +62,7 @@ test('Only the actual match score is highlighted and detailed reasons stay reada
  card.querySelector('.cx-saved-match-details').open=true;
  assert(card.textContent.includes('Competência confirmada'));
  assert(card.querySelector('#saveMatch'));
- w.close();
+ w.CXSavedJobsDesign.dispose();w.close();
 });
 test('Locale controls new headings without touching saved job titles',()=>{
  const {w,doc}=fixture();
@@ -70,7 +70,7 @@ test('Locale controls new headings without touching saved job titles',()=>{
  doc.dispatchEvent(new w.CustomEvent('cx:locale-change'));
  assert.match(doc.querySelector('.cx-saved-page-intro h2').textContent,/Vacantes guardadas/);
  assert.equal(doc.querySelector('#membroVagasSalvas strong').textContent,'Vaga salva real');
- w.close();
+ w.CXSavedJobsDesign.dispose();w.close();
 });
 test('CSS, live assets and privacy remain scoped to saved jobs',()=>{
  assert(stylesheet.includes('#view-logada #subpage-vagas-salvas'));

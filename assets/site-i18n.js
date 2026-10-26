@@ -267,6 +267,20 @@
    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
    let node;while((node=walker.nextNode()))translateText(node);
  }
+ function moveLanguageIntoHeader(){
+   const host=document.getElementById('cx-language-host');
+   if(!host)return;
+   // Prefer the top workbar of the member shell; never overlay the sign-out button.
+   const member=document.getElementById('view-logada');
+   const memberOpen=member&&!member.hidden&&getComputedStyle(member).display!=='none';
+   const top=memberOpen
+     ?document.querySelector('#view-logada .crm-workbar')
+     :(document.querySelector('#view-publica .crm-navbar .crm-navlinks')||document.querySelector('#view-publica .crm-navbar'));
+   const fallback=document.querySelector('body > header nav, body > header')||document.body;
+   const destination=top||fallback;
+   if(host.parentElement!==destination)destination.appendChild(host);
+   host.dataset.cxLanguagePosition=top?'header':'fallback';
+ }
  function sync(){
    document.documentElement.lang=locale;
    let select=document.getElementById('cx-site-language');
@@ -277,6 +291,7 @@
      select.addEventListener('change',()=>{const v=select.value;if(!OPTIONS.includes(v))return;locale=v;try{localStorage.setItem(STORE,v);}catch{} sync();window.dispatchEvent(new CustomEvent('cx:locale-change',{detail:{locale}}));});
    }
    select.value=locale;
+   moveLanguageIntoHeader();
    const nav=document.querySelector('#view-publica .crm-navbar .crm-navlinks');
    if(nav&&!nav.querySelector('[data-cx-cases-link]')){
      const a=document.createElement('a');a.href='/cases/';a.textContent='Cases';a.dataset.cxCasesLink='true';
@@ -333,7 +348,7 @@
  }
  function styles(){
    if(document.getElementById('cx-language-css'))return;
-   const tag=document.createElement('style');tag.id='cx-language-css';tag.textContent='.cx-case-teaser{padding:26px 20px;background:#fff7f1;border-block:1px solid #f5d1b5}.cx-case-teaser-inner{max-width:1120px;margin:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}.cx-case-teaser h2{font-size:clamp(22px,3vw,34px);line-height:1.16;letter-spacing:-.035em;font-weight:800;color:#352015;margin:4px 0}.cx-case-teaser p{max-width:670px;margin:4px 0;color:#674e3e;font-size:14px}.cx-case-teaser p:first-child{color:#9e4c1d;text-transform:uppercase;letter-spacing:.14em;font-size:10px;font-weight:800}.cx-case-teaser a{display:inline-flex;align-items:center;min-height:44px;padding:11px 18px;border-radius:10px;color:#23160e;background:#f97316;text-decoration:none;font-weight:800;font-size:14px}.cx-case-teaser a:hover{background:#ea650e}.cx-language-host{position:fixed;left:12px;bottom:12px;z-index:8500;border-radius:999px;border:1px solid #dedede;background:rgba(255,255,255,.97);box-shadow:0 4px 17px #0001;padding:4px;max-width:150px}.cx-language-host select{color:#1a1a1a;border:0;border-radius:999px;padding:5px 7px;background:transparent;font:600 12px/1.4 system-ui;max-width:137px}.cx-language-host select:focus-visible{outline:2px solid #F97316;outline-offset:2px}.cx-language-host{border:1px solid #45536c!important;border-radius:9px!important;padding:2px!important;background:#111a2b!important;box-shadow:none!important}.cx-language-host select{font:500 12px/1.4 system-ui!important;color:#f4f5fb!important;border:0!important;outline-offset:2px!important;padding:7px 9px!important;min-height:34px!important;max-width:137px!important;background:#111a2b!important}.cx-language-host select:focus-visible{outline:2px solid #cfa5e9!important}.cx-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[data-cx-cases-link]{white-space:nowrap}@media(max-width:760px){.cx-language-host{bottom:auto;left:auto;right:12px;top:calc(env(safe-area-inset-top, 0px) + 68px);max-width:145px}}';
+   const tag=document.createElement('style');tag.id='cx-language-css';tag.textContent='.cx-case-teaser{padding:26px 20px;background:#fff7f1;border-block:1px solid #f5d1b5}.cx-case-teaser-inner{max-width:1120px;margin:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}.cx-case-teaser h2{font-size:clamp(22px,3vw,34px);line-height:1.16;letter-spacing:-.035em;font-weight:800;color:#352015;margin:4px 0}.cx-case-teaser p{max-width:670px;margin:4px 0;color:#674e3e;font-size:14px}.cx-case-teaser p:first-child{color:#9e4c1d;text-transform:uppercase;letter-spacing:.14em;font-size:10px;font-weight:800}.cx-case-teaser a{display:inline-flex;align-items:center;min-height:44px;padding:11px 18px;border-radius:10px;color:#23160e;background:#f97316;text-decoration:none;font-weight:800;font-size:14px}.cx-case-teaser a:hover{background:#ea650e}.cx-language-host{position:fixed;left:12px;bottom:12px;z-index:8500;border-radius:999px;border:1px solid #dedede;background:rgba(255,255,255,.97);box-shadow:0 4px 17px #0001;padding:4px;max-width:150px}.cx-language-host select{color:#1a1a1a;border:0;border-radius:999px;padding:5px 7px;background:transparent;font:600 12px/1.4 system-ui;max-width:137px}.cx-language-host select:focus-visible{outline:2px solid #F97316;outline-offset:2px}.cx-language-host{border:1px solid #45536c!important;border-radius:9px!important;padding:2px!important;background:#111a2b!important;box-shadow:none!important}.cx-language-host select{font:500 12px/1.4 system-ui!important;color:#f4f5fb!important;border:0!important;outline-offset:2px!important;padding:7px 9px!important;min-height:34px!important;max-width:137px!important;background:#111a2b!important}.cx-language-host select:focus-visible{outline:2px solid #cfa5e9!important}.cx-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[data-cx-cases-link]{white-space:nowrap}@media(max-width:760px){.cx-language-host{bottom:auto;left:auto;right:12px;top:calc(env(safe-area-inset-top, 0px) + 68px);max-width:145px}}.cx-language-host{position:static!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;z-index:auto!important;max-width:152px!important;margin:0 4px!important;flex:0 0 auto!important;display:inline-flex!important;vertical-align:middle!important}.cx-language-host select{width:auto!important;max-width:142px!important;min-height:38px!important;padding:7px 9px!important}.crm-workbar .cx-language-host{margin-left:auto!important}#view-publica .crm-navbar .cx-language-host{align-self:center!important}@media(max-width:760px){.cx-language-host{position:static!important;inset:auto!important;margin:0 2px!important}.cx-language-host select{min-height:40px!important}}';
    document.head.append(tag);
  }
  window.CXLanguage={getLocale:()=>locale,translate:(key)=>{const original=String(key);return locale==='pt-BR'?original:(labels[original]?.[locale==='en'?0:1]||original);},setLocale:(v)=>{if(OPTIONS.includes(v)){locale=v;try{localStorage.setItem(STORE,v);}catch{}sync();}},sync};

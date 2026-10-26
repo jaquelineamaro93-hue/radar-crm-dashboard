@@ -9,6 +9,20 @@ const labels={
  en:{home:'Help center',all:'All',groups:['Account and privacy','Jobs and AI Match','Community','Using Brasa'],read:'View guide',back:'View all guides',explore:'Explore the help center',toc:'In this article',purpose:'What it is for',steps:'Step by step',important:'What you need to know',returning:'When you return',open:'Open feature',copilot:'Help me with Brasa',search:'Search articles',related:'Related articles',previous:'Previous',next:'Next',updated:'Updated on 26 Oct 2026',time:n=>`About ${n} min read`,count:n=>`${n} guides available`,none:'No guides found. Try another search.'},
  'es-419':{home:'Centro de ayuda',all:'Todos',groups:['Cuenta y privacidad','Vacantes y Match IA','Comunidad','Brasa en la práctica'],read:'Ver guía',back:'Ver todas las guías',explore:'Explora el centro de ayuda',toc:'En este artículo',purpose:'Para qué sirve',steps:'Paso a paso',important:'Lo que debes saber',returning:'Al volver',open:'Abrir funcionalidad',copilot:'Ayúdame con Brasa',search:'Buscar artículos',related:'Artículos relacionados',previous:'Anterior',next:'Siguiente',updated:'Actualizado el 26/10/2026',time:n=>`Lectura de unos ${n} min`,count:n=>`${n} guías disponibles`,none:'No se encontraron guías. Prueba otra búsqueda.'}
 };
+// Cosmetic owner exemption; all protected data still relies on server authorization.
+const copyrightText={
+ 'pt-BR':'© Conexão CRM. Conteúdo protegido. Reprodução, distribuição e uso em sistemas de IA dependem de autorização.',
+ en:'© Conexão CRM. Protected content. Reproduction, distribution and use in AI systems require authorization.',
+ 'es-419':'© Conexão CRM. Contenido protegido. La reproducción, distribución y el uso en sistemas de IA requieren autorización.'
+};
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.source!==window.parent||event.data?.type!=='crm:help-watermark-exemption-response')return;
+ document.body.classList.toggle('cx-owner-watermark-exempt',event.data.isOwner===true);
+});
+function requestOwnerExemption(){
+ if(window.parent===window)return;
+ try{window.parent.postMessage({type:'crm:help-watermark-exemption-request'},location.origin)}catch{}
+}
 const clean=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const getLocale=()=>{try{const x=localStorage.getItem('conexao:locale');return labels[x]?x:'pt-BR'}catch{return 'pt-BR'}};
 let category=-1,active=-1;
@@ -53,7 +67,11 @@ function render(i,focus=false){
  });
  const actions=el('div','help-article-actions'),open=el('a','help-feature-link',t.open);open.href=guide.target;open.target='_top';actions.append(open);
  if(new URLSearchParams(location.search).get('embedded')==='1')actions.append(button(t.copilot,()=>window.parent.postMessage({type:'crm:help-open-copilot'},location.origin),'help-copilot-link'));
- article.append(actions);body.append(article);
+ article.append(actions);
+ const copyright=el('p','help-copyright',copyrightText[getLocale()]);
+ article.append(copyright);
+ body.append(article);
+ requestOwnerExemption();
  const prevnext=el('nav','help-prev-next');prevnext.setAttribute('aria-label',t.previous+' / '+t.next);
  [i>0?i-1:-1,i<guides.length-1?i+1:-1].forEach((n,k)=>{const box=el('div');if(n>=0){const a=routeLink(guides[n],(k===0?'← ':'')+localized(guides[n])[0]+(k===1?' →':''));a.prepend(el('span','help-direction',k===0?t.previous:t.next));box.append(a)}prevnext.append(box)});body.append(prevnext);
  const related=el('section','help-related');related.append(el('h3',null,t.related));const relevant=guides.map((g,n)=>n).filter(n=>n!==i).sort((a,b)=>(guides[b].group===guide.group)-(guides[a].group===guide.group)).slice(0,3);

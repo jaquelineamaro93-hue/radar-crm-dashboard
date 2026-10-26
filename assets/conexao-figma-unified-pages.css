@@ -359,3 +359,34 @@ html.crm-compact-device #view-publica #publicHero .crm-conexo-secondary{
 html.crm-compact-device #crmPublicWorkspace #pageCourses #courseResults .result-grid{
  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
 }
+
+/* Restore the original Figma workspace composition: saved jobs at left,
+   Match recommendations at right, community beneath saved jobs. */
+@media(min-width:1081px){
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard #crmSavedSlot>.cx-saved-main{
+  display:grid!important;
+  grid-template-columns:minmax(260px,.85fr) minmax(0,1.6fr)!important;
+  grid-template-areas:"saved matches" "communities matches"!important;
+  grid-template-rows:auto 1fr!important;
+  align-items:start!important;gap:16px!important;
+ }
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-list-panel{grid-area:saved!important}
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-recommendations{grid-area:matches!important;min-width:0!important}
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-communities{grid-area:communities!important}
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasMatch{
+  grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;
+ }
+}
+@media(min-width:1550px){
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard #membroVagasMatch{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:1080px){
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard #crmSavedSlot>.cx-saved-main{
+  grid-template-columns:minmax(0,1fr)!important;grid-template-areas:none!important;
+ }
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-list-panel,
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-recommendations,
+ #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-communities{grid-area:auto!important}
+}

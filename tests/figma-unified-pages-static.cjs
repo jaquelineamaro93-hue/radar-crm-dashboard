@@ -46,8 +46,8 @@ test('workbench, public counters and notices use accessible card surfaces',()=>{
  assert(css.includes('focus-visible'));
 });
 test('new source references load with cache refresh',()=>{
- assert(html.includes('conexao-figma-unified-pages.css?v=20261025-allpages-v2'));
- assert(html.includes('saved-jobs-figma.js?v=20261025-figma-v4'));
+ assert(html.includes('conexao-figma-unified-pages.css?v=20261026-auto-match-columns1'));
+ assert(html.includes('saved-jobs-figma.js?v=20261026-auto-match-columns1'));
  assert(savedJs.includes("page.classList.contains('cx-saved-dashboard')"));
  assert(savedJs.includes('matchObserver.observe(match,{childList:true})'));
 });
@@ -64,4 +64,17 @@ test('CSS tokens and source expressions stay syntactically balanced',()=>{
   assert.equal(depth,0);
  }
  assert.doesNotThrow(()=>new Function(savedJs));
+});
+
+test('saved jobs use Figma two-column workspace and actual Match cards load on entry',()=>{
+ for(const style of [css,savedCss]){
+  assert(style.includes('grid-template-areas:"saved matches" "communities matches"'),'restore Figma columns');
+  assert(style.includes('@media(max-width:1080px)'),'mobile fallback');
+ }
+ assert(html.includes('>Atualizar o Match</button>'),'manual refresh text');
+ assert(savedJs.includes("refresh:'Atualizar o Match'"),'translation');
+ assert(savedJs.includes('function autoLoadOnSavedRoute()'),'automatic loading');
+ assert(savedJs.includes('Promise.resolve(crmRunMatch())'),'reuse existing real match engine');
+ assert(savedJs.includes("crmActiveRoute!=='vagas-salvas'"),'load only when route is active');
+ assert(!savedJs.includes('VAGAS=['),'no fixture data or fabricated scores');
 });

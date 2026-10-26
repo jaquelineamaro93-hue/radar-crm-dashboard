@@ -12,7 +12,7 @@ const messages={
    saved:'Minhas vagas salvas',
    suggested:'Vagas recomendadas',
    best:'MELHOR MATCH',
-   refresh:'Buscar Match',
+   refresh:'Atualizar o Match',
    allJobs:'Ver todas as vagas',
    communities:'COMUNIDADES',
    communityTitle:'Conecte-se. Troque. Evolua.',
@@ -20,7 +20,7 @@ const messages={
    resume:'Currículo para Match · privado',
    resumeTitle:'Seu currículo profissional',
    editResume:'Editar currículo',
-   empty:'Complete seu currículo e escolha Buscar Match para consultar vagas compatíveis.',
+   empty:'Complete seu Currículo para Match para visualizar recomendações de vagas automaticamente.',
    details:'Por que esta vaga combina com meu perfil?',
    explanation:'A pontuação é uma estimativa de aderência, não uma previsão de contratação. Confira a vaga original.',
    chat:'Conversas e troca de experiências.',
@@ -34,7 +34,7 @@ const messages={
    saved:'My saved jobs',
    suggested:'Recommended jobs',
    best:'BEST MATCH',
-   refresh:'Find matches',
+   refresh:'Refresh matches',
    allJobs:'View all jobs',
    communities:'COMMUNITIES',
    communityTitle:'Connect. Share. Grow.',
@@ -42,7 +42,7 @@ const messages={
    resume:'Matching resume · private',
    resumeTitle:'Your professional resume',
    editResume:'Edit resume',
-   empty:'Complete your resume and choose Find matches to see compatible jobs.',
+   empty:'Complete your matching resume to see recommended jobs automatically.',
    details:'Why does this job match my profile?',
    explanation:'Match scores are estimates, not hiring predictions. Always verify the original posting.',
    chat:'Conversations and shared experiences.',
@@ -56,7 +56,7 @@ const messages={
    saved:'Mis vacantes guardadas',
    suggested:'Vacantes recomendadas',
    best:'MEJOR MATCH',
-   refresh:'Buscar coincidencias',
+   refresh:'Actualizar el Match',
    allJobs:'Ver todas las vacantes',
    communities:'COMUNIDADES',
    communityTitle:'Conecta. Comparte. Evoluciona.',
@@ -64,7 +64,7 @@ const messages={
    resume:'Currículum para match · privado',
    resumeTitle:'Tu currículum profesional',
    editResume:'Editar currículum',
-   empty:'Completa tu currículum y selecciona Buscar coincidencias para consultar vacantes afines.',
+   empty:'Completa tu currículum para Match y verás las vacantes recomendadas automáticamente.',
    details:'¿Por qué esta vacante coincide con mi perfil?',
    explanation:'El porcentaje es una estimación, no una predicción de contratación. Revisa el anuncio original.',
    chat:'Conversaciones e intercambio de experiencias.',
@@ -78,7 +78,7 @@ function currentLocale(){const lang=document.documentElement.lang;return validLo
 function t(k){return(messages[locale]||messages['pt-BR'])[k]||k;}
 function label(el,key){if(!el)return;el.dataset.cxSavedKey=key;el.textContent=t(key);}
 function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
-let matchObserver=null,pending=false;
+let matchObserver=null,languageObserver=null,pending=false,disposed=false;
 function tidyMatches(){
  const host=document.getElementById('membroVagasMatch');
  if(!host)return;
@@ -118,6 +118,9 @@ function tidyMatches(){
  });
 }
 function updateTranslations(){
+ // The document may be detached while a pending MutationObserver callback runs
+ // (e.g. logout/navigation or a component test closing its DOM).
+ if(disposed||typeof document==='undefined'||!document?.documentElement)return;
  locale=currentLocale();
  document.querySelectorAll('#'+rootId+' [data-cx-saved-key]').forEach(node=>node.textContent=t(node.dataset.cxSavedKey));
 }
@@ -154,8 +157,8 @@ function enhance(){
    if(typeof MutationObserver==='function'){
      matchObserver?.disconnect();
      matchObserver=new MutationObserver(()=>{
-       if(pending)return;pending=true;
-       requestAnimationFrame(()=>{pending=false;tidyMatches();});
+       if(disposed||pending)return;pending=true;
+       requestAnimationFrame(()=>{pending=false;if(!disposed)tidyMatches();});
      });
      matchObserver.observe(match,{childList:true}); // avoid recursive observers
    }
@@ -235,18 +238,43 @@ function enhance(){
  // Only mount watchers inside this private panel. Do not watch session, profile or Copilot nodes.
  if(typeof MutationObserver==='function'){
    matchObserver?.disconnect();
-   matchObserver=new MutationObserver(()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;tidyMatches();});});
+   matchObserver=new MutationObserver(()=>{if(disposed||pending)return;pending=true;requestAnimationFrame(()=>{pending=false;if(!disposed)tidyMatches();});});
    matchObserver.observe(match,{childList:true,subtree:true});
  }
  tidyMatches();
 }
-function init(){enhance();updateTranslations();}
+// The first visit automatically runs the existing real Match pipeline.
+ // Subsequent visits reuse the rendered cards; the button forces a fresh fetch.
+ // Nothing is scored locally by this visual module.
+let matchUser='',matchTriggeredAt=0;
+function autoLoadOnSavedRoute(){
+ const page=document.getElementById(rootId),workspace=document.getElementById('view-logada');
+ if(!page?.classList.contains('active')||!workspace||workspace.hidden)return;
+ try{
+  if(typeof crmActiveRoute!=='string'||crmActiveRoute!=='vagas-salvas')return;
+  if(typeof crmSignedIn!=='function'||!crmSignedIn())return;
+  if(typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id)return;
+  if(typeof crmRunMatch!=='function')return;
+  const now=Date.now(),uid=CURRENT_USER.id;
+  if(uid===matchUser&&now-matchTriggeredAt<120000)return;
+  matchUser=uid;matchTriggeredAt=now;
+  Promise.resolve(crmRunMatch()).catch(()=>{matchTriggeredAt=0;});
+ }catch{matchTriggeredAt=0}
+}
+function init(){
+ if(disposed)return;
+ enhance();updateTranslations();
+ // crmNavigate dispatches the event after the page has become active.
+ autoLoadOnSavedRoute();
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 document.addEventListener('crm:route-changed',init);
 document.addEventListener('cx:locale-change',updateTranslations);
 // The global language component can initialize after this script. Follow its
 // document.lang change without reading private data or creating a polling loop.
-if(typeof MutationObserver==='function')new MutationObserver(updateTranslations)
- .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-window.CXSavedJobsDesign={refresh:init};
+if(typeof MutationObserver==='function'){
+ languageObserver=new MutationObserver(updateTranslations);
+ languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+}
+window.CXSavedJobsDesign={refresh:init,dispose(){disposed=true;matchObserver?.disconnect();languageObserver?.disconnect();}};
 })();
