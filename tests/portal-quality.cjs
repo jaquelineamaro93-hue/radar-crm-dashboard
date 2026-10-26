@@ -59,6 +59,18 @@ assert(!read('assets/crm-runtime-integrations.js').includes("navigator.serviceWo
   'registro de push deve respeitar a escolha do visitante');
 
 // Conexômetro mantém o layout restrito ao segundo bloco da home.
+
+// O override do redesign precisa preservar a largura do telefone, nao anular padding.
+const homeFigmaCss=read('assets/conexao-figma-unified-pages.css');
+assert(homeFigmaCss.includes('#view-publica #publicHero #crmConexometro.crm-conexometro'),'o Conexometro precisa ter override mobile mais especifico que padding zero');
+assert(homeFigmaCss.includes('padding:32px 16px 38px!important'),'o Conexometro precisa de respiro horizontal no telefone');
+assert(homeFigmaCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))!important'),'CTAs do mobile nao podem usar tres colunas apertadas');
+assert(homeFigmaCss.includes('crm-conexo-ctas a:first-child{grid-column:1/-1!important}'),'CTA principal precisa ter largura completa');
+assert(homeFigmaCss.includes('body #crmSurveyReminder.crm-survey-modern'),'aviso de pesquisa deve seguir a identidade visual atual');
+const noticeCss=read('assets/crm-help-workspace.css');
+assert(noticeCss.includes('.crm-help-release-inline'),'aviso de novidades continua disponivel');
+assert(noticeCss.includes('border-left:3px solid #a875ce!important'),'aviso precisa manter paleta de redesign');
+
 const meterCss=read('assets/conexometro.css');
 assert(!index.includes('id="crm-conexometro-styles"'),'CSS antigo do Conexômetro não pode competir com o stylesheet novo');
 assert(meterCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'3 indicadores devem ter colunas iguais no desktop');
