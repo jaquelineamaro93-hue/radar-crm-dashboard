@@ -26,17 +26,17 @@ addScript('/assets/open-to-work-excerpts.js?v=20261021-1','crm-otw-excerpts-runt
 if(!document.getElementById('crm-copilot-css')){
   const css=document.createElement('link');
   css.id='crm-copilot-css';css.rel='stylesheet';
-  css.href='/assets/crm-copilot.css?v=20261026-feedback1';
+  css.href='/assets/crm-copilot.css?v=20261026-clean1';
   document.head.appendChild(css);
 }
 // Load the optional feedback writer first. Brasa itself remains available if it fails.
 if(!document.getElementById('crm-brasa-feedback-runtime')){
  const feedback=document.createElement('script');feedback.id='crm-brasa-feedback-runtime';
  feedback.src='/assets/brasa-feedback.js?v=20261026-feedback2';feedback.async=true;
- feedback.addEventListener('load',()=>addScript('/assets/crm-copilot.js?v=20261026-feedback2','crm-copilot-runtime'),{once:true});
- feedback.addEventListener('error',()=>addScript('/assets/crm-copilot.js?v=20261026-feedback2','crm-copilot-runtime'),{once:true});
+ feedback.addEventListener('load',()=>addScript('/assets/crm-copilot.js?v=20261026-clean1','crm-copilot-runtime'),{once:true});
+ feedback.addEventListener('error',()=>addScript('/assets/crm-copilot.js?v=20261026-clean1','crm-copilot-runtime'),{once:true});
  document.head.appendChild(feedback);
-}else{addScript('/assets/crm-copilot.js?v=20261026-feedback2','crm-copilot-runtime')}
+}else{addScript('/assets/crm-copilot.js?v=20261026-clean1','crm-copilot-runtime')}
 
 
 // O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.
