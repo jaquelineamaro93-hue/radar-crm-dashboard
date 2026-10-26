@@ -10,9 +10,11 @@ const home=read('assets/member-home-reference.js');
 
 test('New-user survey is wired to a validated account, not a visitor',()=>{
  assert(index.includes('CXFirstAccessInterests?.offer?.(data.user,profile)'));
- assert(script.includes("CREATED_AFTER='2026-10-25T00:00:00.000Z'"));
+ assert(!script.includes('CREATED_AFTER'),'unanswered choices must not be blocked by a calendar cutoff');
  assert(script.includes('window.crmSignedIn?.()'));
- assert(script.includes('user.created_at'));
+ assert(script.includes("!Array.isArray(profile?.onboarding_goals)"),'only missing preference prompts again');
+ assert(script.includes('observer.observe')||script.includes('.observe(document.body'),'profile overlay lifecycle must be watched');
+ assert(script.includes("'crm:auth-state'"),'session restoration retries the prompt');
  assert(script.includes("!Array.isArray(profile?.onboarding_goals)"));
  assert(script.includes('user.is_anonymous'));
  assert(script.includes("getUser(session.access_token)"));
@@ -49,6 +51,23 @@ test('Dashboard honors priority without rewriting real profile or match data',()
  assert(home.includes("pesquisa:['goalResearch','pesquisa']"));
  assert(home.includes("recruiter?'membros'"));
  assert(home.includes("CXFirstAccessInterests?.edit?.()"));
+});
+test('All 35 published SPA routes share the same onboarding and UX version',()=>{
+ const {execFileSync}=require('node:child_process');
+ const files=execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\\n').filter(name=>name==='404.html'||name==='index.html'||(name.endsWith('/index.html')&&read(name).length>1000000));
+ const copies=files.map(read);
+ assert.equal(copies.length,35);
+ for(const doc of copies){
+  assert.equal(doc,copies[0],'stale shell or different HTML route');
+  assert(doc.includes('first-access-interests.js?v=20261026-goals4'));
+  assert(doc.includes('conexao-ux-refinement.css?v=20261026-ui1'));
+  assert(doc.includes('conexao-ux-refinement.js?v=20261026-ui1'));
+ }
+ const ui=read('assets/conexao-ux-refinement.js');
+ const css=read('assets/conexao-ux-refinement.css');
+ assert.doesNotThrow(()=>new Function(ui));
+ assert(css.includes('#crmAdminPage')&&css.includes('#pageSearch')&&css.includes('#pageFreelancers')&&css.includes('#pageAgencias'));
+ assert(ui.includes('crm-catalog-disclaimer')&&ui.includes('labelsForAdmin'));
 });
 test('Mobile and desktop visual styles are included without stale orange controls',()=>{
  assert(index.includes('first-access-interests.css?v='));
