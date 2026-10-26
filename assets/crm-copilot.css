@@ -108,3 +108,21 @@
 #cxCopilot .cx-copilot-bottom{flex-wrap:wrap}
 #cxCopilot .cx-copilot-bottom small{flex:1 1 170px}
 @media(max-width:480px){#cxCopilot .cx-copilot-privacy-settings{font-size:10px}}
+
+/* Feedback inline, small touch targets, no extra modal and no conversation collection. */
+#cxCopilot .cx-copilot-feedback{margin-top:12px;padding-top:10px;border-top:1px solid #554d55;display:flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:100%}
+#cxCopilot .cx-copilot-feedback-question{font:500 12px/1.45 system-ui,sans-serif;color:#dad5de}
+#cxCopilot .cx-copilot-feedback-actions{display:flex;align-items:center;gap:7px}
+#cxCopilot .cx-copilot-feedback-actions button{display:inline-grid;place-items:center;width:42px;min-width:42px;height:40px;border-radius:9px;background:#242431;border:1px solid #65586c;color:#fff;font:19px/1 system-ui;box-shadow:none}
+#cxCopilot .cx-copilot-feedback-actions button:hover,#cxCopilot .cx-copilot-feedback-actions button[aria-pressed=true]{background:#3b2f4b;border-color:#cea8e5}
+#cxCopilot .cx-copilot-feedback-form{display:flex;flex-direction:column;gap:7px;width:100%;max-width:100%;padding:3px 0 0}
+#cxCopilot .cx-copilot-feedback-form[hidden],#cxCopilot .cx-copilot-feedback-actions[hidden],#cxCopilot .cx-copilot-feedback-status[hidden]{display:none!important}
+#cxCopilot .cx-copilot-feedback-form label{display:block;font-size:12px!important;color:#f5eafa;font-weight:650}
+#cxCopilot .cx-copilot-feedback-form textarea{display:block;width:100%;min-height:87px;max-height:145px;font:14px/1.5 system-ui,sans-serif;color:#faf8fd!important;background:#181722!important;border:1px solid #6b6179!important;border-radius:9px;padding:9px;resize:vertical}
+#cxCopilot .cx-copilot-feedback-form small{font:11px/1.5 system-ui,sans-serif;color:#c7bfce}
+#cxCopilot .cx-copilot-feedback-form-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-start}
+#cxCopilot .cx-copilot-feedback-form-actions button{min-height:40px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:650;background:#cfa5e9;color:#14121b;border:1px solid #cfa5e9}
+#cxCopilot .cx-copilot-feedback-form-actions button:last-child{background:transparent;color:#e0d6ea;border-color:#73657e}
+#cxCopilot .cx-copilot-feedback-status{margin:3px 0 0;font:12px/1.5 system-ui,sans-serif;color:#e8d7f0}
+#cxCopilot .cx-copilot-feedback.is-sent{padding-top:8px}
+@media(max-width:600px){#cxCopilot .cx-copilot-feedback{gap:7px}#cxCopilot .cx-copilot-feedback-form textarea{font-size:16px}}
