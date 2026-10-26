@@ -12,7 +12,7 @@ const messages={
    saved:'Minhas vagas salvas',
    suggested:'Vagas recomendadas',
    best:'MELHOR MATCH',
-   refresh:'Buscar Match',
+   refresh:'Atualizar o Match',
    allJobs:'Ver todas as vagas',
    communities:'COMUNIDADES',
    communityTitle:'Conecte-se. Troque. Evolua.',
@@ -20,7 +20,7 @@ const messages={
    resume:'Currículo para Match · privado',
    resumeTitle:'Seu currículo profissional',
    editResume:'Editar currículo',
-   empty:'Complete seu currículo e escolha Buscar Match para consultar vagas compatíveis.',
+   empty:'Complete seu Currículo para Match para visualizar recomendações de vagas automaticamente.',
    details:'Por que esta vaga combina com meu perfil?',
    explanation:'A pontuação é uma estimativa de aderência, não uma previsão de contratação. Confira a vaga original.',
    chat:'Conversas e troca de experiências.',
@@ -34,7 +34,7 @@ const messages={
    saved:'My saved jobs',
    suggested:'Recommended jobs',
    best:'BEST MATCH',
-   refresh:'Find matches',
+   refresh:'Refresh matches',
    allJobs:'View all jobs',
    communities:'COMMUNITIES',
    communityTitle:'Connect. Share. Grow.',
@@ -42,7 +42,7 @@ const messages={
    resume:'Matching resume · private',
    resumeTitle:'Your professional resume',
    editResume:'Edit resume',
-   empty:'Complete your resume and choose Find matches to see compatible jobs.',
+   empty:'Complete your matching resume to see recommended jobs automatically.',
    details:'Why does this job match my profile?',
    explanation:'Match scores are estimates, not hiring predictions. Always verify the original posting.',
    chat:'Conversations and shared experiences.',
@@ -56,7 +56,7 @@ const messages={
    saved:'Mis vacantes guardadas',
    suggested:'Vacantes recomendadas',
    best:'MEJOR MATCH',
-   refresh:'Buscar coincidencias',
+   refresh:'Actualizar el Match',
    allJobs:'Ver todas las vacantes',
    communities:'COMUNIDADES',
    communityTitle:'Conecta. Comparte. Evoluciona.',
@@ -64,7 +64,7 @@ const messages={
    resume:'Currículum para match · privado',
    resumeTitle:'Tu currículum profesional',
    editResume:'Editar currículum',
-   empty:'Completa tu currículum y selecciona Buscar coincidencias para consultar vacantes afines.',
+   empty:'Completa tu currículum para Match y verás las vacantes recomendadas automáticamente.',
    details:'¿Por qué esta vacante coincide con mi perfil?',
    explanation:'El porcentaje es una estimación, no una predicción de contratación. Revisa el anuncio original.',
    chat:'Conversaciones e intercambio de experiencias.',
@@ -240,7 +240,29 @@ function enhance(){
  }
  tidyMatches();
 }
-function init(){enhance();updateTranslations();}
+// The first visit automatically runs the existing real Match pipeline.
+ // Subsequent visits reuse the rendered cards; the button forces a fresh fetch.
+ // Nothing is scored locally by this visual module.
+let matchUser='',matchTriggeredAt=0;
+function autoLoadOnSavedRoute(){
+ const page=document.getElementById(rootId),workspace=document.getElementById('view-logada');
+ if(!page?.classList.contains('active')||!workspace||workspace.hidden)return;
+ try{
+  if(typeof crmActiveRoute!=='string'||crmActiveRoute!=='vagas-salvas')return;
+  if(typeof crmSignedIn!=='function'||!crmSignedIn())return;
+  if(typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id)return;
+  if(typeof crmRunMatch!=='function')return;
+  const now=Date.now(),uid=CURRENT_USER.id;
+  if(uid===matchUser&&now-matchTriggeredAt<120000)return;
+  matchUser=uid;matchTriggeredAt=now;
+  Promise.resolve(crmRunMatch()).catch(()=>{matchTriggeredAt=0;});
+ }catch{matchTriggeredAt=0}
+}
+function init(){
+ enhance();updateTranslations();
+ // crmNavigate dispatches the event after the page has become active.
+ autoLoadOnSavedRoute();
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 document.addEventListener('crm:route-changed',init);
 document.addEventListener('cx:locale-change',updateTranslations);
