@@ -390,3 +390,66 @@ html.crm-compact-device #crmPublicWorkspace #pageCourses #courseResults .result-
  #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-recommendations,
  #view-logada #subpage-vagas-salvas.cx-saved-dashboard .cx-saved-communities{grid-area:auto!important}
 }
+
+/* 2026-10-26: home mobile. O Conexometro nao pode herdar padding zero do publicHero. */
+@media(max-width:640px){
+  #view-publica #publicHero,
+  #view-publica #publicHero .crm-hero,
+  #view-publica #publicHero #crmConexometro{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important}
+  #view-publica #publicHero .crm-hero-content{box-sizing:border-box!important;min-width:0!important;max-width:100%!important;padding:34px 20px 52px!important}
+  #view-publica #publicHero .crm-hero h1{font-size:clamp(37px,10.5vw,48px)!important;line-height:1.03!important;overflow-wrap:break-word!important}
+  #view-publica #publicHero #crmConexometro.crm-conexometro,
+  #view-publica #crmConexometro.crm-conexometro{padding:32px 16px 38px!important;overflow:hidden!important}
+  #view-publica #crmConexometro .crm-conexo-wrap{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0 auto!important}
+  #view-publica #crmConexometro .crm-conexo-kicker{font-size:10px!important;gap:6px 9px!important;letter-spacing:.09em!important;line-height:1.5!important;overflow-wrap:anywhere}
+  #view-publica #crmConexometro .crm-conexo-kicker-note{font-size:10px!important;letter-spacing:.04em!important}
+  #view-publica #crmConexometro .crm-conexo-heading{font-size:clamp(24px,6.9vw,32px)!important;line-height:1.18!important;margin:14px 0 10px!important;letter-spacing:-.035em!important;overflow-wrap:anywhere}
+  #view-publica #crmConexometro .crm-conexo-intro{font-size:13px!important;line-height:1.55!important;margin:0 0 18px!important;max-width:100%!important}
+  #view-publica #crmConexometro .crm-conexo-stats{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+  #view-publica #crmConexometro :is(.crm-conexo-feature,.crm-conexo-card){box-sizing:border-box!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;gap:13px!important;padding:18px!important;border-radius:12px!important}
+  #view-publica #crmConexometro :is(.crm-conexo-feature-value,.crm-conexo-card-value){font-size:clamp(31px,9vw,39px)!important;margin:2px 0 0!important;line-height:1.15!important;max-width:100%!important}
+  #view-publica #crmConexometro .crm-conexo-card-bottom{gap:7px!important}
+  #view-publica #crmConexometro .crm-conexo-card-mark{width:30px!important;height:30px!important}
+  #view-publica #crmConexometro .crm-conexo-trend{font-size:11px!important;line-height:1.3!important;min-width:0!important}
+  #view-publica #crmConexometro .crm-conexo-trend-text{overflow-wrap:anywhere!important}
+  #view-publica #crmConexometro .crm-conexo-info{gap:7px!important;align-items:flex-start!important;margin:14px 0 0!important}
+  #view-publica #crmConexometro .crm-conexo-status,
+  #view-publica #crmConexometro .crm-conexo-refresh{font-size:11px!important;line-height:1.4!important}
+  #view-publica #crmConexometro .crm-conexo-ctas{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin:16px 0 0!important}
+  #view-publica #crmConexometro .crm-conexo-ctas a{box-sizing:border-box!important;min-width:0!important;min-height:44px!important;padding:9px 6px!important;font-size:12px!important;line-height:1.3!important;border-radius:9px!important;white-space:normal!important}
+  #view-publica #crmConexometro .crm-conexo-ctas a:first-child{grid-column:1/-1!important}
+  #view-publica #crmConexometro .crm-conexo-note{font-size:10px!important;line-height:1.5!important;margin-top:12px!important}
+  #view-publica .crm-public-menu{min-width:0!important}
+  #view-publica .crm-public-menu>summary{display:flex!important;align-items:center!important;gap:10px!important;min-height:38px!important;padding:8px 2px!important;font-size:12px!important;font-weight:650!important;color:#d5c2e6!important}
+  #view-publica .crm-public-menu>summary::before{content:"";display:inline-block;flex:0 0 18px;width:18px;height:14px;border-top:2px solid currentColor;border-bottom:2px solid currentColor;background:linear-gradient(currentColor,currentColor) center/18px 2px no-repeat}
+  #view-publica .crm-navbar .crm-navbar-inner{row-gap:0!important}
+  html.crm-compact-device #view-publica .crm-public-menu{margin-top:0!important}
+  #view-publica .crm-public-menu>summary::-webkit-details-marker{display:none}
+}
+@media(max-width:360px){
+  #view-publica #publicHero #crmConexometro.crm-conexometro,
+  #view-publica #crmConexometro.crm-conexometro{padding-inline:14px!important}
+  #view-publica #crmConexometro .crm-conexo-ctas{grid-template-columns:minmax(0,1fr)!important}
+  #view-publica #crmConexometro .crm-conexo-ctas a:first-child{grid-column:auto!important}
+}
+/* Avisos: mesma linguagem navy/lilas do redesign, inclusive o convite publico da pesquisa. */
+body #crmSurveyReminder.crm-survey-modern,
+body #crmNewsletterPrompt{
+  box-sizing:border-box!important;width:min(360px,calc(100vw - 28px))!important;max-width:calc(100vw - 28px)!important;
+  background:#192335!important;color:#f3f5fb!important;border:1px solid #46536a!important;
+  border-top:2px solid #9f6ac6!important;border-radius:14px!important;
+  padding:16px!important;box-shadow:0 15px 40px rgba(0,0,0,.35)!important;
+  max-height:min(75dvh,530px)!important;overflow-y:auto!important
+}
+body #crmSurveyReminder.crm-survey-modern :is(.crm-survey-label,h2,p){max-width:100%;overflow-wrap:break-word}
+body #crmSurveyReminder.crm-survey-modern .crm-survey-label{color:#cca3e8!important;font-size:10px!important;letter-spacing:.09em!important}
+body #crmSurveyReminder.crm-survey-modern h2{font-size:18px!important;line-height:1.28!important;margin:6px 0 8px!important;color:#fff!important}
+body #crmSurveyReminder.crm-survey-modern p{font-size:12px!important;line-height:1.55!important;color:#c2cbdb!important}
+body #crmSurveyReminder.crm-survey-modern .crm-survey-primary,
+body #crmNewsletterPrompt [data-nl-yes]{background:#7f40b1!important;border-color:#7f40b1!important;color:#fff!important;border-radius:8px!important;font-size:12px!important}
+body #crmSurveyReminder.crm-survey-modern :is(a,button):focus-visible,
+body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!important;outline-offset:2px!important}
+@media(max-width:640px){
+  body #crmSurveyReminder.crm-survey-modern,
+  body #crmNewsletterPrompt{left:14px!important;right:14px!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;top:auto!important;width:auto!important;max-width:none!important;max-height:min(55dvh,430px)!important}
+}
