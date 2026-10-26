@@ -275,7 +275,7 @@
    const memberOpen=member&&!member.hidden&&getComputedStyle(member).display!=='none';
    const top=memberOpen
      ?document.querySelector('#view-logada .crm-workbar')
-     :document.querySelector('#view-publica .crm-navbar .crm-navlinks, #view-publica .crm-navbar');
+     :(document.querySelector('#view-publica .crm-navbar .crm-navlinks')||document.querySelector('#view-publica .crm-navbar'));
    const fallback=document.querySelector('body > header nav, body > header')||document.body;
    const destination=top||fallback;
    if(host.parentElement!==destination)destination.appendChild(host);
