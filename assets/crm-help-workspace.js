@@ -24,6 +24,19 @@ window.addEventListener('message',event=>{
  if(!frames.some(frame=>frame.contentWindow===event.source&&!frame.hidden&&frame.closest('.tab-page')?.classList.contains('active')))return;
  if(signedIn()&&window.CXCopilot?.isAvailable?.())window.CXCopilot.open();
 });
+// Attribution overlay exception only for the site owner's authenticated account.
+// It does not grant access, alter RLS, or prevent screenshots / AI transcription.
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.data?.type!=='crm:help-watermark-exemption-request')return;
+ const frame=[...document.querySelectorAll('.crm-help-inner-frame')].find(el=>el.contentWindow===event.source);
+ if(!frame||frame.hidden||!frame.closest('.tab-page')?.classList.contains('active'))return;
+ let owner=false;
+ try{
+   owner=signedIn()&&typeof CURRENT_USER!=='undefined'&&
+     String(CURRENT_USER?.email||'').trim().toLowerCase()==='jaqueline.amaro93@gmail.com';
+ }catch{}
+ event.source.postMessage({type:'crm:help-watermark-exemption-response',isOwner:owner},location.origin);
+});
 const STORAGE='conexao:seen-help-releases:v1';
 const icons={
  bell:'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>',
