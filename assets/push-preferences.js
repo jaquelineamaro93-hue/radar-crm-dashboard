@@ -30,11 +30,11 @@ function init(){
  if(!document.getElementById('crm-help-workspace-style')){
    const style=document.createElement('link');
    style.id='crm-help-workspace-style';style.rel='stylesheet';
-   style.href='/assets/crm-help-workspace.css?v=20261026-navy-help-2';document.head.append(style);
+   style.href='/assets/crm-help-workspace.css?v=20261026-benchmark-4';document.head.append(style);
  }
  if(!document.getElementById('crm-help-workspace-script')){
    const script=document.createElement('script');script.id='crm-help-workspace-script';
-   script.src='/assets/crm-help-workspace.js?v=20261026-navy-help-2';script.async=true;
+   script.src='/assets/crm-help-workspace.js?v=20261026-benchmark-4';script.async=true;
    document.head.append(script);
  }
 }

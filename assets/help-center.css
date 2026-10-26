@@ -76,3 +76,42 @@ button:focus-visible{outline:2px solid var(--help-accent);outline-offset:3px}
 @media(max-width:760px){.help-reader-columns{grid-template-columns:minmax(0,1fr)}.help-guide-article{padding:18px}.help-categories{gap:6px}.help-categories button{font-size:12px}.help-guide-article h2{font-size:21px}}
 
 .help-guide-title{display:block;width:100%;text-align:left;padding:0;min-height:44px;border:0;background:none;color:var(--help-text);font:650 15px/1.5 system-ui;cursor:pointer}
+/* Reference article composition: compact reading column, contents, grouped library. */
+body>main{width:100%;max-width:1136px;margin-inline:auto;padding-inline:28px;font-size:14px}
+body.crm-help-embedded>main{width:100%;max-width:1080px;margin-inline:auto;padding:8px 0 24px}
+.help-reader{min-width:0}.help-reader-columns{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:start}
+.help-reader-main{min-width:0}.help-breadcrumb{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 14px;color:var(--help-muted);font-size:11px;line-height:1.5}
+.help-breadcrumb button,.help-reader-footer button{border:0;background:none;padding:0;color:var(--help-accent);text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}
+.help-breadcrumb span:last-child{overflow-wrap:anywhere}
+.help-guide-article{margin:0;padding:24px;border-radius:12px}
+.help-guide-article .tag{margin:0 0 7px;font-size:10px;letter-spacing:.09em;text-transform:uppercase;line-height:1.4}
+.help-guide-article .help-article-title{font:italic 500 clamp(22px,2.1vw,25px)/1.3 Georgia,serif;letter-spacing:0;margin:0 0 10px;color:var(--help-text)}
+.help-guide-article .help-article-intro{font-size:13px;line-height:1.7;margin:0 0 12px;color:var(--help-muted)}
+.help-guide-article .help-article-meta{font-size:10px;line-height:1.5;color:var(--help-muted);margin:0 0 25px}
+.help-guide-article .help-article-section{margin:0 0 26px;scroll-margin-top:18px}
+.help-guide-article .help-article-section h3{font-size:17px;line-height:1.4;margin:0 0 12px;font-weight:650;letter-spacing:-.01em}
+.help-guide-article .help-article-section p,.help-guide-article li{font-size:13px;line-height:1.85;color:var(--help-muted);margin:0}
+.help-guide-article ol{padding-left:21px;margin:0}.help-guide-article li{padding-left:3px;margin-bottom:8px}.help-guide-article li::marker{color:var(--help-accent);font-size:11px}
+.help-article-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+.help-article-actions .help-feature-link,.help-copilot-link{display:inline-flex;align-items:center;justify-content:center;margin:0;min-height:40px;padding:8px 12px;font:600 12px/1.5 system-ui;border:1px solid var(--help-accent);border-radius:7px;color:var(--help-accent);background:none;text-decoration:none;cursor:pointer}
+.help-article-actions .help-feature-link{background:#cfa5e9;color:#151b2a}
+.help-reader .help-article-sidebar{position:sticky;top:16px;padding:15px;border-radius:12px}
+.help-sidebar-search{width:100%;min-width:0;min-height:38px!important;font-size:11px!important;padding:8px 10px!important;border-radius:7px!important;margin:0 0 18px!important}
+.help-reader .help-article-sidebar h3{font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px;color:var(--help-muted);font-weight:700}
+.help-article-toc{display:flex;flex-direction:column;align-items:stretch;gap:0;padding-left:9px;border-left:1px solid var(--help-border);margin-bottom:22px}
+.help-article-toc a{padding:6px 0;min-height:32px;font-size:11px;line-height:1.5;color:var(--help-accent);border:0;border-radius:0}
+.help-library{display:block}.help-library-group{margin-bottom:13px}.help-library-group h4{font:600 10px/1.5 system-ui;color:var(--help-muted);margin:0 0 5px}
+.help-library-group a{display:block;padding:8px;min-height:34px;font:11px/1.5 system-ui;color:var(--help-muted);border:0;border-radius:6px;text-decoration:none}
+.help-library-group a[aria-current]{background:#2b304a;color:var(--help-text);font-weight:650}
+.help-reader .help-all-guides{padding:12px 0 0;margin-top:3px;min-height:40px;border:0;border-top:1px solid var(--help-border);border-radius:0;color:var(--help-accent);font:600 11px/1.5 system-ui;text-decoration:underline;cursor:pointer}
+.help-prev-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:14px 0 26px;padding:14px 0;border-top:1px solid var(--help-border)}
+.help-prev-next div:last-child{text-align:right}.help-prev-next a{display:block;font-size:11px;line-height:1.6;color:var(--help-muted);text-decoration:none}.help-direction{display:block;font-size:9px;color:var(--help-muted)}
+.help-related{margin:0 0 23px}.help-related h3{font-size:12px;margin:0 0 10px}.help-related a{display:block;padding:10px 12px;border:1px solid var(--help-border);border-bottom:0;background:var(--help-card);font-size:11px;line-height:1.6;text-decoration:none;color:var(--help-muted)}
+.help-related a:nth-child(2){border-radius:7px 7px 0 0}.help-related a:last-child{border-bottom:1px solid var(--help-border);border-radius:0 0 7px 7px}
+.help-reader-footer{display:flex;gap:14px;padding-top:14px;border-top:1px solid var(--help-border);font-size:11px}.help-result-count{font-size:12px;color:var(--help-muted);margin:0 0 15px}
+.help-guide-card{margin:0;padding:17px 19px}.help-guide-card .tag{font-size:10px;margin:0 0 5px}.help-guide-card h2{font-size:15px;margin:0 0 7px}.help-guide-title{display:block;font:650 15px/1.5 system-ui;min-height:0;color:var(--help-text);text-decoration:none}
+.help-guide-card .help-guide-description{font-size:12px;line-height:1.65;margin:0}.help-read-guide{font-size:12px;text-decoration:none;margin-top:6px}
+.help-sidebar-empty{font-size:11px;color:var(--help-muted)}
+@media(max-width:800px){.help-reader-columns{grid-template-columns:minmax(0,1fr)}.help-reader .help-article-sidebar{position:static}.help-library{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.help-article-toc{flex-direction:row;flex-wrap:wrap;gap:4px 12px}.help-article-toc a{min-height:40px;padding:10px 0}.help-guide-article{padding:20px}.help-reading .help-reader{max-width:100%}}
+@media(max-width:540px){body>main{padding-inline:16px}body.crm-help-embedded>main{padding-inline:0}.help-guide-article{padding:18px}.help-guide-article .help-article-title{font-size:23px}.help-guide-article .help-article-section p,.help-guide-article li{font-size:14px}.help-breadcrumb{font-size:11px}.help-library{grid-template-columns:minmax(0,1fr)}.help-prev-next{gap:12px}.help-article-actions>*{flex:1 1 150px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
