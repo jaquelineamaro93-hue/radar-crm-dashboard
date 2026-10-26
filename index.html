@@ -1351,7 +1351,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-member-mobile-2">
 <link rel="stylesheet" href="/assets/saved-jobs-figma.css?v=20261026-auto-match-columns1">
 <link rel="stylesheet" href="/assets/conexao-figma-unified-pages.css?v=20261026-auto-match-columns1">
-<link rel="stylesheet" href="/assets/member-home-reference.css?v=20261025-home2">
+<link rel="stylesheet" href="/assets/member-home-reference.css?v=20261026-home-avatar1">
 <link rel="stylesheet" href="/assets/first-access-interests.css?v=20261025-onboarding-v3">
 </head>
 <body>
@@ -9022,7 +9022,7 @@ function crmSyncAuth(){
    const requested=crmPendingRoute;
    crmPendingRoute=null;
    const current=crmRouteFromLocation();
-   const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]?current:'membros');
+   const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]&&!crmPublicRoutes.has(current)?current:'dashboard');
    crmNavigate(destination,!!requested);}
   else{crmToggleMenu(false);crmNavigate('inicio');}
  }
@@ -9039,7 +9039,7 @@ function crmNavigate(route,updateHash=true){
  if(document.body.classList.contains('crm-menu-open'))crmToggleMenu(false);
  route=({calculadora:'calc',agenda:'eventos','workspace-parceiras':'comunidade'})[route]||route;
  if(route==='dashboard'&&!crmSignedIn())route='mercado';
- if(route==='inicio'&&crmSignedIn())route='membros';
+ if(route==='inicio'&&crmSignedIn())route='dashboard';
  if(updateHash&&route===crmActiveRoute&&route!=='inicio'&&crmRoutes[route]&&crmSignedIn()&&!crmById('view-logada').hidden&&crmById(crmRoutes[route][0])?.classList.contains('active')){
   // Already on this page. Do not restart loading or recreate the sidebar.
   if(location.pathname!==crmRoutePath(route))history.replaceState(null,'',crmRoutePath(route));
@@ -10172,7 +10172,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 </style>
 <script src="/assets/otw-registration.js?v=20261024-dedup"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261026-auto-match-columns1"></script>
-<script defer src="/assets/member-home-reference.js?v=20261025-home2"></script>
+<script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261025-onboarding-v3"></script>
 </body>
 </html>
