@@ -17,14 +17,14 @@ function openOwnFreelancer(){
  if(id!=null&&typeof openFreelancerEditModal==='function'){
   openFreelancerEditModal(id,own.name);
  }else{
-  document.getElementById('btnOpenFreelancerModal')?.click();
   if(typeof crmNavigate==='function')crmNavigate('freelancers');
+  document.getElementById('btnOpenFreelancerModal')?.click();
  }
 }
 function openOTW(){
  closeEditor();
  if(typeof crmNavigate==='function')crmNavigate('search');
- const tab=document.getElementById('searchTabRegister')||document.getElementById('otwRegistrationTab');
+ const tab=document.getElementById('searchTabRegistration');
  if(tab)tab.click();
  else location.assign('/open-to-work/?cadastro=1');
 }
