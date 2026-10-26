@@ -68,6 +68,9 @@ assert.match(script,/new MutationObserver\(reconcile\)/);
 assert.match(script,/setInterval\(reconcile,2000\)/);
 const cases=[
   ['Como finalizar meu cadastro?','profile-status'],
+  ['Quero vagas no meu perfil','action','match'],
+  ['Pode sugerir oportunidades para o meu perfil?','action','match'],
+  ['Como melhorar meu perfil para encontrar vagas?','analyze'],
   ['Encontre vagas remotas de CRM','action','remote'],
   ['Quero vagas híbridas','action','hybrid'],
   ['Quero abrir o calendário de eventos','action','events'],
