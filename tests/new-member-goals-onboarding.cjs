@@ -31,7 +31,7 @@ test('Skip means an explicit empty private selection, not a public profile',()=>
  assert(script.includes(".from('profiles').update({onboarding_goals:goals}).eq('id',id)"));
  assert(script.includes(".from('profiles').insert({id,onboarding_goals:goals,directory_visible:false})"));
  assert(script.includes("if(data?.id!==id")===false);
- assert(!script.includes('directory_visible'));
+ assert(script.includes('directory_visible:false'),'new profile remains private by default');
  assert(!script.includes('profiles_public'));
  assert(!script.includes('service_role'));
 });
@@ -54,7 +54,7 @@ test('Dashboard honors priority without rewriting real profile or match data',()
 });
 test('All 35 published SPA routes share the same onboarding and UX version',()=>{
  const {execFileSync}=require('node:child_process');
- const files=execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\\n').filter(name=>name==='404.html'||name==='index.html'||(name.endsWith('/index.html')&&read(name).length>1000000));
+ const files=execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\n').filter(name=>name==='404.html'||name==='index.html'||(name.endsWith('/index.html')&&read(name).length>1000000));
  const copies=files.map(read);
  assert.equal(copies.length,35);
  for(const doc of copies){
