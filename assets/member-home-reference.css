@@ -243,3 +243,34 @@ html.crm-compact-device #view-logada #crmPersonalDashboard.cx-home-reference>.cr
 #view-logada #crmPersonalDashboard.cx-home-reference .cx-home-edit-interests:hover{
  border-color:#b889da!important;background:#312342!important;
 }
+
+/* Visão Geral: personal identity shares the same responsive dashboard header. */
+#view-logada #crmPersonalDashboard .cx-home-identity{
+ display:flex;align-items:center;gap:16px;min-width:0;margin:9px 0 2px;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-avatar{
+ flex:0 0 62px;width:62px;height:62px;border-radius:50%;overflow:hidden;
+ display:grid;place-items:center;background:#322344;color:#e5c8f5;
+ border:1px solid #66537c;font-size:23px;font-weight:750;line-height:1;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-avatar img{
+ display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-body{
+ display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-name{
+ display:block;font:700 13px/1.4 system-ui,sans-serif;letter-spacing:.01em;
+ color:#d4b3eb;max-width:100%;overflow-wrap:anywhere;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-body #crmWelcome{
+ margin:0!important;text-align:left!important;
+}
+#view-logada #crmPersonalDashboard .cx-home-identity-body #crmDashboardContext{
+ margin:0!important;text-align:left!important;
+}
+@media(max-width:600px){
+ #view-logada #crmPersonalDashboard .cx-home-identity{align-items:flex-start;gap:11px}
+ #view-logada #crmPersonalDashboard .cx-home-identity-avatar{flex-basis:48px;width:48px;height:48px;font-size:18px}
+ #view-logada #crmPersonalDashboard .cx-home-identity-name{font-size:12px}
+}
