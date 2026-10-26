@@ -1,0 +1,102 @@
+/* Conexão CRM | Consistent shell and directory refinements, 26 Oct 2026.
+   Single scoped stylesheet loaded after legacy rules; no functional changes. */
+:root{--cx-fine-border:#354259;--cx-surface:#161f30;--cx-muted:#aebcd0;--cx-lilac:#c69adf}
+#view-logada,#view-publica{min-width:0}
+#view-logada .crm-workspace,#view-logada #crmPages,#view-logada .crm-workbar{min-width:0;max-width:100%}
+#view-logada .crm-workbar{
+ min-height:58px!important;padding:9px clamp(14px,2vw,26px)!important;
+ display:flex!important;justify-content:flex-start!important;align-items:center!important;
+ gap:clamp(6px,1vw,12px)!important;background:#101827f7!important;
+ border-bottom:1px solid #29364b!important;box-sizing:border-box!important;
+}
+#view-logada .crm-workbar #crmBreadcrumb{flex:1 1 auto;min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px!important;letter-spacing:.045em!important}
+#view-logada .crm-workbar .crm-survey-top{flex:0 1 auto;max-width:170px;min-width:0;min-height:34px!important;height:auto!important;display:flex!important;align-items:center;justify-content:center;gap:5px;padding:5px 10px!important;font-size:11px!important;line-height:1.25!important;border:1px solid #6f5184!important;background:transparent!important;color:#cba6e1!important;border-radius:8px!important;text-align:center!important;overflow-wrap:normal}
+#view-logada .crm-workbar .crm-survey-top span{font-size:10px!important}
+#view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle){min-height:34px!important;padding:6px 8px!important;font-size:12px!important;white-space:nowrap!important;border:0!important;background:transparent!important}
+#view-logada .crm-workbar .crm-help-bell{width:36px!important;height:36px!important;min-width:36px!important;border-radius:9px!important;margin:0!important}
+#view-logada .crm-workbar .cx-language-host{margin:0 0 0 auto!important;padding:0!important;max-width:134px!important;border:1px solid #45516a!important;border-radius:8px!important;box-shadow:none!important}
+#view-logada .crm-workbar #cx-site-language{max-width:132px!important;min-height:34px!important;padding:5px 8px!important;font-size:11px!important;line-height:1.25!important;outline-offset:2px!important}
+#view-logada .crm-sidebar{background:#101827!important;border-right:1px solid #29364b!important}
+#view-logada #loggedHeader{padding:11px 10px!important;background:transparent!important;border:0!important;border-bottom:1px solid #29364b!important;border-radius:0!important}
+#view-logada #loggedUserName{font-size:12px!important;line-height:1.35!important}
+#view-logada #loggedUserHeadline{font-size:10px!important;max-width:165px!important}
+#view-logada #crmNavSlot .crm-nav-section{padding:10px 10px 4px!important;letter-spacing:.035em!important;color:#8f9db3!important}
+#view-logada #crmNavSlot .tab-btn{min-height:39px!important;padding:7px 10px!important;font-size:12px!important;font-weight:500!important;gap:8px!important;border-radius:8px!important}
+#view-logada #crmNavSlot .tab-btn.active,#view-logada #crmNavSlot .tab-btn[aria-current=page]{background:#24273a!important;border:1px solid #8c67a4!important;color:#f4eaff!important;box-shadow:none!important;font-weight:650!important}
+#view-logada #crmNavSlot .tab-btn:not(.active):hover{background:#1a2536!important;color:#eee!important}
+#view-logada #crmPages{padding:clamp(14px,2vw,26px)!important}
+#view-logada :is(.crm-admin-rebrand,#crmAdminPage) :is(.crm-story-head h2,.crm-story-head h3){font-size:clamp(17px,1.6vw,23px)!important;line-height:1.26!important;letter-spacing:-.02em!important}
+#view-logada #crmAdminPage :is(.crm-story-section,.crm-analytics-panel,.crm-mini-card){min-width:0!important}
+#view-logada #crmAdminPage .crm-analytics-panel{padding:clamp(12px,1.4vw,18px)!important;border:1px solid var(--cx-fine-border)!important;border-radius:12px!important;background:var(--cx-surface)!important}
+#view-logada #crmAdminPage .crm-mini-card{padding:clamp(10px,1vw,14px)!important;border:1px solid var(--cx-fine-border)!important;border-radius:10px!important}
+#view-logada #crmAdminPage .crm-mini-card b{font-size:clamp(20px,2vw,28px)!important}
+#view-logada #crmAdminPage .crm-analytics-two{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))!important;gap:12px!important}
+#view-logada #crmAdminPage .crm-analytics-grid{gap:11px!important}
+#view-logada #crmAdminPage .crm-primary-ranking .crm-rank-row{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(52px,72px) minmax(58px,74px) minmax(78px,94px)!important;
+ gap:7px!important;padding:11px 0!important;min-width:0!important;max-width:100%!important;
+}
+#view-logada #crmAdminPage .crm-primary-ranking .crm-rank-row b{font-size:12px!important;font-weight:650!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.35!important}
+#view-logada #crmAdminPage .crm-primary-ranking .crm-rank-metric{min-width:0!important;font-size:10px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:right!important}
+#view-logada #crmAdminPage .crm-behavior-bars .crm-bar,
+#view-logada #crmAdminPage .crm-analytics-panel .crm-bar{display:grid!important;grid-template-columns:minmax(105px,1.15fr) minmax(48px,1.8fr) minmax(52px,.75fr)!important;gap:9px!important;align-items:center!important;padding-block:5px!important;min-width:0!important}
+#view-logada #crmAdminPage .crm-bar>span{min-width:0!important;overflow-wrap:anywhere!important;color:#bfcbdb!important;font-size:11px!important}
+#view-logada #crmAdminPage .crm-bar>b{min-width:0!important;overflow-wrap:normal!important;text-align:right!important;font-size:11px!important;white-space:normal!important}
+#view-logada #crmAdminPage .crm-bar-track{height:6px!important;background:#0d1524!important;min-width:0!important}
+#view-logada #crmAdminPage .crm-bar-fill{background:#bc91d4!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas){min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .section-head h2{font-size:clamp(21px,2.1vw,26px)!important;line-height:1.28!important;margin:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .section-desc{font-size:13px!important;line-height:1.55!important;max-width:75ch!important;color:#b1bed0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.search-tabs,.crm-freelancer-subnav,.pill-filters){gap:6px!important;min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.search-tab-btn,.crm-freelancer-tab,.pill-filter){min-height:36px!important;max-width:100%!important;padding:7px 11px!important;font-size:12px!important;line-height:1.35!important;border-radius:8px!important;white-space:normal!important;color:#c4cede!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.search-tab-btn.active,.crm-freelancer-tab.is-active,.pill-filter.active){background:#30253f!important;border:1px solid #9361b1!important;color:#ddb7ed!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.search-bar,.filter-bar){min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .search-bar{margin-block:14px 18px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.search-input,.filter-field select){min-height:40px!important;height:auto!important;padding:9px 11px!important;max-width:100%!important;min-width:0!important;border:1px solid #45536c!important;background:#111a2b!important;color:#f1f2f7!important;border-radius:9px!important;font-size:13px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) :is(.filter-bar,.search-tabs-container){border-color:#334258!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .result-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))!important;gap:12px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-card{display:flex!important;flex-direction:column!important;min-width:0!important;max-width:100%!important;padding:clamp(14px,1.5vw,18px)!important;background:#161f30!important;border:1px solid #39475e!important;border-radius:13px!important;box-shadow:none!important;gap:12px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-head{min-width:0!important;gap:10px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-head>div:last-child{min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-head h3{font-size:15px!important;line-height:1.3!important;overflow-wrap:anywhere!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-body{flex:1 1 auto!important;min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-body p{font-size:12px!important;line-height:1.55!important;color:#c0cada!important;overflow-wrap:anywhere!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .pro-footer{margin-top:auto!important;min-width:0!important;gap:9px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .crm-review-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .crm-review-actions button{min-width:0!important;white-space:normal!important;min-height:36px!important;padding:7px 8px!important;border-radius:8px!important;font-size:11px!important;line-height:1.25!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias,#pageSearch,#pagePlataformas) .crm-review-box details{min-width:0!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias) .crm-catalog-disclaimer{background:#141d2c!important;border:1px solid #35435a!important;border-radius:10px!important;margin:12px 0!important;padding:11px 13px!important;max-width:100%!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias) .crm-catalog-disclaimer>summary{font-size:12px!important;font-weight:650!important;color:#cdaae2!important;cursor:pointer!important}
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias) .crm-catalog-disclaimer .note{font-size:12px!important;line-height:1.5!important;padding:6px 0!important;margin:0!important;background:transparent!important;border:0!important;color:#b6c3d6!important}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))!important;gap:12px!important}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-card{min-width:0!important;max-width:100%!important;border:1px solid #3b4860!important;border-radius:13px!important;background:#161f30!important;box-shadow:none!important}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-card :is(p,h3,span){overflow-wrap:anywhere!important}
+#view-publica #crmSurveyReminder.crm-survey-modern{width:min(305px,calc(100vw - 24px))!important;padding:12px!important;bottom:14px!important;right:14px!important;max-height:min(54dvh,365px)!important;border-radius:12px!important}
+#view-publica #crmSurveyReminder.crm-survey-modern h2{font-size:15px!important;margin:6px 0!important}
+#view-publica #crmSurveyReminder.crm-survey-modern p{font-size:11px!important;margin:0 0 8px!important}
+#view-publica #crmSurveyReminder.crm-survey-modern :is(.crm-survey-primary,.crm-survey-secondary button){min-height:34px!important;padding:7px 9px!important;font-size:11px!important}
+#cxCopilot .cx-copilot-launch{min-height:38px!important;padding:3px 9px 3px 4px!important;border-radius:999px!important;font-size:11px!important;gap:5px!important;box-shadow:0 5px 14px #0004!important}
+#cxCopilot .cx-copilot-launch .brasa-fox{width:27px!important;height:27px!important;flex-basis:27px!important}
+@media(max-width:1180px){
+ #view-logada #crmAdminPage .crm-primary-ranking .crm-rank-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px 9px!important}
+ #view-logada #crmAdminPage .crm-primary-ranking .crm-rank-row b{grid-column:1/-1!important}
+ #view-logada #crmAdminPage .crm-primary-ranking .crm-rank-metric{text-align:left!important}
+}
+@media(max-width:900px){
+ #view-logada .crm-workbar{flex-wrap:wrap!important;row-gap:6px!important}
+ #view-logada .crm-workbar #crmBreadcrumb{flex-basis:40%!important}
+ #view-logada .crm-workbar .crm-survey-top{display:none!important}
+ #view-logada .crm-workbar .cx-language-host{margin-left:auto!important}
+ #view-logada #crmPages{padding:14px!important}
+}
+@media(max-width:640px){
+ #view-logada .crm-workbar{min-height:54px!important;padding:7px 10px!important;gap:6px!important}
+ #view-logada .crm-workbar #crmBreadcrumb{display:none!important}
+ #view-logada .crm-workbar .crm-help-bell{width:34px!important;height:34px!important;min-width:34px!important}
+ #view-logada #crmAdminPage .crm-analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #view-logada #crmAdminPage .crm-behavior-bars .crm-bar{grid-template-columns:minmax(80px,1fr) minmax(30px,1fr) minmax(55px,.8fr)!important}
+ #view-logada #crmAdminPage .crm-analytics-panel .crm-bar{grid-template-columns:minmax(75px,1fr) minmax(30px,1fr) minmax(45px,.6fr)!important}
+ #cxCopilot .cx-copilot-launch{font-size:0!important;border-radius:50%!important;padding:4px!important;min-width:38px!important;justify-content:center!important}
+ #cxCopilot .cx-copilot-launch .brasa-fox{width:29px!important;height:29px!important;flex-basis:29px!important}
+}
+@media(prefers-reduced-motion:reduce){#view-logada *,#cxCopilot *{scroll-behavior:auto!important}}
