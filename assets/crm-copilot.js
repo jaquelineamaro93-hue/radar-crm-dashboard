@@ -34,7 +34,7 @@ function canShow(){
     return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
   }catch{return false;}
 }
-let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={},recentQuestions=[];
+let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={},recentQuestions=[],lastAiReply='';
 const aiConsentName=()=>{
  const uid=String(getUser()?.id||'');if(!uid||!signed())return '';
  let n=2166136261;for(let i=0;i<uid.length;i++)n=Math.imul(n^uid.charCodeAt(i),16777619);
@@ -46,9 +46,34 @@ function saveAiConsent(){const name=aiConsentName();if(!name)return;document.coo
 function revokeAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=; Max-Age=0; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
 const CTA=[
-  ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
-  ['salary','Médias salariais'],['rankings','Rankings']
+ ['advisor','Como melhorar meu currículo?'],
+ ['advisor','Como me destacar em CRM?'],
+ ['jobs','Encontre vagas remotas de CRM'],
+ ['salary','Médias salariais']
 ];
+const FOLLOW_UPS=Object.freeze({
+ jobs:['Quais requisitos devo priorizar?','Como preparar minha candidatura?'],
+ salary:['Como interpretar essa pesquisa?','Como negociar minha remuneração?'],
+ match:['Como melhorar meu Match?','Quais competências desenvolver?'],
+ general:['Me ajude a criar um plano de ação','Pode me dar um exemplo prático?']
+});
+function suggestionTopic(question){
+ const q=normalize(question);
+ return /\bmatch\b|aderencia|compatibilidade/.test(q)?'match':
+ /salari|remuner|contraproposta|negociacao/.test(q)?'salary':
+ /vaga|candidatura|emprego|recolocacao|curriculo|entrevista/.test(q)?'jobs':'general';
+}
+function showContinuations(messageItem,question){
+ // Keep the last answer focused: two optional next questions, no massive CTA stack.
+ const follow=FOLLOW_UPS[suggestionTopic(question)]||FOLLOW_UPS.general;
+ const row=document.createElement('div');row.className='cx-copilot-followups';
+ const title=document.createElement('span');title.textContent='Como quer continuar?';row.append(title);
+ follow.forEach(phrase=>{
+   const button=document.createElement('button');button.type='button';button.textContent=phrase;
+   button.addEventListener('click',()=>process(phrase));row.append(button);
+ });
+ messageItem.append(row);
+}
 function addMessage(type,message,action,sources=[],options={}){
   if(!history)return;
   const item=document.createElement('div');
@@ -76,13 +101,14 @@ function addMessage(type,message,action,sources=[],options={}){
     item.append(b);
   }
   if(type==='assistant'&&options.feedback!==false)window.CRMBrasaFeedback?.attach(item,{kind:options.replyKind||'assistant',userId:getUser()?.id});
+  if(type==='assistant'&&options.continuations)showContinuations(item,options.continuations);
   history.append(item);
   while(history.children.length>18)history.firstElementChild.remove();
   history.scrollTop=history.scrollHeight;
 }
 function showIntro(){
   if(history?.children.length)return;
-  addMessage('assistant','Olá, sou a Brasa Copilot. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.',null,[],{feedback:false});
+  addMessage('assistant','Oi! Sou a Brasa. Posso ajudar você a pensar sobre CRM, carreira, vagas e networking, com orientações práticas aqui na conversa. O que quer destravar hoje?',null,[],{feedback:false});
 }
 function currentProfileStatus(){
   if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
@@ -98,31 +124,36 @@ function currentProfileStatus(){
   return {message:'Encontrei estas etapas pendentes no seu perfil: '+missing.join(', ')+'. Posso abrir o formulário para completar. Essa verificação aconteceu somente no seu navegador.',action:'profile'};
 }
 function classify(question){
-  const s=normalize(question);
-  if(!s)return {intent:'help'};
-  if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
-  if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
-    return {intent:'profile-status'};
-  // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
-  if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
-    return {intent:'analyze'};
-  if(/(avatar)/.test(s))return {intent:'action',action:'avatar'};
-  if(/(ranking|pontos xp|coins|pontuacao)/.test(s))return {intent:'action',action:'rankings'};
-  if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
-  if(/(membros|networking|conhecer pessoas|fazer conexoes)/.test(s))
-    return {intent:'action',action:'members'};
-  if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s))return {intent:'analyze'};
-  if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
-    return {intent:'action',action:'salary'};
-  if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
-    return {intent:'action',action:'market'};
-  if(/(vaga|radar|emprego|oportunidade|match|aderencia|candidatura)/.test(s)){
-    if(/remot/.test(s))return {intent:'action',action:'remote'};
-    if(/hibrid/.test(s))return {intent:'action',action:'hybrid'};
-    if(/(match|aderencia)/.test(s))return {intent:'action',action:'match'};
-    return {intent:'action',action:'jobs'};
-  }
-  return {intent:'help'};
+ const s=normalize(question);
+ if(!s)return {intent:'help'};
+ // Only explicit interface commands launch a page. Guidance stays conversational.
+ const direct=/^(?:abre?|abrir|mostre|mostrar|acesse|acessar|ir para|me leve|navegue|vai para|ver pagina|ver area)\b/;
+ const consultation=/\b(?:como|porque|por que|qual estrategia|me ajude|me orient|dica|vale a pena|o que acha|o que voce acha|devo|posso|melhorar|comparar|entender|explicar|analise|avaliar|plano|passo a passo|priorizar|negociar|desenvolver|consultiv|quais competencia)\b/;
+ // Multi-sentence or detailed job descriptions are analyzed by the consultative model.
+ if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))return {intent:'analyze'};
+ if(/\b(?:pesquis|consult|buscar|busca|procura|procure).{0,35}(?:internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s))return {intent:'analyze'};
+ if(/^\s*(?:como finalizar|como completar) meu cadastro\??$/.test(s))return {intent:'profile-status'};
+ if(consultation.test(s))return {intent:'analyze'};
+ if(direct.test(s)){
+   if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
+   if(/meu perfil|cadastro|editar perfil/.test(s))return {intent:'profile-status'};
+   if(/avatar/.test(s))return {intent:'action',action:'avatar'};
+   if(/ranking|pontos xp|coins/.test(s))return {intent:'action',action:'rankings'};
+   if(/evento|agenda|calendario/.test(s))return {intent:'action',action:'events'};
+   if(/membros|networking|comunidade/.test(s))return {intent:'action',action:'members'};
+   if(/salari|remuneracao|faixa salarial/.test(s))return {intent:'action',action:'salary'};
+   if(/match/.test(s))return {intent:'action',action:'match'};
+   if(/radar|vaga/.test(s))return {intent:'action',action:'jobs'};
+ }
+ if(/^(?:ver faixas salariais|medias salariais|media salarial|quanto ganha|salario de|salario para)/.test(s))return {intent:'action',action:'salary'};
+ if(/^(?:encontre|buscar|busque|procure|quero|preciso)\s+vagas?\b/.test(s)){
+   if(/remot/.test(s))return {intent:'action',action:'remote'};
+   if(/hibrid/.test(s))return {intent:'action',action:'hybrid'};
+   return {intent:'action',action:'jobs'};
+ }
+ if(/^(?:quero conhecer|conhecer)\s+(?:outros\s+)?membros/.test(s))return {intent:'action',action:'members'};
+ if(/^(?:ver rankings|ver ranking)/.test(s))return {intent:'action',action:'rankings'};
+ return {intent:'help'};
 }
 function navigate(route){
   // Somente rotas confiáveis, definidas no código, nunca rotas do modelo ou do usuário.
@@ -194,13 +225,18 @@ async function analyze(){
  activeRoot.querySelector('[data-cx-send]').disabled=true;
  try{
   const context=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question).map(x=>x.slice(0,320));
+   // One recent answer is ephemeral and only from public AI dialogue; no profile attached.
+   if(lastAiReply&&context.length){context.splice(0,context.length-1);context.push(('Brasa: '+lastAiReply).slice(0,320));}
   const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error)throw Error('unavailable');
   const action=result.data?.action;
   if(action==='profile'){const status=currentProfileStatus();addMessage('assistant',status.message,status.action);}
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
-  else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai'});
+  else if(result.data?.resposta){
+     lastAiReply=String(result.data.resposta).slice(0,300);
+     addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai',continuations:question});
+   }
   else throw Error('empty');
  }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
@@ -308,7 +344,7 @@ function process(question){
       const member=getUser()?.id;
       addMessage('assistant','Consultando as vagas públicas do Radar...',null,[],{feedback:false});
       crmBrasaPublicJobs(question).then(answer=>{
-        if(getUser()?.id===member&&canShow())addMessage('assistant',answer,'jobs');
+        if(getUser()?.id===member&&canShow())addMessage('assistant',answer,'jobs',[],{continuations:question});
       }).catch(()=>{
         if(getUser()?.id===member&&canShow())addMessage('assistant','A consulta ao Radar não respondeu. Tente novamente em instantes.');
       });
@@ -316,7 +352,7 @@ function process(question){
     }
     if(found.action==='salary'){
       const answer=localAnswer('salary',question);
-      addMessage('assistant',answer,'salary');
+      addMessage('assistant',answer,'salary',[],{continuations:question});
       // Once external research was authorized, proactively enrich a state-level
       // request because the portal data only has macro-regions.
       if(aiConsentSaved()&&/\b(?:sp|sao paulo)\b/.test(normalize(question))){
@@ -338,7 +374,7 @@ function process(question){
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];lastAiReply='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
   showIntro();updateAiConsentControl();
 }
 function open(){
@@ -402,7 +438,7 @@ function mount(){
 // One mounted instance per authenticated session. Route visibility never clears messages.
 function reconcile(){
   if(!signed()){
-    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];busy=false;lastUserId='';
+    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];lastAiReply='';busy=false;lastUserId='';
     if(root)root.remove();
     root=null;drawer=null;history=null;entry=null;
     return;
