@@ -60,16 +60,47 @@ assert(!read('assets/crm-runtime-integrations.js').includes("navigator.serviceWo
 
 // Conexômetro mantém o layout restrito ao segundo bloco da home.
 
-// O override do redesign precisa preservar a largura do telefone, nao anular padding.
+// A responsividade é por largura/altura disponível, nunca por marca ou OS.
 const homeFigmaCss=read('assets/conexao-figma-unified-pages.css');
-assert(homeFigmaCss.includes('#view-publica #publicHero #crmConexometro.crm-conexometro'),'o Conexometro precisa ter override mobile mais especifico que padding zero');
-assert(homeFigmaCss.includes('padding:32px 16px 38px!important'),'o Conexometro precisa de respiro horizontal no telefone');
-assert(homeFigmaCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))!important'),'CTAs do mobile nao podem usar tres colunas apertadas');
-assert(homeFigmaCss.includes('crm-conexo-ctas a:first-child{grid-column:1/-1!important}'),'CTA principal precisa ter largura completa');
-assert(homeFigmaCss.includes('body #crmSurveyReminder.crm-survey-modern'),'aviso de pesquisa deve seguir a identidade visual atual');
+const navResponsive=read('assets/portal-layout.js');
+assert(homeFigmaCss.includes('padding:40px clamp(16px,4vw,52px)!important'),
+ 'desktop compacto nao pode zerar a margem do Conexometro');
+assert(homeFigmaCss.includes('#view-publica #publicHero #crmConexometro.crm-conexometro'),
+ 'padding responsivo deve vencer o seletor legado do publicHero');
+assert(homeFigmaCss.includes('@media(max-width:960px)'),
+ 'tablets precisam de regra dedicada, sem faixa vazia entre celular e desktop');
+assert(homeFigmaCss.includes('@media(max-width:720px)'),
+ 'celulares largos e tablets estreitos devem montar cards em uma coluna');
+assert(homeFigmaCss.includes('@media(max-width:370px)'),
+ 'janelas muito estreitas e zoom devem mostrar botoes empilhados');
+assert(homeFigmaCss.includes('@media(max-height:600px) and (pointer:coarse)'),
+ 'celular em paisagem deve considerar altura disponivel');
+assert(homeFigmaCss.includes('padding-inline:clamp(14px,4vw,28px)!important'),
+ 'margem horizontal do celular deve respeitar largura disponivel');
+assert(homeFigmaCss.includes('grid-template-columns:repeat(2,minmax(0,1fr))!important'),
+ 'faixa intermediaria deve usar duas colunas quando couber');
+assert(homeFigmaCss.includes('grid-template-columns:minmax(0,1fr)!important'),
+ 'faixa estreita deve ter uma coluna, sem corte lateral');
+assert(homeFigmaCss.includes('crm-conexo-ctas a:first-child{grid-column:1/-1!important}'),
+ 'CTA principal deve ocupar largura total no celular');
+assert(homeFigmaCss.includes('body #crmSurveyReminder.crm-survey-modern'),
+ 'aviso de pesquisa deve seguir a identidade visual');
+assert(navResponsive.includes("(max-width:900px), (max-height:600px) and (pointer:coarse)"),
+ 'menu compacto deve reagir a viewport, inclusive paisagem');
+assert(!navResponsive.includes('window.screen.width'),
+ 'nao usar largura fisica/tela de dispositivo para orientar layout');
 const noticeCss=read('assets/crm-help-workspace.css');
 assert(noticeCss.includes('.crm-help-release-inline'),'aviso de novidades continua disponivel');
-assert(noticeCss.includes('border-left:3px solid #a875ce!important'),'aviso precisa manter paleta de redesign');
+assert(noticeCss.includes('border-left:3px solid #a875ce!important'),
+ 'aviso precisa manter paleta de redesign');
+// A matriz cobre tamanhos comuns, sem presumir modelos/firmwares especificos.
+// Testes visuais com navegador real continuam necessarios para homologacao.
+const viewportWidths=[320,360,375,390,412,430,600,720,768,820,900,1024,1366];
+for(const width of viewportWidths){
+ const layout=width<=370?'small':width<=720?'stacked':width<=960?'two-column':'desktop';
+ assert(['small','stacked','two-column','desktop'].includes(layout),
+  'faixa nao coberta: '+width);
+}
 
 const meterCss=read('assets/conexometro.css');
 assert(!index.includes('id="crm-conexometro-styles"'),'CSS antigo do Conexômetro não pode competir com o stylesheet novo');
