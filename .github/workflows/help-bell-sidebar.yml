@@ -26,6 +26,9 @@ on:
       - 'tests/saved-jobs-figma.cjs'
       - 'assets/saved-jobs-figma.*'
       - 'assets/conexao-figma-unified-pages.css'
+      - 'assets/conexao-ux-refinement.*'
+      - 'assets/first-access-interests.*'
+      - 'tests/new-member-goals-onboarding.cjs'
       - 'tests/help-watermark-language-footer.cjs'
       - '.github/workflows/help-bell-sidebar.yml'
   push:
@@ -58,6 +61,7 @@ jobs:
           node-version: '22.23.4'
       - run: node tests/help-bell-sidebar.cjs
       - run: node tests/portal-shell-route-sync.cjs
+      - run: node --test tests/new-member-goals-onboarding.cjs
       - run: node tests/feedback-sidebar-email.cjs
       - name: Install isolated DOM test dependency
         run: npm install --prefix "$RUNNER_TEMP/crm-help-dom" jsdom@26.1.0 --ignore-scripts --no-audit --no-fund

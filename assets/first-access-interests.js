@@ -5,7 +5,7 @@
 (function(){
 'use strict';
 if(window.CXFirstAccessInterests)return;
-const CREATED_AFTER='2026-10-25T00:00:00.000Z';
+// A missing private preference, rather than the sign-up date, determines eligibility.
 const ROOT_ID='crmGoalsOnboarding';
 const OPTIONS=[
  {id:'trabalho',label:'work',icon:'briefcase'},
@@ -80,8 +80,7 @@ function t(k){const lang=document.documentElement.lang;return (TEXT[lang]||TEXT[
 function canOffer(user,profile){
  if(!user||user.is_anonymous||!user.id||!window.crmSignedIn?.())return false;
  if(typeof CURRENT_USER==='undefined'||CURRENT_USER?.id!==user.id)return false;
- if(Date.parse(user.created_at||'')<Date.parse(CREATED_AFTER))return false;
- if(!Number.isFinite(Date.parse(user.created_at||'')))return false;
+ // Empty saved choices also count as a response and must not trigger another prompt.
  return !Array.isArray(profile?.onboarding_goals);
 }
 let subjectId=null,selection=[],busy=false,previousFocus=null,previousOverflow='',priorityOpen=false,editing=false;
@@ -245,20 +244,37 @@ function translate(){
  overlay.querySelector('.crm-goals-choices')?.setAttribute('aria-label',t('formHeading'));
  update();
 }
-// Restore the private interests survey when the professional-profile modal
-// prevented its initial launch. This does not affect older accounts.
+// Keep the interests prompt pending while an existing profile or login modal owns
+// the viewport; resume when the verified session and member workspace are ready.
+let retryTimer=null,retryCount=0;
 function retryOffer(){
  if(typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id||root())return;
- if(typeof crmActiveRoute==='string'&&crmActiveRoute!=='dashboard')return;
+ const workspace=document.getElementById('view-logada');
+ if(!workspace||workspace.hidden||workspace.getAttribute('aria-hidden')==='true')return;
+ if(!window.crmSignedIn?.())return;
  offer(CURRENT_USER,typeof CURRENT_PROFILE==='undefined'?null:CURRENT_PROFILE);
 }
-document.addEventListener('crm:route-changed',()=>setTimeout(retryOffer,80));
-document.addEventListener('crm:role-resolved',()=>setTimeout(retryOffer,80));
-if(typeof MutationObserver==='function'&&document.body)
+function scheduleRetry(){
+ setTimeout(retryOffer,80);
+ if(retryTimer!==null)return;
+ retryCount=0;
+ retryTimer=setInterval(()=>{
+  retryCount++;retryOffer();
+  if(root()||retryCount>=20){clearInterval(retryTimer);retryTimer=null;}
+ },1200);
+}
+for(const eventName of ['crm:route-changed','crm:role-resolved','crm:auth-state']){
+ document.addEventListener(eventName,scheduleRetry);
+}
+if(typeof MutationObserver==='function'&&document.body){
  new MutationObserver(records=>{
-  if(records.some(record=>Array.from(record.removedNodes).some(node=>node.nodeType===1&&node.id==='profileModalOverlay')))
-   setTimeout(retryOffer,80);
- }).observe(document.body,{childList:true});
+  if(records.some(record=>Array.from(record.removedNodes).some(node=>node.nodeType===1&&(
+    node.id==='profileModalOverlay'||node.querySelector?.('#profileModalOverlay')||node.matches?.('dialog,.crm-login-overlay')))))
+   scheduleRetry();
+ }).observe(document.body,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleRetry,{once:true});
+else scheduleRetry();
 document.addEventListener('cx:locale-change',translate);
 if(typeof MutationObserver==='function')new MutationObserver(translate)
  .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
