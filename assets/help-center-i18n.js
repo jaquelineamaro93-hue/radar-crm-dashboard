@@ -6,6 +6,7 @@ const getLocale=()=>{try{const x=localStorage.getItem('conexao:locale');return x
 function render(){
  const locale=getLocale(),root=document.body;
  if(!root||!root.hasAttribute('data-crm-help-page'))return;
+ root.classList.toggle('crm-help-embedded',new URLSearchParams(location.search).get('embedded')==='1');
  document.documentElement.lang=locale;
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
  let node;while((node=walker.nextNode())){
