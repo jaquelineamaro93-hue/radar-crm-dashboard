@@ -24,3 +24,8 @@
 .crm-help-inner-frame{display:block;width:100%;min-width:0;height:600px;min-height:380px;border:0;background:transparent;overflow:hidden}
 .crm-help-inner-frame[hidden]{display:none}
 @media(max-width:740px){.crm-help-bell{margin-left:auto}.crm-help-workspace-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}.crm-help-workspace-tabs button{flex:none;font-size:12px}.crm-help-popover{max-height:calc(100dvh - 105px)}}
+
+/* Keep help at the reference reading scale inside the existing sidebar shell. */
+.crm-help-workspace-page{max-width:1120px!important;margin-inline:auto!important}
+.crm-help-workspace-tabs{gap:5px;padding-bottom:10px;margin-bottom:14px}
+.crm-help-workspace-tabs button{font-size:12px;min-height:38px;padding:7px 10px}

@@ -18,6 +18,12 @@ const locales={
  ['20261026-help','Centro de ayuda disponible','Encuentra respuestas sobre Match IA, perfiles y vacantes guardadas.'],
  ['20261026-practices','Buenas prácticas y contenidos','Consejos de carrera, networking y entrevistas.']]}
 };
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.data?.type!=='crm:help-open-copilot')return;
+ const frames=[...document.querySelectorAll('.crm-help-inner-frame')];
+ if(!frames.some(frame=>frame.contentWindow===event.source&&!frame.hidden&&frame.closest('.tab-page')?.classList.contains('active')))return;
+ if(signedIn()&&window.CXCopilot?.isAvailable?.())window.CXCopilot.open();
+});
 const STORAGE='conexao:seen-help-releases:v1';
 const icons={
  bell:'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>',
@@ -73,12 +79,16 @@ function register(){
     doc.addEventListener('click',e=>{
       const a=e.target.closest?.('a[href]');if(!a)return;
       const url=new URL(a.href,location.origin);
-      if(url.origin!==location.origin)return;
+      if(url.origin!==location.origin||e.defaultPrevented)return;
+      if(url.pathname===new URL(def.path,location.origin).pathname&&url.hash)return;
       const route=Object.entries(defs).find(([,d])=>new URL(d.path,location.origin).pathname===url.pathname)?.[0];
       if(route){e.preventDefault();open(route)}
-      else if(url.pathname==='/dashboard'||url.pathname==='/membros/'||url.pathname==='/'){
-        e.preventDefault();open('membro');
-      }else{a.target='_blank';a.rel='noopener noreferrer';}
+      else {
+        const destinations={'/dashboard':'dashboard','/dashboard/':'dashboard','/meu-painel/':'membro','/meu-painel':'membro','/vagas-salvas/':'vagas-salvas','/open-to-work/':'search','/eventos/':'eventos','/membros/':'membros'};
+        const destination=destinations[url.pathname];
+        if(destination&&typeof crmNavigate==='function'){e.preventDefault();crmNavigate(destination)}
+        else{a.target='_blank';a.rel='noopener noreferrer';}
+      }
     });
   });
   page.append(tabs,status,frame);host.append(page);

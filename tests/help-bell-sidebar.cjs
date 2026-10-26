@@ -37,7 +37,7 @@ for(const code of ['pt-BR','en','es-419'])assert(shell.includes(code));
 // Old cached Web Push modal must never return after a production deploy.
 for(const filename of ['index.html','404.html']){
  const html=read(filename);
- assert.match(html,/\/assets\/push-preferences\.js\?v=20261026-navy-help-2/,'updated JS cache key: '+filename);
+ assert.match(html,/\/assets\/push-preferences\.js\?v=20261026-benchmark-4/,'updated JS cache key: '+filename);
  assert.match(html,/\/assets\/push-preferences\.css\?v=20261026-navy-help-2/,'updated CSS cache key: '+filename);
  assert.doesNotMatch(html,/\/assets\/push-preferences\.(?:js|css)\?v=20261023-header-2/,'stale cache key: '+filename);
 }

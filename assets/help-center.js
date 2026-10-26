@@ -1,60 +1,79 @@
-/* Public help content only. No account or member data is read here. */
+/* Progressive guide reader; only authored public help content. */
 (()=>{'use strict';
-const input=document.getElementById('help-search');if(!input)return;
-const clean=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const cards=[...document.querySelectorAll('[data-help-article]')],grid=document.querySelector('.help-topic-grid');
+const input=document.getElementById('help-search'),guides=window.CRMHelpGuides;
+if(!input||!Array.isArray(guides))return;
+const grid=document.querySelector('.help-topic-grid'),main=document.querySelector('main'),heading=main.querySelector('h1'),label=document.querySelector('label[for="help-search"]'),empty=document.getElementById('help-empty');
 if(!grid)return;
-const groups=[0,1,1,0,0,2,3];
 const labels={
- 'pt-BR':{all:'Todos',groups:['Conta e privacidade','Vagas e Match IA','Comunidade','Brasa na prática'],read:'Ver passo a passo',back:'Todos os tutoriais',related:'Explore a Central',steps:'Passo a passo',open:'Abrir funcionalidade'},
- en:{all:'All',groups:['Account and privacy','Jobs and AI Match','Community','Using Brasa'],read:'View guide',back:'All guides',related:'Explore the help center',steps:'Step by step',open:'Open feature'},
- 'es-419':{all:'Todos',groups:['Cuenta y privacidad','Vacantes y Match IA','Comunidad','Brasa en la práctica'],read:'Ver guía',back:'Todas las guías',related:'Explora el centro de ayuda',steps:'Paso a paso',open:'Abrir funcionalidad'}
+ 'pt-BR':{home:'Central de Ajuda',all:'Todos',groups:['Conta e privacidade','Vagas e Match IA','Comunidade','Brasa na prática'],read:'Ver passo a passo',back:'Ver todos os tutoriais',explore:'Explore a Central',toc:'Neste artigo',purpose:'Para que serve',steps:'Passo a passo',important:'O que você precisa saber',returning:'Ao retomar',open:'Abrir funcionalidade',copilot:'Me ajude com a Brasa',search:'Pesquisar artigos',related:'Artigos relacionados',previous:'Anterior',next:'Próximo',updated:'Atualizado em 26/10/2026',time:n=>`Leitura de cerca de ${n} min`,count:n=>`${n} tutoriais disponíveis`,none:'Nenhum tutorial encontrado. Tente outra palavra.'},
+ en:{home:'Help center',all:'All',groups:['Account and privacy','Jobs and AI Match','Community','Using Brasa'],read:'View guide',back:'View all guides',explore:'Explore the help center',toc:'In this article',purpose:'What it is for',steps:'Step by step',important:'What you need to know',returning:'When you return',open:'Open feature',copilot:'Help me with Brasa',search:'Search articles',related:'Related articles',previous:'Previous',next:'Next',updated:'Updated on 26 Oct 2026',time:n=>`About ${n} min read`,count:n=>`${n} guides available`,none:'No guides found. Try another search.'},
+ 'es-419':{home:'Centro de ayuda',all:'Todos',groups:['Cuenta y privacidad','Vacantes y Match IA','Comunidad','Brasa en la práctica'],read:'Ver guía',back:'Ver todas las guías',explore:'Explora el centro de ayuda',toc:'En este artículo',purpose:'Para qué sirve',steps:'Paso a paso',important:'Lo que debes saber',returning:'Al volver',open:'Abrir funcionalidad',copilot:'Ayúdame con Brasa',search:'Buscar artículos',related:'Artículos relacionados',previous:'Anterior',next:'Siguiente',updated:'Actualizado el 26/10/2026',time:n=>`Lectura de unos ${n} min`,count:n=>`${n} guías disponibles`,none:'No se encontraron guías. Prueba otra búsqueda.'}
 };
-const targets=['/meu-painel/','/match/','/vagas-salvas/','/open-to-work/','/meu-painel/','/eventos/','/dashboard/'];
-const locale=()=>{try{return localStorage.getItem('conexao:locale')||'pt-BR'}catch{return 'pt-BR'}};
-const copy=()=>labels[locale()]||labels['pt-BR'];
+const clean=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const getLocale=()=>{try{const x=localStorage.getItem('conexao:locale');return labels[x]?x:'pt-BR'}catch{return 'pt-BR'}};
 let category=-1,active=-1;
-const filters=document.createElement('nav');filters.className='help-categories';filters.setAttribute('aria-label','Categorias / Categories');input.after(filters);
-const reader=document.createElement('section');reader.className='help-reader';reader.hidden=true;grid.after(reader);
-const summaries=cards.map(card=>card.querySelector('summary'));
-const contents=cards.map(card=>card.querySelector('p'));
-const links=[];
-for(let i=0;i<cards.length;i++){
- const card=document.createElement('article');cards[i].replaceWith(card);card.append(summaries[i],contents[i]);cards[i]=card;
- const title=document.createElement('button');title.type='button';title.className='help-guide-title';title.textContent=summaries[i].textContent;summaries[i].replaceWith(title);summaries[i]=title;contents[i].hidden=true;
- cards[i].classList.add('help-guide-card');
- const link=document.createElement('button');link.type='button';link.className='help-read-guide';link.addEventListener('click',()=>show(i));cards[i].append(link);links.push(link);
- summaries[i].addEventListener('click',e=>{e.preventDefault();show(i)});
+const filters=el('nav','help-categories');filters.setAttribute('aria-label','Categorias / Categories');input.after(filters);
+const count=el('p','help-result-count');filters.after(count);
+const reader=el('section','help-reader');reader.hidden=true;grid.after(reader);
+function el(tag,cls,text){const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node}
+function button(text,action,cls){const b=el('button',cls,text);b.type='button';b.addEventListener('click',action);return b}
+function localized(guide){return guide.locales[getLocale()]}
+function routeLink(guide,text,cls){const a=el('a',cls,text);a.href='#tutorial='+guide.slug;return a}
+function matches(guide,q){return clean(localized(guide).flat().join(' ')).includes(clean(q.trim()))}
+function selectedFromHash(){const slug=new URLSearchParams(location.hash.slice(1)).get('tutorial');return guides.findIndex(g=>g.slug===slug)}
+function navigate(i){const hash=i<0?'':'#tutorial='+guides[i].slug;history.pushState(null,'',location.pathname+location.search+hash);render(i,true)}
+function paintCatalog(){
+ const t=labels[getLocale()];grid.replaceChildren();filters.replaceChildren();
+ [t.all,...t.groups].forEach((name,n)=>{const key=n-1,b=button(name,()=>{category=key;paintCatalog()},'help-category');b.setAttribute('aria-pressed',String(category===key));filters.append(b)});
+ let total=0;
+ guides.forEach((guide,i)=>{if(category!==-1&&category!==guide.group||!matches(guide,input.value))return;total++;
+  const data=localized(guide),card=el('article','help-guide-card');card.dataset.helpArticle='';
+  card.append(el('p','tag',t.groups[guide.group]));
+  const h=el('h2');h.append(routeLink(guide,data[0],'help-guide-title'));card.append(h,el('p','help-guide-description',data[1]),routeLink(guide,t.read+' →','help-read-guide'));grid.append(card);
+ });
+ count.textContent=t.count(total);empty.textContent=t.none;empty.hidden=total>0;
 }
-function filter(){
- const q=clean(input.value.trim());let count=0;
- cards.forEach((card,i)=>{card.hidden=(category!==-1&&groups[i]!==category)||!clean(summaries[i].textContent+' '+contents[i].textContent).includes(q);if(!card.hidden)count++});
- document.getElementById('help-empty').hidden=count>0;
+function catalogState(isReader){
+ heading.hidden=isReader;label.hidden=isReader;input.hidden=isReader;filters.hidden=isReader;count.hidden=isReader;grid.hidden=isReader;reader.hidden=!isReader;
+ if(isReader)empty.hidden=true;document.body.classList.toggle('help-reading',isReader);
 }
-function catalog(){
- active=-1;reader.hidden=true;reader.replaceChildren();grid.hidden=false;filters.hidden=false;input.hidden=false;document.querySelector('label[for="help-search"]').hidden=false;filter();
+function render(i,focus=false){
+ const t=labels[getLocale()];active=i;catalogState(i>=0);reader.replaceChildren();
+ if(i<0){paintCatalog();document.title=t.home+' | Conexão CRM';if(focus)input.focus();return}
+ const guide=guides[i],data=localized(guide);
+ const crumbs=el('nav','help-breadcrumb');crumbs.setAttribute('aria-label','Breadcrumb');
+ crumbs.append(button(t.home,()=>navigate(-1)),el('span',null,'/'),el('span',null,t.groups[guide.group]),el('span',null,'/'),el('span',null,data[0]));
+ const columns=el('div','help-reader-columns'),body=el('div','help-reader-main'),article=el('article','help-guide-article');
+ const title=el('h2','help-article-title',data[0]);title.tabIndex=-1;
+ const words=data.flat().join(' ').split(/\s+/).length;
+ article.append(el('p','tag',t.groups[guide.group]),title,el('p','help-article-intro',data[1]),el('p','help-article-meta','◷ '+t.time(Math.max(1,Math.ceil(words/200)))+' · '+t.updated));
+ const sections=[[t.purpose,'para-que-serve',data[2]],[t.steps,'passo-a-passo',data[3]],[t.important,'importante',data[4]],[t.returning,'ao-retomar',data[5]]];
+ sections.forEach(([name,id,content])=>{const section=el('section','help-article-section');section.id='guia-'+id;section.append(el('h3',null,name));
+  if(Array.isArray(content)){const ol=el('ol');content.forEach(step=>ol.append(el('li',null,step)));section.append(ol)}else section.append(el('p',null,content));article.append(section);
+ });
+ const actions=el('div','help-article-actions'),open=el('a','help-feature-link',t.open);open.href=guide.target;open.target='_top';actions.append(open);
+ if(new URLSearchParams(location.search).get('embedded')==='1')actions.append(button(t.copilot,()=>window.parent.postMessage({type:'crm:help-open-copilot'},location.origin),'help-copilot-link'));
+ article.append(actions);body.append(article);
+ const prevnext=el('nav','help-prev-next');prevnext.setAttribute('aria-label',t.previous+' / '+t.next);
+ [i>0?i-1:-1,i<guides.length-1?i+1:-1].forEach((n,k)=>{const box=el('div');if(n>=0){const a=routeLink(guides[n],(k===0?'← ':'')+localized(guides[n])[0]+(k===1?' →':''));a.prepend(el('span','help-direction',k===0?t.previous:t.next));box.append(a)}prevnext.append(box)});body.append(prevnext);
+ const related=el('section','help-related');related.append(el('h3',null,t.related));const relevant=guides.map((g,n)=>n).filter(n=>n!==i).sort((a,b)=>(guides[b].group===guide.group)-(guides[a].group===guide.group)).slice(0,3);
+ relevant.forEach(n=>related.append(routeLink(guides[n],localized(guides[n])[0]+' ›')));body.append(related);
+ const footer=el('nav','help-reader-footer');footer.append(button(t.home,()=>navigate(-1)),el('a',null,labels[getLocale()]===labels.en?"What's new":getLocale()==='es-419'?'Novedades':'Novidades'));footer.lastChild.href='/novidades/';body.append(footer);
+ const aside=el('aside','help-article-sidebar'),search=el('input','help-sidebar-search');search.type='search';search.placeholder=t.search;search.setAttribute('aria-label',t.search);aside.append(search,el('h3',null,t.toc));
+ const toc=el('nav','help-article-toc');toc.setAttribute('aria-label',t.toc);
+ sections.forEach(([name,id])=>{const a=el('a',null,name);a.href='#guia-'+id;a.addEventListener('click',e=>{e.preventDefault();document.getElementById('guia-'+id)?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});toc.append(a)});aside.append(toc,el('h3',null,t.explore));
+ const library=el('nav','help-library');library.setAttribute('aria-label',t.explore);
+ t.groups.forEach((name,g)=>{const group=el('div','help-library-group');group.dataset.group=g;group.append(el('h4',null,name));guides.forEach((v,n)=>{if(v.group!==g)return;const a=routeLink(v,localized(v)[0]);a.dataset.guide=n;if(n===i)a.setAttribute('aria-current','page');group.append(a)});library.append(group)});
+ const noresults=el('p','help-sidebar-empty',t.none);noresults.hidden=true;library.append(noresults);
+ search.addEventListener('input',()=>{let found=0;library.querySelectorAll('[data-guide]').forEach(a=>{a.hidden=!matches(guides[Number(a.dataset.guide)],search.value);if(!a.hidden)found++});library.querySelectorAll('[data-group]').forEach(g=>g.hidden=![...g.querySelectorAll('[data-guide]')].some(a=>!a.hidden));noresults.hidden=found>0});
+ aside.append(library,button(t.back,()=>navigate(-1),'help-all-guides'));columns.append(body,aside);reader.append(crumbs,columns);
+ document.title=data[0]+' | Conexão CRM';if(focus){title.focus({preventScroll:true});main.scrollIntoView({block:'start'})}
 }
-function button(text,action){const b=document.createElement('button');b.type='button';b.textContent=text;b.addEventListener('click',action);return b}
-function show(i,focus=true){
- active=i;const t=copy();reader.replaceChildren();reader.hidden=false;grid.hidden=true;filters.hidden=true;input.hidden=true;document.querySelector('label[for="help-search"]').hidden=true;document.getElementById('help-empty').hidden=true;
- const back=button('← '+t.back,()=>{catalog();input.focus()});back.className='help-back';
- const article=document.createElement('article');article.className='help-guide-article';
- const tag=document.createElement('p');tag.className='tag';tag.textContent=t.groups[groups[i]];
- const title=document.createElement('h2');title.textContent=summaries[i].textContent;title.tabIndex=-1;
- const heading=document.createElement('h3');heading.textContent=t.steps;
- const text=document.createElement('p');text.textContent=contents[i].textContent;
- const open=document.createElement('a');open.href=targets[i];open.className='help-feature-link';open.textContent=t.open+' →';open.target='_top';
- article.append(tag,title,heading,text,open);
- const aside=document.createElement('aside');const h=document.createElement('h3');h.textContent=t.related;aside.append(h);
- cards.forEach((card,n)=>{const b=button(summaries[n].textContent,()=>show(n));if(n===i)b.setAttribute('aria-current','page');aside.append(b)});
- const columns=document.createElement('div');columns.className='help-reader-columns';columns.append(article,aside);reader.append(back,columns);if(focus)title.focus();
-}
-function render(){
- const t=copy();filters.replaceChildren();
- [t.all,...t.groups].forEach((name,n)=>{const key=n-1;const b=button(name,()=>{category=key;render();filter()});b.setAttribute('aria-pressed',String(category===key));filters.append(b)});
- links.forEach(link=>link.textContent=t.read+' →');if(active>=0)show(active,false);
-}
-input.addEventListener('input',filter);
-window.addEventListener('cx:locale-change',()=>queueMicrotask(()=>{render();filter()}));
-document.addEventListener('DOMContentLoaded',render,{once:true});if(document.readyState!=='loading')render();
+reader.addEventListener('click',routeClick);grid.addEventListener('click',routeClick);
+function routeClick(e){const a=e.target.closest('a[href^="#tutorial="]');if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const slug=new URLSearchParams(a.hash.slice(1)).get('tutorial'),n=guides.findIndex(g=>g.slug===slug);if(n>=0){e.preventDefault();navigate(n)}}
+input.addEventListener('input',paintCatalog);
+window.addEventListener('popstate',()=>render(selectedFromHash()));window.addEventListener('hashchange',()=>render(selectedFromHash()));
+window.addEventListener('cx:locale-change',()=>queueMicrotask(()=>render(active)));
+function init(){render(selectedFromHash())}
+document.addEventListener('DOMContentLoaded',()=>queueMicrotask(init),{once:true});if(document.readyState!=='loading')queueMicrotask(init);
 })();
