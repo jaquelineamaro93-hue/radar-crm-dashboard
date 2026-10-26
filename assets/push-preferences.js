@@ -260,20 +260,38 @@
     inviteDismissed=true;
   }
   function placeProfileButton(){
-    document.querySelectorAll('.crm-workbar [data-crm-push-header]').forEach(button=>button.remove());
+    document.querySelectorAll('[data-crm-push-header]').forEach(button=>button.remove());
     if(!authenticated()){dialog?.close();return;}
-    const header=document.querySelector('#profileModalOverlay .crm-profile-footer');
-    if(header&&!header.querySelector('[data-crm-push-header]')){
-      const button=document.createElement('button');
-      button.type='button';button.className='crm-push-header-button';
-      button.dataset.crmPushHeader='1';
-      button.setAttribute('aria-haspopup','dialog');
-      button.setAttribute('aria-controls','crmPushPreferences');
-      button.innerHTML=icon+'<span>Avisos</span>';
-      button.addEventListener('click',()=>openDialog());
-      header.prepend(button);
-    }
-    refreshButtons();
+    const existing=document.getElementById('pf_web_push');
+    const anchor=document.querySelector('#profileModalOverlay .crm-news-optin');
+    if(!anchor||existing)return;
+    const label=document.createElement('label');
+    label.className='crm-directory-visibility';
+    label.innerHTML='<input id="pf_web_push" type="checkbox"><span><strong>Receber notificações neste dispositivo</strong><small>Autorizar avisos da Conexão CRM pelo navegador. Você pode desativar aqui a qualquer momento.</small><small role="status" aria-live="polite" data-push-status></small></span>';
+    anchor.insertAdjacentElement('afterend',label);
+    const input=label.querySelector('input'),status=label.querySelector('[data-push-status]');
+    input.checked=any(read())&&permission()==='granted';
+    input.addEventListener('change',async()=>{
+      if(!authenticated()){input.checked=false;return;}
+      const enable=input.checked;
+      input.disabled=true;
+      try{
+        if(enable){
+          if(!supported())throw new Error('Este navegador não oferece notificações. No iPhone, adicione o site à Tela de Início e abra por lá.');
+          const granted=permission()==='granted'?'granted':await Notification.requestPermission();
+          if(granted!=='granted')throw new Error('A autorização não foi concedida pelo navegador.');
+          const p=read();p.comunidade=true;
+          localStorage.setItem(KEY,JSON.stringify(p));
+          await ensureSdk();sync(p);
+          status.textContent='Permissão concedida. Preferência de avisos da comunidade salva neste navegador.';
+        }else{
+          const p=defaults();for(const t of topics)p[t.id]=false;
+          localStorage.setItem(KEY,JSON.stringify(p));sync(p);await unsubscribe();
+          status.textContent='Notificações desativadas neste navegador.';
+        }
+      }catch(error){input.checked=false;status.textContent=error.message||'Não foi possível atualizar as notificações.';}
+      finally{input.disabled=false;}
+    });
   }
   function init(){
     placeProfileButton();
