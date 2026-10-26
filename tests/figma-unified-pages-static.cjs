@@ -9,7 +9,8 @@ const savedCss=read('assets/saved-jobs-figma.css');
 const savedJs=read('assets/saved-jobs-figma.js');
 
 test('saved-jobs Figma markup is in initial HTML, not dependent on after-load rearrangement',()=>{
- const start=html.indexOf('id="subpage-vagas-salvas"');
+ const route=html.indexOf('id="subpage-vagas-salvas"');
+ const start=html.lastIndexOf('<div',route);
  const end=html.indexOf('id="subpage-membros"',start);
  assert(start>0&&end>start,'saved jobs route should precede members route');
  const page=html.slice(start,end);
