@@ -96,7 +96,11 @@
     return dialog;
   }
   let dialog=null;
+  function authenticated(){
+    try{return typeof crmSignedIn==='function'&&crmSignedIn()&&typeof CURRENT_USER!=='undefined'&&!!CURRENT_USER?.id&&!CURRENT_USER.is_anonymous}catch{return false}
+  }
   function openDialog(section){
+    if(!authenticated())return;
     dismissInvite();
     if(!dialog)dialog=createDialog();
     const p=read();
@@ -110,7 +114,7 @@
   function refreshButtons(){
     const p=read();
     document.querySelectorAll('[data-crm-push-header]').forEach(b=>{
-      b.querySelector('span').textContent='Avisos';
+      if(b.querySelector('span').textContent!=='Avisos')b.querySelector('span').textContent='Avisos';
       const label=any(p)?'Configurar avisos: assuntos selecionados':'Configurar avisos';
       b.setAttribute('aria-label',label);
       b.title=label;
@@ -118,6 +122,7 @@
   }
   async function save(e){
     e.preventDefault();
+    if(!authenticated()){dialog?.close();return;}
     const form=e.currentTarget;
     const p=defaults();
     for(const t of topics)p[t.id]=form.elements[t.id].checked;
@@ -237,7 +242,7 @@
     const existing=document.getElementById('crmPushInvite');
     let seen=inviteDismissed;
     try{seen=seen||!!localStorage.getItem(INVITE_KEY)||!!localStorage.getItem(KEY)}catch{}
-    if(!visible||(seen&&!existing)||any(read())||!supported()||permission()==='denied'){
+    if(!authenticated()||!visible||(seen&&!existing)||any(read())||!supported()||permission()==='denied'){
       existing?.remove();return;
     }
     // Convites existentes e formulários têm prioridade; nunca abrir um modal sozinho.
@@ -254,21 +259,43 @@
     try{localStorage.setItem(INVITE_KEY,'1')}catch{}
     inviteDismissed=true;
   }
+  function placeProfileButton(){
+    document.querySelectorAll('[data-crm-push-header]').forEach(button=>button.remove());
+    if(!authenticated()){dialog?.close();return;}
+    const existing=document.getElementById('pf_web_push');
+    const anchor=document.querySelector('#profileModalOverlay .crm-news-optin');
+    if(!anchor||existing)return;
+    const label=document.createElement('label');
+    label.className='crm-directory-visibility';
+    label.innerHTML='<input id="pf_web_push" type="checkbox"><span><strong>Receber notificações neste dispositivo</strong><small>Autorizar avisos da Conexão CRM pelo navegador. Você pode desativar aqui a qualquer momento.</small><small role="status" aria-live="polite" data-push-status></small></span>';
+    anchor.insertAdjacentElement('afterend',label);
+    const input=label.querySelector('input'),status=label.querySelector('[data-push-status]');
+    input.checked=any(read())&&permission()==='granted';
+    input.addEventListener('change',async()=>{
+      if(!authenticated()){input.checked=false;return;}
+      const enable=input.checked;
+      input.disabled=true;
+      try{
+        if(enable){
+          if(!supported())throw new Error('Este navegador não oferece notificações. No iPhone, adicione o site à Tela de Início e abra por lá.');
+          const granted=permission()==='granted'?'granted':await Notification.requestPermission();
+          if(granted!=='granted')throw new Error('A autorização não foi concedida pelo navegador.');
+          const p=read();p.comunidade=true;
+          localStorage.setItem(KEY,JSON.stringify(p));
+          await ensureSdk();sync(p);
+          status.textContent='Permissão concedida. Preferência de avisos da comunidade salva neste navegador.';
+        }else{
+          const p=defaults();for(const t of topics)p[t.id]=false;
+          localStorage.setItem(KEY,JSON.stringify(p));sync(p);await unsubscribe();
+          status.textContent='Notificações desativadas neste navegador.';
+        }
+      }catch(error){input.checked=false;status.textContent=error.message||'Não foi possível atualizar as notificações.';}
+      finally{input.disabled=false;}
+    });
+  }
   function init(){
-    const header=document.querySelector('.crm-workbar');
-    const survey=header?.querySelector('.crm-survey-top');
-    if(header&&!header.querySelector('[data-crm-push-header]')){
-      const button=document.createElement('button');
-      button.type='button';button.className='crm-push-header-button';
-      button.dataset.crmPushHeader='1';
-      button.setAttribute('aria-haspopup','dialog');
-      button.setAttribute('aria-controls','crmPushPreferences');
-      button.innerHTML=icon+'<span>Avisos</span>';
-      button.addEventListener('click',()=>openDialog());
-      if(survey)survey.insertAdjacentElement('afterend',button);
-      else header.appendChild(button);
-    }
-    refreshButtons();
+    placeProfileButton();
+    new MutationObserver(placeProfileButton).observe(document.body,{childList:true,subtree:true});
     setTimeout(refreshIncompleteProfileNudge,1200);
     setInterval(refreshIncompleteProfileNudge,6000);
     setTimeout(refreshInvite,8000);
