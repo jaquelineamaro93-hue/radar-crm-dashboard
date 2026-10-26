@@ -19,6 +19,14 @@ test('New-user survey is wired to a validated account, not a visitor',()=>{
  assert(script.includes('user.is_anonymous'));
  assert(script.includes("getUser(session.access_token)"));
 });
+test('Survey is retried when a native dialog closes and is cleared on account change',()=>{
+ assert(script.includes("record.attributeName==='open'"),'dialog close must wake a blocked prompt');
+ assert(script.includes("!record.target.hasAttribute('open')"),'only closed dialogs trigger a retry');
+ assert(script.includes("document.addEventListener('crm:auth-state'"),'account changes are handled separately');
+ assert(script.includes("CURRENT_USER?.id!==subjectId"),'survey from a previous account must close');
+ assert(script.includes("attributeFilter:['open']"),'the observer watches modal state, not every DOM mutation');
+});
+
 test('The five screenshot choices have deterministic keys and priority support',()=>{
  for(const key of ['trabalho','projetos','aprender','networking','pesquisa'])
   assert(script.includes("id:'"+key+"'"));
