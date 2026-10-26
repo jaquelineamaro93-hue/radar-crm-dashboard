@@ -115,3 +115,28 @@ body.crm-help-embedded>main{width:100%;max-width:1080px;margin-inline:auto;paddi
 @media(max-width:800px){.help-reader-columns{grid-template-columns:minmax(0,1fr)}.help-reader .help-article-sidebar{position:static}.help-library{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.help-article-toc{flex-direction:row;flex-wrap:wrap;gap:4px 12px}.help-article-toc a{min-height:40px;padding:10px 0}.help-guide-article{padding:20px}.help-reading .help-reader{max-width:100%}}
 @media(max-width:540px){body>main{padding-inline:16px}body.crm-help-embedded>main{padding-inline:0}.help-guide-article{padding:18px}.help-guide-article .help-article-title{font-size:23px}.help-guide-article .help-article-section p,.help-guide-article li{font-size:14px}.help-breadcrumb{font-size:11px}.help-library{grid-template-columns:minmax(0,1fr)}.help-prev-next{gap:12px}.help-article-actions>*{flex:1 1 150px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Accessible guide reading rhythm and visible copyright marking on screenshots. */
+.help-guide-card{padding:21px 23px!important;min-height:150px;display:flex;flex-direction:column;align-items:stretch;gap:7px}
+.help-guide-card .tag{margin:0 0 5px!important;line-height:1.4}
+.help-guide-card h2{margin:0 0 4px!important;line-height:1.5}
+.help-guide-card .help-guide-description{line-height:1.75;margin:0 0 4px!important}
+.help-guide-card .help-read-guide{margin-top:auto;padding-top:10px;min-height:35px}
+.help-reader-columns{gap:22px}
+.help-guide-article{padding:30px 34px!important;min-width:0;position:relative;isolation:isolate;overflow:hidden}
+.help-guide-article>*{position:relative;z-index:1}
+.help-guide-article .help-article-section{margin:0 0 29px;padding:0 0 20px;border-bottom:1px solid var(--help-border)}
+.help-guide-article .help-article-section:last-of-type{border-bottom:0;padding-bottom:0}
+.help-guide-article .help-article-section h3{margin:0 0 14px;line-height:1.45}
+.help-guide-article .help-article-section p{line-height:1.85}
+.help-guide-article ol{padding-left:25px!important;margin:10px 0 0!important}
+.help-guide-article li{padding-left:5px!important;margin:0 0 13px!important;line-height:1.75!important}
+.help-reader .help-article-sidebar{padding:20px!important}
+.help-library-group{margin-bottom:18px!important}
+.help-library-group a{padding:10px 9px!important;min-height:38px!important;line-height:1.55!important}
+.help-copyright{margin-top:24px!important;padding-top:14px;border-top:1px solid var(--help-border);font-size:11px!important;line-height:1.6;color:var(--help-muted);letter-spacing:.015em}
+/* The mark is visual attribution, not a DRM or screen-capture prevention mechanism. */
+body.help-reading:not(.cx-owner-watermark-exempt) .help-guide-article::before{content:"";display:block;position:absolute;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22440%22%20height%3D%22230%22%20viewBox%3D%220%200%20440%20230%22%3E%3Cg%20transform%3D%22translate(220%20116)%20rotate(-26)%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2217%22%20font-weight%3D%22700%22%20fill%3D%22%23a89bc7%22%20text-anchor%3D%22middle%22%3E%3Ctext%20x%3D%220%22%20y%3D%22-8%22%3ECONEX%C3%83O%20CRM%3C%2Ftext%3E%3Ctext%20x%3D%220%22%20y%3D%2218%22%20font-size%3D%2211%22%20letter-spacing%3D%222%22%3EREPRODU%C3%87%C3%83O%20N%C3%83O%20AUTORIZADA%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-size:440px 230px;background-repeat:repeat;opacity:.21}
+body.cx-owner-watermark-exempt .help-copyright{display:none}
+@media(max-width:800px){.help-reader-columns{gap:18px}.help-guide-article{padding:25px 26px!important}.help-reader .help-article-sidebar{padding:20px!important}}
+@media(max-width:540px){.help-guide-card{padding:20px!important;min-height:0}.help-guide-article{padding:22px 19px!important}.help-guide-article .help-article-section{margin-bottom:25px;padding-bottom:18px}.help-guide-article li{margin-bottom:13px!important}.help-reader .help-article-sidebar{padding:18px!important}}
