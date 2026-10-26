@@ -45,4 +45,12 @@ const legacyCss=read('assets/push-preferences.css');
 assert.match(legacyCss,/#crmPushPreferences,#crmPushInvite/,'retired modal cannot overlay the new layout');
 assert.doesNotMatch(glue,/crmPushPreferences|showModal\(|requestPermission\(/,'preferences JS must not open old notification dialogs');
 
+const contextual=read('assets/contextual-prompts.js');
+new vm.Script(contextual,{filename:'contextual-prompts.js'});
+assert.match(glue,/contextual-prompts\.js\?v=/,'route-based prompts loaded');
+assert.match(contextual,/HIGH_ADOPTION=new Set\(\['dashboard','search','membros','vagas'\]\)/);
+assert.match(contextual,/MEDIUM_ADOPTION=new Set\(\['quem-somos','freelancers','courses','comunidade'\]\)/);
+assert.match(contextual,/crmExperiencePrompt/);
+assert.match(contextual,/crm-census-inline/);
+assert.doesNotMatch(contextual,/Notification\.requestPermission|serviceWorker\.register|SUPABASE_SERVICE_ROLE_KEY/);
 console.log('PASS help bell: sidebar shell, direct links, translations, mobile and consent without Web Push');
