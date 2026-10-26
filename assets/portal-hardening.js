@@ -14,7 +14,7 @@
   if(!document.getElementById('cx-portal-layout-runtime')){
     const script=document.createElement('script');
     script.id='cx-portal-layout-runtime';script.defer=true;
-    script.src='/assets/portal-layout.js?v=20261026-topnav-1';
+    script.src='/assets/portal-layout.js?v=20261026-catalog1';
     document.head.append(script);
   }
 
