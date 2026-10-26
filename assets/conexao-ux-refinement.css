@@ -71,10 +71,10 @@
 :is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))!important;gap:12px!important}
 :is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-card{min-width:0!important;max-width:100%!important;border:1px solid #3b4860!important;border-radius:13px!important;background:#161f30!important;box-shadow:none!important}
 :is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-card :is(p,h3,span){overflow-wrap:anywhere!important}
-#view-publica #crmSurveyReminder.crm-survey-modern{width:min(305px,calc(100vw - 24px))!important;padding:12px!important;bottom:14px!important;right:14px!important;max-height:min(54dvh,365px)!important;border-radius:12px!important}
-#view-publica #crmSurveyReminder.crm-survey-modern h2{font-size:15px!important;margin:6px 0!important}
-#view-publica #crmSurveyReminder.crm-survey-modern p{font-size:11px!important;margin:0 0 8px!important}
-#view-publica #crmSurveyReminder.crm-survey-modern :is(.crm-survey-primary,.crm-survey-secondary button){min-height:34px!important;padding:7px 9px!important;font-size:11px!important}
+body #crmSurveyReminder.crm-survey-modern{width:min(305px,calc(100vw - 24px))!important;padding:12px!important;bottom:14px!important;right:14px!important;max-height:min(54dvh,365px)!important;border-radius:12px!important}
+body #crmSurveyReminder.crm-survey-modern h2{font-size:15px!important;margin:6px 0!important}
+body #crmSurveyReminder.crm-survey-modern p{font-size:11px!important;margin:0 0 8px!important}
+body #crmSurveyReminder.crm-survey-modern :is(.crm-survey-primary,.crm-survey-secondary button){min-height:34px!important;padding:7px 9px!important;font-size:11px!important}
 #cxCopilot .cx-copilot-launch{min-height:38px!important;padding:3px 9px 3px 4px!important;border-radius:999px!important;font-size:11px!important;gap:5px!important;box-shadow:0 5px 14px #0004!important}
 #cxCopilot .cx-copilot-launch .brasa-fox{width:27px!important;height:27px!important;flex-basis:27px!important}
 @media(max-width:1180px){
