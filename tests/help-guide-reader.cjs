@@ -7,6 +7,8 @@ const read=p=>fs.readFileSync(p,'utf8');
  w.eval(read('assets/help-guides.js'));w.eval(read('assets/help-center.js'));w.eval(read('assets/help-center-i18n.js'));
  const tick=()=>new Promise(r=>setTimeout(r,0));await tick();
  const d=w.document;
+ w.eval(read('assets/help-center-i18n.js'));
+ assert(d.title.includes('Converse com a Brasa'),'late translation initialization must preserve the article title');
  assert.equal(d.querySelector('.help-article-title').textContent,'Converse com a Brasa Copilot sobre sua carreira');
  assert(d.querySelector('main h1').hidden,'generic page title must not duplicate article heading');
  const headings={'pt-BR':'Para que serve',en:'What it is for','es-419':'Para qué sirve'};

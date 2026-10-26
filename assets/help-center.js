@@ -44,7 +44,7 @@ function render(i,focus=false){
  const crumbs=el('nav','help-breadcrumb');crumbs.setAttribute('aria-label','Breadcrumb');
  crumbs.append(button(t.home,()=>navigate(-1)),el('span',null,'/'),el('span',null,t.groups[guide.group]),el('span',null,'/'),el('span',null,data[0]));
  const columns=el('div','help-reader-columns'),body=el('div','help-reader-main'),article=el('article','help-guide-article');
- const title=el('h2','help-article-title',data[0]);title.tabIndex=-1;
+ const title=el('h1','help-article-title',data[0]);title.tabIndex=-1;
  const words=data.flat().join(' ').split(/\s+/).length;
  article.append(el('p','tag',t.groups[guide.group]),title,el('p','help-article-intro',data[1]),el('p','help-article-meta','◷ '+t.time(Math.max(1,Math.ceil(words/200)))+' · '+t.updated));
  const sections=[[t.purpose,'para-que-serve',data[2]],[t.steps,'passo-a-passo',data[3]],[t.important,'importante',data[4]],[t.returning,'ao-retomar',data[5]]];
@@ -63,7 +63,7 @@ function render(i,focus=false){
  const toc=el('nav','help-article-toc');toc.setAttribute('aria-label',t.toc);
  sections.forEach(([name,id])=>{const a=el('a',null,name);a.href='#guia-'+id;a.addEventListener('click',e=>{e.preventDefault();document.getElementById('guia-'+id)?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});toc.append(a)});aside.append(toc,el('h3',null,t.explore));
  const library=el('nav','help-library');library.setAttribute('aria-label',t.explore);
- t.groups.forEach((name,g)=>{const group=el('div','help-library-group');group.dataset.group=g;group.append(el('h4',null,name));guides.forEach((v,n)=>{if(v.group!==g)return;const a=routeLink(v,localized(v)[0]);a.dataset.guide=n;if(n===i)a.setAttribute('aria-current','page');group.append(a)});library.append(group)});
+ [guide.group,...t.groups.map((_,n)=>n).filter(n=>n!==guide.group)].forEach(g=>{const name=t.groups[g],group=el('div','help-library-group');group.dataset.group=g;group.append(el('h4',null,name));guides.forEach((v,n)=>{if(v.group!==g)return;const a=routeLink(v,localized(v)[0]);a.dataset.guide=n;if(n===i)a.setAttribute('aria-current','page');group.append(a)});library.append(group)});
  const noresults=el('p','help-sidebar-empty',t.none);noresults.hidden=true;library.append(noresults);
  search.addEventListener('input',()=>{let found=0;library.querySelectorAll('[data-guide]').forEach(a=>{a.hidden=!matches(guides[Number(a.dataset.guide)],search.value);if(!a.hidden)found++});library.querySelectorAll('[data-group]').forEach(g=>g.hidden=![...g.querySelectorAll('[data-guide]')].some(a=>!a.hidden));noresults.hidden=found>0});
  aside.append(library,button(t.back,()=>navigate(-1),'help-all-guides'));columns.append(body,aside);reader.append(crumbs,columns);
