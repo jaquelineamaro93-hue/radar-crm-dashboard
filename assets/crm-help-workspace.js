@@ -46,7 +46,36 @@ const lookup=()=>{let k=window.CXLanguage?.getLocale?.();if(!k)try{k=localStorag
 const copy=()=>locales[lookup()];
 const read=()=>{try{const arr=JSON.parse(localStorage.getItem(STORAGE)||'[]');return Array.isArray(arr)?arr.filter(x=>typeof x==='string'):[]}catch{return []}};
 const markRead=()=>{try{localStorage.setItem(STORAGE,JSON.stringify(locales['pt-BR'].items.map(x=>x[0])))}catch{}updateBell()};
-let button=null,panel=null,sidebar=null;
+let button=null,panel=null,sidebar=null,releaseBanner=null;
+const releaseKey=()=>{
+ const user=typeof CURRENT_USER==='undefined'?null:CURRENT_USER;
+ if(!user?.id)return '';
+ let hash=2166136261;for(const c of user.id)hash=Math.imul(hash^c.charCodeAt(0),16777619);
+ return 'conexao:release-help:v2:'+(hash>>>0).toString(36);
+};
+function showReleaseNotice(){
+ const route=typeof crmActiveRoute==='string'?crmActiveRoute:'';
+ const key=releaseKey(),page=document.getElementById('crmPersonalDashboard');
+ if(!signedIn()||route!=='dashboard'||!key||!page||document.getElementById('crmGoalsOnboarding')||document.getElementById('profileModalOverlay')){
+  releaseBanner?.remove();releaseBanner=null;return;
+ }
+ try{if(localStorage.getItem(key)==='1')return}catch{}
+ if(releaseBanner?.isConnected)return;
+ const heading=page.querySelector('.crm-dashboard-heading');if(!heading)return;
+ const banner=document.createElement('aside');banner.className='crm-help-release-inline';
+ const text=document.createElement('span');text.textContent=lookup()==='en'?'New: Help and updates':lookup()==='es-419'?'Novedades: ayuda y actualizaciones':'Novidades: Central de Dúvidas e atualizações';
+ const actions=document.createElement('div');actions.className='crm-help-release-actions';
+ const dismiss=()=>{
+  try{localStorage.setItem(key,'1')}catch{}
+  banner.remove();releaseBanner=null;
+ };
+ for(const [label,routeName] of [[copy().help,'ajuda'],[copy().all,'novidades']]){
+  const b=document.createElement('button');b.type='button';b.textContent=label;
+  b.addEventListener('click',()=>{dismiss();open(routeName)});actions.append(b);
+ }
+ const close=document.createElement('button');close.type='button';close.className='crm-help-release-dismiss';close.textContent=copy().close;close.addEventListener('click',dismiss);
+ banner.append(text,actions,close);heading.after(banner);releaseBanner=banner;
+}
 function signedIn(){try{return typeof crmSignedIn==='function'&&crmSignedIn()}catch{return false}}
 function register(){
  const host=document.getElementById('crmPages');
@@ -211,6 +240,7 @@ function mount(){
 }
 function sync(){
  const route=typeof crmActiveRoute==='string'?crmActiveRoute:'';
+  showReleaseNotice();
  if(defs[route]){activate(route);return}
  // crmNavigate updates .active for all pages but not the inline display/hidden
  // values set by this module. Always clear both on non-help routes.
