@@ -1351,8 +1351,8 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link id="cx-soft-ui-20261014" rel="stylesheet" href="/assets/soft-ui-20261014.css?v=20261025-member-mobile-2">
 <link rel="stylesheet" href="/assets/saved-jobs-figma.css?v=20261025-figma-v2">
 <link rel="stylesheet" href="/assets/conexao-figma-unified-pages.css?v=20261025-allpages-v2">
-<link rel="stylesheet" href="/assets/member-home-reference.css?v=20261025-home1">
-<link rel="stylesheet" href="/assets/first-access-interests.css?v=20261025-onboarding-v1">
+<link rel="stylesheet" href="/assets/member-home-reference.css?v=20261025-home2">
+<link rel="stylesheet" href="/assets/first-access-interests.css?v=20261025-onboarding-v2">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -8972,6 +8972,7 @@ function crmClearPrivateData(){
  crmMemberCache=null;crmMemberLoading=null;if(crmMemberSearchTimer)clearTimeout(crmMemberSearchTimer);crmMemberSearchTimer=0;crmAuthEpoch++;if(typeof evPresence!=='undefined')evPresence={};PEOPLE=[];FREELANCERS=[];window.FL_REVIEWS=[];searchLoaded=false;
  for(const id of ['searchResults','freelancerResults','comDiretorioGrid','comunidadeMembros','aiMatchResults','freelancerChallengeResults','platformChallengeResults','membroVagasSalvas','membroVagasMatch','crmMyEventsList','crmSubmissionList']){const e=crmById(id);if(e)e.replaceChildren();}
  for(const id of ['jobDescription','freelancerChallenge','platformChallenge']){if(crmById(id))crmById(id).value='';}
+ window.CXFirstAccessInterests?.close?.();
  crmById('profileModalOverlay')?.remove();crmById('crmJobAnalysis')?.remove();
 }
 async function crmRequireSession(message){
@@ -10171,7 +10172,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 </style>
 <script src="/assets/otw-registration.js?v=20261024-dedup"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261025-figma-v4"></script>
-<script defer src="/assets/member-home-reference.js?v=20261025-home1"></script>
-<script defer src="/assets/first-access-interests.js?v=20261025-onboarding-v1"></script>
+<script defer src="/assets/member-home-reference.js?v=20261025-home2"></script>
+<script defer src="/assets/first-access-interests.js?v=20261025-onboarding-v2"></script>
 </body>
 </html>
