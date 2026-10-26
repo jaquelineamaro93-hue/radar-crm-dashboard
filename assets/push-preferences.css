@@ -30,3 +30,6 @@
 .crm-push-save:disabled{opacity:.6;cursor:wait}
 @media(max-width:500px){.crm-push-dialog{padding:18px}.crm-push-actions{justify-content:stretch}.crm-push-actions button{flex:1}}
 @media(max-width:600px){.crm-push-dialog{position:fixed;inset:auto 0 0;width:100%;max-width:100%;margin:0;max-height:85dvh;border-radius:18px 18px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}.crm-push-close{min-width:44px;min-height:44px}.crm-push-actions button{min-height:44px}}
+
+/* 2026-10-26: legacy web-push topic UI is retired. Keep user consent in Editar Perfil. */
+#crmPushPreferences,#crmPushInvite,.crm-push-dialog,.crm-push-header-button,.crm-push-invite{display:none!important}

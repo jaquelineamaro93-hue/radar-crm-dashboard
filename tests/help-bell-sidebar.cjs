@@ -33,4 +33,16 @@ for(const [slug,title] of [['ajuda','Central de Dúvidas'],['boas-praticas','Boa
 }
 assert.match(shell,/const locales=/);
 for(const code of ['pt-BR','en','es-419'])assert(shell.includes(code));
+
+// Old cached Web Push modal must never return after a production deploy.
+for(const filename of ['index.html','404.html']){
+ const html=read(filename);
+ assert.match(html,/\/assets\/push-preferences\.js\?v=20261026-bell-clean-1/,'updated JS cache key: '+filename);
+ assert.match(html,/\/assets\/push-preferences\.css\?v=20261026-bell-clean-1/,'updated CSS cache key: '+filename);
+ assert.doesNotMatch(html,/\/assets\/push-preferences\.(?:js|css)\?v=20261023-header-2/,'stale cache key: '+filename);
+}
+const legacyCss=read('assets/push-preferences.css');
+assert.match(legacyCss,/#crmPushPreferences,#crmPushInvite/,'retired modal cannot overlay the new layout');
+assert.doesNotMatch(glue,/crmPushPreferences|showModal\(|requestPermission\(/,'preferences JS must not open old notification dialogs');
+
 console.log('PASS help bell: sidebar shell, direct links, translations, mobile and consent without Web Push');
