@@ -118,6 +118,9 @@ function tidyMatches(){
  });
 }
 function updateTranslations(){
+ // The document may be detached while a pending MutationObserver callback runs
+ // (e.g. logout/navigation or a component test closing its DOM).
+ if(typeof document==='undefined'||!document?.documentElement)return;
  locale=currentLocale();
  document.querySelectorAll('#'+rootId+' [data-cx-saved-key]').forEach(node=>node.textContent=t(node.dataset.cxSavedKey));
 }
