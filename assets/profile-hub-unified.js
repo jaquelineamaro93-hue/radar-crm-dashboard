@@ -96,14 +96,21 @@ async function refreshOwner(){
  own.userId=identity;own.id=null;own.name='';
  try{
   const db=(typeof authSb!=='undefined'&&authSb)||null;
-  if(!db)return;
-  const r=await db.from('freelancers_sugeridos').select('id,nome,email_autor')
-    .ilike('email_autor',String(current.email)).limit(2);
+  if(!db){own.userId='';return;}
+  // The authenticated submitter relation is stronger than a matching email.
+  const primary=await db.from('freelancers_sugeridos').select('id,nome,submitted_by')
+    .eq('submitted_by',identity).eq('aprovado',true).limit(1);
   if(user()?.id!==identity)return;
-  if(!r.error){
-   const match=(r.data||[]).find(v=>String(v.email_autor||'').toLocaleLowerCase('pt-BR')===String(current.email).toLocaleLowerCase('pt-BR'));
-   if(match){own.id=match.id;own.name=String(match.nome||'');}
+  let match=!primary.error?primary.data?.[0]:null;
+  // Legacy profiles may predate submitted_by; email is only used to propose
+  // moderated edits through the existing approval flow, never direct updates.
+  if(!match){
+   const fallback=await db.from('freelancers_sugeridos').select('id,nome,email_autor')
+    .ilike('email_autor',String(current.email)).eq('aprovado',true).limit(2);
+   if(user()?.id!==identity)return;
+   match=!fallback.error?(fallback.data||[]).find(v=>String(v.email_autor||'').toLocaleLowerCase('pt-BR')===String(current.email).toLocaleLowerCase('pt-BR')):null;
   }
+  if(match){own.id=match.id;own.name=String(match.nome||'');}
  }catch{}
  renderOwn();
 }
