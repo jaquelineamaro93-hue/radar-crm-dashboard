@@ -269,7 +269,7 @@ for(const eventName of ['crm:route-changed','crm:role-resolved','crm:auth-state'
 if(typeof MutationObserver==='function'&&document.body){
  new MutationObserver(records=>{
   if(records.some(record=>Array.from(record.removedNodes).some(node=>node.nodeType===1&&(
-    node.id==='profileModalOverlay'||node.querySelector?.('#profileModalOverlay')||node.matches?.('dialog,.crm-login-overlay'))))
+    node.id==='profileModalOverlay'||node.querySelector?.('#profileModalOverlay')||node.matches?.('dialog,.crm-login-overlay')))))
    scheduleRetry();
  }).observe(document.body,{childList:true,subtree:true});
 }
