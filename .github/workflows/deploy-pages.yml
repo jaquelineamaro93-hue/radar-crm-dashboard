@@ -29,6 +29,7 @@ jobs:
           node --test tests/new-member-goals-onboarding.cjs
           node tests/catalog-pages-clean.cjs
           node tests/header-ui-kit.cjs
+          node tests/profile-hub-unified.cjs
           node tests/events-chronology.cjs
           node tests/community-jobs-isolation.cjs
           node tests/share-preview-ui.cjs
