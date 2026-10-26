@@ -126,3 +126,78 @@
 #cxCopilot .cx-copilot-feedback-status{margin:3px 0 0;font:12px/1.5 system-ui,sans-serif;color:#e8d7f0}
 #cxCopilot .cx-copilot-feedback.is-sent{padding-top:8px}
 @media(max-width:600px){#cxCopilot .cx-copilot-feedback{gap:7px}#cxCopilot .cx-copilot-feedback-form textarea{font-size:16px}}
+
+/* Webchat v2: compact, conversational, proportionate to the content.
+   Large tap targets remain 40px but visual chrome is restrained. */
+#cxCopilot{right:16px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;--brasa-divider:#364052;--brasa-panel:#151c2b;--brasa-ink:#eaf0f8}
+#cxCopilot .cx-copilot-launch{
+ min-height:42px!important;max-height:44px!important;gap:7px!important;
+ padding:4px 12px 4px 6px!important;border:1px solid #d18a61!important;
+ border-radius:999px!important;background:#f5af7b!important;
+ color:#271c17!important;font-size:12px!important;font-weight:750!important;
+ box-shadow:0 7px 21px rgba(0,0,0,.22)!important
+}
+#cxCopilot .cx-copilot-launch .brasa-fox{width:31px!important;height:31px!important;flex:0 0 31px!important}
+#cxCopilot .cx-copilot-panel{
+ right:0!important;bottom:54px!important;width:min(390px,calc(100vw - 28px))!important;
+ max-width:calc(100vw - 28px)!important;height:min(590px,calc(100dvh - 110px))!important;
+ max-height:calc(100dvh - 110px)!important;
+ background:var(--brasa-panel)!important;border:1px solid var(--brasa-divider)!important;
+ border-radius:15px!important;box-shadow:0 16px 46px rgba(0,0,0,.48)!important
+}
+#cxCopilot .cx-copilot-head{
+ display:flex!important;align-items:center!important;gap:9px!important;
+ min-height:54px!important;max-height:58px!important;padding:8px 12px!important;
+ background:#1b2333!important;border-bottom:1px solid var(--brasa-divider)!important
+}
+#cxCopilot .cx-copilot-head .brasa-fox{width:30px!important;height:30px!important;flex:0 0 30px!important}
+#cxCopilot .cx-copilot-head strong{font-size:13px!important;line-height:1.25!important}
+#cxCopilot .cx-copilot-head small{font-size:10px!important;color:#b6c3d4!important}
+#cxCopilot .cx-copilot-expand{min-height:36px!important;max-height:37px!important;padding:5px 8px!important;font-size:11px!important;background:transparent!important;border:1px solid #495269!important}
+#cxCopilot .cx-copilot-close{flex:0 0 36px!important;width:36px!important;height:36px!important;font-size:21px!important}
+#cxCopilot .cx-copilot-history{
+ padding:12px!important;gap:10px!important;background:#151c2b!important;
+ scrollbar-gutter:auto!important
+}
+#cxCopilot .cx-copilot-message{max-width:94%!important;padding:10px 12px!important;font-size:13px!important;line-height:1.55!important}
+#cxCopilot .cx-copilot-assistant{background:#222c3e!important;border:1px solid #39475d!important}
+#cxCopilot .cx-copilot-user{background:#433156!important;border:1px solid #634378!important}
+#cxCopilot .cx-copilot-action{
+ width:auto!important;max-width:100%!important;display:inline-flex!important;
+ min-height:35px!important;align-items:center!important;
+ background:transparent!important;color:#f2b9d9!important;border:1px solid #815990!important;
+ padding:7px 10px!important;font-size:11px!important;font-weight:650!important;
+ border-radius:9px!important
+}
+#cxCopilot .cx-copilot-action:hover{background:#382a46!important}
+#cxCopilot .cx-copilot-quick{gap:5px!important;padding:7px 10px!important;background:#1b2333!important;border-color:#364052!important}
+#cxCopilot .cx-copilot-quick button{min-height:30px!important;font-size:11px!important;padding:6px 9px!important;border:1px solid #4d5067!important;background:#252c40!important;color:#e0cee9!important}
+#cxCopilot .cx-copilot-form{padding:10px!important;background:#1b2333!important;border-color:#364052!important}
+#cxCopilot .cx-copilot-label{font-size:11px!important;font-weight:600!important;margin-bottom:5px!important}
+#cxCopilot .cx-copilot-form textarea{min-height:46px!important;max-height:132px!important;padding:9px 11px!important;font-size:14px!important;line-height:1.45!important;background:#101727!important;border:1px solid #47536a!important;resize:none!important}
+#cxCopilot .cx-copilot-bottom{margin-top:6px!important;gap:6px!important}
+#cxCopilot .cx-copilot-bottom small{font-size:10px!important;line-height:1.35!important;color:#b2bacc!important}
+#cxCopilot .cx-copilot-bottom button[data-cx-send]{min-height:36px!important;padding:8px 12px!important;font-size:11px!important}
+#cxCopilot .cx-copilot-followups{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid #445066}
+#cxCopilot .cx-copilot-followups>span{flex-basis:100%;font:600 10px/1.4 system-ui,sans-serif;color:#bfc7d8}
+#cxCopilot .cx-copilot-followups button{border-radius:9px!important;border:1px solid #66607b!important;background:transparent!important;color:#ecc8ee!important;font:500 11px/1.4 system-ui,sans-serif!important;padding:7px 9px!important;min-height:34px!important;text-align:left}
+#cxCopilot .cx-copilot-followups button:hover{background:#393147!important}
+#cxCopilot .cx-copilot-feedback{gap:5px!important;padding-top:7px!important;margin-top:10px!important}
+#cxCopilot .cx-copilot-feedback-question{font-size:10px!important}
+#cxCopilot .cx-copilot-feedback-actions button{width:36px!important;min-width:36px!important;height:35px!important;font-size:16px!important}
+#cxCopilot.cx-expanded .cx-copilot-panel{
+ position:fixed!important;inset:28px max(24px,env(safe-area-inset-right,0px)) 28px auto!important;
+ width:min(900px,calc(100vw - 48px))!important;max-width:calc(100vw - 48px)!important;
+ height:calc(100dvh - 56px)!important;max-height:calc(100dvh - 56px)!important
+}
+#cxCopilot.cx-expanded .cx-copilot-history{padding:22px!important}
+#cxCopilot.cx-expanded .cx-copilot-message{max-width:min(78%,690px)!important}
+@media(max-width:600px){
+ #cxCopilot{right:10px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
+ #cxCopilot .cx-copilot-panel{right:0!important;width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important;height:min(610px,calc(100dvh - 88px))!important;max-height:calc(100dvh - 88px)!important;bottom:52px!important}
+ #cxCopilot .cx-copilot-head{padding:7px 10px!important}
+ #cxCopilot .cx-copilot-head small{display:block!important;font-size:9px!important}
+ #cxCopilot .cx-copilot-form textarea{font-size:16px!important}
+ #cxCopilot.cx-expanded .cx-copilot-panel{inset:6px!important;width:calc(100vw - 12px)!important;max-width:calc(100vw - 12px)!important;height:calc(100dvh - 12px)!important;max-height:calc(100dvh - 12px)!important}
+ #cxCopilot.cx-expanded .cx-copilot-message{max-width:96%!important}
+}
