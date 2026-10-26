@@ -96,7 +96,11 @@
     return dialog;
   }
   let dialog=null;
+  function authenticated(){
+    try{return typeof crmSignedIn==='function'&&crmSignedIn()&&typeof CURRENT_USER!=='undefined'&&!!CURRENT_USER?.id&&!CURRENT_USER.is_anonymous}catch{return false}
+  }
   function openDialog(section){
+    if(!authenticated())return;
     dismissInvite();
     if(!dialog)dialog=createDialog();
     const p=read();
@@ -110,7 +114,7 @@
   function refreshButtons(){
     const p=read();
     document.querySelectorAll('[data-crm-push-header]').forEach(b=>{
-      b.querySelector('span').textContent='Avisos';
+      if(b.querySelector('span').textContent!=='Avisos')b.querySelector('span').textContent='Avisos';
       const label=any(p)?'Configurar avisos: assuntos selecionados':'Configurar avisos';
       b.setAttribute('aria-label',label);
       b.title=label;
@@ -118,6 +122,7 @@
   }
   async function save(e){
     e.preventDefault();
+    if(!authenticated()){dialog?.close();return;}
     const form=e.currentTarget;
     const p=defaults();
     for(const t of topics)p[t.id]=form.elements[t.id].checked;
@@ -237,7 +242,7 @@
     const existing=document.getElementById('crmPushInvite');
     let seen=inviteDismissed;
     try{seen=seen||!!localStorage.getItem(INVITE_KEY)||!!localStorage.getItem(KEY)}catch{}
-    if(!visible||(seen&&!existing)||any(read())||!supported()||permission()==='denied'){
+    if(!authenticated()||!visible||(seen&&!existing)||any(read())||!supported()||permission()==='denied'){
       existing?.remove();return;
     }
     // Convites existentes e formulários têm prioridade; nunca abrir um modal sozinho.
@@ -254,9 +259,10 @@
     try{localStorage.setItem(INVITE_KEY,'1')}catch{}
     inviteDismissed=true;
   }
-  function init(){
-    const header=document.querySelector('.crm-workbar');
-    const survey=header?.querySelector('.crm-survey-top');
+  function placeProfileButton(){
+    document.querySelectorAll('.crm-workbar [data-crm-push-header]').forEach(button=>button.remove());
+    if(!authenticated()){dialog?.close();return;}
+    const header=document.querySelector('#profileModalOverlay .crm-profile-footer');
     if(header&&!header.querySelector('[data-crm-push-header]')){
       const button=document.createElement('button');
       button.type='button';button.className='crm-push-header-button';
@@ -265,10 +271,13 @@
       button.setAttribute('aria-controls','crmPushPreferences');
       button.innerHTML=icon+'<span>Avisos</span>';
       button.addEventListener('click',()=>openDialog());
-      if(survey)survey.insertAdjacentElement('afterend',button);
-      else header.appendChild(button);
+      header.prepend(button);
     }
     refreshButtons();
+  }
+  function init(){
+    placeProfileButton();
+    new MutationObserver(placeProfileButton).observe(document.body,{childList:true,subtree:true});
     setTimeout(refreshIncompleteProfileNudge,1200);
     setInterval(refreshIncompleteProfileNudge,6000);
     setTimeout(refreshInvite,8000);
