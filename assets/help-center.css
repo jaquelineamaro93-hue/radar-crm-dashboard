@@ -1,1 +1,46 @@
-*{box-sizing:border-box}body{margin:0;background:#101116;color:#eeeef5;font:16px/1.65 system-ui,sans-serif}header,main,footer{max-width:1000px;margin:auto;padding:24px}nav{display:flex;gap:20px;flex-wrap:wrap}a{color:#cfbaff}h1{font-size:clamp(28px,5vw,44px);line-height:1.2}h2{font-size:22px}input{width:100%;padding:14px;border:1px solid #767184;border-radius:10px;background:#1c1d25;color:white;font:inherit}article,details{border:1px solid #4b455d;background:#1b1b24;border-radius:14px;padding:22px;margin:16px 0}summary{cursor:pointer;font-weight:600}a:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid #cfbaff;outline-offset:4px}[hidden]{display:none!important}.tag{color:#cfbaff;font-size:14px}footer{border-top:1px solid #4b455d}
+/* Conexão CRM first-party help, guides and release notes. Mobile-first, no purple legacy theme. */
+:root{color-scheme:light;--help-bg:#faf9f6;--help-card:#fff;--help-text:#232323;--help-muted:#65615e;--help-accent:#e66f19;--help-border:#e4ded8}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:0;background:var(--help-bg);color:var(--help-text);font:15px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body>header,body>main,body>footer{width:min(100%,1000px);margin:0 auto;padding:24px}
+body>header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:26px;padding-bottom:22px;border-bottom:1px solid var(--help-border)}
+body>header>a{font-size:16px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;color:#282421;text-decoration:none}
+nav{display:flex;align-items:center;gap:5px;max-width:100%;flex-wrap:wrap}
+nav a{display:inline-flex;align-items:center;min-height:40px;padding:7px 10px;border:1px solid transparent;border-radius:10px;color:#554b43;font-size:13px;text-decoration:none}
+nav a:hover,nav a:focus-visible{border-color:#edc6a4;background:#fff4e9;color:#a8490e}
+body>main{padding-top:28px;padding-bottom:36px}
+h1{margin:0 0 25px;font-size:clamp(26px,4vw,36px);letter-spacing:-.035em;line-height:1.2;font-weight:750}
+h2{margin:0 0 12px;font-size:clamp(17px,2vw,21px);letter-spacing:-.02em;line-height:1.35}
+label{display:block;margin:0 0 7px;color:var(--help-text);font-size:13px;font-weight:650}
+input[type=search]{display:block;width:100%;min-height:46px;padding:12px 14px;margin-bottom:17px;border:1px solid #cfc8c0;border-radius:11px;background:#fff;color:var(--help-text);font:inherit}
+input::placeholder{color:#77716a}
+article,details{border:1px solid var(--help-border);border-radius:14px;background:var(--help-card);margin:12px 0;padding:19px 21px;box-shadow:0 2px 6px rgba(25,20,12,.025)}
+article p,details p{font-size:14px;line-height:1.75;color:#5b5652;margin:6px 0 0}
+details{padding:0}
+summary{cursor:pointer;list-style:none;position:relative;min-height:56px;display:flex;align-items:center;padding:15px 43px 15px 19px;font-size:15px;font-weight:650;line-height:1.5}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"";width:8px;height:8px;border-right:2px solid var(--help-accent);border-bottom:2px solid var(--help-accent);position:absolute;right:20px;top:calc(50% - 6px);transform:rotate(45deg);transition:transform .15s}
+details[open] summary:after{transform:rotate(225deg);top:calc(50% - 2px)}
+details[open] summary{border-bottom:1px solid var(--help-border)}
+details p{margin:0;padding:15px 19px 20px}
+.tag{display:inline-block;margin-bottom:9px;font-size:11px;font-weight:750;letter-spacing:.025em;color:#ab500f}
+a{color:#a8490e;text-underline-offset:3px}
+a:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid #f97316;outline-offset:3px}
+[hidden]{display:none!important}
+body>footer{border-top:1px solid var(--help-border);padding-top:18px;color:var(--help-muted);font-size:13px}
+body.crm-help-embedded{background:transparent}
+body.crm-help-embedded>header,body.crm-help-embedded>footer,body.crm-help-embedded .cx-language-host{display:none!important}
+body.crm-help-embedded>main{width:100%;max-width:none;padding:5px 2px 22px}
+body.crm-help-embedded h1{margin-bottom:19px}
+body.crm-help-embedded article,body.crm-help-embedded details{box-shadow:none}
+@media(max-width:760px){
+ body>header,body>main,body>footer{padding-left:17px;padding-right:17px}
+ body>header{align-items:flex-start;padding-top:19px}
+ body>header nav{flex-basis:100%;gap:3px}
+ body>header nav a{font-size:12px;padding:6px 9px}
+ body>main{padding-top:26px}
+ h1{margin-bottom:19px}
+ article,details{border-radius:12px;margin:10px 0}
+ summary{font-size:14px}
+}
