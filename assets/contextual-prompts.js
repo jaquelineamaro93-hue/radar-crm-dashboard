@@ -54,6 +54,18 @@
  }
  function sync(){manageExperience();manageCensus();}
  function init(){
+  if(!document.getElementById('crm-contextual-prompts-style')){
+   const style=document.createElement('style');style.id='crm-contextual-prompts-style';
+   style.textContent=[
+    '.crm-census-inline{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:9px 12px;margin:8px 0 14px;background:#1a2536;color:#f2f3fa;border:1px solid #45536c;border-radius:10px;font:500 12px/1.4 system-ui,sans-serif}',
+    '.crm-census-inline>span{flex:1 1 170px}',
+    '.crm-census-inline button{min-height:30px;padding:5px 9px;border-radius:7px;border:1px solid #635478;background:#26223a;color:#dfc2ed;cursor:pointer;font:600 11px/1.35 system-ui,sans-serif}',
+    '.crm-census-inline .crm-census-inline-dismiss{background:transparent;border-color:transparent;color:#b6c0d0}',
+    '.crm-census-inline button:focus-visible{outline:2px solid #d6adf0;outline-offset:2px}',
+    '@media(max-width:600px){.crm-census-inline{padding:9px 10px}.crm-census-inline>span{flex-basis:100%}}'
+   ].join('\\n');
+   document.head.append(style);
+  }
   sync();
   document.addEventListener('crm:route-changed',sync);
   document.addEventListener('crm:role-resolved',sync);
