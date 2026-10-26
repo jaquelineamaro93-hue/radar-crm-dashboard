@@ -3,6 +3,27 @@
  'use strict';
  if(window.CXPortalLayout)return;
  const root=document.getElementById('view-logada');
+ // Late-loaded, versioned catalog styles win over legacy route-specific rules.
+ if(!document.getElementById('cx-catalog-refinement-20261026')){
+  const link=document.createElement('link');
+  link.id='cx-catalog-refinement-20261026';link.rel='stylesheet';
+  link.href='/assets/catalog-refinement-20261026.css?v=20261026-catalog1';
+  document.head.append(link);
+ }
+ function normalizeCatalog(page){
+  if(page.id==='pagePlataformas')page.classList.add('crm-platform-modern');
+  if(page.id!=='pageAgencias'&&page.id!=='pageFreelancers')return;
+  // Remove only the specifically retired explanatory banners, not legitimate
+  // account notices, ratings, buttons or source records.
+  for(const note of page.querySelectorAll('.note')){
+   const copy=(note.textContent||'').replace(/\s+/g,' ').trim();
+   if(/^As avaliações\s*(?:\(|["“])/.test(copy)||
+      /^A lista inicial foi montada\b/.test(copy))note.remove();
+  }
+  for(const wrapper of page.querySelectorAll('.crm-catalog-disclaimer')){
+   if(!wrapper.querySelector('.note'))wrapper.remove();
+  }
+ }
  function normalizeAnalytics(page){
   if(page?.id!=='crmAdminPage')return;
   const analytics=page.querySelector('#crmAdminAnalytics');if(!analytics)return;
@@ -35,6 +56,7 @@
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  normalizeCatalog(page);
   if(page.id==='pagePesquisa')page.querySelectorAll('iframe').forEach(frame=>{
    if(frame.closest('.crm-survey-form'))return;
    const details=document.createElement('details');details.className='crm-survey-form';
@@ -104,17 +126,13 @@
     for(const section of sections){const label=section.querySelector('h3')?.textContent;if(label==='Sobre mim'||label==='Ferramentas')section.classList.add('crm-profile-wide');}
    }
   }
-  // Public registration must be visible. Existing private workspace behavior stays.
+  // Registration is always visible, compact and actionable for public and
+  // authenticated visitors. Keep the original signup link and handlers.
   const signup=page.querySelector('.crm-otw-signup');
   if(signup){
    const disclosure=signup.closest('.crm-otw-signup-details');
-   if(page.closest('#crmPublicWorkspace')){
-    if(disclosure)disclosure.replaceWith(signup);
-   }else if(!disclosure){
-    const details=document.createElement('details');details.className='crm-otw-signup-details';
-    const summary=document.createElement('summary');summary.textContent='Cadastrar meu perfil no Open to Work';
-    signup.before(details);details.append(summary,signup);
-   }
+   if(disclosure)disclosure.replaceWith(signup);
+   signup.classList.add('crm-otw-signup-compact');
   }
   // Hide only duplicate legacy public work shortcuts (keep real destinations).
   if(page.closest('#crmPublicWorkspace')&&(page.id==='pageSearch'||page.id==='pageVagas')){
