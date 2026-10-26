@@ -53,3 +53,26 @@ body.crm-help-embedded>main{padding:4px 0 24px}
 .help-topic-grid details{margin:0}
 .help-topic-grid summary{min-height:68px}
 @media(max-width:680px){.help-topic-grid{grid-template-columns:minmax(0,1fr)}}
+/* Guide catalogue and article reader follow the reference without a second app shell. */
+.help-categories{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 20px}
+.help-categories button,.help-back{font:inherit;font-size:13px;color:var(--help-muted);background:transparent;border:1px solid var(--help-border);border-radius:8px;min-height:40px;padding:8px 12px;cursor:pointer}
+.help-categories button[aria-pressed=true]{color:var(--help-text);background:#252d43;border-color:var(--help-accent)}
+.help-guide-card{padding:16px 18px}
+.help-guide-card summary{padding:0;min-height:44px;display:block;font-size:15px}
+.help-guide-card summary:after{display:none}
+.help-read-guide{display:block;border:0;background:none;color:var(--help-accent);font:600 13px/1.5 system-ui;padding:10px 0 0;cursor:pointer;text-align:left}
+.help-back{margin-bottom:12px}
+.help-reader-columns{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}
+.help-guide-article{margin:0;padding:26px}
+.help-guide-article h2{font-size:24px;line-height:1.35;margin:4px 0 25px}
+.help-guide-article h3{font-size:17px;margin:0 0 10px}
+.help-guide-article p{font-size:14px;line-height:1.8}
+.help-feature-link{display:inline-flex;margin-top:24px;padding:9px 14px;border:1px solid var(--help-accent);border-radius:8px;text-decoration:none;font-size:13px}
+.help-reader aside{padding:18px;background:var(--help-card);border:1px solid var(--help-border);border-radius:12px}
+.help-reader aside h3{font-size:13px;margin:0 0 12px}
+.help-reader aside button{width:100%;padding:10px 8px;border:0;border-radius:7px;background:none;color:var(--help-muted);text-align:left;font:13px/1.5 system-ui;cursor:pointer}
+.help-reader aside button[aria-current]{background:#252d43;color:var(--help-accent)}
+button:focus-visible{outline:2px solid var(--help-accent);outline-offset:3px}
+@media(max-width:760px){.help-reader-columns{grid-template-columns:minmax(0,1fr)}.help-guide-article{padding:18px}.help-categories{gap:6px}.help-categories button{font-size:12px}.help-guide-article h2{font-size:21px}}
+
+.help-guide-title{display:block;width:100%;text-align:left;padding:0;min-height:44px;border:0;background:none;color:var(--help-text);font:650 15px/1.5 system-ui;cursor:pointer}
