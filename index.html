@@ -1352,7 +1352,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/saved-jobs-figma.css?v=20261025-figma-v2">
 <link rel="stylesheet" href="/assets/conexao-figma-unified-pages.css?v=20261025-allpages-v2">
 <link rel="stylesheet" href="/assets/member-home-reference.css?v=20261025-home2">
-<link rel="stylesheet" href="/assets/first-access-interests.css?v=20261025-onboarding-v2">
+<link rel="stylesheet" href="/assets/first-access-interests.css?v=20261025-onboarding-v3">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -8411,7 +8411,7 @@ async function authInit(){
    authRenderUI();crmById('loggedUserHeadline').textContent=data.user.email||'';crmSyncAuth();
    // Show the optional private interests step only on a new account.
    // The user's existing professional-profile wizard is separate.
-   window.CXFirstAccessInterests?.offer(data.user,profile);
+   try{window.CXFirstAccessInterests?.offer?.(data.user,profile);}catch(error){console.warn('[Onboarding] interface de interesses indisponível.');}
    if(needsOnboarding)setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);else setTimeout(()=>window.crmRenderFloatingPrompts?.(),350);
    if(location.hash.includes('access_token'))history.replaceState(null,'','/membros');
   }catch{if(epoch!==crmAuthEpoch)return;crmValidatedUserId=null;CURRENT_USER=null;CURRENT_PROFILE=null;authRenderUI();crmSyncAuth();}
@@ -10173,6 +10173,6 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script src="/assets/otw-registration.js?v=20261024-dedup"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261025-figma-v4"></script>
 <script defer src="/assets/member-home-reference.js?v=20261025-home2"></script>
-<script defer src="/assets/first-access-interests.js?v=20261025-onboarding-v2"></script>
+<script defer src="/assets/first-access-interests.js?v=20261025-onboarding-v3"></script>
 </body>
 </html>
