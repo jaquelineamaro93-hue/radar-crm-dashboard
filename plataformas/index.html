@@ -1355,6 +1355,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/first-access-interests.css?v=20261026-goals4">
 <link rel="stylesheet" href="/assets/conexao-ux-refinement.css?v=20261026-ui1">
 <link rel="stylesheet" href="/assets/ui-kit-header-controls.css?v=20261026-header1">
+<link rel="stylesheet" href="/assets/profile-hub-unified.css?v=20261026-profhub1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -2429,10 +2430,10 @@ crmShowSurveyReminder();
         <button type="button" id="crmFreelancerTabAI" class="crm-freelancer-tab" aria-controls="crmFreelancerAIView" aria-pressed="false" onclick="crmSelectFreelancerView('ai')">Encontrar com IA</button>
       </nav>
       <div id="crmFreelancerDirectoryView" aria-labelledby="crmFreelancerTabDirectory">
-      <div class="note">As avaliações "Recomendo" e "Não recomendo" são anônimas: o nome de quem vota não é salvo em nenhum lugar.</div>
+      
 
       <div class="ev-header-row" style="justify-content:flex-end;">
-        <button class="ev-btn-suggest" id="btnOpenFreelancerModal"> Anunciar meu perfil</button>
+        <button class="ev-btn-suggest" id="btnOpenFreelancerModal">Anunciar meu perfil</button>
       </div>
 
 
@@ -2448,6 +2449,9 @@ crmShowSurveyReminder();
               <option>Design</option>
               <option>Estratégia</option>
               <option>Implementação</option>
+              <option>Analytics</option>
+              <option>Automação</option>
+              <option>Consultoria</option>
             </select>
           </div>
           <span class="filter-count" id="freelancerCount">carregando...</span>
@@ -2463,7 +2467,7 @@ crmShowSurveyReminder();
         <div style="display:grid; gap:14px;">
           <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
             <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como me anuncio como freelancer? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Clique em "Anunciar meu perfil", preencha seus dados (nome, especialidade e bio), inclua seu portfólio/site, LinkedIn e contato, e adicione um artigo/post se tiver. O perfil fica aprovado automaticamente. Se cadastrou um artigo, o time da comunidade revisa antes de publicar na vitrine.</p>
+            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Clique em "Anunciar meu perfil", preencha seus dados (nome, especialidade e bio), inclua seu portfólio/site, LinkedIn e contato, e adicione um artigo/post se tiver. O anúncio é analisado pela moderação antes de aparecer na vitrine. Artigos enviados também passam por revisão.</p>
           </details>
 
           <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
@@ -3961,7 +3965,7 @@ function crmJobLocationInfo(vaga){
       .trim();
     if(estado){
       const nome=CRM_JOB_STATE_LABELS[estado];
-      cleaned=cleaned.replace(new RegExp('\\b'+estado+'\\b','gi'),' ').replace(new RegExp(nome,'gi'),' ');
+      cleaned=cleaned.replace(new RegExp('\b'+estado+'\b','gi'),' ').replace(new RegExp(nome,'gi'),' ');
     }
     const parts=cleaned.split(/[,|\/–—-]/).map(x=>x.trim().replace(/\be\s+regi[aã]o\b/gi,'').trim()).filter(Boolean);
     municipio=parts.find(x=>x.length>1&&!/^(regi[aã]o|estado)$/i.test(x))||'';
@@ -6347,7 +6351,7 @@ function openFreelancerEditModal(id, nome){
     <div class="ev-modal-overlay" id="flEditOverlay" role="dialog" aria-modal="true" style="display:flex;">
       <div class="ev-modal-box" style="max-width:500px;">
         <h2 class="fd" style="color:var(--text);font-size:16px;font-weight:700;margin-bottom:4px;">Editar meu perfil de Freelancer</h2>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Edite os campos abaixo. As alterações são publicadas na hora.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Edite seus dados. A solicitação será analisada pela moderação antes de aparecer na vitrine.</p>
         <label class="ev-ilabel">Categoria <span style="font-weight:400;font-size:11px;">(selecione uma ou mais)</span></label>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;" id="flEditCatWrap">
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;"><input type="checkbox" value="Copy" name="flEditCat"> Copy</label>
@@ -6477,7 +6481,7 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- return '<article class="pro-card"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
+ return '<article class="pro-card" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
@@ -6626,7 +6630,7 @@ function renderFreelancers(){
   const q = (document.getElementById('freelancerSearchText').value||'').toLowerCase().trim();
   const fCat = document.getElementById('fCategoriaFreela').value;
   const results = FREELANCERS.filter(f =>
-    (!fCat || f.categoria===fCat) &&
+    (!fCat || String(f.categoria||'').split(',').map(x=>x.trim()).includes(fCat)) &&
     (!q || [f.nome, f.categoria, f.bio].join(' ').toLowerCase().includes(q))
   );
   document.getElementById('freelancerCount').textContent = results.length + (results.length===1?' freelancer':' freelancers');
@@ -8239,7 +8243,7 @@ function activateLoggedArea(userProfile){
   const foto = escapeHtml(crmSafeUrl(CURRENT_USER?.user_metadata?.avatar_url || ''));
 
   const nomeEl = document.getElementById('loggedUserName');
-  const greeting=`Olá, ${nome.split(' ')[0]}!`;
+  const greeting='Olá, '+(profile.preferred_name||nome.split(' ')[0]);
   if(nomeEl&&nomeEl.textContent!==greeting)nomeEl.textContent=greeting;
 
   const headlineEl = document.getElementById('loggedUserHeadline');
@@ -8490,7 +8494,10 @@ function openProfileModal(options={}){
             <div><label class="ev-ilabel" for="pf_photo">Foto do perfil</label><input id="pf_photo" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG ou WebP, até 5 MB.</small></div>
           </div>
           <label class="ev-ilabel">Nome completo *</label>
-          <input id="pf_nome" class="ev-ifield" type="text" placeholder="Nome Sobrenome" value="${escapeHtml(nome)}">
+          <input id="pf_nome" class="ev-ifield" type="text" placeholder="Nome Sobrenome" value="${escapeHtml(nome)}" autocomplete="name">
+          <label class="ev-ilabel" for="pf_preferred_name">Como gostaria de ser chamado? <span>(opcional)</span></label>
+          <input id="pf_preferred_name" class="ev-ifield" type="text" autocomplete="nickname" maxlength="40" placeholder="Ex.: Jaque" value="${escapeHtml(p.preferred_name||'')}">
+          <small class="crm-profile-field-help">Usaremos esse nome para falar com você no portal e no Brasa. Não altera seu nome público ou currículo.</small>
           <div class="crm-profile-two-cols">
             <div><label class="ev-ilabel" for="pf_gender">Como você se identifica? <span>(opcional)</span></label>
               <select id="pf_gender" class="ev-ifield">${[['','Prefiro não informar'],['feminino','Feminino'],['masculino','Masculino'],['nao_binario','Não binário'],['outra_identidade','Outra identidade']].map(([v,l])=>`<option value="${v}" ${(p.gender_identity||'')===v?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -8573,6 +8580,14 @@ async function saveProfile(){
   const tools = Array.from(document.querySelectorAll('#pf_tools_wrap input:checked')).map(cb=>cb.value);
   const workModel = Array.from(document.querySelectorAll('[id^="pf_model_"]:checked')).map(cb=>cb.value);
   const fullName=(document.getElementById('pf_nome')?.value||'').trim();
+  const preferredName=(document.getElementById('pf_preferred_name')?.value||'').normalize('NFC').trim();
+  if(preferredName && (preferredName.length<2||preferredName.length>40||
+    !/^[\p{L}][\p{L}' -]*[\p{L}]$/u.test(preferredName)||
+    /\b(nazista|neonazista|racista|supremacista|hitler|genocida)\b/i.test(preferredName))){
+    statusEl.style.color='#fca5a5';
+    statusEl.textContent='Escolha um nome curto e respeitoso, usando apenas letras, espaços, apóstrofo ou hífen.';
+    return;
+  }
   const headline=(document.getElementById('pf_headline')?.value||'').trim();
   const seniority=document.getElementById('pf_seniority')?.value||'';
   if(!fullName||!headline||!seniority||!tools.length){
@@ -8580,7 +8595,7 @@ async function saveProfile(){
     if(CRM_PROFILE_ONBOARDING){CRM_PROFILE_STEP=!fullName?1:2;crmProfileStep(CRM_PROFILE_STEP);}return;
   }
   const payload = {
-    id: CURRENT_USER.id, full_name:fullName, headline, seniority,
+    id: CURRENT_USER.id, full_name:fullName, preferred_name:preferredName||null, headline, seniority,
     current_company: (document.getElementById('pf_company')?.value||'').trim(),
     gender_identity: document.getElementById('pf_gender')?.value || null,
     language_preference: document.getElementById('pf_language')?.value || 'neutra',
@@ -10177,5 +10192,6 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261026-goals4"></script>
 <script defer src="/assets/conexao-ux-refinement.js?v=20261026-ui1"></script>
+<script defer src="/assets/profile-hub-unified.js?v=20261026-profhub1"></script>
 </body>
 </html>
