@@ -9,7 +9,7 @@ const style=read('assets/first-access-interests.css');
 const home=read('assets/member-home-reference.js');
 
 test('New-user survey is wired to a validated account, not a visitor',()=>{
- assert(index.includes('CXFirstAccessInterests?.offer(data.user,profile)'));
+ assert(index.includes('CXFirstAccessInterests?.offer?.(data.user,profile)'));
  assert(script.includes("CREATED_AFTER='2026-10-25T00:00:00.000Z'"));
  assert(script.includes('window.crmSignedIn?.()'));
  assert(script.includes('user.created_at'));
