@@ -190,14 +190,19 @@ function sync(){
  if(defs[route])activate(route);
  else if(sidebar){sidebar.classList.remove('active');sidebar.removeAttribute('aria-current')}
 }
+function restoreDirectRoute(){
+ const hash=decodeURIComponent(location.hash.replace(/^#/,''));
+ const route=Object.entries(defs).find(([key,d])=>d.canonical===location.pathname||key===hash)?.[0];
+ if(route&&signedIn()&&typeof crmActiveRoute==='string'&&crmActiveRoute!==route)open(route);
+}
 function init(){
  mount();sync();
  const nav=document.getElementById('crmNavSlot');
  if(nav)new MutationObserver(()=>{if(!sidebar?.isConnected)mount()}).observe(nav,{childList:true});
  document.addEventListener('crm:route-changed',()=>{mount();sync()});
- document.addEventListener('crm:role-resolved',()=>{mount();sync()});
+ document.addEventListener('crm:role-resolved',()=>{mount();sync();restoreDirectRoute()});
  window.addEventListener('cx:locale-change',()=>{
-  mount();if(panel){closePanel();showPanel()}
+  mount();sync();if(panel){closePanel();showPanel()}
   for(const def of Object.values(defs)){
    const f=document.querySelector('#'+def.id+' iframe');
    try{f?.contentWindow?.dispatchEvent(new Event('cx:locale-change'))}catch{}
@@ -207,8 +212,7 @@ function init(){
  document.addEventListener('keydown',onEsc);
  window.addEventListener('resize',closePanel,{passive:true});
  window.addEventListener('popstate',()=>{mount();sync()});
- const route=Object.entries(defs).find(([,d])=>d.canonical===location.pathname)?.[0];
- if(route&&signedIn())open(route);
+ restoreDirectRoute();
 }
 window.CRMHelpWorkspace={open,activate,register};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
