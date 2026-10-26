@@ -51,7 +51,11 @@ function addMessage(type,message,action,sources=[],options={}){
   const item=document.createElement('div');
   item.className='cx-copilot-message cx-copilot-'+type;
   const text=document.createElement('p');
-  text.textContent=String(message||'').slice(0,2800);
+  // Presentation only. Preserve user messages and evidence; keep assistant copy conversational.
+  const copy=String(message||'').slice(0,2800);
+  text.textContent=type==='assistant'
+    ?copy.replace(/[\u2013\u2014]/g,',').replace(/!+/g,'.').replace(/\p{Extended_Pictographic}/gu,'').replace(/[ \t]{2,}/g,' ')
+    :copy;
   item.append(text);
   if(type==='assistant'&&Array.isArray(sources)&&sources.length){
     const references=document.createElement('div');references.className='cx-copilot-sources';
@@ -80,14 +84,14 @@ function addMessage(type,message,action,sources=[],options={}){
 function showIntro(){
   if(!history)return;
   // The name stays in the browser; it is never attached to external AI requests.
-  const source=String(getProfile()?.full_name||getUser()?.user_metadata?.full_name||getUser()?.user_metadata?.name||'').trim();
+  const source=String(getProfile()?.preferred_name||getProfile()?.full_name||getUser()?.user_metadata?.full_name||getUser()?.user_metadata?.name||'').trim();
   const first=(source.split(/\s+/)[0]||'').slice(0,35);
   const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
   const greeting=locale==='en'
     ?'Hi'+(first?', '+first:'')+'. What can I help you with?'
     :locale==='es-419'
     ?'Hola'+(first?', '+first:'')+'. ¿En qué puedo ayudarte?'
-    :'Oi'+(first?', '+first:'')+'. Como posso ajudar?';
+    :'Oi'+(first?', '+first:'')+'. Em que posso ajudar?';
   const previous=history.firstElementChild;
   if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
     const content=previous.querySelector('p');if(content)content.textContent=greeting;
