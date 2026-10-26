@@ -45,10 +45,7 @@ function updateAiConsentControl(){const button=root?.querySelector('[data-cx-pri
 function saveAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=1; Max-Age=15552000; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 function revokeAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=; Max-Age=0; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
-const CTA=[
-  ['profile','Completar perfil'],['jobs','Buscar vagas'],['events','Eventos'],
-  ['salary','Médias salariais'],['rankings','Rankings']
-];
+const CTA=[['jobs','Buscar vagas'],['salary','Médias salariais']];
 function addMessage(type,message,action,sources=[],options={}){
   if(!history)return;
   const item=document.createElement('div');
@@ -82,7 +79,7 @@ function addMessage(type,message,action,sources=[],options={}){
 }
 function showIntro(){
   if(history?.children.length)return;
-  addMessage('assistant','Olá, sou a Brasa Copilot. Posso orientar você pelo portal, verificar quais partes do seu perfil faltam, abrir ferramentas e aplicar filtros de vagas. Você continua no controle das ações.',null,[],{feedback:false});
+  addMessage('assistant',cxT('Olá! 👋 Como posso ajudar?'),null,[],{feedback:false});
 }
 function currentProfileStatus(){
   if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
@@ -101,6 +98,11 @@ function classify(question){
   const s=normalize(question);
   if(!s)return {intent:'help'};
   if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
+  // A pergunta completa define a intenção, não a palavra isolada "perfil".
+  if(/\b(como|porque|por que|dica|orienta|aconselh|me ajuda|me explique|qual a melhor|vale a pena)\b/.test(s)&&/(vaga|match|perfil|curriculo|carreira|entrevista)/.test(s))
+    return {intent:'analyze'};
+  if(/(vaga|oportunidade|emprego|radar|match|aderencia)/.test(s)&&/(meu perfil|meus dados|com base no meu perfil|para mim)/.test(s))
+    return {intent:'action',action:'match'};
   if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
     return {intent:'profile-status'};
   // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
@@ -286,7 +288,7 @@ function localAnswer(action,question){
     rankings:'Os Rankings ficam na área Conexão XP. Eles mostram a participação na comunidade. Seu avatar também pode ser personalizado nessa área.',
     avatar:'Você pode personalizar seu avatar na área Conexão XP. As escolhas são feitas por você no editor; esta conversa não altera seu perfil.',
     market:'O relatório Open to Work apresenta os dados agregados dos profissionais disponíveis. Ele complementa Cargos & Salários, que reúne a pesquisa de remuneração.',
-    match:'O Match compara informações profissionais com requisitos das vagas. A pontuação indica aderência por regras, não probabilidade de contratação. Confira senioridade, modalidade e requisitos no anúncio antes de se candidatar.'
+    match:'Para encontrar vagas alinhadas ao seu perfil, use o Match IA. Ele compara suas informações com os requisitos das oportunidades, sem anexar seu cadastro a esta conversa. Posso abrir seu Match para você conferir os resultados.'
   })[action]||'Conte um pouco mais sobre o que você precisa.';
 }
 function process(question){
@@ -306,12 +308,12 @@ function process(question){
     lastTopic=found.action;
     if(['jobs','remote','hybrid'].includes(found.action)){
       const member=getUser()?.id;
-      addMessage('assistant','Consultando as vagas públicas do Radar...',null,[],{feedback:false});
+      const loading=document.createElement('p');loading.className='cx-copilot-status';loading.setAttribute('role','status');loading.textContent=cxT('Buscando vagas…');history.append(loading);history.scrollTop=history.scrollHeight;
       crmBrasaPublicJobs(question).then(answer=>{
         if(getUser()?.id===member&&canShow())addMessage('assistant',answer,'jobs');
       }).catch(()=>{
-        if(getUser()?.id===member&&canShow())addMessage('assistant','A consulta ao Radar não respondeu. Tente novamente em instantes.');
-      });
+        if(getUser()?.id===member&&canShow())addMessage('assistant','Não consegui consultar o Radar agora. Quer tentar novamente?');
+       }).finally(()=>loading.remove());
       return;
     }
     if(found.action==='salary'){
@@ -359,12 +361,12 @@ function mount(){
   root.innerHTML=
     '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa Copilot</span></button>'+
     '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
-     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong><small>Seu assistente no Conexão CRM</small></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
+     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
      '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
      '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
-     '<div class="cx-copilot-bottom"><small>Não envie senhas, CPF ou informações confidenciais.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
+     '<div class="cx-copilot-bottom"><small>Não inclua dados pessoais.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
     '</section>';
   document.body.append(root);
   drawer=root.querySelector('[data-cx-open]')?.nextElementSibling;
