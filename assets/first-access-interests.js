@@ -204,9 +204,16 @@ async function persist(skipped){
   if(userError||userData?.user?.id!==id||typeof CURRENT_USER==='undefined'||CURRENT_USER?.id!==id)throw Error('session changed');
   const goals=skipped?[]:[...new Set(selection)].slice(0,5);
   if(!skipped&&!goals.length){if(status)status.textContent=t('choose');return;}
-  const {data,error}=await authSb.from('profiles').upsert({id,onboarding_goals:goals},{onConflict:'id'}).select('id,onboarding_goals').single();
+  // Updating an existing profile never changes its visibility, role or
+  // consent. A first-time profile is created as directory-private by default.
+  const hasProfile=typeof CURRENT_PROFILE!=='undefined'&&CURRENT_PROFILE?.id===id;
+  const operation=hasProfile
+    ?authSb.from('profiles').update({onboarding_goals:goals}).eq('id',id)
+    :authSb.from('profiles').insert({id,onboarding_goals:goals,directory_visible:false});
+  const {data,error}=await operation.select('id,onboarding_goals,directory_visible').single();
   if(error||data?.id!==id||!Array.isArray(data.onboarding_goals))throw Error('save failed');
-  if(typeof CURRENT_PROFILE!=='undefined')CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id,onboarding_goals:data.onboarding_goals};
+  if(typeof CURRENT_PROFILE!=='undefined')
+    CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id,onboarding_goals:data.onboarding_goals,directory_visible:data.directory_visible};
   const shouldNavigate=!editing;
   close();
   window.CXMemberHomeReference?.refresh?.();
