@@ -1,0 +1,173 @@
+/* Conexão CRM · UI Kit / Header control family
+ * Approved product palette: navy surfaces, lilac focus, neutral copy.
+ * Shared implementation tokens for Survey CTA, Profile action,
+ * Notifications icon button and Language select.
+ * Do not modify handlers, visibility permissions or data flows.
+ */
+#view-logada {
+ --cx-control-height:40px;
+ --cx-control-radius:10px;
+ --cx-control-gap:10px;
+ --cx-control-padding-x:13px;
+ --cx-control-icon:19px;
+ --cx-control-text-size:12px;
+ --cx-control-border:#43516a;
+ --cx-control-surface:#101827;
+ --cx-control-accent:#cda6e3;
+ --cx-control-text:#edf1f8;
+}
+#view-logada .crm-workbar{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:flex-start!important;
+ flex-wrap:nowrap!important;
+ column-gap:var(--cx-control-gap)!important;
+ row-gap:8px!important;
+ min-height:60px!important;
+ padding:10px clamp(12px,1.8vw,22px)!important;
+ box-sizing:border-box!important;
+}
+#view-logada .crm-workbar #crmBreadcrumb{
+ flex:1 1 auto!important;
+ min-width:0!important;
+ margin:0!important;
+ line-height:1.3!important;
+}
+#view-logada .crm-workbar :is(.crm-survey-top,.crm-help-bell,#cx-site-language){
+ min-height:var(--cx-control-height)!important;
+ height:var(--cx-control-height)!important;
+ border:1px solid var(--cx-control-border)!important;
+ border-radius:var(--cx-control-radius)!important;
+ box-shadow:none!important;
+ background:var(--cx-control-surface)!important;
+ color:var(--cx-control-text)!important;
+ box-sizing:border-box!important;
+ font-family:inherit!important;
+ font-size:var(--cx-control-text-size)!important;
+ font-weight:550!important;
+ letter-spacing:0!important;
+ line-height:1.25!important;
+}
+#view-logada .crm-workbar .crm-survey-top{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ max-width:210px!important;
+ padding:0 var(--cx-control-padding-x)!important;
+ gap:7px!important;
+ margin:0!important;
+ white-space:nowrap!important;
+ text-align:center!important;
+ color:var(--cx-control-accent)!important;
+ border-color:#74538c!important;
+ cursor:pointer!important;
+}
+#view-logada .crm-workbar .crm-survey-top span{
+ margin:0!important;
+ color:inherit!important;
+ font-size:14px!important;
+ line-height:1!important;
+ flex:0 0 auto!important;
+}
+#view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle){
+ display:inline-flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ flex:0 0 auto!important;
+ height:var(--cx-control-height)!important;
+ min-height:var(--cx-control-height)!important;
+ padding:0 12px!important;
+ margin:0!important;
+ background:transparent!important;
+ border:1px solid transparent!important;
+ border-radius:var(--cx-control-radius)!important;
+ font-family:inherit!important;
+ font-size:13px!important;
+ font-weight:600!important;
+ line-height:1.25!important;
+ color:var(--cx-control-text)!important;
+ white-space:nowrap!important;
+ box-shadow:none!important;
+}
+#view-logada .crm-workbar .crm-help-bell{
+ display:inline-grid!important;
+ place-items:center!important;
+ flex:0 0 var(--cx-control-height)!important;
+ width:var(--cx-control-height)!important;
+ min-width:var(--cx-control-height)!important;
+ height:var(--cx-control-height)!important;
+ padding:0!important;
+ margin:0!important;
+}
+#view-logada .crm-workbar .crm-help-bell svg{
+ width:var(--cx-control-icon)!important;
+ height:var(--cx-control-icon)!important;
+ max-width:var(--cx-control-icon)!important;
+ max-height:var(--cx-control-icon)!important;
+ stroke-width:1.8!important;
+ display:block!important;
+}
+#view-logada .crm-workbar .cx-language-host{
+ display:inline-flex!important;
+ flex:0 0 auto!important;
+ align-items:center!important;
+ width:148px!important;
+ max-width:148px!important;
+ height:var(--cx-control-height)!important;
+ min-height:var(--cx-control-height)!important;
+ padding:0!important;
+ margin:0 0 0 1px!important;
+ border:0!important;
+ background:transparent!important;
+ border-radius:var(--cx-control-radius)!important;
+ box-shadow:none!important;
+}
+#view-logada .crm-workbar #cx-site-language{
+ width:100%!important;
+ max-width:none!important;
+ height:100%!important;
+ min-height:100%!important;
+ padding:0 12px!important;
+ border:1px solid var(--cx-control-border)!important;
+ border-radius:var(--cx-control-radius)!important;
+ background:var(--cx-control-surface)!important;
+ box-shadow:none!important;
+ color:var(--cx-control-text)!important;
+ font-family:inherit!important;
+ font-size:var(--cx-control-text-size)!important;
+ font-weight:550!important;
+ line-height:1.25!important;
+ text-overflow:ellipsis!important;
+ outline-offset:3px!important;
+}
+#view-logada .crm-workbar :is(.crm-survey-top,.crm-help-bell,#cx-site-language,.crm-text-button):hover{
+ border-color:#9470b3!important;
+ background:#1a2538!important;
+}
+#view-logada .crm-workbar :is(.crm-survey-top,.crm-help-bell,#cx-site-language,.crm-text-button):focus-visible{
+ outline:2px solid var(--cx-control-accent)!important;
+ outline-offset:2px!important;
+}
+@media(max-width:900px){
+ #view-logada .crm-workbar{gap:8px!important;flex-wrap:nowrap!important}
+ #view-logada .crm-workbar .crm-survey-top{display:none!important}
+ #view-logada .crm-workbar .cx-language-host{margin-left:auto!important}
+}
+@media(max-width:600px){
+ #view-logada .crm-workbar{
+  padding:8px 12px!important;
+  min-height:56px!important;
+ }
+ #view-logada .crm-workbar>.crm-text-button:not(#crmMenuToggle){display:none!important}
+ #view-logada .crm-workbar .cx-language-host{width:136px!important;max-width:136px!important}
+ #view-logada .crm-workbar .crm-help-bell{order:1}
+ #view-logada .crm-workbar .cx-language-host{order:2}
+}
+@media(max-width:370px){
+ #view-logada .crm-workbar .cx-language-host{width:122px!important;max-width:122px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #view-logada .crm-workbar *{transition:none!important}
+}
