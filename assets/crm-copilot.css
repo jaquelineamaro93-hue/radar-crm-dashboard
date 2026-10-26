@@ -165,3 +165,19 @@
  #cxCopilot .cx-copilot-form textarea{font-size:16px}
  #cxCopilot .cx-copilot-message{font-size:14px}
 }
+
+/* Minimal chat controls, scoped to Brasa only. */
+#cxCopilot .cx-copilot-launch{min-height:42px;padding:4px 11px 4px 5px;gap:6px;font-size:12px;font-weight:650;box-shadow:0 6px 20px #0004}
+#cxCopilot .cx-copilot-launch .brasa-fox{width:30px;height:30px;flex-basis:30px}
+#cxCopilot .cx-copilot-panel{width:min(410px,calc(100vw - 24px));height:min(600px,calc(100dvh - 96px));border-radius:16px}
+#cxCopilot .cx-copilot-head{min-height:52px!important;max-height:58px!important;padding:7px 12px!important}
+#cxCopilot .cx-copilot-head .brasa-fox{width:28px;height:28px;flex-basis:28px}
+#cxCopilot .cx-copilot-history{padding:12px;gap:9px}
+#cxCopilot .cx-copilot-message{padding:9px 11px;line-height:1.48;max-width:94%;border-radius:12px}
+#cxCopilot .cx-copilot-quick{padding:0 12px 9px;gap:5px}
+#cxCopilot .cx-copilot-quick button{min-height:29px;padding:5px 9px;font-size:11px;font-weight:500}
+#cxCopilot .cx-copilot-action{min-height:30px;padding:5px 9px;font-size:11px;font-weight:550}
+#cxCopilot .cx-copilot-form{padding:9px 10px 10px}
+#cxCopilot .cx-copilot-form textarea{min-height:43px;padding:10px 12px}
+#cxCopilot .cx-copilot-bottom button[data-cx-send]{min-height:33px;padding:6px 12px}
+@media(max-width:600px){#cxCopilot{right:max(8px,env(safe-area-inset-right,0px))}#cxCopilot .cx-copilot-panel{width:calc(100vw - 16px);height:min(620px,calc(100dvh - 80px))}}

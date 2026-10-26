@@ -245,6 +245,20 @@ function translate(){
  overlay.querySelector('.crm-goals-choices')?.setAttribute('aria-label',t('formHeading'));
  update();
 }
+// Restore the private interests survey when the professional-profile modal
+// prevented its initial launch. This does not affect older accounts.
+function retryOffer(){
+ if(typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id||root())return;
+ if(typeof crmActiveRoute==='string'&&crmActiveRoute!=='dashboard')return;
+ offer(CURRENT_USER,typeof CURRENT_PROFILE==='undefined'?null:CURRENT_PROFILE);
+}
+document.addEventListener('crm:route-changed',()=>setTimeout(retryOffer,80));
+document.addEventListener('crm:role-resolved',()=>setTimeout(retryOffer,80));
+if(typeof MutationObserver==='function'&&document.body)
+ new MutationObserver(records=>{
+  if(records.some(record=>Array.from(record.removedNodes).some(node=>node.nodeType===1&&node.id==='profileModalOverlay')))
+   setTimeout(retryOffer,80);
+ }).observe(document.body,{childList:true});
 document.addEventListener('cx:locale-change',translate);
 if(typeof MutationObserver==='function')new MutationObserver(translate)
  .observe(document.documentElement,{attributes:true,attributeFilter:['lang']});

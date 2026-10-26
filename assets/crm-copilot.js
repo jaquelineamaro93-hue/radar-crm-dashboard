@@ -78,8 +78,24 @@ function addMessage(type,message,action,sources=[],options={}){
   history.scrollTop=history.scrollHeight;
 }
 function showIntro(){
-  if(history?.children.length)return;
-  addMessage('assistant',cxT('Olá! 👋 Como posso ajudar?'),null,[],{feedback:false});
+  if(!history)return;
+  // The name stays in the browser; it is never attached to external AI requests.
+  const source=String(getProfile()?.full_name||getUser()?.user_metadata?.full_name||getUser()?.user_metadata?.name||'').trim();
+  const first=(source.split(/\s+/)[0]||'').slice(0,35);
+  const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
+  const greeting=locale==='en'
+    ?'Hi'+(first?', '+first:'')+'. What can I help you with?'
+    :locale==='es-419'
+    ?'Hola'+(first?', '+first:'')+'. ¿En qué puedo ayudarte?'
+    :'Oi'+(first?', '+first:'')+'. Como posso ajudar?';
+  const previous=history.firstElementChild;
+  if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
+    const content=previous.querySelector('p');if(content)content.textContent=greeting;
+    return;
+  }
+  if(history.children.length)return;
+  addMessage('assistant',greeting,null,[],{feedback:false});
+  history.lastElementChild.dataset.cxWelcome='true';
 }
 function currentProfileStatus(){
   if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
@@ -113,7 +129,9 @@ function classify(question){
   if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
   if(/(membros|networking|conhecer pessoas|fazer conexoes)/.test(s))
     return {intent:'action',action:'members'};
-  if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s))return {intent:'analyze'};
+  if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s)||
+    /(?:salari|remuner|mercado|tendenc|notici|pesquis|estudo).{0,50}(?:atual|recent|hoje|esta semana|ultim|2026)/.test(s))
+    return {intent:'analyze'};
   if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
@@ -359,7 +377,7 @@ function mount(){
   if(document.getElementById('cxCopilot'))return;
   root=document.createElement('div');root.id='cxCopilot';root.className='ph-no-capture';root.setAttribute('data-ph-no-capture','true');
   root.innerHTML=
-    '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa Copilot</span></button>'+
+    '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa</span></button>'+
     '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
      '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
@@ -410,7 +428,7 @@ function reconcile(){
     return;
   }
   if(!root&&canShow())mount();
-  if(root){clearOnAccountChange();root.hidden=!canShow();}
+  if(root){clearOnAccountChange();showIntro();root.hidden=!canShow();}
 }
 function start(){
   const workspace=document.getElementById('view-logada');
