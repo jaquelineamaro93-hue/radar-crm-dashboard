@@ -149,9 +149,9 @@
  function normalizePublicNavigation(){
   const nav=document.querySelector('#view-publica .crm-navbar .crm-navlinks');if(!nav)return;
   const wrapper=nav.closest('.crm-public-menu');
-  const compactViewport=!!window.matchMedia?.('(max-width:900px)').matches;
-  const compactPhone=!!window.matchMedia?.('(pointer:coarse)').matches&&Number(window.screen?.width||0)>0&&window.screen.width<=600;
-  const mobile=compactViewport||compactPhone;
+  // Use a faixa VISIVEL, nao screen.width (instavel em zoom e rotacao).
+  // Navegacao compacta tambem cobre telefones em paisagem com altura reduzida.
+  const mobile=!!window.matchMedia?.('(max-width:900px), (max-height:600px) and (pointer:coarse)').matches;
   document.documentElement.classList.toggle('crm-compact-device',mobile);
   if(mobile&&!wrapper){
    const details=document.createElement('details');details.className='crm-public-menu';
