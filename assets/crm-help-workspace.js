@@ -60,6 +60,7 @@ function register(){
   page.className='tab-page crm-help-workspace-page';
   page.setAttribute('aria-label',def.title);
   page.hidden=true;
+  page.style.display='none';
   const tabs=document.createElement('nav');tabs.className='crm-help-workspace-tabs';tabs.setAttribute('aria-label','Ajuda e conteúdos');
   for(const [r,v] of Object.entries(defs)){
    const tab=document.createElement('button');tab.type='button';
@@ -210,8 +211,17 @@ function mount(){
 }
 function sync(){
  const route=typeof crmActiveRoute==='string'?crmActiveRoute:'';
- if(defs[route])activate(route);
- else if(sidebar){sidebar.classList.remove('active');sidebar.removeAttribute('aria-current')}
+ if(defs[route]){activate(route);return}
+ // crmNavigate updates .active for all pages but not the inline display/hidden
+ // values set by this module. Always clear both on non-help routes.
+ for(const def of Object.values(defs)){
+  const pane=document.getElementById(def.id);
+  if(!pane)continue;
+  pane.classList.remove('active');
+  pane.hidden=true;
+  pane.style.display='none';
+ }
+ if(sidebar){sidebar.classList.remove('active');sidebar.removeAttribute('aria-current')}
 }
 function restoreDirectRoute(){
  const hash=decodeURIComponent(location.hash.replace(/^#/,''));
