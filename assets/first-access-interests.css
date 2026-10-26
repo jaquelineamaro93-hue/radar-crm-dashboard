@@ -1,0 +1,175 @@
+/* Conexão CRM | Figma-first new member interest survey | dark + violet.
+   Separate from the three-step professional profile form. */
+#crmGoalsOnboarding.crm-goals-overlay{
+ position:fixed;inset:0;z-index:12050;display:flex;
+ align-items:center;justify-content:center;
+ overflow-y:auto;overscroll-behavior:contain;
+ background:rgba(5,9,20,.86);backdrop-filter:blur(8px);
+ padding:24px;box-sizing:border-box;
+}
+#crmGoalsOnboarding [hidden]{display:none!important;}
+#crmGoalsOnboarding *{box-sizing:border-box;}
+#crmGoalsOnboarding .crm-goals-dialog{
+ background:#101827;border:1px solid #47526a;
+ box-shadow:0 30px 90px rgba(0,0,0,.5);color:#f3f4fb;
+ border-radius:18px;overflow:hidden;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.13fr);
+ width:min(900px,100%);max-height:min(92dvh,900px);min-width:0;
+ font:400 14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+#crmGoalsOnboarding .crm-goals-introduction{
+ padding:34px;background:#0c1426;
+ display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+ min-width:0;overflow-y:auto;
+}
+#crmGoalsOnboarding .crm-goals-brand{
+ font-size:17px;letter-spacing:-.04em;color:#fff;font-weight:850;
+}
+#crmGoalsOnboarding .crm-goals-brand::after{content:"";display:inline-block;background:#ae79d0;
+ border-radius:50%;height:5px;width:5px;vertical-align:baseline;margin-left:2px;}
+#crmGoalsOnboarding .crm-goals-eyebrow{
+ font-size:10px;font-weight:750;letter-spacing:.1em;
+ color:#cfa8e9;line-height:1.4;margin:18px 0 0;
+}
+#crmGoalsOnboarding .crm-goals-intro-heading{
+ font-size:clamp(23px,3vw,33px);font-weight:740;line-height:1.17;letter-spacing:-.035em;
+ color:#f4f5fb;margin:0;max-width:14ch;
+}
+#crmGoalsOnboarding .crm-goals-intro-copy{
+ font-size:13px;color:#b9c5d7;line-height:1.6;margin:0;max-width:40ch;
+}
+#crmGoalsOnboarding .crm-goals-benefits{
+ display:flex;flex-direction:column;width:100%;gap:12px;
+ margin:6px 0 0;border-top:1px solid #2e3b55;padding-top:18px;
+}
+#crmGoalsOnboarding .crm-goals-benefit{
+ display:flex;flex-direction:column;align-items:flex-start;gap:3px;
+ border-bottom:1px solid #29364e;padding-bottom:11px;
+}
+#crmGoalsOnboarding .crm-goals-benefit strong{
+ font-size:13px;font-weight:700;color:#e6d1f2;
+}
+#crmGoalsOnboarding .crm-goals-benefit span{font-size:12px;color:#9eaec5;}
+#crmGoalsOnboarding .crm-goals-side-note{
+ margin:auto 0 0;color:#8999af;font-size:11px;line-height:1.55;
+}
+#crmGoalsOnboarding .crm-goals-form{
+ display:flex;flex-direction:column;gap:12px;
+ padding:32px;overflow-y:auto;min-width:0;
+ background:#192335;color:#f5f6fb;
+}
+#crmGoalsOnboarding .crm-goals-form>h2{
+ font-size:clamp(21px,2.5vw,26px);font-weight:730;letter-spacing:-.03em;line-height:1.25;
+ color:#f5f6fb;margin:0;
+}
+#crmGoalsOnboarding .crm-goals-subtitle{
+ color:#b9c5d6;line-height:1.55;font-size:13px;margin:0 0 6px;
+}
+#crmGoalsOnboarding .crm-goals-choices{display:flex;flex-direction:column;gap:8px;}
+#crmGoalsOnboarding .crm-goals-option{
+ position:relative;display:flex;align-items:center;gap:11px;min-height:48px;
+ border:1px solid #47526d;border-radius:10px;
+ background:#11192a;color:#e6eaf5;
+ padding:10px 13px;cursor:pointer;
+ font-size:13px;font-weight:500;line-height:1.4;
+}
+#crmGoalsOnboarding .crm-goals-option:has(input:checked){
+ border-color:#a172c2;background:#302343;color:#f4e4ff;
+}
+#crmGoalsOnboarding .crm-goals-option:hover{border-color:#a172c2;}
+#crmGoalsOnboarding .crm-goals-option input{
+ position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+ margin:0;appearance:none;
+}
+#crmGoalsOnboarding .crm-goals-option:has(input:focus-visible){
+ outline:2px solid #e2b6fb;outline-offset:2px;
+}
+#crmGoalsOnboarding .crm-goals-choice-mark{
+ width:19px;height:19px;flex:0 0 19px;display:grid;place-items:center;
+ border-radius:5px;border:1px solid #5c6a82;background:#11192a;
+ color:transparent;font-size:12px;font-weight:800;
+}
+#crmGoalsOnboarding .crm-goals-option:has(input:checked) .crm-goals-choice-mark{
+ background:#a56bca;border-color:#bc8bdf;color:#fff;
+}
+#crmGoalsOnboarding .crm-goals-summary{
+ display:flex;flex-direction:column;gap:5px;padding:2px 0 4px;
+}
+#crmGoalsOnboarding #crmGoalsCount{
+ font-size:12px;color:#d1a9e8;margin:0;font-weight:650;
+}
+#crmGoalsOnboarding .crm-goals-primary{
+ display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+}
+#crmGoalsOnboarding .crm-goals-primary p{
+ font-size:12px;color:#c9d3e1;margin:0;line-height:1.45;
+}
+#crmGoalsOnboarding .crm-goals-change{
+ min-height:39px;padding:7px 10px;
+ background:transparent;border:1px solid #586780;border-radius:8px;
+ color:#e0bbf5;font-size:12px;font-weight:600;cursor:pointer;
+}
+#crmGoalsOnboarding .crm-goals-priority-options{
+ display:flex;flex-direction:column;gap:6px;padding:12px;
+ border-radius:9px;background:#111a2b;border:1px solid #45526b;
+}
+#crmGoalsOnboarding .crm-goals-priority-options p{
+ margin:0 0 3px;font-size:12px;color:#c9d3e0;
+}
+#crmGoalsOnboarding .crm-goals-priority-options label{
+ display:flex;align-items:center;gap:8px;color:#e4eaf2;
+ min-height:34px;font-size:12px;cursor:pointer;
+}
+#crmGoalsOnboarding .crm-goals-priority-options input{accent-color:#a56bca;}
+#crmGoalsOnboarding .crm-goals-privacy{
+ background:#111a2b;border:1px solid #35445f;border-radius:9px;
+ padding:12px 14px;margin-top:4px;
+}
+#crmGoalsOnboarding .crm-goals-privacy p{
+ margin:0;color:#bdc9dc;font-size:11px;line-height:1.55;
+}
+#crmGoalsOnboarding .crm-goals-status{
+ min-height:16px;color:#f1b8c1;font-size:12px;line-height:1.4;margin:0;
+}
+#crmGoalsOnboarding .crm-goals-save{
+ min-height:46px;background:#7f40b1;color:#fff;
+ border:1px solid #a06cc5;border-radius:8px;padding:10px 15px;
+ font-size:13px;font-weight:750;cursor:pointer;
+}
+#crmGoalsOnboarding .crm-goals-save:not(:disabled):hover{background:#9655be;}
+#crmGoalsOnboarding .crm-goals-save:disabled{opacity:.5;cursor:not-allowed;}
+#crmGoalsOnboarding .crm-goals-skip{
+ color:#d4dbea;font-size:12px;min-height:40px;border:0;
+ background:transparent;cursor:pointer;text-decoration:underline;
+ text-decoration-color:#5a6780;text-underline-offset:3px;
+}
+#crmGoalsOnboarding .crm-goals-skip-note{
+ text-align:center;color:#899bb4;font-size:11px;margin:-6px 0 0;line-height:1.55;
+}
+#crmGoalsOnboarding :is(button,input):focus-visible{
+ outline:2px solid #e5baf9;outline-offset:3px;
+}
+@media(max-width:700px){
+ #crmGoalsOnboarding.crm-goals-overlay{
+  align-items:flex-start;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));
+ }
+ #crmGoalsOnboarding .crm-goals-dialog{
+  display:flex;flex-direction:column;width:100%;
+  max-height:none;min-height:0;border-radius:13px;overflow:visible;
+ }
+ #crmGoalsOnboarding .crm-goals-introduction{padding:18px 18px 14px;gap:7px;overflow:visible;}
+ #crmGoalsOnboarding .crm-goals-brand{font-size:16px;}
+ #crmGoalsOnboarding .crm-goals-eyebrow{margin:8px 0 2px;font-size:10px;}
+ #crmGoalsOnboarding .crm-goals-intro-heading{font-size:22px;max-width:100%;}
+ #crmGoalsOnboarding .crm-goals-intro-copy{font-size:12px;line-height:1.5;}
+ #crmGoalsOnboarding .crm-goals-benefits,
+ #crmGoalsOnboarding .crm-goals-side-note{display:none;}
+ #crmGoalsOnboarding .crm-goals-form{padding:18px;gap:10px;overflow:visible;}
+ #crmGoalsOnboarding .crm-goals-form>h2{font-size:21px;}
+ #crmGoalsOnboarding .crm-goals-subtitle{font-size:12px;}
+ #crmGoalsOnboarding .crm-goals-option{min-height:45px;padding:10px 11px;font-size:12px;}
+ #crmGoalsOnboarding .crm-goals-privacy{padding:11px;}
+}
+@media(prefers-reduced-motion:reduce){
+ #crmGoalsOnboarding *{animation:none!important;transition:none!important;}
+}
