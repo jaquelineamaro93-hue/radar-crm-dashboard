@@ -234,7 +234,7 @@
    const avatar=wrap.querySelector('.cx-home-identity-avatar'),sidebar=document.getElementById('loggedAvatar');
    const photo=sidebar?.querySelector('img');
    let url=photo?.getAttribute('src')||user?.user_metadata?.avatar_url||'';
-   try{const parsed=new URL(url,location.origin);if(parsed.protocol!=='https:'||parsed.origin!==location.origin&&!['lh3.googleusercontent.com','googleusercontent.com'].some(host=>parsed.hostname===host||parsed.hostname.endsWith('.'+host))){url=''}else url=parsed.href}
+   try{const parsed=new URL(url,location.origin);if(parsed.protocol!=='https:'||parsed.origin!==location.origin&&!['lh3.googleusercontent.com','googleusercontent.com','rwkbpafpniwzvlkfngag.supabase.co'].some(host=>parsed.hostname===host||parsed.hostname.endsWith('.'+host))){url=''}else url=parsed.href}
    catch{url=''}
    const image=avatar.querySelector('img');
    if(url){
