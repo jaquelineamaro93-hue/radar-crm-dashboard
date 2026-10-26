@@ -83,7 +83,10 @@
  background:transparent!important;
  border:1px solid transparent!important;
  border-radius:var(--cx-control-radius)!important;
- font:600 13px/1.25 inherit!important;
+ font-family:inherit!important;
+ font-size:13px!important;
+ font-weight:600!important;
+ line-height:1.25!important;
  color:var(--cx-control-text)!important;
  white-space:nowrap!important;
  box-shadow:none!important;
@@ -132,7 +135,10 @@
  background:var(--cx-control-surface)!important;
  box-shadow:none!important;
  color:var(--cx-control-text)!important;
- font:550 var(--cx-control-text-size)/1.25 inherit!important;
+ font-family:inherit!important;
+ font-size:var(--cx-control-text-size)!important;
+ font-weight:550!important;
+ line-height:1.25!important;
  text-overflow:ellipsis!important;
  outline-offset:3px!important;
 }
