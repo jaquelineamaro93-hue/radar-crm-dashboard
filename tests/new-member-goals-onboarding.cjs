@@ -26,7 +26,8 @@ test('The five screenshot choices have deterministic keys and priority support',
 });
 test('Skip means an explicit empty private selection, not a public profile',()=>{
  assert(script.includes('skipped?[]'));
- assert(script.includes(".from('profiles').upsert({id,onboarding_goals:goals},{onConflict:'id'})"));
+ assert(script.includes(".from('profiles').update({onboarding_goals:goals}).eq('id',id)"));
+ assert(script.includes(".from('profiles').insert({id,onboarding_goals:goals,directory_visible:false})"));
  assert(script.includes("if(data?.id!==id")===false);
  assert(!script.includes('directory_visible'));
  assert(!script.includes('profiles_public'));
