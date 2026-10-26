@@ -20,7 +20,7 @@ function render(){
  }
  const search=document.getElementById('help-search');
  if(search)search.placeholder=locale==='en'?'AI Match, saved jobs, profile…':locale==='es-419'?'Match IA, vacantes guardadas, perfil…':'Match IA, vagas salvas, perfil…';
- const title=document.querySelector('main h1');
+ const title=document.querySelector('main .help-article-title')||document.querySelector('main h1');
  if(title)document.title=title.textContent+' | Conexão CRM';
 }
 document.addEventListener('DOMContentLoaded',render,{once:true});
