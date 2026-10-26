@@ -1,0 +1,112 @@
+/* Conexão CRM | Catalog pages 2026-10-26
+   Scoped presentation only. Existing search, sorting, voting and links are preserved. */
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup.crm-otw-signup-compact{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:12px 20px!important;min-width:0!important;
+ margin:12px 0 16px!important;padding:15px clamp(14px,2vw,20px)!important;
+ border:1px solid #3d4a61!important;border-radius:12px!important;
+ background:#171f30!important;box-shadow:none!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>div{
+ flex:1 1 340px!important;min-width:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact h3{
+ font-size:clamp(15px,1.35vw,18px)!important;line-height:1.32!important;
+ letter-spacing:-.012em!important;margin:3px 0 4px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact p{
+ font-size:12px!important;line-height:1.45!important;margin:0!important;
+ max-width:65ch!important;color:#adbbcf!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>a,
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>button{
+ flex:0 0 auto!important;min-height:40px!important;padding:10px 16px!important;
+ border-radius:9px!important;font-size:12px!important;font-weight:650!important;
+ background:#8745b5!important;border:1px solid #9a5ac7!important;color:#fff!important;
+ white-space:normal!important;text-align:center!important;text-decoration:none!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-details{
+ border:0!important;background:transparent!important;padding:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-details>summary{display:none!important}
+/* The directory cards start immediately after the action and search, without
+   legacy stacked legal disclaimers. Other informational notes are unchanged. */
+:is(#view-logada,#crmPublicWorkspace) :is(#pageFreelancers,#pageAgencias) .crm-catalog-disclaimer:empty{display:none!important}
+/* Platforms is a single visual family with the other CRM directories. */
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern{
+ min-width:0!important;color:#edf0f8
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern .section-head{
+ display:flex!important;align-items:flex-start!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:8px 18px!important;min-width:0!important;
+ margin:0 0 17px!important;padding:0 0 14px!important;
+ border-bottom:1px solid #334259!important;background:transparent!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(h1,.section-head h2){
+ font-size:clamp(22px,2.2vw,28px)!important;font-weight:740!important;
+ letter-spacing:-.025em!important;line-height:1.2!important;margin:0 0 5px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.section-desc,.section-head p){
+ color:#acbad0!important;font-size:13px!important;line-height:1.55!important;
+ max-width:72ch!important;margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.search-bar,.filter-bar,.pf-filters,.filters,.filter-panel){
+ min-width:0!important;max-width:100%!important;box-sizing:border-box!important;
+ border:1px solid #35445b!important;background:#171f30!important;
+ border-radius:12px!important;box-shadow:none!important;
+ padding:clamp(12px,1.3vw,16px)!important;margin:12px 0 16px!important;
+ gap:10px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(input[type="search"],input[type="text"],select,.search-input){
+ min-width:0!important;max-width:100%!important;min-height:40px!important;
+ border:1px solid #43536c!important;background:#0f1727!important;
+ border-radius:9px!important;color:#eff2f8!important;
+ padding:8px 11px!important;font-size:13px!important;box-sizing:border-box!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-grid,.result-grid){
+ display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))!important;
+ align-items:stretch!important;gap:14px!important;min-width:0!important;
+ margin:16px 0 22px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-card,.pro-card){
+ display:flex!important;flex-direction:column!important;
+ gap:12px!important;min-width:0!important;max-width:100%!important;
+ background:#171f30!important;border:1px solid #3d4b61!important;
+ border-radius:14px!important;padding:clamp(15px,1.5vw,19px)!important;
+ box-shadow:none!important;overflow-wrap:anywhere!important;
+ transition:border-color .15s ease!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-card,.pro-card):hover{
+ border-color:#8d6aa7!important;transform:none!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-name,.pf-card h3){
+ color:#f4f5fb!important;font-size:15px!important;line-height:1.32!important;
+ letter-spacing:-.01em!important;margin:0!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-desc,.pf-bio,.pf-card p){
+ color:#b7c4d7!important;font-size:12px!important;line-height:1.55!important;
+ overflow-wrap:anywhere!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-cat,.pf-tag,.p-badge){
+ border:1px solid #70548c!important;background:#2a2239!important;color:#d5b2e9!important;
+ border-radius:6px!important;font-size:11px!important;padding:3px 7px!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(button,a).crm-button{
+ min-height:37px!important;border-radius:9px!important;font-size:12px!important
+}
+@media(max-width:720px){
+ :is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup.crm-otw-signup-compact{
+  padding:14px!important;gap:10px!important
+ }
+ :is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>div{flex-basis:100%!important}
+ :is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>a,
+ :is(#view-logada,#crmPublicWorkspace) #pageSearch .crm-otw-signup-compact>button{
+  width:100%!important;min-height:44px!important;flex-basis:100%!important
+ }
+ :is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern :is(.pf-grid,.result-grid){
+  grid-template-columns:minmax(0,1fr)!important
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ :is(#view-logada,#crmPublicWorkspace) #pagePlataformas.crm-platform-modern .pf-card{transition:none!important}
+}
