@@ -207,7 +207,7 @@
  if(!document.getElementById('cx-site-i18n-script')){
    const script=document.createElement('script');
    script.id='cx-site-i18n-script';
-   script.src='/assets/site-i18n.js?v=20261025-member-mobile-2';
+   script.src='/assets/site-i18n.js?v=20261026-navy-help-2';
    script.defer=true;
    document.head.append(script);
  }
