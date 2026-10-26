@@ -34,7 +34,7 @@ function init(){
  }
  if(!document.getElementById('crm-help-workspace-script')){
    const script=document.createElement('script');script.id='crm-help-workspace-script';
-   script.src='/assets/crm-help-workspace.js?v=20261026-benchmark-4';script.async=true;
+   script.src='/assets/crm-help-workspace.js?v=20261026-watermark-1';script.async=true;
    document.head.append(script);
  }
 }
