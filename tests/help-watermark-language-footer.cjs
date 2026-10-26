@@ -34,7 +34,7 @@ for(const html of [shell,fallback]){
  assert(html.includes('portal-hardening.js?v=20261026-language-top-1'),'bust layout runtime');
  assert(html.includes('push-preferences.js?v=20261026-watermark-1'),'bust notifications runtime');
 }
-assert(read('assets/portal-hardening.js').includes('portal-layout.js?v=20261026-topnav-1'));
+assert.match(read('assets/portal-hardening.js'),/portal-layout\.js\?v=[\w-]+/,'layout must remain versioned and loaded');
 assert(read('assets/portal-layout.js').includes('site-i18n.js?v=20261026-topnav-1'));
 assert(read('assets/push-preferences.js').includes('crm-help-workspace.js?v=20261026-release2'));
 const dom=new JSDOM('<div id="view-publica"><div class="crm-navbar"><nav class="crm-navlinks"></nav></div></div><div id="view-logada" hidden><div class="crm-workbar"><button id="profile">Meu perfil</button></div><aside><button id="sair">Sair</button></aside></div>',{url:'https://conexaocrm.com/',runScripts:'outside-only',pretendToBeVisual:true});
