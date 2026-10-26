@@ -47,10 +47,10 @@ assert.doesNotMatch(glue,/crmPushPreferences|showModal\(|requestPermission\(/,'p
 
 const contextual=read('assets/contextual-prompts.js');
 new vm.Script(contextual,{filename:'contextual-prompts.js'});
-assert.match(glue,/contextual-prompts\\.js\\?v=/,'route-based prompts loaded');
-assert.match(contextual,/HIGH_ADOPTION=new Set\\(\\['dashboard','search','membros','vagas'\\]\\)/);
-assert.match(contextual,/MEDIUM_ADOPTION=new Set\\(\\['quem-somos','freelancers','courses','comunidade'\\]\\)/);
+assert.match(glue,/contextual-prompts\.js\?v=/,'route-based prompts loaded');
+assert.match(contextual,/HIGH_ADOPTION=new Set\(\['dashboard','search','membros','vagas'\]\)/);
+assert.match(contextual,/MEDIUM_ADOPTION=new Set\(\['quem-somos','freelancers','courses','comunidade'\]\)/);
 assert.match(contextual,/crmExperiencePrompt/);
 assert.match(contextual,/crm-census-inline/);
-assert.doesNotMatch(contextual,/Notification\\.requestPermission|serviceWorker\\.register|SUPABASE_SERVICE_ROLE_KEY/);
+assert.doesNotMatch(contextual,/Notification\.requestPermission|serviceWorker\.register|SUPABASE_SERVICE_ROLE_KEY/);
 console.log('PASS help bell: sidebar shell, direct links, translations, mobile and consent without Web Push');
