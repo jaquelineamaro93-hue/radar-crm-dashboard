@@ -33,3 +33,6 @@
 
 /* 2026-10-26: legacy web-push topic UI is retired. Keep user consent in Editar Perfil. */
 #crmPushPreferences,#crmPushInvite,.crm-push-dialog,.crm-push-header-button,.crm-push-invite{display:none!important}
+
+/* Compact language control, independent of script cache. */
+.cx-language-host{border:1px solid #45536c!important;border-radius:9px!important;padding:2px!important;background:#111a2b!important;box-shadow:none!important}.cx-language-host select{font:500 12px/1.4 system-ui!important;color:#f4f5fb!important;border:0!important;outline-offset:2px!important;padding:7px 9px!important;min-height:34px!important;max-width:137px!important;background:#111a2b!important}.cx-language-host select:focus-visible{outline:2px solid #cfa5e9!important}
