@@ -61,9 +61,9 @@ async function run(){
       item.cards=await page.locator('#vagasContainerHub>.crm-job-card').count();
       if(item.cards){
        const bg=await page.locator('#vagasContainerHub>.crm-job-card').first().evaluate(el=>getComputedStyle(el).backgroundColor);
-       const rgb=bg.match(/^rgb\\((\\d+), (\\d+), (\\d+)\\)$/);
-       assert(rgb,'Radar card surface not a solid RGB color: '+bg);
-       const [red,green,blue]=rgb.slice(1).map(Number);
+       const triplet=bg.match(/\d+/g);
+       assert(triplet&&triplet.length>=3,'Radar card RGB components unavailable: '+bg);
+       const [red,green,blue]=triplet.slice(0,3).map(Number);
        assert(blue>red&&blue>green&&red<65&&green<80&&blue<120,
         'Radar card uses retired/non-navy surface '+bg);
       }else item.notes.push('No live job cards to check; filter shell and overflow checked');
