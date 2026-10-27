@@ -6150,6 +6150,9 @@ async function submitFreelancer(){
   if(!email){ statusEl.className='form-status err'; statusEl.textContent='Preencha seu e-mail.'; return; }
   if(!flSb){ statusEl.className='form-status err'; statusEl.textContent='Conexão indisponível. Recarregue a página.'; return; }
 
+  let extras;
+  try{extras=crmFreelancerReadExtras('fl');}
+  catch(e){statusEl.className='form-status err';statusEl.textContent=e.message;return;}
   // Sanitizar todos os campos antes de salvar
   const perfil = {
     nome: sanitizeInput(nome, 150),
@@ -6160,7 +6163,7 @@ async function submitFreelancer(){
     linkedin: document.getElementById('fl_linkedin').value.trim(),
     contato: document.getElementById('fl_contato').value.trim(),
     aprovado: false,
-    ...crmFreelancerReadExtras('fl'),
+    ...extras,
   };
 
   const conteudo = document.getElementById('fl_conteudo').value.trim();
@@ -6427,7 +6430,9 @@ async function submitFreelancerEdit(id){
   const linkedin = (document.getElementById('flEditLinkedin').value||'').trim();
   const portfolio = (document.getElementById('flEditPortfolio').value||'').trim();
   const contato = (document.getElementById('flEditContato').value||'').trim();
-  const extras=crmFreelancerReadExtras('flEdit');
+  let extras;
+  try{extras=crmFreelancerReadExtras('flEdit');}
+  catch(e){statusEl.style.color='#fca5a5';statusEl.textContent=e.message;return;}
   if(categoria) payload.categoria = categoria;
   if(bio) payload.bio = bio;
   if(linkedin) payload.linkedin = linkedin;
@@ -6447,7 +6452,7 @@ async function submitFreelancerEdit(id){
     loadFreelancers();
   }catch(e) {
     console.error(e);
-    statusEl.style.color='red'; statusEl.textContent='Erro ao salvar. Tente novamente.';
+    statusEl.style.color='#fca5a5'; statusEl.textContent='Não foi possível enviar a edição. '+(e?.message||'Tente novamente.');
   }
 }
 
