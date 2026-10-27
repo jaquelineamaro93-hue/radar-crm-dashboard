@@ -20,12 +20,29 @@ const ACTIONS=Object.freeze({
   saved:{label:'Abrir Vagas Salvas',route:'vagas-salvas'},
   market:{label:'Ver dados do mercado',route:'mercado'},
   match:{label:'Ver Match de Vagas',route:'vagas'},
-  avatar:{label:'Abrir meu Avatar',route:'xp-avatar'},
   rankings:{label:'Ver Rankings',route:'xp-rankings'}
 });
 const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const getUser=()=>{try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null}catch{return null}};
 const signed=()=>{try{return typeof crmSignedIn==='function'&&crmSignedIn()&&!!getUser()?.id&&!getUser()?.is_anonymous}catch{return false}};
+function nicknameKey(){const id=getUser()?.id;return signed()&&id?'crm:brasa:preferred-name:'+id:'';}
+function preferredName(){
+ const key=nicknameKey();if(!key)return '';
+ try{const n=localStorage.getItem(key);if(n&&/^[\p{L}][\p{L} '-]{1,23}$/u.test(n))return n;}catch{}
+ const u=getUser(),meta=u?.user_metadata||{};
+ const profile=String(meta.preferred_name||meta.nickname||'').trim();
+ if(/^[\p{L}][\p{L} '-]{1,23}$/u.test(profile))return profile;
+ if(String(u?.email||'').toLowerCase()==='jaqueline.amaro93@gmail.com')return 'Jaque';
+ return '';
+}
+function explicitNickname(q){
+ const m=String(q||'').match(/(?:me\s+cham(?:a|e|ar)\s+de|pode\s+me\s+chamar\s+de|prefiro\s+(?:ser\s+)?chamad[ao]\s+de|meu\s+apelido\s+é|quero\s+ser\s+chamad[ao]\s+de)\s+([\p{L}][\p{L} '-]{1,23}?)(?=[.,!?;\n]|$)/iu);
+ return m?m[1].trim().replace(/\s+/g,' '):'';
+}
+function rememberNickname(n){
+ const k=nicknameKey();if(!k)return false;
+ try{localStorage.setItem(k,n);return true}catch{return false}
+}
 function canShow(){
   // A sessão e a área logada precisam estar ativas ao mesmo tempo.
   // Uma rota pública nunca pode montar nem exibir este assistente.
@@ -94,9 +111,10 @@ function showIntro(){
   if(!history)return;
   // Deliberately do not read any member profile fields, even for greetings.
   const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
-  const greeting=locale==='en'?'Hi. How can I help today?'
-    :locale==='es-419'?'Hola. ¿En qué puedo ayudarte hoy?'
-    :'Oi. Em que posso ajudar hoje?';
+  const nickname=preferredName();
+  const greeting=locale==='en'?'Hi'+(nickname?', '+nickname:'')+'. How can I help today?'
+    :locale==='es-419'?'Hola'+(nickname?', '+nickname:'')+'. ¿En qué puedo ayudarte hoy?'
+    :'Oi'+(nickname?', '+nickname:'')+'. Em que posso ajudar hoje?';
   const previous=history.firstElementChild;
   if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
     const content=previous.querySelector('p');if(content)content.textContent=greeting;
@@ -136,7 +154,7 @@ function classify(question){
   // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
   if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
     return {intent:'analyze'};
-  if(/(avatar)/.test(s))return {intent:'action',action:'avatar'};
+
   if(/(ranking|pontos xp|coins|pontuacao)/.test(s))return {intent:'action',action:'rankings'};
   if(/(evento|agenda|encontro|calendario)/.test(s))return {intent:'action',action:'events'};
   if(/(membros|networking|conhecer pessoas|fazer conexoes)/.test(s))
@@ -194,7 +212,7 @@ function runAction(id){
   }
   if(id==='otw'){if(navigate('search'))document.getElementById('searchTabRegistration')?.click();return;}
   const item=ACTIONS[id];
-  if(['avatar','rankings'].includes(id)&&!signed()){
+  if(id==='rankings'&&!signed()){
     addMessage('assistant','Entre com Google para usar essa ferramenta.','login');return;
   }
   if(!navigate(item.route)){addMessage('assistant','Não foi possível abrir essa seção. Use o menu principal do portal.');return;}
@@ -232,6 +250,7 @@ async function analyze(){
   const context=previous.map((q,i)=>i===previous.length-1&&lastAssistantReply
     ?('Pergunta anterior: '+q.slice(0,100)+'\nResposta anterior do Brasa: '+lastAssistantReply.slice(0,175)).slice(0,320)
     :q.slice(0,320));
+  const name=preferredName();if(name)context.unshift('Preferência de nome confirmada: trate esta pessoa por '+name+'.');
   const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error){
@@ -339,8 +358,7 @@ function localAnswer(action,question){
     events:'A agenda reúne eventos da comunidade. Você pode consultar os detalhes e salvar os que interessam. Quer encontrar um evento ou publicar uma proposta?',
     saved:'As vagas que você guardou ficam na página Vagas Salvas. Posso abrir essa área para você.',
     members:'No diretório você encontra profissionais da comunidade e os contatos que cada pessoa escolheu compartilhar. Você busca uma especialidade ou quer atualizar seu próprio perfil?',
-    rankings:'Os Rankings ficam na área Conexão XP. Eles mostram a participação na comunidade. Seu avatar também pode ser personalizado nessa área.',
-    avatar:'Você pode personalizar seu avatar na área Conexão XP. As escolhas são feitas por você no editor; esta conversa não altera seu perfil.',
+    rankings:'Os Rankings mostram profissionais recomendados e participação voluntária na comunidade.',
     market:'O relatório Open to Work apresenta os dados agregados dos profissionais disponíveis. Ele complementa Cargos & Salários, que reúne a pesquisa de remuneração.',
     match:'Para encontrar vagas alinhadas ao seu perfil, use o Match IA. Ele compara suas informações com os requisitos das oportunidades, sem anexar seu cadastro a esta conversa. Posso abrir seu Match para você conferir os resultados.'
   })[action]||'Conte um pouco mais sobre o que você precisa.';
@@ -354,6 +372,8 @@ function process(question){
   recentQuestions.push(question.slice(0,320));if(recentQuestions.length>4)recentQuestions.shift();
   addMessage('user',question);
   const normalized=normalize(question);
+  const preferred=explicitNickname(question);
+  if(preferred){rememberNickname(preferred);addMessage('assistant','Combinado, '+preferred+'. Vou usar esse nome nas nossas conversas.');return;}
   if(/^(?:era isso|obrigad|valeu|ate mais|tchau)/.test(normalized)){
     addMessage('assistant','Por nada. Até a próxima.');return;
   }
