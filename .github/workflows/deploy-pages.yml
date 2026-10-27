@@ -30,6 +30,7 @@ jobs:
           node tests/catalog-pages-clean.cjs
           node tests/first-paint-layout.cjs
           node tests/unified-directory-shell.cjs
+          node tests/radar-groups-visual-consistency.cjs
           node tests/freelancer-card-a.cjs
           node tests/workspace-studio-spacing.cjs
           node tests/saved-jobs-unsave.cjs
