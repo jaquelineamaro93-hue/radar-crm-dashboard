@@ -25,6 +25,7 @@
  font-size:12px!important;color:#c5bad8!important;
 }
 #pageFreelancers .cx-freelancer-card-a .cx-fc-head{
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
  position:relative!important;min-width:0!important;
  gap:12px!important;align-items:flex-start!important;
 }
@@ -197,7 +198,13 @@
 }
 @media(max-width:650px){
  #view-logada #crmPages #pageFreelancers.active{padding-top:12px!important}
- #pageFreelancers .cx-freelancer-card-a .cx-fc-head{flex-wrap:wrap!important}
+ #pageFreelancers .cx-freelancer-card-a .cx-fc-head{
+  flex-wrap:nowrap!important;flex-direction:row!important;
+ }
+ #pageFreelancers .cx-freelancer-card-a .cx-fc-head .cx-share-card .cx-share-label{display:none!important}
+ #pageFreelancers .cx-freelancer-card-a .cx-fc-head .cx-share-card{
+  width:34px!important;min-width:34px!important;justify-content:center!important;
+ }
  #pageFreelancers .cx-freelancer-card-a .cx-fc-head>.cx-share-holder{
   margin-left:auto!important
  }
