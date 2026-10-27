@@ -1,0 +1,42 @@
+name: Public catalog browser smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/public-catalog-visual-smoke.cjs'
+      - '.github/workflows/public-catalog-browser-smoke.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/public-catalog-visual-smoke.cjs'
+      - '.github/workflows/public-catalog-browser-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    name: Chromium desktop, tablet and phone
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned browser runner
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.64.1
+          npx playwright install --with-deps chromium
+      - name: Inspect live public catalog in four viewports
+        run: node tests/public-catalog-visual-smoke.cjs
+      - name: Store visual evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-catalog-visual-evidence
+          path: visual-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
