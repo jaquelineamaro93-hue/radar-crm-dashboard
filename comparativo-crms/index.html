@@ -4144,14 +4144,11 @@ async function carregarVagasHub() {
 }
 
 function obterModalidade(vaga) {
-  const explicit=String(vaga.modalidade_normalizada||vaga.work_model||vaga.modelo||'').trim().toLowerCase();
-  const text=explicit || String(vaga.description||vaga.descricao||vaga.location||'').toLowerCase();
-  let badge='';
-  if(/h[ií]brid/.test(text))badge='Híbrido';
-  else if(/remot|home office|teletrabalho/.test(text))badge='Remoto';
-  else if(/presencial|on-site|onsite/.test(text))badge='Presencial';
+  const explicit=crmRadarNormalized(vaga.modalidade_normalizada||vaga.work_model||vaga.modelo||'');
+  const labels={remoto:'Remoto',remote:'Remoto','home office':'Remoto',hibrido:'Híbrido',hibrida:'Híbrido',hybrid:'Híbrido',presencial:'Presencial','on site':'Presencial',onsite:'Presencial'};
+  const badge=labels[explicit];
   if(!badge)return null;
-  return {label:badge,badge,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'};
+  return {label:badge,badge,icon:'',color:'rgba(169,106,203,.11)',textColor:'var(--accent)'};
 }
 
 function obterEmpresa(vaga) {
@@ -4174,7 +4171,7 @@ function mapearCampoVaga(vaga) {
     publicacao: vaga.published_at || '',
     disponibilidade: vaga.availability_status || 'unverified',
     link: vaga.link || vaga.url || vaga.apply_url || vaga.job_url || '',
-    modalidade: vaga.modalidade_normalizada ? {badge:vaga.modalidade_normalizada,icon:'',color:'rgba(249,115,22,.11)',textColor:'var(--accent)'} : obterModalidade(vaga),
+    modalidade: obterModalidade(vaga),
     localidade: (() => {
       const info=crmJobLocationInfo(vaga);
       // O título pode conter palavras de localização, mas não comprova cidade/UF.
@@ -9306,8 +9303,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  for(const name of ['cargo','empresa','nivel','plataforma']){const legacy=crmById('filtro-'+name+'-hub'),visible=crmById('filtro-'+name);Object.defineProperty(legacy,'value',{configurable:true,get:()=>visible.value,set:value=>{visible.value=value;}});}
  crmSyncAuth();crmSetLanding(true);crmHandleLocation();
  let searchTimer;for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio']){const input=crmById('filtro-'+n);if(!input)continue;input.addEventListener(input.tagName==='SELECT'?'change':'input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(crmSearchJobs,400);});input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(searchTimer);crmSearchJobs();}});}
- crmById('filtro-modalidade').addEventListener('change',crmFilterModality);
- new MutationObserver(crmFilterModality).observe(crmById('vagasContainerHub'),{childList:true});
+ crmById('filtro-modalidade').addEventListener('change',crmSearchJobs);
 
  crmById('comSubTabDiretorio').onclick=()=>crmOpenMemberTab('diretorio');
  window.addEventListener('hashchange',crmHandleLocation);window.addEventListener('popstate',crmHandleLocation);
@@ -9330,17 +9326,9 @@ async function crmSearchJobs(){
 
  for(const n of ['cargo','empresa','nivel','plataforma'])crmById('filtro-'+n+'-hub').value=crmById('filtro-'+n).value;
  const b=crmById('btn-buscar');b.disabled=true;b.textContent='Buscando…';
- try{await aplicarFiltrosVagas();if(seq===crmJobSearchSequence)crmFilterModality();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
+ try{await aplicarFiltrosVagas();}finally{if(seq===crmJobSearchSequence){b.disabled=false;b.textContent='Buscar';}}
 }
 function crmClearJobs(){if(crmById('filtro-categoria'))crmById('filtro-categoria').value='';for(const n of ['cargo','empresa','nivel','plataforma','estado','municipio','modalidade','abrangencia']){const el=crmById('filtro-'+n);if(el)el.value='';}limparFiltrosVagas();}
-function crmFilterModality(){
- const container=crmById('vagasContainerHub'),value=crmById('filtro-modalidade').value;
- const cards=Array.from(container.children).filter(c=>c.querySelector('h3'));
- if(!cards.length)return;
- let visible=0;cards.forEach(c=>{const match=!value||Array.from(c.querySelectorAll('span')).some(s=>s.textContent.trim().replace(/^[^A-Za-zÀ-ÿ]+/,'')===value);c.hidden=!match;if(match)visible++;});
- crmById('vagasCountHub').textContent=String(visible);
- let empty=crmById('crmModalityEmpty');if(!visible&&value){if(!empty){empty=document.createElement('p');empty.id='crmModalityEmpty';empty.className='crm-filter-empty';empty.textContent='Nenhuma vaga encontrada nesta modalidade.';container.append(empty);}}else if(empty)empty.remove();
-}
 
 let CURRENT_MATCH_RESUME=null;
 function crmCsvList(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,40);}
