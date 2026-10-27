@@ -50,8 +50,8 @@ assert(!html.includes('id="crmRadarArchive"'),
   'Closed vacancies must not be shown in an archive on the Radar page');
 assert(!html.includes('<h3 style="font-weight:700; font-size:14px; margin:0; color:var(--text);">Vagas encontradas nos últimos 14 dias</h3>'),
   'Redundant 14-day jobs heading must not occupy screen space');
-assert(radarCss.includes('background:#fff1b5!important')&&radarCss.includes('color:#4a3526!important')&&radarCss.includes('border-radius:13px!important'),
-  'Candidatar must retain baby-yellow, dark brown text and rounded corners');
+assert(radarCss.includes('background:#cda5ed!important')&&radarCss.includes('color:#211630!important')&&radarCss.includes('border-radius:9px!important'),
+  'Candidatar must retain the approved lilac CTA, high-contrast dark text and rounded corners');
 assert(radarCss.includes('.crm-job-clean-apply')&&radarCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),
   'Lightweight card presentation and bottom CTA must be responsive');
 
