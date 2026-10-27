@@ -675,7 +675,7 @@ html.crm-compact-device #crmPublicPages #pageVagas .crm-radar-header .crm-add-co
 html.crm-compact-device #crmPublicWorkspace button:focus-visible,
 html.crm-compact-device #crmPublicWorkspace a:focus-visible,
 html.crm-compact-device #view-publica .crm-public-menu>summary:focus-visible{
- outline:2px solid #fdba74!important;outline-offset:2px
+ outline:2px solid #cda6e3!important;outline-offset:2px
 }
 
 /* FIX 2026-10-25: workspace mobile and member-directory visual cleanup.
