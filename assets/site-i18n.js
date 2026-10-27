@@ -247,7 +247,19 @@
 "Enviar recomendação":["Send recommendation","Enviar recomendación"],
 "BIBLIOTECA":["LIBRARY","BIBLIOTECA"],
 "FORMATO":["FORMAT","FORMATO"],
-"TEMA":["TOPIC","TEMA"]
+"TEMA":["TOPIC","TEMA"],
+"Áreas do meu perfil":["My profile sections","Secciones de mi perfil"],
+"Seu perfil freelancer":["Your freelancer profile","Tu perfil freelance"],
+"Gerencie a apresentação usada na vitrine de profissionais. Edições podem exigir aprovação da comunidade.":["Manage how you appear in the freelancer directory. Changes may require community approval.","Gestiona cómo apareces en el directorio freelance. Los cambios pueden requerir aprobación de la comunidad."],
+"Editar meu perfil freelancer":["Edit my freelancer profile","Editar mi perfil freelance"],
+"Solicitar edição do meu perfil":["Request a profile update","Solicitar una actualización de mi perfil"],
+"Cadastrar perfil freelancer":["Create freelancer profile","Registrar perfil freelance"],
+"Cadastrar meu perfil":["Create my profile","Crear mi perfil"],
+"Open to Work e currículo":["Open to Work and résumé","Open to Work y currículum"],
+"Atualize sua vitrine profissional e seu currículo privado para recomendações de vagas.":["Update your public professional listing and your private résumé for job recommendations.","Actualiza tu perfil profesional público y tu currículum privado para recibir recomendaciones de vacantes."],
+"Editar Open to Work":["Edit Open to Work","Editar Open to Work"],
+"Editar currículo do Match":["Edit Match résumé","Editar currículum de Match"],
+"Perfil geral":["General profile","Perfil general"]
  };
  const originals=new WeakMap();
  function read(){try{const v=localStorage.getItem(STORE);return OPTIONS.includes(v)?v:'pt-BR';}catch{return 'pt-BR';}}
@@ -353,7 +365,7 @@
    document.head.append(tag);
  }
  window.CXLanguage={getLocale:()=>locale,translate:(key)=>{const original=String(key);return locale==='pt-BR'?original:(labels[original]?.[locale==='en'?0:1]||original);},setLocale:(v)=>{if(OPTIONS.includes(v)){locale=v;try{localStorage.setItem(STORE,v);}catch{}sync();}},sync};
- function boot(){styles();sync();}
+ function boot(){styles();sync();window.dispatchEvent(new CustomEvent('cx:locale-ready',{detail:{locale}}));}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
  document.addEventListener('crm:route-changed',()=>requestAnimationFrame(sync));
  document.addEventListener('crm:admin-ready',()=>requestAnimationFrame(sync));
