@@ -58,6 +58,21 @@ async function run(){
       if(item.cards===0)item.notes.push('API cards not rendered in capture; no imaginary test records added');
      }
      if(route.path==='vagas'){
+      // Pull-request runs inspect production, which still serves the previous
+      // release. Enforce the new UI only after merge and deployment to main.
+      if(process.env.GITHUB_EVENT_NAME!=='pull_request'){
+       const title=page.locator('#pageVagas .crm-radar-header h2').first();
+       assert(await title.isVisible(),'Radar title must be visible, not hidden as duplicate');
+       assert(await page.locator('#crmPublicWorkspace .crm-public-pagebar').first().isHidden(),
+        'Redundant public breadcrumb must be removed');
+       const controls=page.locator('#cxRadarViewbar');
+       assert(await controls.isVisible(),'Real Cards/Lista navigation missing');
+       const listButton=controls.getByRole('button',{name:'Lista'});
+       await listButton.click();
+       assert(await page.locator('#vagasContainerHub').evaluate(el=>el.classList.contains('cx-radar-list-mode')),
+        'List view must change the existing live cards');
+       await controls.getByRole('button',{name:'Cards'}).click();
+      }
       item.cards=await page.locator('#vagasContainerHub>.crm-job-card').count();
       if(item.cards){
        const bg=await page.locator('#vagasContainerHub>.crm-job-card').first().evaluate(el=>getComputedStyle(el).backgroundColor);
