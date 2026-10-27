@@ -111,3 +111,76 @@
 @media(prefers-reduced-motion:reduce){
  :is(#view-logada,#crmPublicWorkspace) #pagePlataformas .pf-card{transition:none!important}
 }
+
+/* Comunidade / Grupos — cards com os links reais já cadastrados.
+   Não altera nomes, descrições nem permissões. */
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos{
+ min-width:0!important;max-width:100%!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-groups-intro{
+ margin:0 0 15px!important;padding:14px 0 16px!important;
+ border-bottom:1px solid #35445c!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-groups-intro h2{
+ margin:4px 0 8px!important;line-height:1.25!important;
+ font-size:clamp(21px,2.2vw,28px)!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-groups-intro p{
+ color:#b7c4d6!important;font-size:13px!important;line-height:1.55!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-section{
+ margin:17px 0 23px!important;min-width:0!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-section>header{
+ margin:0 0 12px!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-section>header h3{
+ margin:4px 0!important;font-size:17px!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-section>header p{
+ font-size:12px!important;color:#aebed3!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-list{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ align-items:stretch!important;gap:12px!important;min-width:0!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-row{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ justify-content:space-between!important;gap:12px!important;
+ min-width:0!important;margin:0!important;padding:17px!important;
+ border:1px solid #3c4b63!important;border-radius:12px!important;
+ background:#172235!important;box-shadow:none!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-row h4{
+ font-size:14px!important;line-height:1.4!important;margin:0 0 6px!important;
+ color:#f4f5fb!important;overflow-wrap:anywhere!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-row p{
+ margin:0!important;font-size:12px!important;line-height:1.55!important;
+ color:#b9c7d9!important;overflow-wrap:anywhere!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-links{
+ display:flex!important;flex-wrap:wrap!important;gap:8px!important;
+ margin-top:auto!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-links a{
+ display:inline-flex!important;justify-content:center!important;align-items:center!important;
+ min-height:39px!important;padding:8px 13px!important;
+ border:1px solid #795c9c!important;border-radius:9px!important;
+ background:#312842!important;color:#efdaf9!important;
+ text-decoration:none!important;font-size:12px!important;font-weight:650!important;
+ overflow-wrap:anywhere!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-links a:focus-visible{
+ outline:2px solid #d3a9ef!important;outline-offset:3px!important;
+}
+@media(max-width:820px){
+ :is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-list{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+}
+@media(max-width:520px){
+ :is(#view-logada,#crmPublicWorkspace) #comPanelGrupos .cx-group-row{
+  padding:14px!important;
+ }
+}
