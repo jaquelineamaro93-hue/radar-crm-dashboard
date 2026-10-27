@@ -1,7 +1,17 @@
 (function(){
 'use strict';
-const directory=document.getElementById('searchDirPanel'),dirTab=document.getElementById('searchTabDir');
-if(!directory||!dirTab)return;
+const directory=document.getElementById('searchDirPanel');
+if(!directory)return;
+// The public directory no longer ships the old subtab. Build local navigation
+// instead of silently disabling registration when that legacy element is absent.
+let dirTab=document.getElementById('searchTabDir');
+if(!dirTab){
+ const nav=document.createElement('nav');nav.className='search-tabs';nav.setAttribute('aria-label','Open to Work');
+ dirTab=document.createElement('button');dirTab.type='button';dirTab.id='searchTabDir';
+ dirTab.className='search-tab-btn active';dirTab.textContent='Profissionais';dirTab.setAttribute('aria-pressed','true');
+ nav.append(dirTab);directory.before(nav);
+}
+ dirTab.addEventListener('click',()=>{crmNavigate('search');selectRegistration(false);});
 const publicContacts=window.crmPublicContacts;
 if(typeof publicContacts==='function')window.crmPublicContacts=function(p){const html=publicContacts(p),email=String(p.email_contato||'').trim();if(!email||email.length>254||!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))return html;const link=document.createElement('a');link.className='p-btn';link.href='mailto:'+encodeURIComponent(email);link.textContent='E-mail';return html.replace('</div>',link.outerHTML+'</div>');};
 const css=document.createElement('link');css.rel='stylesheet';css.href='/assets/otw-registration.css?v=20261024-inline';document.head.append(css);
