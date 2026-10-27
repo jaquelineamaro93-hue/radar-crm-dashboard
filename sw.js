@@ -1,1 +1,3 @@
-importScripts("https://api.inngage.com.br/v1/webpush/js/sw.js");
+/* Web Push retired. No third-party SDK or push handlers. */
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',event=>event.waitUntil(self.registration.unregister()));
