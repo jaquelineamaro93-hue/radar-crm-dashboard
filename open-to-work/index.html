@@ -1359,6 +1359,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link id="cx-catalog-refinement-20261026" rel="stylesheet" href="/assets/catalog-refinement-20261026.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
+<link rel="stylesheet" href="/assets/freelancer-card-a-20261026.css?v=20261026-card-a1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -6484,7 +6485,30 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- return '<article class="pro-card" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
+ const name=escapeHtml(f.nome||'Profissional da comunidade');
+ const category=String(f.categoria||'').trim();
+ const bio=String(f.bio||'').trim();
+ const tags=category.split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
+ const more=category.split(',').map(x=>x.trim()).filter(Boolean).length-tags.length;
+ const rec=RECOMENDACOES[recKey('freelancer',f.nome)]||{sim:0};
+ const info=reviews.length?('<span class="cx-fc-rating">★ '+escapeHtml((reviews.reduce((sum,r)=>sum+Number(r.nota||0),0)/reviews.length).toFixed(1))+' <small>('+reviews.length+' avaliações)</small></span>'):'<span class="cx-fc-no-reviews">Novo na comunidade · sem avaliações</span>';
+ const contactLinks=crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'');
+ const fullBio=bio||'Este perfil ainda não tem uma apresentação profissional.';
+ return '<article class="pro-card cx-freelancer-card-a" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'">'+
+  '<div class="cx-fc-head"><div class="pro-avatar" aria-hidden="true">'+escapeHtml(initialsFor(f.nome||'Profissional'))+'</div><div class="cx-fc-identity"><h3>'+name+'</h3>'+(category?'<span class="cx-fc-role">'+escapeHtml(category)+'</span>':'')+'</div></div>'+
+  '<p class="cx-fc-bio">'+escapeHtml(fullBio)+'</p>'+
+  (tags.length?'<div class="cx-fc-tags" aria-label="Especialidades">'+tags.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+(more?'<span>+'+more+'</span>':'')+'</div>':'')+
+  '<div class="cx-fc-actions"><button type="button" class="cx-fc-primary" onclick="CXConnections.request('+index+')">Solicitar proposta</button><button type="button" class="cx-fc-secondary" onclick="crmToggleFreelancerDetails(this)" aria-expanded="false">Ver perfil</button></div>'+
+  '<div class="cx-fc-reputation">'+info+'<span class="cx-fc-recommendations">'+(Number(rec.sim)>0?Number(rec.sim)+' recomendações':'')+'</span></div>'+
+  '<div class="cx-fc-details" hidden><p class="cx-fc-detail-heading">Sobre</p><p class="cx-fc-fullbio">'+escapeHtml(fullBio)+'</p><div class="cx-fc-contact">'+contactLinks+'</div>'+(window.CXConnections?'<div class="cx-fc-claim"><button type="button" class="cx-claim-link" onclick="CXConnections.request('+index+',true)">Este perfil é meu</button></div>':'')+crmReviewSection('freelancer',f.nome,reviews)+'</div>'+
+ '</article>';
+}
+function crmToggleFreelancerDetails(button){
+ const card=button.closest('.cx-freelancer-card-a'),panel=card?.querySelector('.cx-fc-details');
+ if(!panel)return;
+ panel.hidden=!panel.hidden;
+ button.setAttribute('aria-expanded',String(!panel.hidden));
+ button.textContent=panel.hidden?'Ver perfil':'Ocultar detalhes';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
