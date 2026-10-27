@@ -9136,11 +9136,11 @@ function crmSyncAuth(){
  if(signed!==crmWasSignedIn){crmWasSignedIn=signed;
   if(signed){crmById('crmJoinDialog')?.close();for(const [id] of Object.values(crmRoutes)){const p=crmById(id),host=crmById('crmPages');if(p&&p.parentElement!==host)host.append(p);}crmSetLanding(false);
    // Keep the visitor on the requested page after session restoration.
-   // Only an explicitly requested private route should trigger navigation.
+   // Preserve private deep links and the Open to Work registration journey.
    const requested=crmPendingRoute;
    crmPendingRoute=null;
    const current=crmRouteFromLocation();
-   const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]&&!crmPublicRoutes.has(current)?current:'dashboard');
+   const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]&&(current==='search'||!crmPublicRoutes.has(current))?current:'dashboard');
    crmNavigate(destination,!!requested);}
   else{crmToggleMenu(false);crmNavigate('inicio');}
  }
@@ -10288,7 +10288,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
  #crmProfilePrompt{bottom:14px}
 }
 </style>
-<script src="/assets/otw-registration.js?v=20261027-public-registration1"></script>
+<script src="/assets/otw-registration.js?v=20261027-journey1"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261026-auto-match-columns1"></script>
 <script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261026-goals4"></script>
