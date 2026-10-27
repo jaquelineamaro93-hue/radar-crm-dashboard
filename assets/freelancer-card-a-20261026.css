@@ -1,0 +1,130 @@
+/* Freelancer Variante A — compact card with progressive disclosure.
+   Source-of-truth: only fields present in public freelancer records. */
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid,
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerChallengeResults .result-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:14px!important;align-items:start!important
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .cx-freelancer-card-a{
+ display:flex!important;flex-direction:column!important;
+ min-width:0!important;height:auto!important;min-height:0!important;
+ padding:17px!important;gap:11px!important;
+ border:1px solid #394a65!important;border-radius:13px!important;
+ background:#171f30!important;box-shadow:none!important;
+ color:#eef2fa!important
+}
+#pageFreelancers .cx-freelancer-card-a .cx-fc-head{
+ display:flex!important;align-items:center!important;gap:12px!important;
+ margin:0!important;padding:0!important;border:0!important;
+ min-width:0!important
+}
+#pageFreelancers .cx-freelancer-card-a .pro-avatar{
+ width:46px!important;height:46px!important;flex:0 0 46px!important;
+ display:grid!important;place-items:center!important;
+ margin:0!important;padding:0!important;
+ border-radius:12px!important;border:1px solid #5b507e!important;
+ background:#342b58!important;color:#eee3ff!important;
+ font-size:14px!important;font-weight:700!important
+}
+#pageFreelancers .cx-freelancer-card-a .cx-fc-identity{min-width:0!important;flex:1!important}
+#pageFreelancers .cx-freelancer-card-a .cx-fc-identity h3{
+ color:#f2f5fb!important;font-size:14px!important;line-height:1.35!important;
+ font-weight:700!important;margin:0 0 3px!important;overflow-wrap:anywhere!important
+}
+#pageFreelancers .cx-fc-role{
+ display:block!important;font-size:12px!important;color:#b5bfd1!important;
+ line-height:1.4!important;overflow-wrap:anywhere!important
+}
+#pageFreelancers .cx-freelancer-card-a .cx-fc-bio{
+ font-size:12px!important;line-height:1.55!important;color:#c2cde0!important;
+ margin:0!important;overflow:hidden!important;
+ display:-webkit-box!important;-webkit-box-orient:vertical!important;
+ -webkit-line-clamp:3!important;line-clamp:3!important;
+ min-height:0!important
+}
+#pageFreelancers .cx-fc-tags{display:flex!important;flex-wrap:wrap!important;gap:5px!important;min-height:0!important}
+#pageFreelancers .cx-fc-tags span{
+ font-size:10px!important;line-height:1.3!important;
+ background:#29223e!important;color:#dec8f0!important;
+ padding:4px 7px!important;border:1px solid #6e538d!important;
+ border-radius:6px!important;max-width:100%!important;overflow-wrap:anywhere!important
+}
+#pageFreelancers .cx-fc-actions{
+ display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr)!important;
+ gap:8px!important;margin:4px 0 0!important
+}
+#pageFreelancers .cx-fc-actions button{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ min-width:0!important;min-height:39px!important;padding:9px 7px!important;
+ font-family:inherit!important;font-size:12px!important;font-weight:650!important;
+ border-radius:9px!important;cursor:pointer!important;line-height:1.2!important
+}
+#pageFreelancers .cx-fc-primary{
+ background:#bd99ec!important;color:#1d1731!important;border:1px solid #bd99ec!important
+}
+#pageFreelancers .cx-fc-secondary{
+ background:transparent!important;color:#ecd8fb!important;border:1px solid #8c68ad!important
+}
+#pageFreelancers .cx-fc-actions button:hover{filter:brightness(1.08)!important}
+#pageFreelancers .cx-fc-reputation{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:6px!important;
+ border-top:1px solid #334158!important;
+ padding-top:10px!important;font-size:11px!important;color:#aebacf!important;
+ min-height:0!important;margin:0!important
+}
+#pageFreelancers .cx-fc-rating{color:#e9c57d!important;font-size:13px!important;font-weight:700!important}
+#pageFreelancers .cx-fc-rating small{font-size:11px!important;font-weight:400!important;color:#aebacf!important}
+#pageFreelancers .cx-fc-no-reviews{color:#adbacc!important}
+#pageFreelancers .cx-fc-recommendations:empty{display:none!important}
+#pageFreelancers .cx-fc-details[hidden]{display:none!important}
+#pageFreelancers .cx-fc-details{
+ display:flex!important;flex-direction:column!important;gap:11px!important;
+ border-top:1px solid #394a60!important;padding-top:13px!important
+}
+#pageFreelancers .cx-fc-detail-heading{
+ margin:0!important;font-size:11px!important;text-transform:uppercase!important;
+ font-weight:700!important;letter-spacing:.06em!important;color:#a9b7ce!important
+}
+#pageFreelancers .cx-fc-fullbio{
+ margin:0!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+ font-size:12px!important;line-height:1.65!important;color:#cad4e4!important
+}
+#pageFreelancers .cx-fc-contact{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+#pageFreelancers .cx-fc-contact .p-actions{
+ display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin:0!important
+}
+#pageFreelancers .cx-fc-contact :is(button,a),#pageFreelancers .cx-fc-claim button{
+ min-height:34px!important;padding:7px 10px!important;
+ font-size:11px!important;color:#dfc4f0!important;
+ border:1px solid #654e82!important;border-radius:8px!important;
+ background:transparent!important;text-decoration:none!important
+}
+#pageFreelancers .cx-fc-claim{padding:0!important;margin:0!important}
+#pageFreelancers .cx-fc-details .crm-review-box{
+ display:block!important;margin:0!important;padding:11px 0 0!important;
+ background:transparent!important;border:0!important;border-top:1px solid #354359!important;
+ min-width:0!important
+}
+#pageFreelancers .cx-fc-details .crm-review-box p{
+ margin:0 0 9px!important;font-size:11px!important;line-height:1.5!important
+}
+#pageFreelancers .cx-fc-details .crm-review-actions{display:flex!important;gap:7px!important;flex-wrap:wrap!important}
+#pageFreelancers .cx-fc-details .crm-review-actions button{
+ min-height:32px!important;padding:7px 10px!important;font-size:11px!important;border-radius:7px!important
+}
+#pageFreelancers .cx-fc-details .crm-review-box details{margin-top:9px!important}
+#pageFreelancers .cx-freelancer-card-a :is(button,a):focus-visible{
+ outline:2px solid #e0b8fb!important;outline-offset:2px!important
+}
+@media(max-width:1100px){
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid,
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerChallengeResults .result-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:720px){
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerResults .result-grid,
+ :is(#view-logada,#crmPublicWorkspace) #pageFreelancers #freelancerChallengeResults .result-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(max-width:360px){
+ #pageFreelancers .cx-fc-actions{grid-template-columns:1fr!important}
+}
