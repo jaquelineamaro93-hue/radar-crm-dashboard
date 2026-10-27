@@ -6,7 +6,7 @@ const html=read('index.html'),css=read('assets/profile-modal-unified-20261027.cs
 for(const route of ['404.html','freelancers/index.html','dashboard/index.html','open-to-work/index.html']){
  assert.equal(read(route),html,'SPA route must serve the same themed profile UI: '+route);
 }
-assert(html.includes('profile-modal-unified-20261027.css?v=20261027-modalall1'),'Modal stylesheet must load in document head with cache-bust');
+assert(html.includes('profile-modal-unified-20261027.css?v=20261027-modalall2'),'Modal stylesheet must load in document head with cache-bust');
 assert(html.indexOf('profile-modal-unified-20261027.css')<html.indexOf('</head>'),'Must style before modal first paint');
 assert(html.includes("dialog.className='crm-join-dialog crm-submission-dialog'"),'Verification dialog needs the new scoped visual class');
 assert(html.includes('<div class="crm-submission-actions">'),'Verification buttons need a compact action group');
