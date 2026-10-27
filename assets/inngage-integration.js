@@ -52,7 +52,6 @@ function fields(profile={},user={}){
     cadastro_incompleto:!complete,
     diretorio_visivel:profile.directory_visible!==false,
     recebe_novidades:profile.receive_community_updates===true,
-    ...(typeof window.crmPushPreferenceFields==='function'?window.crmPushPreferenceFields():{}),
     origem:'conexao_crm'
   });
 }
