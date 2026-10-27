@@ -14,10 +14,15 @@ assert.match(client,/vagas-salvas/,'saved jobs are answered with a real route');
 assert.match(client,/Boa para qual próximo passo/,'ambiguous jobs should ask for the role before searching');
 assert.match(client,/Por nada\. Até a próxima\./,'a natural closing does not invite another question');
 assert.match(client,/conversationalFallback\(question\)/,'backend unavailability gets a useful safe next step');
-assert.match(loader,/brasa-clean-20261026\.css\?v=20261026-dialogue2/);
-assert.match(loader,/crm-copilot\.js\?v=20261026-dialogue2/);
+assert.match(loader,/brasa-clean-20261026\.css\?v=20261027-conversation3/);
+assert.match(loader,/crm-copilot\.js\?v=20261027-conversation3/);
 assert.match(ui,/\.pro-card \.pro-avatar/,'freelancer avatar gets separate space');
 assert.match(ui,/object-fit:contain/,'real freelancer photographs and logos stay uncropped');
+assert.match(ui,/\.cx-copilot-panel:not\(\[hidden\]\)/,'chat is content-sized');
+assert.match(ui,/height:auto!important/,'chat does not reserve a fixed 640px window');
+assert.match(client,/Pergunta anterior:/,'previous user turn is included');
+assert.match(client,/lastAssistantReply/,'previous answer is available to resolve followups');
+assert.match(client,/cx-copilot-typing/,'typing indicator stays in conversation');
 for(let i=1;i<=18;i++)assert.match(BRASA_CONVERSATION_GUIDANCE,new RegExp('(?:^| )'+i+'\\. '),'missing conversation situation '+i);
 for(const topic of ['TRANSFORMAÇÃO DOS RESULTADOS EM CONVERSA','JSON','buscas vazias',
  'não abra cadastros','Não termine todas as respostas']){
@@ -43,8 +48,11 @@ assert(input[0].content.includes('18. Encerramento'));
 assert(input[0].content.includes('TRANSFORMAÇÃO DOS RESULTADOS EM CONVERSA'));
 assert.doesNotMatch(JSON.stringify(input),/CURRENT_PROFILE|full_name|service_role/);
 assert.equal(calls[1].body.store,false);
-const low=await answerBrasa('Meu currículo está muito básico',env,async(url)=>new Response(JSON.stringify({answers:{intent:{type:'choice',choice:'unclear',confidence:0.3}}})));
-assert.equal(low.method,'jev_clarify');
-assert.match(low.resposta,/currículo/);
+const low=await answerBrasa('Meu currículo está muito básico',env,async(url)=>{
+ if(url.includes('typesafe.ai'))return new Response(JSON.stringify({answers:{intent:{type:'choice',choice:'unclear',confidence:0.3}}}));
+ return new Response(JSON.stringify({choices:[{message:{content:'Podemos começar por um trecho sem dados pessoais.'}}]}));
+});
+assert.equal(low.method,'jev_then_llm');
+assert.match(low.resposta,/trecho sem dados pessoais/);
 assert.doesNotMatch(low.resposta,/dados do portal ou referências públicas/);
 console.log('PASS: 18 conversational scenarios, safe data boundaries, natural outputs, fallback and UI');
