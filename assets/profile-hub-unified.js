@@ -136,7 +136,7 @@ function renderOwn(){
   if(eligible&&!b){
    b=button('Editar meu perfil',openOwnFreelancer);
    b.classList.add('cx-freelancer-edit');
-   const footer=card.querySelector('.pro-footer')||card;footer.prepend(b);
+   const footer=card.querySelector('.crm-fl-more-menu')||card.querySelector('.crm-fl-list-buttons')||card.querySelector('.pro-footer')||card;footer.append(b);
   }
   if(!eligible&&b)b.remove();
  });
