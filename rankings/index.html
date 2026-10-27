@@ -4,7 +4,6 @@
 <meta name="description" content="Reconheça profissionais Open to Work, descubra membros que contribuem e empresas parceiras no Conexão CRM">
 <link rel="stylesheet" href="/rankings/style.css?v=3">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
-<script defer src="/avatar-studio/catalog.js?v=12"></script>
 <script defer src="/rankings/app.js?v=5"></script><link rel="stylesheet" href="/assets/cx-return-nav.css?v=20261027-focus1">
 <script src="/assets/cx-return-nav.js?v=3" defer></script>
 <script>if(new URLSearchParams(location.search).get('embedded')==='1')document.documentElement.classList.add('cx-xp-embedded-mode');</script>
@@ -12,8 +11,8 @@
 <script src="/assets/xp-embed.js?v=3" defer></script>
 <link rel="stylesheet" href="/assets/admin-module-rebrand.css?v=20261025-audit12"></head><body>
 <a class="skip" href="#rankMain">Ir para os rankings</a>
-<header class="top"><a class="logo" href="/meu-painel/"><span class="cube" aria-hidden="true">⬡</span><strong>CONEXÃO <em>CRM.</em></strong></a><nav aria-label="Navegação Conexão XP"><a href="/meu-painel/">Meu Painel</a><a href="/avatar-studio/">Meu Avatar</a><a class="active" href="/rankings/">Rankings</a></nav></header>
-<main id="rankMain"><div class="breadcrumbs"><a href="/meu-painel/">Meu Painel</a><span>/</span><a href="/avatar-studio/">Conexão XP</a><span>/</span><strong>Rankings</strong></div>
+<header class="top"><a class="logo" href="/meu-painel/"><span class="cube" aria-hidden="true">⬡</span><strong>CONEXÃO <em>CRM.</em></strong></a><nav aria-label="Navegação Conexão XP"><a href="/meu-painel/">Meu Painel</a><a class="active" href="/rankings/">Rankings</a></nav></header>
+<main id="rankMain"><div class="breadcrumbs"><a href="/meu-painel/">Meu Painel</a><span>/</span><a href="/meu-painel/">Comunidade</a><span>/</span><strong>Rankings</strong></div>
 <section class="hero"><div><span class="eyebrow">CONEXÃO XP / HALL DA COMUNIDADE</span><h1>Conexões que <em>fazem a diferença</em></h1><p>Conheça os profissionais reconhecidos, quem participa da comunidade e as empresas que realmente contribuem</p></div><div class="hero-figure"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v3h4v4c0 3-2 5-5 5h-1v4h4M6 20h12M10 16v4M8 7H4v4c0 3 2 5 5 5h1V4"/></svg></div></section>
 <div class="switches" aria-label="Escolher ranking" role="group"><button type="button" class="active" data-kind="profissionais">Profissionais recomendados</button><button type="button" data-kind="comunidade">Comunidade engajada</button><button type="button" data-kind="empresas">Empresas parceiras</button></div>
 <section class="ranking" aria-labelledby="rankingTitle"><div class="section-head"><div><span class="eyebrow">RECONHECIMENTO DE VERDADE</span><h2 id="rankingTitle">Profissionais recomendados</h2><p id="rankingSubtitle">Recomendações reais nas habilidades escolhidas pelos profissionais Open to Work</p></div><button type="button" id="refresh" class="subtle-btn">Atualizar</button></div><p id="status" role="status">Conectando à comunidade</p><div class="cx-sheet-bridge" aria-live="polite"><span id="cxSheetBridgeStatus">Consultando o diretório Open to Work</span><a href="/open-to-work">Explorar profissionais <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></a></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div></section>
