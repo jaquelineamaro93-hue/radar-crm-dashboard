@@ -12,6 +12,6 @@ assert(js.includes('Resposta anterior do Brasa:'),'previous answer included in f
 assert(js.includes("if(found.action==='salary'&&!directSalaryQuery)"),'ambiguous salary follow-up stays conversational');
 assert(js.includes('cx-copilot-typing'),'typing belongs inside the conversation');
 assert(!js.includes('localStorage')&&!js.includes('sessionStorage'),'no private local persistence');
-assert(loader.includes('crm-copilot.js?v=20261027-conversation3'),'new code version loaded');
+assert(loader.includes('crm-copilot.js?v=20261027-retry4'),'new code version loaded');
 assert(loader.includes('brasa-clean-20261026.css?v=20261027-conversation3'),'new CSS loaded');
 console.log('PASS: Brasa compact conversation and contextual followups');
