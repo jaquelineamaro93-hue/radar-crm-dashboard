@@ -1,6 +1,8 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync('index.html','utf8');
 const hardening=fs.readFileSync('assets/portal-hardening.js','utf8');
+assert.doesNotMatch(source,/function crmFilterModality\(/,'no second text-of-badge filter may hide valid server results');
+assert(source.includes("crmById('filtro-modalidade').addEventListener('change',crmSearchJobs)"));
 assert.doesNotMatch(hardening,/window\.aplicarFiltrosVagas\s*=/,'the runtime must not replace the complete Radar query with a partial cache filter');
 const elements=Object.fromEntries(['filtro-categoria','filtro-modalidade','filtro-abrangencia','filtro-cargo-hub','filtro-empresa-hub','filtro-nivel-hub','filtro-plataforma-hub','filtro-estado','filtro-municipio','filtro-ordem-hub','totalVagasHub','vagasCountHub'].map(id=>[id,{value:'',textContent:''}]));
 const container={innerHTML:'OLD ANALYST RESULT',querySelector:()=>({})};elements.vagasContainerHub=container;
@@ -8,6 +10,7 @@ let rows=[],error=null,rendered=[],calls=[];
 const query={then(resolve){return Promise.resolve({data:rows,error}).then(resolve)}};for(const name of ['select','neq','gte','in','or','eq','ilike','order','limit'])query[name]=(...args)=>{calls.push([name,...args]);return query};
 const ctx={document:{getElementById:id=>elements[id]},console:{error(){}},crmVagasRenderSeq:0,initVagasSupabase(){},sanitizeInputVagas:x=>x,vagasSb:{from:()=>query},crmRadarPublicationCutoff:()=>null,crmJobMatchesLocation:()=>true,escapeHtml:x=>x,renderizarVagasHub:r=>{rendered=r;container.innerHTML=r.map(x=>x.title).join('|')},crmLoadClosedJobs(){}};vm.createContext(ctx);
 vm.runInContext(source.slice(source.indexOf('function crmRadarNormalized('),source.indexOf('function crmRadarPublishedMillis(')),ctx);
+vm.runInContext(source.slice(source.indexOf('function obterModalidade(vaga)'),source.indexOf('function obterEmpresa(vaga)')),ctx);
 vm.runInContext(source.slice(source.indexOf('async function aplicarFiltrosVagas()'),source.indexOf('function limparFiltrosVagas()')),ctx);
 (async()=>{
  rows=[{title:'Analista CRM Sênior',abrangencia:'Nacional'},{title:'Chief Marketing Officer',abrangencia:'Nacional'},{title:'CTO',abrangencia:'Internacional'},{title:'Account Director',abrangencia:'Internacional'},{title:'Diretora de CRM',abrangencia:'Nacional'},{title:'Assistant to CEO',abrangencia:'Nacional'}];
@@ -22,5 +25,7 @@ vm.runInContext(source.slice(source.indexOf('async function aplicarFiltrosVagas(
  elements['filtro-nivel-hub'].value='C-Level';rows=[];await ctx.aplicarFiltrosVagas();assert(container.innerHTML.includes('Nenhuma vaga'));assert(!container.innerHTML.includes('Analista'));
  container.innerHTML='OLD ANALYST RESULT';error={message:'Network error'};await ctx.aplicarFiltrosVagas();assert(container.innerHTML.includes('Erro ao buscar vagas'));assert(!container.innerHTML.includes('OLD ANALYST'));
  for(const [title,level,expected] of [['Analista Sênior','Sênior',true],['Analista Junior','Júnior',true],['Diretor de Marketing','Diretoria',true],['Chief Information Security Officer','C-Level',true],['Analista CRM','C-Level',false],['Executive Assistant to CEO','C-Level',false],['Senior CRO, Affiliate Marketing','C-Level',false]])assert.equal(ctx.crmRadarLevelMatches({title},level),expected,title);
+ for(const mode of ['Remoto','Híbrido','Presencial']){assert.equal(ctx.obterModalidade({modalidade_normalizada:mode}).badge,mode);calls=[];elements['filtro-modalidade'].value=mode;error=null;rows=[];await ctx.aplicarFiltrosVagas();assert(calls.some(c=>c[0]==='eq'&&c[1]==='modalidade_normalizada'&&c[2]===mode));}
+ assert.equal(ctx.obterModalidade({location:'São Paulo',description:'benefício home office; reunião presencial'}),null);
  console.log('PASS Radar: real search function, national/director/C-level intersection, accented leadership, empty/error replaces old cards, correct count, no analyst leakage');
 })().catch(e=>{console.error(e);process.exitCode=1});
