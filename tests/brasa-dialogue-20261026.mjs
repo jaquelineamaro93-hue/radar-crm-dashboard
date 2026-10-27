@@ -14,8 +14,8 @@ assert.match(client,/vagas-salvas/,'saved jobs are answered with a real route');
 assert.match(client,/Boa para qual próximo passo/,'ambiguous jobs should ask for the role before searching');
 assert.match(client,/Por nada\. Até a próxima\./,'a natural closing does not invite another question');
 assert.match(client,/conversationalFallback\(question\)/,'backend unavailability gets a useful safe next step');
-assert.match(loader,/brasa-clean-20261026\.css\?v=20261027-conversation3/);
-assert.match(loader,/crm-copilot\.js\?v=20261027-retry4/);
+assert.match(loader,/brasa-clean-20261026\.css\?v=20261027-name-focus1/);
+assert.match(loader,/crm-copilot\.js\?v=20261027-name-focus1/);
 assert.match(ui,/\.pro-card \.pro-avatar/,'freelancer avatar gets separate space');
 assert.match(ui,/object-fit:contain/,'real freelancer photographs and logos stay uncropped');
 assert.match(ui,/\.cx-copilot-panel:not\(\[hidden\]\)/,'chat is content-sized');
@@ -56,3 +56,22 @@ assert.equal(low.method,'jev_then_llm');
 assert.match(low.resposta,/trecho sem dados pessoais/);
 assert.doesNotMatch(low.resposta,/dados do portal ou referências públicas/);
 console.log('PASS: 18 conversational scenarios, safe data boundaries, natural outputs, fallback and UI');
+
+// Greeting uses only the current session first name and never trusts markup.
+const intro=client.slice(client.indexOf('function showIntro(){'),client.indexOf('function currentProfileStatus(){'));
+for(const [name,locale,expected] of [
+ ['Jaqueline Amaro','pt-BR','Oi, Jaqueline. Em que posso ajudar hoje?'],
+ ['Ana María','es-419','Hola, Ana. ¿En qué puedo ayudarte hoy?'],
+ ['João Silva','en','Hi, João. How can I help today?'],
+ ['', 'pt-BR','Oi. Em que posso ajudar hoje?'],
+ ['<img src=x>', 'pt-BR','Oi. Em que posso ajudar hoje?']
+]){
+ const history={children:[],lastElementChild:{dataset:{}}};let actual='';
+ vm.runInNewContext(intro+';showIntro();',{
+  history,getUser:()=>({user_metadata:{full_name:name}}),
+  window:{CXLanguage:{getLocale:()=>locale}},
+  addMessage:(role,text)=>{actual=text;}
+ });
+ assert.equal(actual,expected);
+}
+console.log('PASS: local first-name greeting in three languages, missing name and markup rejection');

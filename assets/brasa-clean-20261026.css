@@ -86,7 +86,8 @@
 }
 #cxCopilot .cx-copilot-form textarea::placeholder{color:#9facc0!important}
 #cxCopilot .cx-copilot-form textarea:focus-visible{
- outline:2px solid var(--brasa-accent)!important;outline-offset:1px!important;
+ outline:1px solid var(--brasa-accent)!important;outline-offset:-1px!important;
+ box-shadow:none!important;
  border-color:var(--brasa-accent)!important
 }
 #cxCopilot .cx-copilot-bottom{margin-top:7px!important}

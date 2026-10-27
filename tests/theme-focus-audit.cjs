@@ -12,7 +12,7 @@ for(const marker of [
  'input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #cda6e3',
  '#crmPublicWorkspace .search-input:focus-visible',
  'outline:2px solid #cda6e3;outline-offset:3px',
- 'google-login.js?v=20261027-focus-audit1',
+ 'google-login.js?v=20261027-name-focus1',
  'soft-ui-20261014.css?v=20261027-focus-audit1',
  'unified-directory-shell-20261026.css?v=20261027-focus-audit1',
  'share-everything.css?v=20261027-focus-audit1',
@@ -39,15 +39,15 @@ for(const p of ['index.html',...files]){
 }
 for(const [p,marker] of [
  ['assets/open-to-work-excerpts.css','outline:2px solid #cda6e3'],
- ['assets/crm-copilot.css','outline:3px solid #cda6e3!important'],
+ ['assets/crm-copilot.css','outline:1px solid #cda6e3!important'],
  ['assets/otw-registration.css','outline:2px solid #cda6e3'],
  ['assets/cx-return-nav.css','outline:2px solid #cda6e3'],
  ['assets/share-everything.css','outline:2px solid #cda6e3'],
  ['assets/soft-ui-20261014.css','outline:2px solid #cda6e3!important']
 ])assert(read(p).includes(marker),'missing lilac focus: '+p);
 assert(read('assets/crm-runtime-integrations.js').includes('open-to-work-excerpts.css?v=20261027-purplefocus1'));
-assert(read('assets/crm-runtime-integrations.js').includes('crm-copilot.css?v=20261027-focus-audit1'));
-assert(read('assets/google-login.js').includes('crm-runtime-integrations.js?v=20261027-focus-audit1'));
+assert(read('assets/crm-runtime-integrations.js').includes('crm-copilot.css?v=20261027-name-focus1'));
+assert(read('assets/google-login.js').includes('crm-runtime-integrations.js?v=20261027-name-focus1'));
 for(const p of ['rankings/index.html','avatar-studio/index.html','quem-faz/index.html'])assert(read(p).includes('cx-return-nav.css?v=20261027-focus1'));
 assert(!index.includes('google-login.js?v=20261026-feedback1'),'stale login script cache');
 console.log('PASS: '+(files.length+1)+' stylesheets/shell files scanned, '+rules+' focus rules checked, 33 routes synchronized, nested assets versioned');

@@ -92,11 +92,15 @@ function addMessage(type,message,action,sources=[],options={}){
 }
 function showIntro(){
   if(!history)return;
-  // Deliberately do not read any member profile fields, even for greetings.
+  // Display only the first name already in this session. Never send it to AI.
+  const metadata=getUser()?.user_metadata||{};
+  const rawName=String(metadata.full_name||metadata.name||metadata.nome||'').trim().split(/\s+/)[0];
+  const firstName=/^[\p{L}][\p{L}\p{M}’'-]{0,39}$/u.test(rawName)?rawName:'';
+  const hello=firstName?', '+firstName:'';
   const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
-  const greeting=locale==='en'?'Hi. How can I help today?'
-    :locale==='es-419'?'Hola. ¿En qué puedo ayudarte hoy?'
-    :'Oi. Em que posso ajudar hoje?';
+  const greeting=locale==='en'?`Hi${hello}. How can I help today?`
+    :locale==='es-419'?`Hola${hello}. ¿En qué puedo ayudarte hoy?`
+    :`Oi${hello}. Em que posso ajudar hoje?`;
   const previous=history.firstElementChild;
   if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
     const content=previous.querySelector('p');if(content)content.textContent=greeting;

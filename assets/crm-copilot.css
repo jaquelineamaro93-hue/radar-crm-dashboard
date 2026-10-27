@@ -69,7 +69,7 @@
 #view-logada [role="tab"][aria-selected="true"]{background:#7c2d12!important;color:#fff!important;border-color:#fdba74!important}
 #view-logada .crm-nav-items .tab-btn:is(.active,[aria-current="page"]) *,
 #view-logada .search-tab-btn.active *,#view-logada .cx-tabs button.active *{color:inherit!important}
-#view-logada :is(button,a,[role="tab"],input,textarea,select):focus-visible{outline:3px solid #cda6e3!important;outline-offset:3px!important;box-shadow:0 0 0 5px #211b18!important}
+#view-logada :is(button,a,[role="tab"],input,textarea,select):focus-visible{outline:1px solid #cda6e3!important;outline-offset:-1px!important;box-shadow:none!important}
 @media(prefers-reduced-motion:reduce){#cxCopilot *,#view-logada .crm-sidebar{animation:none!important;transition:none!important}}
 
 /* Readable conversation with an optional expanded viewport. */
