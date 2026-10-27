@@ -371,7 +371,7 @@ html.crm-compact-device #view-logada #subpage-vagas-salvas .cx-saved-rec-actions
 }
 #view-logada #subpage-vagas-salvas #membroVagasSalvas .crm-saved-remove{
  appearance:none;background:transparent;border:1px solid #536079;
- border-radius:8px;color:#d4bddf;font:600 12px/1.3 inherit;
+ border-radius:8px;color:#d4bddf;font-size:12px;font-weight:600;line-height:1.3;font-family:inherit;
  min-height:38px;padding:8px 12px;cursor:pointer;max-width:100%;
 }
 #view-logada #subpage-vagas-salvas #membroVagasSalvas .crm-saved-remove:hover{
