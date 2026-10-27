@@ -34,7 +34,7 @@ assert(help.includes('showReleaseNotice'), 'one-time news notice uses authentica
 assert(r('assets/first-access-interests.js').includes('retryOffer'), 'new account interest prompt retries after profile dialog');
 assert(!js.includes('crm_brasa_message_feedback'));
 new vm.Script(feedback,{filename:'assets/brasa-feedback.js'});
-assert(r('index.html').includes('google-login.js?v=20261026-feedback1'));
+assert(r('index.html').includes('google-login.js?v=20261027-focus-audit1'));
 const email=r('docs/inngage-templates/announcement-help-brasa-20261026.html');
 assert(email.includes('Editar perfil'));
 assert(email.includes('Essa decisão é sua'));
