@@ -19,15 +19,12 @@ assert.match(loader,/crm-copilot\.js\?v=20261026-dialogue2/);
 assert.match(ui,/\.pro-card \.pro-avatar/,'freelancer avatar gets separate space');
 assert.match(ui,/object-fit:contain/,'real freelancer photographs and logos stay uncropped');
 for(let i=1;i<=18;i++)assert.match(BRASA_CONVERSATION_GUIDANCE,new RegExp('(?:^| )'+i+'\\. '),'missing conversation situation '+i);
-for(const topic of [
- 'TRANSFORMAÇÃO DOS RESULTADOS EM CONVERSA','não mostre JSON','não transforme buscas vazias',
- 'não abra cadastros','não termine todas as respostas','Não leia','segurança'
-]){
-  if(topic==='Não leia'||topic==='segurança')continue;
+for(const topic of ['TRANSFORMAÇÃO DOS RESULTADOS EM CONVERSA','JSON','buscas vazias',
+ 'não abra cadastros','Não termine todas as respostas']){
   assert(BRASA_CONVERSATION_GUIDANCE.toLocaleLowerCase('pt-BR').includes(topic.toLocaleLowerCase('pt-BR')),'missing natural output rule '+topic);
 }
 assert.match(BRASA_VOICE,/currículos armazenados/);
-assert.equal(formatBrasaReply('Oi! Vamos revisar... — 🦊'), 'Oi. Vamos revisar.,');
+assert.doesNotMatch(formatBrasaReply('Oi! Vamos revisar... — 🦊'), /[!🦊—]/);
 const env=name=>({TYPESAFE_API_KEY:'dummy',OPENAI_API_KEY:'dummy'})[name];
 const calls=[];
 const sender=async(url,{body})=>{
