@@ -1359,6 +1359,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link id="cx-catalog-refinement-20261026" rel="stylesheet" href="/assets/catalog-refinement-20261026.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
+<link rel="stylesheet" href="/assets/freelancer-card-a-20261027.css?v=20261027-a1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -3395,6 +3396,7 @@ crmShowSurveyReminder();
         <option value="Estratégia">Estratégia</option>
         <option value="Implementação">Implementação</option>
       </select>
+      <div id="flExtraFields" class="cx-extra-fields"></div>
       <label class="ev-ilabel" for="fl_bio">Sobre você (o que você faz, ferramentas, experiência)</label>
       <textarea id="fl_bio" class="ev-ifield" rows="3" placeholder="Ex: Especialista em copy para automações de CRM, 4 anos de experiência com RD Station e HubSpot." maxlength="400" style="margin-bottom:12px;resize:none;"></textarea>
       <label class="ev-ilabel" for="fl_portfolio">Link do portfólio ou site (opcional)</label>
@@ -6056,6 +6058,8 @@ function crmSelectFreelancerView(view){
 function initFreelancersTab(){
   freelancersInitialized = true;
   flInitSB();
+  const extra=document.getElementById('flExtraFields');
+  if(extra&&!extra.dataset.ready){extra.innerHTML=crmFreelancerExtraFields('fl');extra.dataset.ready='true';}
   loadFreelancers();
   flSubRT();
 
@@ -6081,7 +6085,7 @@ function initFreelancersTab(){
 }
 function closeFreelancerModal(){ 
   document.getElementById('freelancerModal').classList.remove('open');
-  ['fl_nome','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo','fl_nome_load'].forEach(id=>{
+  ['fl_nome','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo','fl_nome_load',...['titulo','ferramentas','anos_experiencia','localidade','idiomas','modalidade','disponibilidade','valor_hora','foto_file'].map(x=>'fl_'+x)].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value='';
   });
@@ -6149,6 +6153,7 @@ async function submitFreelancer(){
     linkedin: document.getElementById('fl_linkedin').value.trim(),
     contato: document.getElementById('fl_contato').value.trim(),
     aprovado: false,
+    ...crmFreelancerReadExtras('fl'),
   };
 
   const conteudo = document.getElementById('fl_conteudo').value.trim();
@@ -6157,6 +6162,8 @@ async function submitFreelancer(){
   btn.disabled = true; btn.textContent = 'Enviando...';
 
   try{
+    const photo=await crmFreelancerUploadPhoto('fl');
+    if(photo)perfil.foto_url=photo;
     const {error} = await crmSecureInsert('freelancers_sugeridos',perfil);
     if(error) throw error;
     if(conteudo) evToastMsg('Envie o artigo separadamente em Conteúdos, após concluir este cadastro.','');
@@ -6350,6 +6357,7 @@ function flSubRT(){
 // ============ EDITAR PERFIL DE FREELANCER ============
 function openFreelancerEditModal(id, nome){
  if(!crmSubmissionGate())return;
+  const existing=FREELANCERS.find(p=>String(p.id)===String(id))||{};
   const html = `
     <div class="ev-modal-overlay" id="flEditOverlay" role="dialog" aria-modal="true" style="display:flex;">
       <div class="ev-modal-box" style="max-width:500px;">
@@ -6373,8 +6381,7 @@ function openFreelancerEditModal(id, nome){
         <input id="flEditPortfolio" class="ev-ifield" type="url" placeholder="https://..." style="margin-bottom:10px;">
         <label class="ev-ilabel">WhatsApp/contato</label>
         <input id="flEditContato" class="ev-ifield" type="text" placeholder="11999999999" style="margin-bottom:10px;">
-        <label class="ev-ilabel">Valor por hora (opcional)</label>
-        <input id="flEditValorHora" class="ev-ifield" type="text" placeholder="Ex: R$ 150/hora" style="margin-bottom:16px;">
+        ${crmFreelancerExtraFields('flEdit',existing)}
         <div style="display:flex;gap:10px;">
           <button class="ev-modal-btn-cancel" onclick="document.getElementById('flEditOverlay').remove()" style="flex:1;">Cancelar</button>
           <button class="ev-modal-btn-save" onclick="submitFreelancerEdit('${id}')" style="flex:1;">Salvar alterações</button>
@@ -6384,7 +6391,7 @@ function openFreelancerEditModal(id, nome){
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
   if(flSb){
-    flSb.from('freelancers_sugeridos').select('bio,linkedin,portfolio,contato,categoria').eq('id', id).maybeSingle().then(({data})=>{
+    flSb.from('freelancers_sugeridos').select('bio,linkedin,portfolio,contato,categoria,titulo,ferramentas,anos_experiencia,localidade,idiomas,modalidade,disponibilidade,valor_hora').eq('id', id).maybeSingle().then(({data})=>{
       if(data){
         if(data.categoria){
           const cats = data.categoria.split(',').map(s=>s.trim());
@@ -6394,7 +6401,10 @@ function openFreelancerEditModal(id, nome){
         if(data.linkedin) document.getElementById('flEditLinkedin').value = data.linkedin;
         if(data.portfolio) document.getElementById('flEditPortfolio').value = data.portfolio;
         if(data.contato) document.getElementById('flEditContato').value = data.contato;
-        if(data.valor_hora) document.getElementById('flEditValorHora').value = data.valor_hora;
+        for(const key of ['titulo','ferramentas','anos_experiencia','localidade','idiomas','modalidade','disponibilidade','valor_hora']){
+          const input=document.getElementById('flEdit_'+key);
+          if(input)input.value=data[key]??'';
+        }
       }
     });
   }
@@ -6410,16 +6420,19 @@ async function submitFreelancerEdit(id){
   const linkedin = (document.getElementById('flEditLinkedin').value||'').trim();
   const portfolio = (document.getElementById('flEditPortfolio').value||'').trim();
   const contato = (document.getElementById('flEditContato').value||'').trim();
-  const valorHora = (document.getElementById('flEditValorHora').value||'').trim();
+  const extras=crmFreelancerReadExtras('flEdit');
   if(categoria) payload.categoria = categoria;
   if(bio) payload.bio = bio;
   if(linkedin) payload.linkedin = linkedin;
   if(portfolio) payload.portfolio = portfolio;
   if(contato) payload.contato = contato;
+  Object.assign(payload,extras);
 
   if(Object.keys(payload).length===0){ statusEl.style.color='red'; statusEl.textContent='Preencha ao menos um campo.'; return; }
   try{
     if(!flSb) throw new Error('Conexão indisponível');
+    const photo=await crmFreelancerUploadPhoto('flEdit');
+    if(photo)payload.foto_url=photo;
     const {error} = await crmSecureInsert('freelancers_edicoes',{target_id:Number(id),nome_freelancer:(FREELANCERS.find(f=>String(f.id)===String(id))?.nome||'Perfil #'+id),descricao_alteracao:JSON.stringify(payload)});
     if(error) throw error;
     document.getElementById('flEditOverlay').remove();
@@ -9614,6 +9627,7 @@ async function crmSubmitReviewForm(event){
 </script>
 <script src="/assets/google-login.js?v=20261026-feedback1"></script>
 <script src="/assets/workspace.js?v=20261025-audit14"></script>
+<script src="/assets/freelancer-fields-20261027.js?v=20261027-a1"></script>
 <script src="/assets/connections.js?v=20261003-1"></script>
 <script src="/assets/talent-links.js?v=20260923-2"></script>
 <script>
