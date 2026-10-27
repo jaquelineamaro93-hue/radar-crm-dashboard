@@ -40,7 +40,7 @@ const routes=[
 ];
 assert.equal(fs.readFileSync('404.html','utf8'),shell,'404 fallback must equal the main portal');
 for(const route of routes)assert.equal(fs.readFileSync(route,'utf8'),shell,'Outdated SPA page: '+route);
-assert(shell.includes('const destination=requested||(current&&current!==\'inicio\'&&crmRoutes[current]&&!crmPublicRoutes.has(current)?current:\'dashboard\')'),'Default login is Visão Geral while preserving private deep links');
+assert(shell.includes('const destination=requested||(current&&current!==\'inicio\'&&crmRoutes[current]&&(current===\'search\'||!crmPublicRoutes.has(current))?current:\'dashboard\')'),'Default login is Visão Geral while preserving private deep links and the Open to Work journey');
 assert(shell.includes("if(route==='inicio'&&crmSignedIn())route='dashboard'"),'Signed-in Home opens dashboard');
 assert(shell.includes('>Atualizar o Match</button>'),'Saved jobs must offer refresh not initial search');
 assert(shell.includes('saved-jobs-figma.js?v=20261026-auto-match-columns1'));
