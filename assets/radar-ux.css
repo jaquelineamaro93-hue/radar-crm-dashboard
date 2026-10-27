@@ -208,3 +208,20 @@
 @media(prefers-reduced-motion:reduce){
   #pageVagas #vagasContainerHub>.crm-job-card{transition:none!important}
 }
+
+/* Ações reais do Radar: neutralizar botões legados isolados e o CSS inline.
+   Não afeta o hero animado da LP, filtros, estado ou handlers. */
+:is(#view-logada,#crmPublicWorkspace) #pageVagas .crm-add-community-job,
+:is(#view-logada,#crmPublicWorkspace) #pageVagas #btn-buscar{
+ background:#cda5ed!important;color:#211630!important;
+ border:1px solid #cda5ed!important;
+ border-radius:9px!important;box-shadow:none!important;
+ font-weight:700!important;min-height:40px!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageVagas .crm-add-community-job:hover,
+:is(#view-logada,#crmPublicWorkspace) #pageVagas #btn-buscar:hover{
+ background:#e1c0f5!important;border-color:#e1c0f5!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageVagas :is(.crm-add-community-job,#btn-buscar):focus-visible{
+ outline:2px solid #f2ddff!important;outline-offset:3px!important;
+}
