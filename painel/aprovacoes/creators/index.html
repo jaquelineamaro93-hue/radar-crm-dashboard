@@ -1361,7 +1361,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
 <link rel="stylesheet" href="/assets/freelancer-card-a-20261026.css?v=20261027-selected-a2">
 <link id="cx-structural-release" rel="stylesheet" href="/assets/figma-structure-release-20261027.css?v=20261027-struct1">
-<link rel="stylesheet" id="cx-freelancer-ux-repair" href="/assets/freelancer-ux-repair-20261027.css?v=20261027-owner1">
+<link rel="stylesheet" id="cx-freelancer-ux-repair" href="/assets/freelancer-ux-repair-20261027.css?v=20261027-compact-rate2">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -6324,7 +6324,7 @@ function openFreelancerEditModal(id, nome){
         <label class="ev-ilabel">WhatsApp/contato</label>
         <input id="flEditContato" class="ev-ifield" type="text" placeholder="11999999999" style="margin-bottom:10px;">
         <label class="ev-ilabel">Valor por hora (opcional)</label>
-        <input id="flEditValorHora" class="ev-ifield" type="text" placeholder="Ex: R$ 150/hora" style="margin-bottom:16px;">
+        <input id="flEditValorHora" class="ev-ifield" type="number" min="0" max="999999.99" step="0.01" inputmode="decimal" placeholder="Ex.: 150,00" style="margin-bottom:16px;">
         <div style="display:flex;gap:10px;">
           <button class="ev-modal-btn-cancel" onclick="document.getElementById('flEditOverlay').remove()" style="flex:1;">Cancelar</button>
           <button class="ev-modal-btn-save" onclick="submitFreelancerEdit('${id}')" style="flex:1;">Salvar alterações</button>
@@ -6344,7 +6344,7 @@ function openFreelancerEditModal(id, nome){
         if(data.linkedin) document.getElementById('flEditLinkedin').value = data.linkedin;
         if(data.portfolio) document.getElementById('flEditPortfolio').value = data.portfolio;
         if(data.contato) document.getElementById('flEditContato').value = data.contato;
-        if(data.valor_hora) document.getElementById('flEditValorHora').value = data.valor_hora;
+        if(data.valor_hora!=null) document.getElementById('flEditValorHora').value = data.valor_hora;
       }
     });
   }
@@ -6366,6 +6366,16 @@ async function submitFreelancerEdit(id){
   if(linkedin) payload.linkedin = linkedin;
   if(portfolio) payload.portfolio = portfolio;
   if(contato) payload.contato = contato;
+  if(valorHora!==''){
+    const rate=Number(valorHora.replace(',','.'));
+    if(!Number.isFinite(rate)||rate<0||rate>999999.99){
+      statusEl.style.color='#f4a6a6';
+      statusEl.textContent='Informe um valor por hora válido, como 150,00.';
+      document.getElementById('flEditValorHora').focus();
+      return;
+    }
+    payload.valor_hora=Math.round(rate*100)/100;
+  }
 
   if(Object.keys(payload).length===0){ statusEl.style.color='red'; statusEl.textContent='Preencha ao menos um campo.'; return; }
   try{
@@ -6455,14 +6465,16 @@ function freelancerCardHtml(f){
    Number.isInteger(years)&&years>0?years+' '+(years===1?'ano':'anos')+' de experiência':'',
    String(f.localidade||'').trim(),
    String(f.idiomas||'').trim(),
-   String(f.modalidade||'').trim(),
-   Number.isFinite(hourly)&&hourly>0?hourly.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})+'/h':''
+   String(f.modalidade||'').trim()
  ].filter(Boolean);
  const availability=String(f.disponibilidade||'').trim();
  const isAvailable=/^(dispon[ií]vel|dispon[ií]vel agora|sim|imediata|disponibilidade imediata)$/i.test(availability);
- const meta=metadata.length||availability?
+ const rateLabel=Number.isFinite(hourly)&&hourly>0?
+    hourly.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})+'/h':'';
+ const meta=metadata.length||availability||rateLabel?
    '<div class="cx-fc-meta">'+metadata.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+
-   (availability?'<span class="'+(isAvailable?'cx-fc-available':'')+'">'+(isAvailable?'● ':'')+escapeHtml(availability)+'</span>':'')+'</div>':'';
+   (availability?'<span class="'+(isAvailable?'cx-fc-available':'')+'">'+(isAvailable?'● ':'')+escapeHtml(availability)+'</span>':'')+
+   (rateLabel?'<span class="cx-fc-rate" aria-label="Valor por hora">'+escapeHtml(rateLabel)+'</span>':'')+'</div>':'';
  const contacts=[
    f.linkedin?'<button type="button" class="cx-fc-contact-link" data-crm-contact="freelancers" data-index="'+index+'" data-channel="linkedin">LinkedIn</button>':'',
    (f.contato||f.whatsapp)?'<button type="button" class="cx-fc-contact-link" data-crm-contact="freelancers" data-index="'+index+'" data-channel="whatsapp">WhatsApp</button>':'',
