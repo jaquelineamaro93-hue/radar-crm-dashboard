@@ -184,3 +184,19 @@
   padding:14px!important;
  }
 }
+
+/* CTA do curso: manter o diálogo e os dados originais; harmonizar só a cor.
+   Os botões de sugerir evento permanecem no seu escopo independente. */
+:is(#view-logada,#crmPublicWorkspace) #pageCourses #btnGoToCourseForm{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:40px!important;padding:9px 15px!important;
+ background:#312842!important;color:#efdaf9!important;
+ border:1px solid #795c9c!important;border-radius:9px!important;
+ box-shadow:none!important;font-size:12px!important;font-weight:650!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageCourses #btnGoToCourseForm:hover{
+ background:#443055!important;border-color:#9b75b7!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageCourses #btnGoToCourseForm:focus-visible{
+ outline:2px solid #d9b2f3!important;outline-offset:3px!important;
+}
