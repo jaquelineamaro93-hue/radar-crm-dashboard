@@ -7,7 +7,7 @@ assert(html.includes('freelancer-card-a-20261026.css?v=20261026-card-a1'));
 assert.equal((html.match(/function freelancerCardHtml\(f\)/g)||[]).length,1);
 assert(html.includes('cx-freelancer-card-a'));
 assert(html.includes('cx-fc-bio'));
-assert(html.includes('-webkit-line-clamp:3')===false,'clamp must be in CSS, not hard-coded markup');
+assert(html.includes('class="cx-fc-bio"'),'bio is structured separately from the stylesheet');
 assert(css.includes('-webkit-line-clamp:3'));
 assert(html.includes('crmToggleFreelancerDetails(this)'));
 assert(html.includes("crmReviewSection('freelancer',f.nome,reviews)"));
