@@ -56,6 +56,32 @@ async function run(){
       const loaded=await page.locator('link[href*="freelancer-card-a-20261026.css"]').count();
       assert(loaded>0,'published Freelancer A stylesheet missing');
       if(process.env.GITHUB_EVENT_NAME!=='pull_request'&&item.cards>0){
+       assert.equal(await page.locator('#pageFreelancers .crm-freelancer-faq').count(),0,'Retired Freelancer FAQ still present');
+       assert.equal(await page.getByRole('button',{name:'Carregar mais freelancers'}).count(),0,'Old manual pagination still present');
+       const dropdown=page.locator('#freelancerOrder');
+       const values=await dropdown.locator('option').evaluateAll(options=>options.map(el=>el.value));
+       assert(values.includes('most_reviewed')&&values.includes('new'),'More reviewed and new options missing from dropdown');
+       const raw=await page.locator('#freelancerCount').textContent();
+       const total=Number((raw||'').match(/\\d+/)?.[0]||0);
+       assert(total===item.cards,'Not all actual freelancers shown initially: '+JSON.stringify({total,shown:item.cards}));
+       await dropdown.selectOption('most_reviewed');
+       const ratedCounts=await page.locator('#freelancerResults .cx-freelancer-card-a').evaluateAll(cards=>cards.map(card=>{
+        const label=card.querySelector('.cx-fc-rating small')?.textContent||'';
+        return Number(label.match(/\\d+/)?.[0]||0);
+       }));
+       assert.equal(ratedCounts.length,total,'Review order must not hide records');
+       assert(ratedCounts.every((n,i)=>i===0||ratedCounts[i-1]>=n),
+        'Most reviewed must be based on actual public reviews: '+ratedCounts.join(','));
+       await dropdown.selectOption('new');
+       const newBadges=await page.locator('#freelancerResults .cx-freelancer-card-a').evaluateAll(cards=>cards.map(card=>
+         !!card.querySelector('.cx-fc-no-reviews')));
+       let sawReviewed=false;
+       assert(newBadges.every(value=>{if(!value)sawReviewed=true;return !(sawReviewed&&value)}),
+        'New/no-review profiles must be shown before reviewed professionals');
+       await dropdown.selectOption('recent');
+       item.cards=await page.locator('#freelancerResults .cx-freelancer-card-a').count();
+      }
+      if(process.env.GITHUB_EVENT_NAME!=='pull_request'&&item.cards>0){
        // The share control must be in the *visible header* at 100% viewport zoom;
        // a footer control below a long review panel does not meet the UX contract.
        const first=page.locator('#freelancerResults .cx-freelancer-card-a').first();
