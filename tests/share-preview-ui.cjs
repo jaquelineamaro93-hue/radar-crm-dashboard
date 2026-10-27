@@ -10,7 +10,7 @@ const landing=read('compartilhar/index.html');
 assert.equal(html,fallback,'Deep-link fallback must equal index for GitHub Pages');
 new Function(script);
 assert(/\/assets\/share-everything\.js\?v=[\w-]+/.test(html),'Share actions must be loaded with a cache version');
-assert(html.includes('/assets/share-everything.css?v=20261015-og1'),'Share CSS must be loaded');
+assert(html.includes('/assets/share-everything.css?v=20261027-focus-audit1'),'Share CSS must be loaded');
 assert(script.includes("route:'search',pages:['pageSearch'],selectors:['#searchResults .p-card']"),
   'Only public Open to Work directory cards may receive individual share actions');
 assert(script.includes("kind==='pagina'?url.href:shareUrl.href"),
