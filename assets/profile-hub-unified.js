@@ -119,27 +119,24 @@ function renderOwn(){
  const cta=page?.querySelector('#btnOpenFreelancerModal');
  const mine=signed()&&own.userId===user()?.id&&own.id!=null;
  if(cta){
-  cta.textContent=mine?'Editar meu perfil freelancer':'Cadastrar perfil freelancer';
+  cta.textContent=mine?'Editar em Meu perfil':'Cadastrar meu perfil';
   if(!cta.dataset.cxOwnedAction){
    cta.dataset.cxOwnedAction='1';
    cta.addEventListener('click',e=>{
     if(!(signed()&&own.userId===user()?.id&&own.id!=null))return;
-    e.preventDefault();e.stopImmediatePropagation();openOwnFreelancer();
+    e.preventDefault();e.stopImmediatePropagation();
+    if(typeof openProfileModal==='function'){
+     openProfileModal();
+     const tab=document.getElementById('cx-profile-tab-freelancer');
+     if(tab)tab.click();
+     else if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById('cx-profile-tab-freelancer')?.click());
+    }
    },true);
   }
  }
- page?.querySelectorAll('[data-cx-freelancer-id]').forEach(card=>{
-  const id=card.getAttribute('data-cx-freelancer-id');
-  const eligible=mine&&String(id)===String(own.id);
-  card.classList.toggle('cx-freelancer-mine',eligible);
-  let b=card.querySelector('.cx-freelancer-edit');
-  if(eligible&&!b){
-   b=button('Editar meu perfil',openOwnFreelancer);
-   b.classList.add('cx-freelancer-edit');
-   const footer=card.querySelector('.pro-footer')||card;footer.prepend(b);
-  }
-  if(!eligible&&b)b.remove();
- });
+ // Editing and ownership belong to Meu perfil > Freelancer only.
+ // Do not inject "Este perfil é meu" or an edit action into public cards.
+ page?.querySelectorAll('.cx-freelancer-edit').forEach(el=>el.remove());
  profileOverlay()?.dispatchEvent(new Event('cx:ownership-checked'));
 }
 function refresh(){mountEditor();renderOwn();if(signed()&&own.userId!==user()?.id)refreshOwner();}

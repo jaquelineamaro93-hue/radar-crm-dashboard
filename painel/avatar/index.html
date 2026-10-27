@@ -1359,7 +1359,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link id="cx-catalog-refinement-20261026" rel="stylesheet" href="/assets/catalog-refinement-20261026.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
-<link rel="stylesheet" href="/assets/freelancer-card-a-20261026.css?v=20261026-card-a1">
+<link rel="stylesheet" href="/assets/freelancer-card-a-20261026.css?v=20261027-selected-a2">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -2413,11 +2413,12 @@ crmShowSurveyReminder();
     </section>
   </div><div class="tab-page" id="pageFreelancers">
     <section>
-      <div class="section-head"><span class="section-num"></span><h2>Freelancers de CRM</h2></div>
+      <div class="section-head"><span class="section-num"></span><h2>Profissionais disponíveis para projetos freelance</h2></div>
       <div class="crm-freelancer-briefing">
-        <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+        <p class="section-desc">Conecte-se com especialistas da comunidade para projetos de curto ou longo prazo.</p>
         <div class="crm-freelancer-briefing-actions">
-          <button class="ev-btn-suggest" type="button" id="btnOpenFreelancerModal">Cadastrar perfil freelancer</button>
+          <span class="cx-freelancer-count" id="freelancerCount" role="status" aria-live="polite">Buscando profissionais...</span>
+          <button class="ev-btn-suggest" type="button" id="btnOpenFreelancerModal">Cadastrar meu perfil</button>
         </div>
       </div>
       <div class="crm-freelancer-toolbar">
@@ -2449,7 +2450,11 @@ crmShowSurveyReminder();
               <option>Consultoria</option>
             </select>
           </div>
-          <span class="filter-count" id="freelancerCount" role="status" aria-live="polite">Buscando profissionais...</span>
+          
+          <div class="filter-field cx-freelancer-order-field">
+            <label for="freelancerOrder">Ordenar por</label>
+            <select id="freelancerOrder"><option value="recent">Mais recentes</option><option value="name_asc">Nome A–Z</option><option value="name_desc">Nome Z–A</option></select>
+          </div>
           <button class="filter-reset" id="btnResetFreelancers">Limpar filtros</button>
         </div>
       </div>
@@ -6070,13 +6075,14 @@ function initFreelancersTab(){
   document.getElementById('freelancerModal').addEventListener('click', e=>{ if(e.target.id==='freelancerModal') closeFreelancerModal(); });
   document.getElementById('fl_submit').addEventListener('click', submitFreelancer);
 
-  ['freelancerSearchText','fCategoriaFreela'].forEach(id=>{
+  ['freelancerSearchText','fCategoriaFreela','freelancerOrder'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderFreelancers);
     document.getElementById(id).addEventListener('change', renderFreelancers);
   });
   document.getElementById('btnResetFreelancers').addEventListener('click', ()=>{
     document.getElementById('freelancerSearchText').value = '';
     document.getElementById('fCategoriaFreela').value = '';
+    document.getElementById('freelancerOrder').value = 'recent';
     renderFreelancers();
   });
 }
@@ -6482,25 +6488,59 @@ async function deleteFreelancer(id, nome){
 
 function flCardId(nome){return 'n'+Array.from(nome).map(c=>c.codePointAt(0).toString(16)).join('-');}
 function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome);}
+function crmFreelancerTags(f){
+ const tools=String(f.ferramentas||'').split(/[,;\n]/).map(x=>x.trim()).filter(Boolean);
+ const cats=String(f.categoria||'').split(',').map(x=>x.trim()).filter(Boolean);
+ return [...new Set((tools.length?tools:cats.slice(1)))].slice(0,12);
+}
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
  const name=escapeHtml(f.nome||'Profissional da comunidade');
- const category=String(f.categoria||'').trim();
- const bio=String(f.bio||'').trim();
- const tags=category.split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
- const more=category.split(',').map(x=>x.trim()).filter(Boolean).length-tags.length;
+ const category=String(f.categoria||'').split(',').map(x=>x.trim()).filter(Boolean);
+ const title=String(f.titulo||'').trim();
+ const bio=String(f.bio||'').trim()||'Este perfil ainda não tem uma apresentação profissional.';
+ const skills=crmFreelancerTags(f),topSkills=skills.slice(0,3),more=skills.length-topSkills.length;
  const rec=RECOMENDACOES[recKey('freelancer',f.nome)]||{sim:0};
- const info=reviews.length?('<span class="cx-fc-rating">★ '+escapeHtml((reviews.reduce((sum,r)=>sum+Number(r.nota||0),0)/reviews.length).toFixed(1))+' <small>('+reviews.length+' avaliações)</small></span>'):'<span class="cx-fc-no-reviews">Novo na comunidade · sem avaliações</span>';
- const contactLinks=crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'');
- const fullBio=bio||'Este perfil ainda não tem uma apresentação profissional.';
+ const average=reviews.length?reviews.reduce((n,r)=>n+Number(r.nota||0),0)/reviews.length:null;
+ const rating=reviews.length?'<span class="cx-fc-rating">★ '+escapeHtml(average.toFixed(1).replace('.',','))+' <small>('+reviews.length+' avaliações)</small></span>':'<span class="cx-fc-no-reviews">Novo na comunidade</span>';
+ const rawImage=crmSafeUrl(String(f.foto_url||''));
+ const photo=rawImage?'<img alt="" src="'+escapeHtml(rawImage)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">':escapeHtml(initialsFor(f.nome||'Profissional'));
+ const years=Number(f.anos_experiencia);
+ const hourly=Number(f.valor_hora);
+ const metadata=[
+   Number.isInteger(years)&&years>0?years+' '+(years===1?'ano':'anos')+' de experiência':'',
+   String(f.localidade||'').trim(),
+   String(f.idiomas||'').trim(),
+   String(f.modalidade||'').trim(),
+   Number.isFinite(hourly)&&hourly>0?hourly.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})+'/h':''
+ ].filter(Boolean);
+ const availability=String(f.disponibilidade||'').trim();
+ const isAvailable=/^(dispon[ií]vel|dispon[ií]vel agora|sim|imediata|disponibilidade imediata)$/i.test(availability);
+ const meta=metadata.length||availability?
+   '<div class="cx-fc-meta">'+metadata.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+
+   (availability?'<span class="'+(isAvailable?'cx-fc-available':'')+'">'+(isAvailable?'● ':'')+escapeHtml(availability)+'</span>':'')+'</div>':'';
+ const contacts=[
+   f.linkedin?'<button type="button" class="cx-fc-contact-link" data-crm-contact="freelancers" data-index="'+index+'" data-channel="linkedin">LinkedIn</button>':'',
+   (f.contato||f.whatsapp)?'<button type="button" class="cx-fc-contact-link" data-crm-contact="freelancers" data-index="'+index+'" data-channel="whatsapp">WhatsApp</button>':'',
+   crmSafeUrl(f.portfolio)?'<a class="cx-fc-contact-link" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':''
+ ].filter(Boolean).join('');
+ const validIndex=index>=0;
  return '<article class="pro-card cx-freelancer-card-a" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'">'+
-  '<div class="cx-fc-head"><div class="pro-avatar" aria-hidden="true">'+escapeHtml(initialsFor(f.nome||'Profissional'))+'</div><div class="cx-fc-identity"><h3>'+name+'</h3>'+(category?'<span class="cx-fc-role">'+escapeHtml(category)+'</span>':'')+'</div></div>'+
-  '<p class="cx-fc-bio">'+escapeHtml(fullBio)+'</p>'+
-  (tags.length?'<div class="cx-fc-tags" aria-label="Especialidades">'+tags.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+(more?'<span>+'+more+'</span>':'')+'</div>':'')+
-  '<div class="cx-fc-actions"><button type="button" class="cx-fc-primary" onclick="CXConnections.request('+index+')">Solicitar proposta</button><button type="button" class="cx-fc-secondary" onclick="crmToggleFreelancerDetails(this)" aria-expanded="false">Ver perfil</button></div>'+
-  '<div class="cx-fc-reputation">'+info+'<span class="cx-fc-recommendations">'+(Number(rec.sim)>0?Number(rec.sim)+' recomendações':'')+'</span></div>'+
-  '<div class="cx-fc-details" hidden><p class="cx-fc-detail-heading">Sobre</p><p class="cx-fc-fullbio">'+escapeHtml(fullBio)+'</p><div class="cx-fc-contact">'+contactLinks+'</div>'+(window.CXConnections?'<div class="cx-fc-claim"><button type="button" class="cx-claim-link" onclick="CXConnections.request('+index+',true)">Este perfil é meu</button></div>':'')+crmReviewSection('freelancer',f.nome,reviews)+'</div>'+
+  '<header class="cx-fc-head"><span class="pro-avatar" aria-hidden="true">'+photo+'</span><div class="cx-fc-identity"><h3>'+name+'</h3>'+
+  (title?'<span class="cx-fc-role">'+escapeHtml(title)+'</span>':'')+
+  (category.length?'<span class="cx-fc-category">'+escapeHtml(category[0])+'</span>':'')+
+  '</div></header>'+meta+
+  '<p class="cx-fc-bio">'+escapeHtml(bio)+'</p>'+
+  (topSkills.length?'<div class="cx-fc-tags" aria-label="Especialidades">'+topSkills.map(t=>'<span>'+escapeHtml(t)+'</span>').join('')+(more?'<span class="cx-fc-more">+'+more+'</span>':'')+'</div>':'')+
+  '<div class="cx-fc-actions"><button type="button" class="cx-fc-primary" '+(validIndex?'onclick="CXConnections.request('+index+')"':'disabled')+'>Solicitar proposta</button>'+
+  '<button type="button" class="cx-fc-secondary" onclick="crmToggleFreelancerDetails(this)" aria-expanded="false">Ver perfil</button></div>'+
+  (contacts?'<div class="cx-fc-contact cx-fc-contact-compact" aria-label="Contatos do freelancer">'+contacts+'</div>':'')+
+  '<footer class="cx-fc-reputation pro-footer"><span class="cx-fc-review-summary">'+rating+
+  (Number(rec.sim)>0?'<small> · '+Number(rec.sim)+' recomendações</small>':'')+'</span>'+
+  '<div class="cx-fc-reputation-actions"><button type="button" class="cx-fc-review-open" onclick="crmOpenFreelancerReview(this)">'+(reviews.length?'Avaliar':'Seja o primeiro a avaliar')+'</button></div></footer>'+
+  '<section class="cx-fc-details" hidden aria-label="Detalhes de '+name+'"><p class="cx-fc-detail-heading">Sobre</p>'+
+  '<p class="cx-fc-fullbio">'+escapeHtml(bio)+'</p>'+crmReviewSection('freelancer',f.nome,reviews)+'</section>'+
  '</article>';
 }
 function crmToggleFreelancerDetails(button){
@@ -6508,7 +6548,18 @@ function crmToggleFreelancerDetails(button){
  if(!panel)return;
  panel.hidden=!panel.hidden;
  button.setAttribute('aria-expanded',String(!panel.hidden));
- button.textContent=panel.hidden?'Ver perfil':'Ocultar detalhes';
+ button.textContent=panel.hidden?'Ver perfil':'Ocultar perfil';
+}
+function crmOpenFreelancerReview(button){
+ const card=button.closest('.cx-freelancer-card-a');
+ if(!card)return;
+ const details=card.querySelector('.cx-fc-details');
+ if(!details)return;
+ details.hidden=false;
+ const toggle=card.querySelector('.cx-fc-secondary');
+ if(toggle){toggle.setAttribute('aria-expanded','true');toggle.textContent='Ocultar perfil';}
+ const review=details.querySelector('.crm-review-actions button:last-child');
+ if(review)crmOpenReview(review);
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
@@ -6653,19 +6704,34 @@ function renderPlatformChallengeResults(data){
 async function submitFreelancerChallenge(){return crmRunAIForm('freelancers','freelancerChallenge','btnSubmitFreelancerChallenge','freelancerChallengeLoading','freelancerChallengeResults',renderFreelancerChallengeResults);}
 function renderFreelancerChallengeResults(data){const matches=data?.matches||[];for(const f of matches){const i=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));if(i<0)FREELANCERS.push(f);else FREELANCERS[i]=f;}crmById('freelancerChallengeResults').innerHTML=matches.length?'<div class="result-grid">'+matches.map(freelancerCardHtml).join('')+'</div>':'<p class="empty-state">Nenhum freelancer aderente encontrado. Tente os filtros manuais.</p>';}
 
-function renderFreelancers(){
-  const q = (document.getElementById('freelancerSearchText').value||'').toLowerCase().trim();
-  const fCat = document.getElementById('fCategoriaFreela').value;
-  const results = FREELANCERS.filter(f =>
-    (!fCat || String(f.categoria||'').split(',').map(x=>x.trim()).includes(fCat)) &&
-    (!q || [f.nome, f.categoria, f.bio].join(' ').toLowerCase().includes(q))
-  );
-  document.getElementById('freelancerCount').textContent = results.length + (results.length===1?' freelancer':' freelancers');
-  const container = document.getElementById('freelancerResults');
-  container.setAttribute('aria-busy','false');
-  container.innerHTML = results.length
-    ? '<div class="result-grid">' + results.map(freelancerCardHtml).join('') + '</div>'
-    : '<div class="empty-state">Nenhum freelancer nessa categoria ainda. Seja a primeira pessoa a anunciar seu perfil!</div>';
+let crmFreelancerVisible=6;
+function renderFreelancers(keepVisible=false){
+ const q=(document.getElementById('freelancerSearchText')?.value||'').toLocaleLowerCase('pt-BR').trim();
+ const fCat=document.getElementById('fCategoriaFreela')?.value||'';
+ const order=document.getElementById('freelancerOrder')?.value||'recent';
+ if(keepVisible!==true)crmFreelancerVisible=6;
+ const filtered=FREELANCERS.filter(f=>
+   (!fCat||String(f.categoria||'').split(',').map(v=>v.trim()).includes(fCat))&&
+   (!q||[f.nome,f.categoria,f.titulo,f.ferramentas,f.bio].join(' ').toLocaleLowerCase('pt-BR').includes(q))
+ );
+ if(order==='name_asc'||order==='name_desc'){
+  filtered.sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')*(order==='name_desc'?-1:1));
+ }
+ const count=document.getElementById('freelancerCount');
+ if(count)count.textContent=filtered.length+(filtered.length===1?' freelancer':' freelancers');
+ const container=document.getElementById('freelancerResults');
+ if(!container)return;
+ container.setAttribute('aria-busy','false');
+ const visible=filtered.slice(0,crmFreelancerVisible);
+ container.innerHTML=filtered.length
+  ?'<div class="result-grid">'+visible.map(freelancerCardHtml).join('')+'</div>'+
+   (filtered.length>visible.length?'<div class="cx-freelancer-more"><span>Mostrando '+visible.length+' de '+filtered.length+' freelancers</span><button type="button" onclick="crmLoadMoreFreelancers()">Carregar mais freelancers</button></div>':'')
+  :'<div class="empty-state">Nenhum freelancer encontrado com esses filtros.</div>';
+ window.CXProfileHub?.refresh?.();
+}
+function crmLoadMoreFreelancers(){
+ crmFreelancerVisible+=6;
+ renderFreelancers(true);
 }
 
 // ============ AGÊNCIAS E CONSULTORIAS ============

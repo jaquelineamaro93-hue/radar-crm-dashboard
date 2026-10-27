@@ -20,7 +20,8 @@ for(const part of ['Perfil geral','Freelancer','Open to Work','searchTabRegistra
  assert(hub.includes(part),'profile hub missing '+part);
 assert(hub.includes('current.email_confirmed_at')||hub.includes('current?.email_confirmed_at'),'ownership check must require verified identity');
 assert(hub.includes('email_autor'),'freelancer ownership must compare the confirmed author address');
-assert(hub.includes('cx-freelancer-mine')&&hub.includes('data-cx-freelancer-id'));
+assert(hub.includes('Editar em Meu perfil'),'freelancer editing remains available from the member profile');
+assert(!hub.includes("b=button('Editar meu perfil',openOwnFreelancer)"),'do not duplicate editing controls inside public cards');
 assert(!brasa.includes('getProfile(')&&!brasa.includes('CURRENT_PROFILE'),'Brasa does not read even nickname from a private profile; name preference remains available in the member editor');
 assert(brasa.includes("type==='assistant'"),'only assistant messages are normalized');
 assert(brasa.includes('Extended_Pictographic'),'no excessive visual emoji in assistant response');

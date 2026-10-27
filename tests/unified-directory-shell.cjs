@@ -6,7 +6,7 @@ assert(html.includes('/assets/unified-directory-shell-20261026.css?v=20261026-wo
 const firstPaint=html.indexOf('/assets/unified-directory-shell-20261026.css?v=');
 assert(firstPaint<html.indexOf('</head>'), 'directory styles must be linked in head');
 assert.equal((html.match(/id="btnOpenFreelancerModal"/g)||[]).length,1,'freelancer CTA is unique');
-assert.match(html,/<div class="crm-freelancer-briefing">\s*<p class="section-desc">Profissionais disponíveis[\s\S]*?<button class="ev-btn-suggest"[^>]*id="btnOpenFreelancerModal">Cadastrar perfil freelancer<\/button>/, 'freelancer CTA must share the description row');
+assert.match(html,/<div class="crm-freelancer-briefing">\s*<p class="section-desc">Conecte-se com especialistas[\s\S]*?<button class="ev-btn-suggest"[^>]*id="btnOpenFreelancerModal">Cadastrar meu perfil<\/button>/, 'freelancer CTA must share the description row');
 assert.match(html,/<div class="crm-freelancer-toolbar">\s*<nav class="crm-freelancer-subnav"/, 'freelancer view tabs must remain directly after the description');
 assert.doesNotMatch(html, /id="searchTabDir"|id="searchTabAI"/, 'Open to Work must not duplicate the global Work navigation');
 assert.match(html, /id="searchDirPanel"/, 'Open to Work directory must remain accessible');
