@@ -6497,7 +6497,8 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
  const reviews=(window.FL_REVIEWS||[]).filter(r=>r.freelancer_nome===f.nome);
- return '<article class="pro-card" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'"><div class="pro-head"><div class="pro-avatar">'+escapeHtml(initialsFor(f.nome))+'</div><div><h3>'+escapeHtml(f.nome)+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Profissional')+'</span></div></div><div class="pro-body"><p>'+escapeHtml(f.bio||'Conheça este profissional e converse sobre seu projeto.')+'</p></div><div class="pro-footer">'+crmContactButtons('freelancers',index)+(crmSafeUrl(f.portfolio)?'<a class="p-btn" href="'+escapeHtml(crmSafeUrl(f.portfolio))+'" target="_blank" rel="noopener noreferrer">Portfólio</a>':'')+(window.CXConnections?window.CXConnections.buttons(f,index):'')+crmReviewSection('freelancer',f.nome,reviews)+'</div></article>';
+ if(window.CXFreelancerCards)return CXFreelancerCards.render(f,index,reviews);
+ return '<article class="pro-card" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'"><h3>'+escapeHtml(f.nome)+'</h3><p>'+escapeHtml(f.bio||'')+'</p></article>';
 }
 let pfComparativoInitialized = false;
 function initPfComparativo(){
@@ -9628,6 +9629,7 @@ async function crmSubmitReviewForm(event){
 <script src="/assets/google-login.js?v=20261026-feedback1"></script>
 <script src="/assets/workspace.js?v=20261025-audit14"></script>
 <script src="/assets/freelancer-fields-20261027.js?v=20261027-a1"></script>
+<script src="/assets/freelancer-card-a-20261027.js?v=20261027-a1"></script>
 <script src="/assets/connections.js?v=20261003-1"></script>
 <script src="/assets/talent-links.js?v=20260923-2"></script>
 <script>
