@@ -28,6 +28,7 @@ jobs:
           node tests/portal-quality.cjs
           node --test tests/new-member-goals-onboarding.cjs
           node tests/catalog-pages-clean.cjs
+          node tests/first-paint-layout.cjs
           node tests/header-ui-kit.cjs
           node tests/profile-hub-unified.cjs
           node tests/events-chronology.cjs

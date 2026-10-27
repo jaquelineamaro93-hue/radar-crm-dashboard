@@ -1,0 +1,20 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const read=p=>fs.readFileSync(p,'utf8');
+const html=read('index.html'),head=html.slice(0,html.indexOf('</head>'));
+assert(head.includes('id="cx-catalog-refinement-20261026" rel="stylesheet"'),'catalog CSS must load statically');
+assert(head.includes('/assets/portal-first-paint.css?v=20261026-audit2'),'first-paint guard must load statically');
+assert(html.includes('/assets/portal-hardening.js?v=20261026-audit2'),'new runtime cache key missing');
+assert(html.includes('id="cx-site-i18n-script" defer src="/assets/site-i18n.js'),'language control must load before portal starts');
+for(const path of ['404.html','dashboard/index.html','vagas/index.html','vagas-salvas/index.html','open-to-work/index.html','plataformas/index.html','freelancers/index.html'])
+ assert.equal(read(path),html,'outdated route shell '+path);
+const layout=read('assets/portal-layout.js');
+assert(layout.includes('function primeLayouts()'),'normalize hidden routes before navigation');
+assert(layout.includes("document.documentElement.classList.add('cx-portal-layout-ready')"),'unhide after sync');
+assert(read('assets/portal-hardening.js').includes("cx-portal-layout-ready'),6000"),'fail-open timeout');
+const css=read('assets/catalog-refinement-20261026.css');
+assert(!css.includes('#pagePlataformas.crm-platform-modern'),'platform visual cannot require runtime class');
+assert(css.includes('#pagePlataformas'),'platforms need static styling');
+assert(!css.includes('.crm-otw-signup.crm-otw-signup-compact'),'registration needs static styling');
+assert(read('assets/portal-first-paint.css').includes('#view-logada:not([hidden])'),'hidden viewport is scoped');
+console.log('PASS first paint, route shells, static CSS, cache keys and fail-open');

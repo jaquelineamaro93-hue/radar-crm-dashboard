@@ -14,9 +14,11 @@
   if(!document.getElementById('cx-portal-layout-runtime')){
     const script=document.createElement('script');
     script.id='cx-portal-layout-runtime';script.defer=true;
-    script.src='/assets/portal-layout.js?v=20261026-catalog1';
+    script.src='/assets/portal-layout.js?v=20261026-audit2';
     document.head.append(script);
   }
+  // Fail open if the optional UI runtime could not load.
+  window.setTimeout(()=>document.documentElement.classList.add('cx-portal-layout-ready'),6000);
 
   // Lightweight sharing actions for public pages and individual resources.
   if(!document.getElementById('cx-share-css')){

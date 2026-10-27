@@ -8,7 +8,7 @@ const css=read('assets/catalog-refinement-20261026.css');
 const runtime=read('assets/portal-hardening.js');
 
 new vm.Script(js,{filename:'assets/portal-layout.js'});
-assert(runtime.includes('/assets/portal-layout.js?v=20261026-catalog1'),'new layout must bypass the old runtime cache');
+assert(runtime.includes('/assets/portal-layout.js?v=20261026-audit2'),'new layout must bypass the old runtime cache');
 assert(js.includes('/assets/catalog-refinement-20261026.css?v=20261026-catalog1'),'new CSS is versioned and loaded by the runtime');
 
 const catalogCode=js.slice(js.indexOf(' function normalizeCatalog(page){'),js.indexOf(' function normalizeAnalytics(page){'));

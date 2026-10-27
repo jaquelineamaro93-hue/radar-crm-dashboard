@@ -183,11 +183,20 @@
   const heading=page?.querySelector('.section-head h2');
   if(heading&&title&&heading.textContent.trim()===title.textContent.trim())heading.classList.add('crm-public-repeated-title');
  }
+ // Prime hidden routes once before they are shown, avoiding a legacy-to-new flash.
+ function primeLayouts(){
+  document.querySelectorAll('#crmPages > .tab-page, #crmPublicPages > .tab-page').forEach(page=>{
+   if(page.dataset.cxLayoutPrimed==='1')return;
+   normalize(page);
+   page.dataset.cxLayoutPrimed='1';
+  });
+ }
  function sync(){
   normalizePublicNavigation();
+  primeLayouts();
   const publicPage=document.querySelector("#crmPublicPages > .tab-page.active");
   if(publicPage)normalize(publicPage);
-  if(!root)return;
+  if(!root){document.documentElement.classList.add('cx-portal-layout-ready');return;}
   root.dataset.layoutVersion='20261025-figma2';
   const page=root.querySelector('.tab-page.active');normalize(page);
   // There is only one active link in the sidebar; structural wrappers never
@@ -203,6 +212,7 @@
    if(active)link.setAttribute('aria-current','page');
    else{link.classList.remove('crm-award-selected');link.removeAttribute('aria-current');}
   }
+  document.documentElement.classList.add('cx-portal-layout-ready');
  }
  window.addEventListener('resize',normalizePublicNavigation);
  document.addEventListener('crm:route-changed',sync);
