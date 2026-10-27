@@ -31,7 +31,7 @@ assert(read('docs/inngage-templates/revised2050.html').includes('{{VAGAS_HTML}}'
 assert(read('docs/inngage-templates/revised2049.html').includes('{{cf.NOME}}'),'keep legacy first-name field');
 const shell=read('index.html'),fallback=read('404.html');
 for(const html of [shell,fallback]){
- assert(html.includes('portal-hardening.js?v=20261026-language-top-1'),'bust layout runtime');
+ assert(html.includes('portal-hardening.js?v=20261026-audit2'),'bust layout runtime');
  assert(html.includes('push-preferences.js?v=20261026-watermark-1'),'bust notifications runtime');
 }
 assert.match(read('assets/portal-hardening.js'),/portal-layout\.js\?v=[\w-]+/,'layout must remain versioned and loaded');
