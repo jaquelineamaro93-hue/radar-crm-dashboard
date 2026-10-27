@@ -1,0 +1,25 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const html=fs.readFileSync('index.html','utf8'),style=fs.readFileSync('assets/unified-directory-shell-20261026.css','utf8');
+const script=fs.readFileSync('assets/workspace.js','utf8');
+assert(html.includes('/assets/unified-directory-shell-20261026.css?v=20261026-final1'), 'new styles must be available before paint');
+const firstPaint=html.indexOf('/assets/unified-directory-shell-20261026.css?v=');
+assert(firstPaint<html.indexOf('</head>'), 'directory styles must be linked in head');
+assert.equal((html.match(/id="btnOpenFreelancerModal"/g)||[]).length,1,'freelancer CTA is unique');
+assert.match(html,/<div class="crm-freelancer-toolbar">\s*<nav class="crm-freelancer-subnav"/, 'freelancer tabs and action share a predictable row');
+assert.match(html,/id="freelancerResults" aria-live="polite" aria-busy="true"/,'initial results must expose loading status');
+assert(html.includes('container.setAttribute(\'aria-busy\',\'false\')'),'results must stop being busy');
+assert(html.includes('freelancerHost.setAttribute(\'aria-busy\',\'true\')'),'loading a directory must indicate busy');
+assert(html.includes('crm-freelancer-faq'),'FAQ is in unified design');
+assert(script.includes("const topTab=document.querySelector('.crm-public-tabs [data-crm-route="),'duplicate contextual navigation must be skipped in public pages');
+assert(style.includes('#crmPublicWorkspace .crm-public-pagebar'),'new public navigation shell');
+assert(style.includes('#crmPublicPages #pageFreelancers'),'catalog layout');
+assert(style.includes('#crmPublicPages #pageVagas'),'radar alignment');
+assert(style.includes('#crmPublicPages #pageSearch'),'talents alignment');
+assert(style.includes('#crmPublicPages #pagePlataformas'),'platform alignment');
+assert(style.includes('prefers-reduced-motion:reduce'),'respect reduced-motion');
+assert(!style.includes('#publicHero'),'landing motion must be left intact');
+assert(!style.includes('#crmConexometro'),'Conexometro motion must be left intact');
+for(const entry of ['404.html','freelancers/index.html','vagas/index.html','open-to-work/index.html','plataformas/index.html','vagas-salvas/index.html','dashboard/index.html'])
+ assert.equal(fs.readFileSync(entry,'utf8'),html,'the 35 route copies should not diverge: '+entry);
+console.log('PASS: stable freelancer skeleton, public shell, styles loaded before paint, landing motion untouched');

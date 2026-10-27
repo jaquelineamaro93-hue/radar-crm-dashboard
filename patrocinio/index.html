@@ -1358,6 +1358,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/profile-hub-unified.css?v=20261026-profhub1">
 <link id="cx-catalog-refinement-20261026" rel="stylesheet" href="/assets/catalog-refinement-20261026.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
+<link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-final1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -2427,16 +2428,17 @@ crmShowSurveyReminder();
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Freelancers de CRM</h2></div>
       <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+      <div class="crm-freelancer-toolbar">
       <nav class="crm-freelancer-subnav" aria-label="Navegação de Freelancers">
         <button type="button" id="crmFreelancerTabDirectory" class="crm-freelancer-tab is-active" aria-controls="crmFreelancerDirectoryView" aria-pressed="true" onclick="crmSelectFreelancerView('directory')">Profissionais</button>
         <button type="button" id="crmFreelancerTabAI" class="crm-freelancer-tab" aria-controls="crmFreelancerAIView" aria-pressed="false" onclick="crmSelectFreelancerView('ai')">Encontrar com IA</button>
       </nav>
+      <button class="ev-btn-suggest" id="btnOpenFreelancerModal">Anunciar meu perfil</button>
+      </div>
       <div id="crmFreelancerDirectoryView" aria-labelledby="crmFreelancerTabDirectory">
       
 
-      <div class="ev-header-row" style="justify-content:flex-end;">
-        <button class="ev-btn-suggest" id="btnOpenFreelancerModal">Anunciar meu perfil</button>
-      </div>
+
 
 
 
@@ -2456,16 +2458,23 @@ crmShowSurveyReminder();
               <option>Consultoria</option>
             </select>
           </div>
-          <span class="filter-count" id="freelancerCount">carregando...</span>
+          <span class="filter-count" id="freelancerCount" role="status" aria-live="polite">Buscando profissionais...</span>
           <button class="filter-reset" id="btnResetFreelancers">Limpar filtros</button>
         </div>
       </div>
 
-      <div id="freelancerResults"></div>
+      <div id="freelancerResults" aria-live="polite" aria-busy="true">
+        <span class="crm-sr-only" role="status">Carregando profissionais...</span>
+        <div class="crm-skeleton-grid" aria-hidden="true">
+          <div class="crm-skeleton-card"><div class="crm-skeleton-avatar"></div><div class="crm-skeleton-line"></div><div class="crm-skeleton-line short"></div><div class="crm-skeleton-line"></div></div>
+          <div class="crm-skeleton-card"><div class="crm-skeleton-avatar"></div><div class="crm-skeleton-line"></div><div class="crm-skeleton-line short"></div><div class="crm-skeleton-line"></div></div>
+          <div class="crm-skeleton-card"><div class="crm-skeleton-avatar"></div><div class="crm-skeleton-line"></div><div class="crm-skeleton-line short"></div><div class="crm-skeleton-line"></div></div>
+        </div>
+      </div>
 
       <!-- ============ FAQ FREELANCERS ============ -->
-      <div style="margin-top:40px; padding-top:32px; border-top:1px solid var(--line);">
-        <h3 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px;"> Perguntas Frequentes</h3>
+      <div class="crm-freelancer-faq" style="margin-top:40px; padding-top:32px; border-top:1px solid var(--line);">
+        <h3 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px;">Perguntas Frequentes</h3>
         <div style="display:grid; gap:14px;">
           <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
             <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como me anuncio como freelancer? <span style="margin-left:10px;"></span></summary>
@@ -6331,13 +6340,15 @@ async function loadFreelancers(){
  if(window.crmFreelancersLoading)return;
  window.crmFreelancersLoading=true;
  const epoch=crmAuthEpoch;
+ const freelancerHost=crmById('freelancerResults');
+ if(!FREELANCERS.length&&freelancerHost)freelancerHost.setAttribute('aria-busy','true');
  if(!FREELANCERS.length)crmById('freelancerCount').textContent='Carregando…';
  try{
   if(!flSb&&!flInitSB())throw Error('Conexão indisponível.');
   const [data,reviews]=await Promise.all([crmFetchDirectory('freelancers'),flSb.from('avaliacoes_freelancers').select('freelancer_nome,nota,comentario,avaliador').order('created_at',{ascending:false})]);
   if(epoch!==crmAuthEpoch)return;FREELANCERS=data;
   if(reviews.error)throw Error('Não foi possível carregar as avaliações.');window.FL_REVIEWS=reviews.data||[];await loadRecomendacoes(flSb);if(epoch!==crmAuthEpoch)return;renderFreelancers();window.crmFreelancersLastLoadedAt=Date.now();
- }catch(e){if(epoch!==crmAuthEpoch)return;if(FREELANCERS.length)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';}
+ }catch(e){if(epoch!==crmAuthEpoch)return;if(FREELANCERS.length)return;crmById('freelancerCount').textContent='Indisponível';crmById('freelancerResults').innerHTML='<p class="empty-state">'+escapeHtml(e.message)+' <button onclick="loadFreelancers()">Tentar novamente</button></p>';crmById('freelancerResults').setAttribute('aria-busy','false');}
  finally{window.crmFreelancersLoading=false;}
 }
 function flSubRT(){
@@ -6637,6 +6648,7 @@ function renderFreelancers(){
   );
   document.getElementById('freelancerCount').textContent = results.length + (results.length===1?' freelancer':' freelancers');
   const container = document.getElementById('freelancerResults');
+  container.setAttribute('aria-busy','false');
   container.innerHTML = results.length
     ? '<div class="result-grid">' + results.map(freelancerCardHtml).join('') + '</div>'
     : '<div class="empty-state">Nenhum freelancer nessa categoria ainda. Seja a primeira pessoa a anunciar seu perfil!</div>';
