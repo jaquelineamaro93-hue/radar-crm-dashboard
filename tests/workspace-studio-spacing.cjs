@@ -26,7 +26,9 @@ assert(nav.includes('padding-bottom:10px!important'),'separator spacing is compa
 assert(css.includes('.cx-work>.cx-status:empty{display:none!important}'),'empty status cannot reserve height');
 assert(css.includes('.cx-work>.cx-status:not(:empty)'),'loading and error messages stay visible');
 assert(css.includes('[data-content]>[data-portal-summary]'),'bring summary closer to navigation');
-for(const route of ['404.html','workspace-studio/index.html','workspace-pipeline/index.html']){
+// Workspace subroutes are handled by SPA routing, not physical HTML folders.
+assert(html.includes("'workspace-studio'"),'workspace-studio route must remain registered');
+for(const route of ['404.html','dashboard/index.html','vagas-salvas/index.html']){
  assert.equal(fs.readFileSync(route,'utf8'),html,'stale routed HTML: '+route);
 }
 console.log('PASS workspace: one divider, no empty gap, active status visible, routes synced');
