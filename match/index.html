@@ -6536,11 +6536,9 @@ function freelancerCardHtml(f){
   '<div class="cx-fc-actions"><button type="button" class="cx-fc-primary" '+(validIndex?'onclick="CXConnections.request('+index+')"':'disabled')+'>Solicitar proposta</button>'+
   '<button type="button" class="cx-fc-secondary" onclick="crmToggleFreelancerDetails(this)" aria-expanded="false">Ver perfil</button></div>'+
   (contacts?'<div class="cx-fc-contact cx-fc-contact-compact" aria-label="Contatos do freelancer">'+contacts+'</div>':'')+
-  '<footer class="cx-fc-reputation"><span class="cx-fc-review-summary">'+rating+
+  '<footer class="cx-fc-reputation pro-footer"><span class="cx-fc-review-summary">'+rating+
   (Number(rec.sim)>0?'<small> · '+Number(rec.sim)+' recomendações</small>':'')+'</span>'+
-  '<div class="cx-fc-reputation-actions"><button type="button" class="cx-fc-review-open" onclick="crmOpenFreelancerReview(this)">'+(reviews.length?'Avaliar':'Seja o primeiro a avaliar')+'</button>'+
-  (validIndex&&window.CXConnections?'<details class="cx-fc-menu"><summary aria-label="Mais opções para '+name+'">•••</summary><div class="cx-fc-menu-items"><button type="button" onclick="CXConnections.request('+index+',true)">Este perfil é meu</button></div></details>':'')+
-  '</div></footer>'+
+  '<div class="cx-fc-reputation-actions"><button type="button" class="cx-fc-review-open" onclick="crmOpenFreelancerReview(this)">'+(reviews.length?'Avaliar':'Seja o primeiro a avaliar')+'</button></div></footer>'+
   '<section class="cx-fc-details" hidden aria-label="Detalhes de '+name+'"><p class="cx-fc-detail-heading">Sobre</p>'+
   '<p class="cx-fc-fullbio">'+escapeHtml(bio)+'</p>'+crmReviewSection('freelancer',f.nome,reviews)+'</section>'+
  '</article>';
