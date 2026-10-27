@@ -19,13 +19,6 @@ function portrait(item){
  const name=safeText(item.name);
  const initials=name.split(/\s+/).slice(0,2).map(x=>x.slice(0,1)).join('').toUpperCase();
  base.textContent=initials||'XP';
- if(item.avatar&&typeof item.avatar==='object'&&window.CXAvatarCatalog?.renderSvg){
-  try{
-   base.innerHTML=window.CXAvatarCatalog.renderSvg(item.avatar,true);
-   base.setAttribute('aria-label','Avatar de '+name);
-   return base;
-  }catch{base.textContent=initials||'XP';}
- }
  if(item.photo&&/^https:\/\//.test(item.photo)){
   const im=document.createElement('img');im.src=item.photo;im.alt='';im.referrerPolicy='no-referrer';
   im.onerror=()=>{im.remove();base.textContent=initials||'XP';};base.replaceChildren(im);
