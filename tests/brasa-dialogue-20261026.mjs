@@ -15,7 +15,7 @@ assert.match(client,/Boa para qual próximo passo/,'ambiguous jobs should ask fo
 assert.match(client,/Por nada\. Até a próxima\./,'a natural closing does not invite another question');
 assert.match(client,/conversationalFallback\(question\)/,'backend unavailability gets a useful safe next step');
 assert.match(loader,/brasa-clean-20261026\.css\?v=20261027-conversation3/);
-assert.match(loader,/crm-copilot\.js\?v=20261027-conversation3/);
+assert.match(loader,/crm-copilot\.js\?v=20261027-retry4/);
 assert.match(ui,/\.pro-card \.pro-avatar/,'freelancer avatar gets separate space');
 assert.match(ui,/object-fit:contain/,'real freelancer photographs and logos stay uncropped');
 assert.match(ui,/\.cx-copilot-panel:not\(\[hidden\]\)/,'chat is content-sized');
