@@ -26,6 +26,7 @@ jobs:
       - name: Portal quality gate
         run: |
           node tests/portal-quality.cjs
+          node tests/radar-filter-regression.cjs
           node --test tests/new-member-goals-onboarding.cjs
           node tests/catalog-pages-clean.cjs
           node tests/first-paint-layout.cjs

@@ -1,5 +1,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync('index.html','utf8');
+const hardening=fs.readFileSync('assets/portal-hardening.js','utf8');
+assert.doesNotMatch(hardening,/window\.aplicarFiltrosVagas\s*=/,'the runtime must not replace the complete Radar query with a partial cache filter');
 const elements=Object.fromEntries(['filtro-categoria','filtro-modalidade','filtro-abrangencia','filtro-cargo-hub','filtro-empresa-hub','filtro-nivel-hub','filtro-plataforma-hub','filtro-estado','filtro-municipio','filtro-ordem-hub','totalVagasHub','vagasCountHub'].map(id=>[id,{value:'',textContent:''}]));
 const container={innerHTML:'OLD ANALYST RESULT',querySelector:()=>({})};elements.vagasContainerHub=container;
 let rows=[],error=null,rendered=[],calls=[];
@@ -9,7 +11,12 @@ vm.runInContext(source.slice(source.indexOf('function crmRadarNormalized('),sour
 vm.runInContext(source.slice(source.indexOf('async function aplicarFiltrosVagas()'),source.indexOf('function limparFiltrosVagas()')),ctx);
 (async()=>{
  rows=[{title:'Analista CRM Sênior',abrangencia:'Nacional'},{title:'Chief Marketing Officer',abrangencia:'Nacional'},{title:'CTO',abrangencia:'Internacional'},{title:'Account Director',abrangencia:'Internacional'},{title:'Diretora de CRM',abrangencia:'Nacional'},{title:'Assistant to CEO',abrangencia:'Nacional'}];
+ elements['filtro-categoria'].value='crm';elements['filtro-modalidade'].value='Remoto';
  elements['filtro-nivel-hub'].value='C-Level';elements['filtro-abrangencia'].value='Nacional';await ctx.aplicarFiltrosVagas();assert.deepEqual(rendered.map(x=>x.title),['Chief Marketing Officer']);assert.equal(elements.totalVagasHub.textContent,'1');assert(calls.some(c=>c[0]==='eq'&&c[1]==='abrangencia'&&c[2]==='Nacional'));
+ assert(calls.some(c=>c[0]==='eq'&&c[1]==='modalidade_normalizada'&&c[2]==='Remoto'));
+ assert(calls.some(c=>c[0]==='in'&&c[1]==='categoria_slug'&&c[2][0]==='crm'));
+ elements['filtro-nivel-hub'].value='';elements['filtro-abrangencia'].value='Internacional';await ctx.aplicarFiltrosVagas();assert.deepEqual(rendered.map(x=>x.title),['CTO','Account Director']);
+ elements['filtro-abrangencia'].value='Nacional';
  elements['filtro-nivel-hub'].value='Diretoria';await ctx.aplicarFiltrosVagas();assert.deepEqual(rendered.map(x=>x.title),['Diretora de CRM']);
  elements['filtro-nivel-hub'].value='Liderança';await ctx.aplicarFiltrosVagas();assert.deepEqual(rendered.map(x=>x.title),['Diretora de CRM']);assert(calls.some(c=>c[0]==='or'&&c[1].includes('%diretor%')));
  elements['filtro-nivel-hub'].value='C-Level';rows=[];await ctx.aplicarFiltrosVagas();assert(container.innerHTML.includes('Nenhuma vaga'));assert(!container.innerHTML.includes('Analista'));

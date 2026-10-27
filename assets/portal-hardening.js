@@ -515,73 +515,8 @@
   });
 
 
-  function localJobFilter(){
-    if(typeof window.aplicarFiltrosVagas!=='function'||typeof window.renderizarVagasHub!=='function')return;
-    const originalApply=window.aplicarFiltrosVagas;
-    const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-    const levelOk=(vaga,level)=>{
-      if(!level)return true;
-      const t=normalize(vaga.title||vaga.cargo||'');
-      const n=normalize(level).replace(/[^a-z0-9]/g,'');
-      // Never use a description/tool mention or a broad regex to promote analysts to C-level.
-      const has=pattern=>pattern.test(t);
-      const classified=
-        has(/\b(c.level|ceo|cto|cfo|coo|cmo|cio|chro|cpo|chief\s+\w+(?:\s+\w+){0,3}\s+officer)\b/) ? 'clevel' :
-        has(/\b(diretor[a]?[es]?|diretoria|director|vice.president|vice.presidente|vp)\b/) ? 'diretoria' :
-        has(/\b(gerente|gerencia|manager|head)\b/) ? 'gerencia' :
-        has(/\b(coordenador[a]?|coordenacao|coordinator|supervisor[a]?)\b/) ? 'coordenacao' :
-        has(/\b(especialista|specialist|principal|staff)\b/) ? 'especialista' :
-        has(/\b(estagio|estagiario[a]?|intern|internship|trainee|aprendiz)\b/) ? 'estagio' :
-        has(/\b(junior|jr)\b/) ? 'junior' :
-        has(/\b(pleno|mid.level)\b/) ? 'pleno' :
-        has(/\b(senior|sr|lead)\b/) ? 'senior' :
-        has(/\b(analista|analyst|assistant|assistente)\b/) ? 'analista' : '';
-      if(n==='lideranca')return ['gerencia','coordenacao','diretoria','clevel'].includes(classified);
-      if(n==='executivo')return classified==='clevel';
-      if(n==='coordenador'||n==='coordenadora')return classified==='coordenacao';
-      if(n==='gerente')return classified==='gerencia';
-      if(n==='diretor'||n==='diretora')return classified==='diretoria';
-      if(n==='c-level')return classified==='clevel';
-      const aliases={clevel:'clevel',diretoria:'diretoria',gerencia:'gerencia',coordenacao:'coordenacao',especialista:'especialista',estagio:'estagio',junior:'junior',pleno:'pleno',senior:'senior',analista:'analista'};
-      return Boolean(aliases[n]) && classified===aliases[n];
-    };
-    window.aplicarFiltrosVagas=async function(){
-      try{
-        const sourceRows=(typeof todasAsVagasHub!=='undefined'&&Array.isArray(todasAsVagasHub))?todasAsVagasHub:null;
-        if(!sourceRows||!sourceRows.length)return originalApply();
-        const cargo=normalize(document.getElementById('filtro-cargo-hub')?.value);
-        const empresa=normalize(document.getElementById('filtro-empresa-hub')?.value);
-        const nivel=document.getElementById('filtro-nivel-hub')?.value||'';
-        const plataforma=normalize(document.getElementById('filtro-plataforma-hub')?.value);
-        const estado=document.getElementById('filtro-estado')?.value||'';
-        const municipio=document.getElementById('filtro-municipio')?.value||'';
-        const ordem=document.getElementById('filtro-ordem-hub')?.value||'recente';
-        let rows=sourceRows.filter(vaga=>{
-          if(cargo&&!normalize(vaga.title||vaga.cargo).includes(cargo))return false;
-          if(empresa&&!normalize(vaga.company||vaga.empresa).includes(empresa))return false;
-          if(plataforma&&!normalize(vaga.source).includes(plataforma))return false;
-          if(!levelOk(vaga,nivel))return false;
-          if((estado||municipio)&&typeof window.crmJobMatchesLocation==='function'&&!window.crmJobMatchesLocation(vaga,estado,municipio))return false;
-          return true;
-        });
-        if(ordem==='empresa')rows.sort((a,b)=>String(a.company||a.empresa||'').localeCompare(String(b.company||b.empresa||''),'pt-BR'));
-        else if(ordem==='cargo')rows.sort((a,b)=>String(a.title||a.cargo||'').localeCompare(String(b.title||b.cargo||''),'pt-BR'));
-        else rows.sort((a,b)=>(Date.parse(b.published_at||'')||0)-(Date.parse(a.published_at||'')||0));
-
-        const container=document.getElementById('vagasContainerHub');
-        if(!rows.length){
-          if(container)container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 16px"><p style="font-size:12px;color:var(--muted)">Nenhuma vaga encontrada com esses critérios.</p></div>';
-          const count=document.getElementById('vagasCountHub');if(count)count.textContent='0';
-          return;
-        }
-        window.renderizarVagasHub(rows,ordem);
-      }catch(error){
-        capture('jobs_local_filter_fallback',{message:String(error?.message||error).slice(0,160)});
-        return originalApply();
-      }
-    };
-  }
-  localJobFilter();
+  // Radar owns its query and every active filter. Do not replace it with a
+  // partial filter over the first cached page of jobs.
   window.CXPortalHardening={
     version:state.version,
     clear(){state.cache.clear();state.inflight.clear();state.lastValidatedAt=0;},
