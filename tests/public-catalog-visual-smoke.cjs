@@ -55,6 +55,24 @@ async function run(){
       assert.equal(oldCards,0,'legacy freelancer card rendered');
       const loaded=await page.locator('link[href*="freelancer-card-a-20261026.css"]').count();
       assert(loaded>0,'published Freelancer A stylesheet missing');
+      if(process.env.GITHUB_EVENT_NAME!=='pull_request'&&item.cards>0){
+       // The share control must be in the *visible header* at 100% viewport zoom;
+       // a footer control below a long review panel does not meet the UX contract.
+       const first=page.locator('#freelancerResults .cx-freelancer-card-a').first();
+       const share=first.locator('.cx-fc-head .cx-share-card');
+       await share.waitFor({state:'visible',timeout:5000});
+       const placement=await share.boundingBox();
+       assert(placement&&placement.width>15,'share control missing from the freelancer card header');
+       await share.click();
+       const popup=page.locator('.cx-share-panel');
+       await popup.waitFor({state:'visible',timeout:3000});
+       const bounds=await popup.boundingBox();
+       const vh=page.viewportSize().height;
+       assert(bounds&&bounds.y>=-2&&bounds.y+bounds.height<=vh+2,
+        'share popup clipped at '+view.name+': '+JSON.stringify(bounds));
+       assert(await popup.getByText('Copiar link').isVisible(),'share link must be accessible');
+       await page.keyboard.press('Escape');
+      }
       if(item.cards===0)item.notes.push('API cards not rendered in capture; no imaginary test records added');
      }
      if(route.path==='vagas'){
