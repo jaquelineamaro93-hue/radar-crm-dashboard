@@ -2456,7 +2456,13 @@ crmShowSurveyReminder();
           
           <div class="filter-field cx-freelancer-order-field">
             <label for="freelancerOrder">Ordenar por</label>
-            <select id="freelancerOrder"><option value="recent">Mais recentes</option><option value="name_asc">Nome A–Z</option><option value="name_desc">Nome Z–A</option></select>
+            <select id="freelancerOrder">
+              <option value="recent">Mais recentes</option>
+              <option value="most_reviewed">Mais avaliados</option>
+              <option value="new">Novos na comunidade</option>
+              <option value="name_asc">Nome A–Z</option>
+              <option value="name_desc">Nome Z–A</option>
+            </select>
           </div>
           <button class="filter-reset" id="btnResetFreelancers">Limpar filtros</button>
         </div>
@@ -2471,36 +2477,6 @@ crmShowSurveyReminder();
         </div>
       </div>
 
-      <!-- ============ FAQ FREELANCERS ============ -->
-      <div class="crm-freelancer-faq" style="margin-top:40px; padding-top:32px; border-top:1px solid var(--line);">
-        <h3 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px;">Perguntas Frequentes</h3>
-        <div style="display:grid; gap:14px;">
-          <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
-            <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como me anuncio como freelancer? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Clique em "Anunciar meu perfil", preencha seus dados (nome, especialidade e bio), inclua seu portfólio/site, LinkedIn e contato, e adicione um artigo/post se tiver. O anúncio é analisado pela moderação antes de aparecer na vitrine. Artigos enviados também passam por revisão.</p>
-          </details>
-
-          <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
-            <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como filtro freelancers por especialidade? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Use o campo de filtro "Categoria" ou a barra de busca. Você pode combinar com o nome da pessoa. Se ficar com dúvidas sobre alguém, os nomes "Recomendados" têm mais validações da comunidade.</p>
-          </details>
-
-          <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
-            <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como funciona a IA "Encontrar Freelancer Ideal"? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Descreva o que você precisa (ex: "templtes de e-mail" ou "automações em n8n") e a IA busca entre os freelancers daquela categoria os que melhor combinam com sua descrição. É um match por relevância, não por ordem alfabética.</p>
-          </details>
-
-          <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
-            <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">O que significa "Recomendado"? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Significa que a pessoa tem pelo menos 2 avaliações da comunidade com "Recomendo" acima de 80%. É um reconhecimento de que a pessoa fez bom trabalho. Não é obrigatório ter essa badge, mas é um bom sinal.</p>
-          </details>
-
-          <details style="border:1px solid var(--line); border-radius:9px; padding:16px; cursor:pointer;">
-            <summary style="font-weight:600; color:var(--text); display:flex; justify-content:space-between; align-items:center;">Como vejo avaliações de um freelancer? <span style="margin-left:10px;"></span></summary>
-            <p style="margin-top:12px; color:var(--muted); font-size:14px; line-height:1.6;">Cada card de freelancer mostra a quantidade de "Recomendo" e "Não recomendo". Clique no card para mais detalhes. As avaliações são anônimas: quem vota não tem o nome exposto.</p>
-          </details>
-        </div>
-      </div>
 
       </div>
       <section id="crmFreelancerAIView" aria-labelledby="crmFreelancerTabAI" hidden>
@@ -6660,34 +6636,63 @@ function renderPlatformChallengeResults(data){
 async function submitFreelancerChallenge(){return crmRunAIForm('freelancers','freelancerChallenge','btnSubmitFreelancerChallenge','freelancerChallengeLoading','freelancerChallengeResults',renderFreelancerChallengeResults);}
 function renderFreelancerChallengeResults(data){const matches=data?.matches||[];for(const f of matches){const i=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));if(i<0)FREELANCERS.push(f);else FREELANCERS[i]=f;}crmById('freelancerChallengeResults').innerHTML=matches.length?'<div class="result-grid">'+matches.map(freelancerCardHtml).join('')+'</div>':'<p class="empty-state">Nenhum freelancer aderente encontrado. Tente os filtros manuais.</p>';}
 
-let crmFreelancerVisible=6;
-function renderFreelancers(keepVisible=false){
+// Every approved professional is immediately visible. Ranking only uses
+// public, actual reviews; it never fabricates ratings or recommendations.
+function crmFreelancerReviewTotals(){
+ const totals=new Map();
+ for(const row of (window.FL_REVIEWS||[])){
+  const key=String(row.freelancer_nome||'');
+  if(!key)continue;
+  if(!totals.has(key))totals.set(key,{count:0,total:0});
+  const item=totals.get(key);
+  item.count++;
+  item.total+=Number(row.nota)||0;
+ }
+ return totals;
+}
+function crmFreelancerDate(f){
+ const time=Date.parse(String(f.created_at||f.createdAt||''));
+ return Number.isFinite(time)?time:0;
+}
+function renderFreelancers(){
  const q=(document.getElementById('freelancerSearchText')?.value||'').toLocaleLowerCase('pt-BR').trim();
  const fCat=document.getElementById('fCategoriaFreela')?.value||'';
  const order=document.getElementById('freelancerOrder')?.value||'recent';
- if(keepVisible!==true)crmFreelancerVisible=6;
  const filtered=FREELANCERS.filter(f=>
    (!fCat||String(f.categoria||'').split(',').map(v=>v.trim()).includes(fCat))&&
    (!q||[f.nome,f.categoria,f.titulo,f.ferramentas,f.bio].join(' ').toLocaleLowerCase('pt-BR').includes(q))
  );
- if(order==='name_asc'||order==='name_desc'){
+ const totals=crmFreelancerReviewTotals();
+ const stats=f=>totals.get(String(f.nome||''))||{count:0,total:0};
+ const newest=(a,b)=>crmFreelancerDate(b)-crmFreelancerDate(a);
+ if(order==='most_reviewed'){
+  // Quantity of real reviews is the main criterion; average stars breaks ties.
+  filtered.sort((a,b)=>{
+   const ra=stats(a),rb=stats(b);
+   return rb.count-ra.count||
+     (rb.count?rb.total/rb.count:0)-(ra.count?ra.total/ra.count:0)||
+     newest(a,b)||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
+  });
+ }else if(order==='new'){
+  // The existing "Novo na comunidade" badge means zero actual reviews.
+  // Place these professionals first, most recent first, without fake ratings.
+  filtered.sort((a,b)=>Number(stats(a).count>0)-Number(stats(b).count>0)||
+    newest(a,b)||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'));
+ }else if(order==='name_asc'||order==='name_desc'){
   filtered.sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')*(order==='name_desc'?-1:1));
+ }else{
+  // Retain the API's recent-first ordering for legacy rows without created_at.
+  filtered.sort((a,b)=>newest(a,b));
  }
  const count=document.getElementById('freelancerCount');
  if(count)count.textContent=filtered.length+(filtered.length===1?' freelancer':' freelancers');
  const container=document.getElementById('freelancerResults');
  if(!container)return;
  container.setAttribute('aria-busy','false');
- const visible=filtered.slice(0,crmFreelancerVisible);
  container.innerHTML=filtered.length
-  ?'<div class="result-grid">'+visible.map(freelancerCardHtml).join('')+'</div>'+
-   (filtered.length>visible.length?'<div class="cx-freelancer-more"><span>Mostrando '+visible.length+' de '+filtered.length+' freelancers</span><button type="button" onclick="crmLoadMoreFreelancers()">Carregar mais freelancers</button></div>':'')
+  ?'<div class="result-grid">'+filtered.map(freelancerCardHtml).join('')+'</div>'
   :'<div class="empty-state">Nenhum freelancer encontrado com esses filtros.</div>';
  window.CXProfileHub?.refresh?.();
-}
-function crmLoadMoreFreelancers(){
- crmFreelancerVisible+=6;
- renderFreelancers(true);
 }
 
 // ============ AGÊNCIAS E CONSULTORIAS ============
