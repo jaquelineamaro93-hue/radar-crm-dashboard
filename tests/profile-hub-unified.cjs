@@ -21,7 +21,7 @@ for(const part of ['Perfil geral','Freelancer','Open to Work','searchTabRegistra
 assert(hub.includes('current.email_confirmed_at')||hub.includes('current?.email_confirmed_at'),'ownership check must require verified identity');
 assert(hub.includes('email_autor'),'freelancer ownership must compare the confirmed author address');
 assert(hub.includes('cx-freelancer-mine')&&hub.includes('data-cx-freelancer-id'));
-assert(brasa.includes('getProfile()?.preferred_name'),'Brasa greeting uses profile nickname locally');
+assert(!brasa.includes('getProfile(')&&!brasa.includes('CURRENT_PROFILE'),'Brasa does not read even nickname from a private profile; name preference remains available in the member editor');
 assert(brasa.includes("type==='assistant'"),'only assistant messages are normalized');
 assert(brasa.includes('Extended_Pictographic'),'no excessive visual emoji in assistant response');
 assert(!brasa.includes("'. Como posso ajudar?'"),'avoid old generic greeting');

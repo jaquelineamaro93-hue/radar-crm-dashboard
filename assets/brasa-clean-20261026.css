@@ -1,0 +1,153 @@
+
+/* Brasa · unified clean conversation presentation, October 2026.
+   Tokens follow the portal UI Kit. The fox is the only orange brand accent. */
+#cxCopilot{
+ --brasa-surface:#111a2b;
+ --brasa-panel:#141d2d;
+ --brasa-border:#35435a;
+ --brasa-control:#1d2940;
+ --brasa-text:#eaf0f9;
+ --brasa-muted:#aab8cd;
+ --brasa-accent:#cda6e3;
+}
+#cxCopilot .cx-copilot-panel{
+ width:min(440px,calc(100vw - 28px))!important;
+ height:min(640px,calc(100dvh - 94px))!important;
+ max-width:calc(100vw - 28px)!important;
+ border:1px solid var(--brasa-border)!important;
+ border-radius:16px!important;
+ background:var(--brasa-surface)!important;
+ color:var(--brasa-text)!important;
+ box-shadow:0 18px 48px #0006!important;
+}
+#cxCopilot .cx-copilot-head{
+ display:flex!important;gap:9px!important;align-items:center!important;
+ min-height:54px!important;max-height:58px!important;
+ padding:9px 14px!important;
+ background:var(--brasa-panel)!important;
+ border-bottom:1px solid var(--brasa-border)!important;
+}
+#cxCopilot .cx-copilot-head strong{font-size:13px!important;font-weight:650!important;letter-spacing:0!important}
+#cxCopilot .cx-copilot-head .brasa-fox{width:28px!important;height:28px!important;flex:0 0 28px!important}
+#cxCopilot .cx-copilot-head :is(.cx-copilot-expand,.cx-copilot-close){
+ width:36px!important;min-width:36px!important;min-height:36px!important;height:36px!important;
+ flex-basis:36px!important;background:transparent!important;color:var(--brasa-muted)!important;
+ border:1px solid transparent!important;border-radius:8px!important;
+}
+#cxCopilot .cx-copilot-head :is(.cx-copilot-expand,.cx-copilot-close):hover{
+ background:#253249!important;color:var(--brasa-text)!important;border-color:var(--brasa-border)!important
+}
+#cxCopilot .cx-copilot-history{
+ background:var(--brasa-surface)!important;
+ padding:18px 16px!important;gap:12px!important;
+}
+#cxCopilot .cx-copilot-message{
+ max-width:min(94%,62ch)!important;
+ font-size:13px!important;line-height:1.58!important;
+ border-radius:12px!important;
+ padding:11px 13px!important;
+ box-shadow:none!important;
+}
+#cxCopilot .cx-copilot-assistant{
+ border:1px solid #334157!important;
+ background:#202b40!important;color:var(--brasa-text)!important;
+ border-bottom-left-radius:5px!important
+}
+#cxCopilot .cx-copilot-user{
+ border:1px solid #68527c!important;
+ background:#352941!important;color:#f3e8fa!important;
+ border-bottom-right-radius:5px!important
+}
+#cxCopilot .cx-copilot-message p{font-size:inherit!important;line-height:inherit!important}
+#cxCopilot .cx-copilot-action{
+ border:1px solid #73558e!important;background:transparent!important;color:#e2c7f1!important;
+ min-height:35px!important;padding:7px 11px!important;font-size:11px!important;
+ border-radius:8px!important;font-weight:600!important;
+}
+#cxCopilot .cx-copilot-action:hover{background:#33263e!important}
+#cxCopilot .cx-copilot-quick{
+ border:0!important;background:var(--brasa-surface)!important;
+ padding:4px 16px 11px!important;gap:7px!important;
+}
+#cxCopilot .cx-copilot-quick button{
+ background:#1e2a3e!important;border:1px solid var(--brasa-border)!important;
+ color:var(--brasa-muted)!important;border-radius:8px!important;
+ font-size:11px!important;min-height:32px!important;
+}
+#cxCopilot .cx-copilot-form{
+ padding:12px 14px 13px!important;
+ background:var(--brasa-panel)!important;border-top:1px solid var(--brasa-border)!important
+}
+#cxCopilot .cx-copilot-form textarea{
+ background:#0e1728!important;border:1px solid #42526c!important;
+ border-radius:11px!important;color:#f0f3fc!important;
+ min-height:46px!important;padding:11px 12px!important;
+ font-size:14px!important;line-height:1.5!important;box-shadow:none!important
+}
+#cxCopilot .cx-copilot-form textarea::placeholder{color:#9facc0!important}
+#cxCopilot .cx-copilot-form textarea:focus-visible{
+ outline:2px solid var(--brasa-accent)!important;outline-offset:1px!important;
+ border-color:var(--brasa-accent)!important
+}
+#cxCopilot .cx-copilot-bottom{margin-top:7px!important}
+#cxCopilot .cx-copilot-bottom small{color:var(--brasa-muted)!important;font-size:10px!important}
+#cxCopilot .cx-copilot-bottom button[data-cx-send]{
+ min-height:36px!important;background:#caa2e4!important;color:#181827!important;
+ border:1px solid #caa2e4!important;border-radius:8px!important;
+ padding:8px 14px!important;font-weight:650!important
+}
+#cxCopilot .cx-copilot-privacy-settings{
+ background:transparent!important;border:0!important;color:#cfb9db!important;
+ text-decoration:underline!important;text-underline-offset:3px!important;
+ font-weight:500!important;font-size:11px!important
+}
+#cxCopilot .cx-copilot-consent{
+ background:#202a3d!important;border:1px solid #48556b!important;
+ color:#d7e1ef!important;border-radius:11px!important
+}
+#cxCopilot .cx-copilot-consent button:first-of-type{
+ background:#caa2e4!important;border-color:#caa2e4!important;color:#1a1520!important
+}
+#cxCopilot .cx-copilot-sources{border-top:1px solid #46536a!important}
+#cxCopilot .cx-copilot-sources a{color:#d9baef!important}
+#cxCopilot .cx-copilot-feedback-actions button{
+ border:0!important;background:transparent!important;
+ color:#bac6d8!important;filter:grayscale(1)!important;
+ min-width:34px!important;width:34px!important;height:34px!important;opacity:.8!important
+}
+#cxCopilot .cx-copilot-feedback-actions button:hover,
+#cxCopilot .cx-copilot-feedback-actions button[aria-pressed=true]{
+ background:#2c354a!important;color:#f3edff!important;opacity:1!important
+}
+#cxCopilot .cx-copilot-launch{min-height:44px!important;box-shadow:0 6px 18px #0003!important}
+#cxCopilot.cx-expanded .cx-copilot-panel{
+ width:min(840px,calc(100vw - 40px))!important;
+ max-width:calc(100vw - 40px)!important;
+ height:calc(100dvh - 40px)!important;
+ border-radius:16px!important
+}
+/* Freelancer cards: avatars and real photos get a visible inset from the card. */
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-head{
+ gap:13px!important;padding:3px 2px 10px!important;
+ border-bottom:1px solid #334259!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-avatar{
+ display:grid!important;place-items:center!important;
+ flex:0 0 48px!important;width:48px!important;min-width:48px!important;height:48px!important;
+ padding:8px!important;margin:2px 0 2px 2px!important;
+ border:1px solid #4a5b74!important;border-radius:12px!important;
+ background:#263449!important;box-sizing:border-box!important;
+ color:#e8d7f2!important;font-size:14px!important;font-weight:650!important;
+ overflow:hidden!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageFreelancers .pro-card .pro-avatar img{
+ display:block!important;width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;border-radius:6px!important
+}
+@media(max-width:600px){
+ #cxCopilot .cx-copilot-panel{width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important;height:min(660px,calc(100dvh - 84px))!important}
+ #cxCopilot .cx-copilot-history{padding:14px 12px!important}
+ #cxCopilot.cx-expanded .cx-copilot-panel{inset:10px 8px 10px 8px!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 20px)!important}
+}
+@media(prefers-reduced-motion:reduce){#cxCopilot *{animation:none!important;transition:none!important}}

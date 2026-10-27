@@ -30,7 +30,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  ask('mas é de São Paulo?');assert.match(history.lastElementChild.textContent,/não consigo afirmar que essa média seja exclusiva de SP/i);
  ask('salário de diretor remoto');assert.match(history.lastElementChild.textContent,/Não encontrei salários/);
  ask('<img src=x onerror=alert(1)>');assert.equal(history.querySelector('img'),null);
- ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/Seu cadastro não será anexado/);
+ ask(('Requisitos: experiência com CRM e SQL. ').repeat(8));assert.match(history.lastElementChild.textContent,/O Brasa não acessa seu perfil ou currículo/);
  const consentCard=history.querySelector('.cx-copilot-consent');
  assert.ok(consentCard,'first external request must ask for consent');
  consentCard.querySelector('button').click();

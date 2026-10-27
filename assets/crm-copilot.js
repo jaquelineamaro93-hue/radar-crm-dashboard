@@ -1,7 +1,7 @@
 /* BRASA COPILOT — copiloto seguro, módulo isolado.
  * Ações locais: navegação, abertura do próprio perfil e filtros visuais.
  * Jev classifica no servidor antes de qualquer chamada ao modelo de linguagem.
- * Nunca consulta diretórios privados, altera tabelas ou envia CURRENT_PROFILE à IA.
+ * Não consulta dados de perfis, diretórios privados ou currículos.
  */
 (()=>{'use strict';
 if(window.CXCopilot)return;
@@ -17,6 +17,7 @@ const ACTIONS=Object.freeze({
   events:{label:'Ver agenda de eventos',route:'eventos'},
   members:{label:'Conhecer membros',route:'membros'},
   salary:{label:'Ver pesquisa completa (opcional)',route:'cargos'},
+  saved:{label:'Abrir Vagas Salvas',route:'vagas-salvas'},
   market:{label:'Ver dados do mercado',route:'mercado'},
   match:{label:'Ver Match de Vagas',route:'vagas'},
   avatar:{label:'Abrir meu Avatar',route:'xp-avatar'},
@@ -24,7 +25,6 @@ const ACTIONS=Object.freeze({
 });
 const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const getUser=()=>{try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null}catch{return null}};
-const getProfile=()=>{try{return typeof CURRENT_PROFILE!=='undefined'?CURRENT_PROFILE:null}catch{return null}};
 const signed=()=>{try{return typeof crmSignedIn==='function'&&crmSignedIn()&&!!getUser()?.id&&!getUser()?.is_anonymous}catch{return false}};
 function canShow(){
   // A sessão e a área logada precisam estar ativas ao mesmo tempo.
@@ -83,15 +83,11 @@ function addMessage(type,message,action,sources=[],options={}){
 }
 function showIntro(){
   if(!history)return;
-  // The name stays in the browser; it is never attached to external AI requests.
-  const source=String(getProfile()?.preferred_name||getProfile()?.full_name||getUser()?.user_metadata?.full_name||getUser()?.user_metadata?.name||'').trim();
-  const first=(source.split(/\s+/)[0]||'').slice(0,35);
+  // Deliberately do not read any member profile fields, even for greetings.
   const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
-  const greeting=locale==='en'
-    ?'Hi'+(first?', '+first:'')+'. What can I help you with?'
-    :locale==='es-419'
-    ?'Hola'+(first?', '+first:'')+'. ¿En qué puedo ayudarte?'
-    :'Oi'+(first?', '+first:'')+'. Em que posso ajudar?';
+  const greeting=locale==='en'?'Hi. How can I help today?'
+    :locale==='es-419'?'Hola. ¿En qué puedo ayudarte hoy?'
+    :'Oi. Em que posso ajudar hoje?';
   const previous=history.firstElementChild;
   if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
     const content=previous.querySelector('p');if(content)content.textContent=greeting;
@@ -102,28 +98,31 @@ function showIntro(){
   history.lastElementChild.dataset.cxWelcome='true';
 }
 function currentProfileStatus(){
-  if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
-  const p=getProfile();
-  if(!p)return {message:'Seu perfil ainda não foi iniciado ou não terminou de carregar. Posso abrir o formulário para você.',action:'profile'};
-  const missing=[];
-  if(!String(p.full_name||'').trim())missing.push('nome');
-  if(!String(p.headline||'').trim())missing.push('cargo ou área');
-  if(!String(p.seniority||'').trim())missing.push('senioridade');
-  if(!Array.isArray(p.tools)||!p.tools.length)missing.push('ferramentas');
-  if(p.guided_onboarding_completed!==true)missing.push('finalização do onboarding');
-  if(!missing.length)return {message:'Seu cadastro essencial está completo. Você pode revisar suas informações quando quiser.',action:'profile'};
-  return {message:'Encontrei estas etapas pendentes no seu perfil: '+missing.join(', ')+'. Posso abrir o formulário para completar. Essa verificação aconteceu somente no seu navegador.',action:'profile'};
+  // Never inspect private member data in an assistant response.
+  if(!signed())return {message:'Para conferir o cadastro, entre na sua conta. Posso explicar os campos sem consultar seus dados.',action:'login'};
+  return {message:'Você pode revisar e atualizar as informações em Meu perfil. Eu não leio seu cadastro, mas posso ajudar a melhorar o que escolher compartilhar aqui.',action:'profile'};
+}
+function conversationalFallback(question){
+ const q=normalize(question);
+ if(/curriculo|cv/.test(q))return 'Um currículo forte mostra o que você fez, como fez e qual foi o resultado. Se quiser, cole um trecho sem nome, telefone ou dados de terceiros e diga o cargo que procura. Posso sugerir melhorias concretas.';
+ if(/entrevista/.test(q))return 'Para preparar uma entrevista, vale relacionar sua experiência aos desafios do cargo. Qual posição você está considerando?';
+ if(/carreira|transicao|promocao|recolocacao/.test(q))return 'Podemos comparar caminhos e organizar um próximo passo. O que está mais difícil de decidir agora?';
+ if(/salari|remuner|pretensao/.test(q))return 'Posso ajudar a comparar remuneração e fontes. Qual cargo ou nível quer consultar?';
+ if(/vaga|emprego|oportunidade/.test(q))return 'Podemos afinar sua busca de vagas. Qual cargo procura e prefere remoto, híbrido ou presencial?';
+ return 'Podemos explorar isso juntos. O que você quer resolver primeiro?';
 }
 function classify(question){
   const s=normalize(question);
   if(!s)return {intent:'help'};
-  if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
+  if(/(?:abrir|acessar|cadastrar|inscrever|ir para|entrar em).{0,28}(?:open.?to.?work|opentowork)/.test(s))return {intent:'action',action:'otw'};
+  if(/(?:open.?to.?work|opentowork)/.test(s))return {intent:'analyze'};
   // A pergunta completa define a intenção, não a palavra isolada "perfil".
   if(/\b(como|porque|por que|dica|orienta|aconselh|me ajuda|me explique|qual a melhor|vale a pena)\b/.test(s)&&/(vaga|match|perfil|curriculo|carreira|entrevista)/.test(s))
     return {intent:'analyze'};
+  if(/(vagas?.{0,24}(?:salv|guard)|(?:salv|guard).{0,24}vagas?)/.test(s))return {intent:'action',action:'saved'};
   if(/(vaga|oportunidade|emprego|radar|match|aderencia)/.test(s)&&/(meu perfil|meus dados|com base no meu perfil|para mim)/.test(s))
     return {intent:'action',action:'match'};
-  if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
+  if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s)&&!/(curriculo|cv|melhor|dica|avaliar|ideal|forte|entrevista)/.test(s))
     return {intent:'profile-status'};
   // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
   if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
@@ -136,6 +135,7 @@ function classify(question){
   if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s)||
     /(?:salari|remuner|mercado|tendenc|notici|pesquis|estudo).{0,50}(?:atual|recent|hoje|esta semana|ultim|2026)/.test(s))
     return {intent:'analyze'};
+  if(/(?:robert half|michael page|fox tech|guia salarial|comparar fontes|outras fontes)/.test(s))return {intent:'analyze'};
   if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
@@ -200,7 +200,7 @@ function confirmExternal(question){
  pendingDescription=question;
  if(aiConsentSaved()){void analyze();return;}
  const card=document.createElement('div');card.className='cx-copilot-consent';
- const label=document.createElement('p');label.textContent=cxT("Seu cadastro não será anexado. Não inclua dados pessoais.");
+ const label=document.createElement('p');label.textContent=cxT("O Brasa não acessa seu perfil ou currículo. Apenas o texto que você escrever será enviado à IA. Não inclua dados pessoais.");
  const yes=document.createElement('button');yes.type='button';yes.textContent=cxT("Aceitar e continuar");
  const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
  yes.addEventListener('click',()=>{saveAiConsent();card.remove();void analyze();});
@@ -211,7 +211,7 @@ async function analyze(){
  const question=pendingDescription;pendingDescription='';if(!question||busy||!signed())return;
  const memberId=getUser()?.id;
  const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
- if(!sb?.functions?.invoke){addMessage('assistant','O serviço está indisponível. Tente novamente em instantes.');return;}
+ if(!sb?.functions?.invoke){addMessage('assistant',conversationalFallback(question));return;}
  const activeRoot=root,activeHistory=history;
  busy=true;activeRoot.dataset.state='thinking';activeHistory.setAttribute('aria-busy','true');
  const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent=cxT("Brasa está pensando…");activeRoot.querySelector('form').before(waiting);
@@ -226,7 +226,7 @@ async function analyze(){
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
   else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai'});
   else throw Error('empty');
- }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
+ }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant',conversationalFallback(question));}
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
 }
 function salaryAnswer(question){
@@ -306,6 +306,7 @@ function localAnswer(action,question){
     remote:'Para buscar trabalho remoto, selecione Remoto no Radar e confira a modalidade no anúncio original. Qual cargo ou senioridade você procura?',
     hybrid:'Em vagas híbridas, confira a cidade e a frequência presencial no anúncio. Qual cidade e senioridade você procura?',
     events:'A agenda reúne eventos da comunidade. Você pode consultar os detalhes e salvar os que interessam. Quer encontrar um evento ou publicar uma proposta?',
+    saved:'As vagas que você guardou ficam na página Vagas Salvas. Posso abrir essa área para você.',
     members:'No diretório você encontra profissionais da comunidade e os contatos que cada pessoa escolheu compartilhar. Você busca uma especialidade ou quer atualizar seu próprio perfil?',
     rankings:'Os Rankings ficam na área Conexão XP. Eles mostram a participação na comunidade. Seu avatar também pode ser personalizado nessa área.',
     avatar:'Você pode personalizar seu avatar na área Conexão XP. As escolhas são feitas por você no editor; esta conversa não altera seu perfil.',
@@ -321,6 +322,13 @@ function process(question){
   root.dataset.started='true';
   recentQuestions.push(question.slice(0,320));if(recentQuestions.length>4)recentQuestions.shift();
   addMessage('user',question);
+  const normalized=normalize(question);
+  if(/^(?:era isso|obrigad|valeu|ate mais|tchau)/.test(normalized)){
+    addMessage('assistant','Por nada. Até a próxima.');return;
+  }
+  if(/^(?:tem|ha|existe).{0,30}(?:vaga|oportunidade)/.test(normalized)&&!/\b(?:crm|cx|cs|analista|especialista|coorden|geren|diretor|head|junior|pleno|senior)\b/.test(normalized)){
+    lastTopic='jobs';addMessage('assistant','Boa para qual próximo passo? Você quer continuar na sua área ou está pensando em mudar?');return;
+  }
   let found=classify(question);
   if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj|mensal|por mes|anual|periodicidade|sao paulo|\bsp\b/.test(normalize(question)))found={intent:'action',action:'salary'};
   if(found.intent==='profile-status'){
@@ -356,7 +364,8 @@ function process(question){
   if(found.intent==='analyze'){
     confirmExternal(question);return;
   }
-  if(/^(oi|ola|bom dia|boa tarde|boa noite|obrigad[oa]|pode me ajudar)[?.! ]*$/.test(normalize(question))){addMessage('assistant','Olá. Posso ajudar com CRM, carreira e recursos do portal. O que você precisa?');return;}
+  if(/^(oi|ola|bom dia|boa tarde|boa noite|obrigad[oa]|pode me ajudar)[?.! ]*$/.test(normalize(question))){addMessage('assistant','Oi. Podemos falar de carreira, CRM ou dúvidas do portal. O que está pensando?');return;}
+  if(/^(curriculo|cv|entrevista|carreira|recolocacao)[?.! ]*$/.test(normalize(question))){addMessage('assistant',conversationalFallback(question));return;}
   confirmExternal(question);
 }
 function clearOnAccountChange(){
@@ -386,9 +395,9 @@ function mount(){
      '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
-     '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
-     '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
-     '<div class="cx-copilot-bottom"><small>Não inclua dados pessoais.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
+     '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Sua mensagem</label>'+
+     '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Escreva sua dúvida..." data-ph-no-capture="true"></textarea>'+
+     '<div class="cx-copilot-bottom"><small>Não envie dados pessoais nem informações de terceiros.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
     '</section>';
   document.body.append(root);
   drawer=root.querySelector('[data-cx-open]')?.nextElementSibling;
