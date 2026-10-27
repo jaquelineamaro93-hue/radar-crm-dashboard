@@ -6,6 +6,11 @@ const user=()=>{try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null;}
 const signed=()=>{try{return !!window.crmSignedIn?.()&&!!user()?.id&&!user()?.is_anonymous;}catch{return false;}};
 const authenticated=()=>signed()&&!!user()?.email_confirmed_at;
 const profileOverlay=()=>document.getElementById('profileModalOverlay');
+const localized=key=>window.CXLanguage?.translate?.(key)||key;
+function localizedNode(el,key){
+ el.dataset.cxProfileKey=key;
+ el.textContent=localized(key);
+}
 function closeEditor(){
  const overlay=profileOverlay();
  if(overlay)overlay.remove();
@@ -39,13 +44,13 @@ function openResume(){
 }
 function button(text,callback){
  const b=document.createElement('button');b.type='button';b.className='cx-profile-action';
- b.textContent=text;b.addEventListener('click',callback);
+ localizedNode(b,text);b.addEventListener('click',callback);
  return b;
 }
 function panel(id,title,description){
  const el=document.createElement('section');el.className='cx-profile-tab-panel';el.id=id;el.hidden=true;
- const heading=document.createElement('h3');heading.textContent=title;
- const copy=document.createElement('p');copy.textContent=description;
+ const heading=document.createElement('h3');localizedNode(heading,title);
+ const copy=document.createElement('p');localizedNode(copy,description);
  el.append(heading,copy);return el;
 }
 function mountEditor(){
@@ -57,7 +62,7 @@ function mountEditor(){
  overlay.dataset.cxHubMounted='1';
  const sections=[...box.querySelectorAll('[data-pf-step]')];
  const footer=box.querySelector('.crm-profile-footer'),status=box.querySelector('#pf_status');
- const nav=document.createElement('nav');nav.className='cx-profile-tabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','Áreas do meu perfil');
+ const nav=document.createElement('nav');nav.className='cx-profile-tabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label',localized('Áreas do meu perfil'));
  const freelancer=panel('cx-profile-tab-freelancer','Seu perfil freelancer','Gerencie a apresentação usada na vitrine de profissionais. Edições podem exigir aprovação da comunidade.');
  const freelaAction=button('Editar meu perfil freelancer',openOwnFreelancer);
  freelancer.append(freelaAction);
@@ -78,10 +83,10 @@ function mountEditor(){
   if(status)status.hidden=which!=='geral';
   if(footer)footer.hidden=which!=='geral';
   const hasOwn=own.userId===user()?.id&&own.id!=null;
-  freelaAction.textContent=hasOwn?'Solicitar edição do meu perfil':'Cadastrar perfil freelancer';
+  localizedNode(freelaAction,hasOwn?'Solicitar edição do meu perfil':'Cadastrar perfil freelancer');
  }
  for(const [key,label] of tabs){
-  const tab=document.createElement('button');tab.type='button';tab.textContent=label;
+  const tab=document.createElement('button');tab.type='button';localizedNode(tab,label);
   tab.className='cx-profile-tab';tab.id='cx-profile-tab-'+key;
   tab.setAttribute('role','tab');tab.setAttribute('aria-controls',key==='freelancer'?freelancer.id:key==='otw'?otw.id:'pf_nome');
   tab.addEventListener('click',()=>select(key));
@@ -130,7 +135,7 @@ function renderOwn(){
  const cta=page?.querySelector('#btnOpenFreelancerModal');
  const mine=signed()&&own.userId===user()?.id&&own.id!=null;
  if(cta){
-  cta.textContent=mine?'Editar meu perfil freelancer':'Cadastrar meu perfil';
+  cta.textContent=localized(mine?'Editar meu perfil freelancer':'Cadastrar meu perfil');
   if(!cta.dataset.cxOwnedAction){
    cta.dataset.cxOwnedAction='1';
    // Intercept all authenticated clicks, even while ownership is still loading:
@@ -147,7 +152,16 @@ function renderOwn(){
  page?.querySelectorAll('.cx-freelancer-edit').forEach(el=>el.remove());
  profileOverlay()?.dispatchEvent(new Event('cx:ownership-checked'));
 }
-function refresh(){mountEditor();renderOwn();if(signed()&&own.userId!==user()?.id)refreshOwner();}
+function syncLocalized(){
+ const overlay=profileOverlay();
+ overlay?.querySelectorAll('[data-cx-profile-key]').forEach(el=>{
+  el.textContent=localized(el.dataset.cxProfileKey||'');
+ });
+ const nav=overlay?.querySelector('.cx-profile-tabs');
+ if(nav)nav.setAttribute('aria-label',localized('Áreas do meu perfil'));
+ renderOwn();
+}
+function refresh(){mountEditor();syncLocalized();if(signed()&&own.userId!==user()?.id)refreshOwner();}
 let scheduled=false;
 function schedule(){
  if(scheduled)return;scheduled=true;
@@ -158,6 +172,8 @@ function start(){
  schedule();
  document.addEventListener('crm:auth-state',()=>{own.userId='';own.id=null;own.name='';schedule();});
  document.addEventListener('crm:route-changed',schedule);
+ window.addEventListener('cx:locale-change',syncLocalized);
+ window.addEventListener('cx:locale-ready',syncLocalized);
  const body=document.body;
  if(body&&typeof MutationObserver==='function')
   new MutationObserver(records=>{

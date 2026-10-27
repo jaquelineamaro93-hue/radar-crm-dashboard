@@ -30,6 +30,16 @@ assert(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'));
 assert(css.includes('@media(max-width:1150px)')&&css.includes('@media(max-width:720px)'));
 assert(css.includes('crm-workbar>.crm-text-button')&&css.includes('border:1px solid #43516b'));
 assert(css.includes('#profileModalOverlay .crm-profile-modal'));
+// The member editor translates its own static UI without touching profile fields.
+const language=read('assets/site-i18n.js');
+for(const key of ['Seu perfil freelancer','Perfil geral','Solicitar edição do meu perfil','Editar currículo do Match']){
+ assert(language.includes(JSON.stringify(key)+':['),'Missing translated profile label: '+key);
+}
+assert(hub.includes("window.addEventListener('cx:locale-change',syncLocalized)"));
+assert(hub.includes("window.addEventListener('cx:locale-ready',syncLocalized)"));
+assert(hub.includes('localizedNode(freelaAction,hasOwn?'));
+assert(hub.includes("cta.textContent=localized(mine?"));
+new vm.Script(language,{filename:'assets/site-i18n.js'});
 new vm.Script(hub,{filename:'assets/profile-hub-unified.js'});
 new vm.Script(brasa,{filename:'assets/crm-copilot.js'});
 let depth=0;for(const char of css){if(char==='{')depth++;if(char==='}')depth--;assert(depth>=0,'CSS closes before opening');}assert.equal(depth,0);
