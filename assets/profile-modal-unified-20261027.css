@@ -51,7 +51,7 @@ body #profileModalOverlay .crm-profile-close{
 }
 body #profileModalOverlay .crm-profile-close:hover{background:#28344d!important}
 body #profileModalOverlay .cx-profile-tabs{
- position:sticky!important;top:var(--cx-modal-sticky-top,95px)!important;
+ position:relative!important;top:auto!important;
  z-index:4!important;display:flex!important;flex-wrap:wrap!important;
  gap:8px!important;margin:0!important;padding:12px clamp(18px,3vw,29px)!important;
  background:#141d2e!important;border-bottom:1px solid #364660!important;
@@ -151,7 +151,17 @@ body #profileModalOverlay .crm-profile-chips label{
 body #profileModalOverlay .crm-profile-chips label:has(input:checked){
  color:#ead5f7!important;background:#322542!important;border-color:#a579c1!important;
 }
-body #profileModalOverlay .crm-profile-chips label span{color:inherit!important}
+body #profileModalOverlay .crm-profile-chips label span{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ margin:0!important;padding:0!important;border:0!important;
+ border-radius:0!important;background:transparent!important;color:inherit!important;
+ font-size:12px!important;line-height:1.3!important;
+}
+body #profileModalOverlay .crm-profile-chips label:has(input:checked) span,
+body #profileModalOverlay .crm-profile-chips input:checked+span{
+ background:transparent!important;color:#f1dcfb!important;
+ border:0!important;border-radius:0!important;
+}
 body #profileModalOverlay .crm-profile-avatar-row{
  display:flex!important;align-items:center!important;gap:15px!important;
  margin:0 0 14px!important;padding:12px!important;
@@ -332,7 +342,7 @@ dialog.crm-submission-dialog small{
   padding:15px!important;gap:8px!important;
  }
  body #profileModalOverlay .cx-profile-tabs{
-  top:var(--cx-modal-sticky-top,79px)!important;
+  position:relative!important;top:auto!important;
   padding:10px 15px!important;gap:5px!important;
  }
  body #profileModalOverlay .cx-profile-tab{flex:1 1 auto!important;padding:8px 10px!important}
