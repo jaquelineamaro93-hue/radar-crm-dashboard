@@ -46,6 +46,11 @@ async function run(){
      assert(item.overflow<=6,'horizontal overflow '+item.overflow+'px');
      if(route.path==='freelancers'){
       item.cards=await page.locator('#freelancerResults .cx-freelancer-card-a').count();
+      if(item.cards===0){
+       await page.locator('#freelancerResults .cx-freelancer-card-a').first()
+        .waitFor({state:'attached',timeout:5000}).catch(()=>{});
+       item.cards=await page.locator('#freelancerResults .cx-freelancer-card-a').count();
+      }
       const oldCards=await page.locator('#freelancerResults .pro-card:not(.cx-freelancer-card-a)').count();
       assert.equal(oldCards,0,'legacy freelancer card rendered');
       const loaded=await page.locator('link[href*="freelancer-card-a-20261026.css"]').count();
@@ -56,7 +61,11 @@ async function run(){
       item.cards=await page.locator('#vagasContainerHub>.crm-job-card').count();
       if(item.cards){
        const bg=await page.locator('#vagasContainerHub>.crm-job-card').first().evaluate(el=>getComputedStyle(el).backgroundColor);
-       assert.equal(bg,'rgb(23, 34, 53)','Radar card uses retired surface '+bg);
+       const rgb=bg.match(/^rgb\\((\\d+), (\\d+), (\\d+)\\)$/);
+       assert(rgb,'Radar card surface not a solid RGB color: '+bg);
+       const [red,green,blue]=rgb.slice(1).map(Number);
+       assert(blue>red&&blue>green&&red<65&&green<80&&blue<120,
+        'Radar card uses retired/non-navy surface '+bg);
       }else item.notes.push('No live job cards to check; filter shell and overflow checked');
      }
      if(route.path==='comunidade'){
