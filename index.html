@@ -9261,7 +9261,7 @@ async function crmAnalyzeJob(button){
  try{const answer=await processarComOpenAI('Analise os requisitos, pontos de atenção e perguntas para entrevista desta vaga pública: '+description);if(d.isConnected)d.querySelector('p').textContent=answer||'Análise indisponível.';}catch(e){if(d.isConnected)d.querySelector('p').textContent=e.message;}
 }
 const crmRouteAliases={'conteudos-cases':'conteudos','patrocinador':'patrocinio','open-to-work':'search','calculadora-clt-pj':'calc','comparativo-crms':'ferramentas','pesquisas-censo':'pesquisa','medias-salariais':'cargos','vagas-crm':'vagas','agenda-eventos':'eventos'};
-const crmRoutePaths={'inicio':'/','quem-somos':'/quem-somos','solucoes':'/solucoes','public-match':'/match','dashboard':'/dashboard','mercado':'/mercado','vagas':'/vagas','vagas-salvas':'/vagas-salvas','search':'/open-to-work','membros':'/membros','freelancers':'/freelancers','membro':'/meu-painel','cargos':'/medias-salariais','calc':'/calculadora-clt-pj','plataformas':'/plataformas','agencias':'/agencias','courses':'/cursos','conteudos':'/conteudos','eventos':'/eventos','comunidade':'/comunidade','patrocinio':'/patrocinio','pesquisa':'/pesquisas-censo','ferramentas':'/comparativo-crms','match-recrutador':'/match-recrutador','meus-eventos':'/meus-eventos','publicar':'/publicar','admin':'/admin','equipe':'/painel/equipe/','xp-avatar':'/painel/avatar/','xp-rankings':'/painel/rankings/','award-dreams':'/painel/aprovacoes/sonhos/','award-speakers':'/painel/aprovacoes/palestrantes/','award-creators':'/painel/aprovacoes/creators/','patrocinio/apoiadores':'/apoiadores'};
+const crmRoutePaths={'inicio':'/','quem-somos':'/quem-somos','solucoes':'/solucoes','public-match':'/match','dashboard':'/dashboard','mercado':'/mercado','vagas':'/vagas','vagas-salvas':'/vagas-salvas','search':'/open-to-work','membros':'/membros','freelancers':'/freelancers','membro':'/meu-painel','cargos':'/medias-salariais','calc':'/calculadora-clt-pj','plataformas':'/plataformas','agencias':'/agencias','courses':'/cursos','conteudos':'/conteudos','eventos':'/eventos','comunidade':'/comunidade','patrocinio':'/patrocinio','pesquisa':'/pesquisas-censo','ferramentas':'/comparativo-crms','match-recrutador':'/match-recrutador','meus-eventos':'/meus-eventos','publicar':'/publicar','admin':'/admin','equipe':'/painel/equipe/','xp-rankings':'/painel/rankings/','award-dreams':'/painel/aprovacoes/sonhos/','award-speakers':'/painel/aprovacoes/palestrantes/','award-creators':'/painel/aprovacoes/creators/','patrocinio/apoiadores':'/apoiadores'};
 const crmPathRoutes=Object.fromEntries(Object.entries(crmRoutePaths).map(([route,path])=>[path.replace(/\/+$/,'')||'/',route]));
 function crmRoutePath(route){return crmRoutePaths[route]||('/'+String(route||'').replace(/^\/+/,''));}
 function crmSyncRouteMeta(route){
@@ -10273,12 +10273,11 @@ async function crmSubmitExperienceRating(rating){
 }
 window.crmRenderFloatingPrompts=crmRenderFloatingPrompts;
 document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPrompts,700));
-</script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
-<script src="/assets/portal-hardening.js?v=20261026-audit2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
+</script><script src="/assets/xp-shell.js?v=20261027-no-avatar1"></script>
+<script src="/assets/portal-hardening.js?v=20261027-no-avatar1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-public-repair1"></script>
 <script defer src="/assets/share-everything.js?v=20261027-visible1"></script>
-<link rel="stylesheet" href="/assets/push-preferences.css?v=20261027-focus-audit1">
-<script defer src="/assets/push-preferences.js?v=20261026-watermark-1"></script>
+<script defer src="/assets/push-preferences.js?v=20261027-retire-push-avatar1"></script>
 <style id="crm-survey-mobile-fix-20261015">
 .crm-experience-save-status{font-size:12px;line-height:1.4;color:#d4e6f8;margin:8px 0}
 @media(max-width:700px){
