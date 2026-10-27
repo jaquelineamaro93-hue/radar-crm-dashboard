@@ -6540,7 +6540,7 @@ function freelancerCardHtml(f){
  const rate=reviews.avg===null?'Sem avaliações ainda':'★ '+reviews.avg.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' ('+reviews.items.length+' avaliações)';
  return '<article class="pro-card crm-fl-card" data-cx-freelancer-id="'+escapeHtml(String(f.id||''))+'">'+
  '<header class="pro-head crm-fl-head">'+crmFlAvatar(f)+'<div class="crm-fl-name"><h3>'+escapeHtml(f.nome||'Profissional')+'</h3><span class="pro-tag">'+escapeHtml(f.categoria||'Freelancer')+'</span></div>'+
- '<button type="button" class="crm-fl-save" aria-pressed="'+saved+'" aria-label="'+(saved?'Remover dos salvos neste navegador':'Salvar neste navegador')+'" title="Salvar neste navegador" onclick="crmFlSave('+JSON.stringify(String(f.id||''))+',this)">'+(saved?'◆':'◇')+'</button></header>'+
+ '<button type="button" class="crm-fl-save" aria-pressed="'+saved+'" aria-label="'+(saved?'Remover dos salvos neste navegador':'Salvar neste navegador')+'" title="Salvar neste navegador" data-freelancer-id="'+escapeHtml(String(f.id||''))+'" onclick="crmFlSave(this.dataset.freelancerId,this)">'+(saved?'◆':'◇')+'</button></header>'+
  (bio?'<p class="crm-fl-bio">'+escapeHtml(bio)+'</p>':'')+
  (skills.length?'<div class="crm-fl-tags">'+crmFlSkillMarkup(skills)+'</div>':'')+
  (years?'<p class="crm-fl-years">'+escapeHtml(years)+' de experiência informada</p>':'')+
