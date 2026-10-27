@@ -205,3 +205,33 @@
 @media(prefers-reduced-motion:reduce){
  #cxCopilot .cx-copilot-history{scroll-behavior:auto!important}
 }
+
+/* Brasa workspace: a full conversation area with a persistent composer. */
+#cxCopilot .cx-copilot-head .cx-copilot-new{width:36px;height:36px;flex:0 0 36px;border:0;border-radius:8px;background:transparent;color:var(--brasa-muted);font-size:24px}
+#cxCopilot .cx-copilot-head .cx-copilot-expand{font-size:24px!important;padding:0!important}
+#cxCopilot .cx-copilot-suggestions{flex:0 0 auto;border-top:1px solid var(--brasa-border);font-size:13px}
+#cxCopilot .cx-copilot-suggestions summary{padding:12px 16px;cursor:pointer;color:var(--brasa-accent)}
+#cxCopilot .cx-copilot-nav{display:flex;flex:0 0 auto;border-top:1px solid var(--brasa-border)}
+#cxCopilot .cx-copilot-nav button{flex:1;min-height:48px;border:0;border-radius:0;background:var(--brasa-panel);color:var(--brasa-muted);font-size:13px}
+#cxCopilot .cx-copilot-nav button[aria-pressed=true]{background:#352941;color:#f3e8fa;box-shadow:inset 0 2px var(--brasa-accent)}
+#cxCopilot .cx-copilot-support{flex:1 1 auto;overflow-y:auto;min-height:180px;padding:20px;font-size:14px;line-height:1.6}
+#cxCopilot .cx-copilot-support h2{font-size:18px;color:var(--brasa-text);margin:0 0 12px}
+#cxCopilot .cx-copilot-support a{color:var(--brasa-accent)}
+#cxCopilot .cx-copilot-support>button{display:block;text-align:left;width:100%;padding:12px;margin-top:8px;border:1px solid var(--brasa-border);border-radius:8px;background:var(--brasa-panel);color:var(--brasa-text);overflow-wrap:anywhere}
+#cxCopilot [hidden]{display:none!important}
+#cxCopilot button:focus-visible,#cxCopilot summary:focus-visible{outline:1px solid var(--brasa-accent)!important;outline-offset:-2px!important}
+#cxCopilot.cx-expanded .cx-copilot-panel:not([hidden]){
+ position:fixed!important;inset:24px!important;margin:auto!important;
+ width:min(1200px,calc(100vw - 48px))!important;max-width:calc(100vw - 48px)!important;
+ height:calc(100dvh - 48px)!important;max-height:calc(100dvh - 48px)!important;
+}
+#cxCopilot.cx-expanded .cx-copilot-history{padding:24px!important}
+#cxCopilot.cx-expanded .cx-copilot-message{font-size:15px!important;max-width:min(85%,80ch)!important}
+#cxCopilot.cx-expanded .cx-copilot-form{padding:16px 20px!important}
+@media(max-width:600px){
+ #cxCopilot.cx-expanded .cx-copilot-panel:not([hidden]){inset:8px!important;width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important;height:calc(100dvh - 16px)!important;max-height:calc(100dvh - 16px)!important}
+ #cxCopilot.cx-expanded .cx-copilot-history{padding:16px!important}
+ #cxCopilot .cx-copilot-head{gap:5px!important;padding:9px!important}
+}
+
+#cxCopilot .cx-copilot-expand::after{content:none!important}

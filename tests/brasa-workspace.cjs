@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+(async()=>{
+ const {Window}=await import(process.env.HAPPY_DOM_MODULE||'happy-dom');
+ const window=new Window({url:'https://conexaocrm.com/membros/'}),document=window.document;
+ document.body.innerHTML='<div id="view-logada"></div>';
+ let user={id:'first'},routes=[];
+ const rows=Array.from({length:6},(_,i)=>({nivel:'Analista Pleno',modelo:'Remoto',regiao:'Sudeste',salario:5000+i*1000}));
+ const context=vm.createContext({window,document,location:window.location,MutationObserver:window.MutationObserver,Event:window.Event,setInterval:()=>0,setTimeout,crmSignedIn:()=>!!user,CARGOS_ROWS:rows,crmNavigate:r=>routes.push(r),get CURRENT_USER(){return user}});
+ vm.runInContext(fs.readFileSync('assets/crm-copilot.js','utf8'),context);
+ document.dispatchEvent(new window.Event('DOMContentLoaded'));
+ window.CXCopilot.open();
+ const root=document.getElementById('cxCopilot'),history=root.querySelector('[role=log]'),panel=document.getElementById('cxCopilotPanel');
+ assert.equal(root.querySelector('.cx-copilot-privacy'),null);
+ const expand=root.querySelector('[data-cx-expand]');
+ expand.click();assert.equal(root.classList.contains('cx-expanded'),true);assert.equal(expand.getAttribute('aria-label'),'Reduzir conversa');
+ expand.click();assert.equal(root.classList.contains('cx-expanded'),false);
+ const ask=text=>{const e=root.querySelector('textarea');e.value=text;root.querySelector('form').dispatchEvent(new window.Event('submit',{cancelable:true}));};
+
+ root.querySelector('[data-cx-view=help]').click();
+ assert.equal(history.hidden,true);assert.match(root.querySelector('[data-cx-support]').textContent,/Como usar/);
+ root.querySelector('[data-cx-view=history]').click();
+ assert.match(root.querySelector('[data-cx-support]').textContent,/Histórico desta conversa/);
+ user={id:'second'};document.dispatchEvent(new window.Event('crm:auth-state'));
+ assert.equal(root.querySelector('[data-cx-support]').textContent,'','account change clears history view');
+ assert.equal(history.hidden,false);assert.equal(history.children.length,1);
+ root.querySelector('[data-cx-new]').click();assert.equal(history.children.length,1);assert.equal(document.activeElement,root.querySelector('textarea'));
+ root.querySelector('[data-cx-close]').click();assert.equal(panel.hidden,true);
+ window.CXCopilot.open();assert.equal(panel.hidden,false);
+ user=null;document.dispatchEvent(new window.Event('crm:auth-state'));assert.equal(document.getElementById('cxCopilot'),null);
+ await window.happyDOM.close();console.log('PASS: expanded workspace, navigation, new conversation, account isolation and close/reopen');
+})().catch(e=>{console.error(e);process.exitCode=1});
