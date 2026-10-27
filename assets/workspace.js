@@ -164,6 +164,13 @@ window.CXWorkspace={open,clear,refresh:()=>open('workspace-'+view),handles:route
     // Procurar apenas com :scope > fazia o runtime não enxergar o card já existente
     // e criar uma nova cópia a cada navegação.
     const generated=[...page.querySelectorAll('.crm-topic-nav[data-crm-generated="1"]')];
+    // The public solution strip already contains the current topic. A second
+    // asynchronous navigation disclosure duplicates links and causes layout shift.
+    const topTab=document.querySelector('.crm-public-tabs [data-crm-route="'+route+'"]');
+    if(!(typeof crmSignedIn==='function'&&crmSignedIn())&&topTab){
+      generated.forEach(el=>el.remove());
+      return;
+    }
     const same=generated.filter(el=>el.dataset.route===route&&el.dataset.area===areaKey);
     const signedNow=typeof crmSignedIn==='function'&&crmSignedIn();
     if(generated.length===1&&same.length===1&&same[0].tagName===(signedNow?'NAV':'DETAILS')){if(signedNow&&page.firstElementChild!==same[0])page.prepend(same[0]);return;}
