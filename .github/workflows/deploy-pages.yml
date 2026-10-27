@@ -36,6 +36,7 @@ jobs:
           node tests/saved-jobs-unsave.cjs
           node tests/header-ui-kit.cjs
           node tests/profile-hub-unified.cjs
+          node tests/profile-modal-unified.cjs
           node tests/events-chronology.cjs
           node tests/community-jobs-isolation.cjs
           node tests/share-preview-ui.cjs

@@ -1,0 +1,360 @@
+/* Unified Conexão CRM modal design | 2026-10-27.
+   The existing profile forms, owner editor and anti-spam verification retain
+   their real handlers, permissions and data. Replaces visual legacy only. */
+:root{--cx-modal-bg:#162033;--cx-modal-surface:#1c293d;--cx-modal-field:#10192a;--cx-modal-border:#42516b;--cx-modal-text:#f4f2fc;--cx-modal-muted:#b8c5d8;--cx-modal-accent:#d8b5ef;--cx-modal-dark:#24182e}
+body #profileModalOverlay.crm-profile-overlay{
+ position:fixed!important;inset:0!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ box-sizing:border-box!important;overflow-y:auto!important;
+ overscroll-behavior:contain!important;padding:18px!important;
+ background:rgba(3,9,21,.78)!important;
+ backdrop-filter:blur(5px)!important;z-index:14500!important;
+}
+body #profileModalOverlay.crm-profile-overlay>.crm-profile-modal{
+ position:relative!important;
+ width:min(780px,100%)!important;max-width:780px!important;
+ min-width:0!important;max-height:calc(100dvh - 36px)!important;
+ margin:auto!important;padding:0!important;overflow-y:auto!important;
+ box-sizing:border-box!important;scrollbar-gutter:auto!important;
+ background:var(--cx-modal-bg)!important;color:var(--cx-modal-text)!important;
+ border:1px solid var(--cx-modal-border)!important;
+ border-radius:16px!important;box-shadow:0 25px 75px rgba(0,0,0,.50)!important;
+}
+body #profileModalOverlay .crm-profile-modal-head{
+ position:sticky!important;top:0!important;z-index:5!important;
+ display:flex!important;align-items:flex-start!important;
+ justify-content:space-between!important;gap:16px!important;
+ margin:0!important;padding:22px clamp(18px,3vw,29px) 16px!important;
+ background:var(--cx-modal-bg)!important;
+ border-bottom:1px solid #35465d!important;
+}
+body #profileModalOverlay .crm-profile-modal-head h2{
+ margin:3px 0 5px!important;font-size:clamp(22px,2.4vw,28px)!important;
+ line-height:1.2!important;letter-spacing:-.025em!important;
+ color:var(--cx-modal-text)!important;font-weight:720!important;
+}
+body #profileModalOverlay .crm-profile-modal-head p:not(.crm-eyebrow){
+ margin:0!important;font-size:12px!important;
+ color:var(--cx-modal-muted)!important;line-height:1.55!important;
+}
+body #profileModalOverlay .crm-profile-modal-head .crm-eyebrow{
+ margin:0!important;color:#d4afea!important;font-size:10px!important;
+ letter-spacing:.055em!important;
+}
+body #profileModalOverlay .crm-profile-close{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:0 0 auto!important;min-width:58px!important;min-height:35px!important;
+ margin:0!important;padding:7px 12px!important;
+ background:#1c293e!important;color:#ece6f4!important;
+ border:1px solid #52627c!important;border-radius:9px!important;
+ font-size:12px!important;line-height:1.2!important;font-weight:600!important;
+}
+body #profileModalOverlay .crm-profile-close:hover{background:#28344d!important}
+body #profileModalOverlay .cx-profile-tabs{
+ position:sticky!important;top:var(--cx-modal-sticky-top,95px)!important;
+ z-index:4!important;display:flex!important;flex-wrap:wrap!important;
+ gap:8px!important;margin:0!important;padding:12px clamp(18px,3vw,29px)!important;
+ background:#141d2e!important;border-bottom:1px solid #364660!important;
+}
+body #profileModalOverlay .cx-profile-tab{
+ flex:0 1 auto!important;min-height:37px!important;
+ padding:8px 14px!important;margin:0!important;
+ color:#b9c7da!important;background:transparent!important;
+ border:1px solid #52617c!important;border-radius:9px!important;
+ font-size:12px!important;font-weight:600!important;
+}
+body #profileModalOverlay .cx-profile-tab.is-active,
+body #profileModalOverlay .cx-profile-tab[aria-selected="true"]{
+ color:#25172f!important;background:var(--cx-modal-accent)!important;
+ border-color:var(--cx-modal-accent)!important;
+}
+body #profileModalOverlay .cx-profile-tab-panel{
+ min-height:0!important;max-width:100%!important;
+ margin:0!important;padding:18px clamp(18px,3vw,29px) 14px!important;
+ background:transparent!important;border:0!important;
+}
+body #profileModalOverlay .cx-profile-tab-panel[hidden]{display:none!important}
+body #profileModalOverlay .crm-profile-modal section[data-pf-step]{
+ margin:0!important;padding:18px clamp(18px,3vw,29px) 12px!important;
+ border:0!important;background:transparent!important;
+}
+body #profileModalOverlay .crm-profile-modal .crm-profile-step-title{
+ display:flex!important;align-items:flex-start!important;gap:11px!important;
+ margin:0 0 15px!important;
+}
+body #profileModalOverlay .crm-profile-step-title>span{
+ display:grid!important;place-items:center!important;
+ flex:0 0 30px!important;width:30px!important;height:30px!important;
+ padding:0!important;border-radius:9px!important;
+ background:#392849!important;color:#e6c6f5!important;
+ border:1px solid #765d8d!important;font-size:12px!important;font-weight:700!important;
+}
+body #profileModalOverlay .crm-profile-step-title h3{
+ margin:0 0 2px!important;color:#f4f2fc!important;
+ font-size:16px!important;font-weight:700!important;line-height:1.4!important;
+}
+body #profileModalOverlay .crm-profile-step-title p{
+ margin:0!important;color:#b9c5d7!important;
+ font-size:12px!important;line-height:1.5!important;
+}
+body #profileModalOverlay .crm-profile-progress{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:6px!important;padding:14px clamp(18px,3vw,29px) 0!important;
+}
+body #profileModalOverlay .crm-profile-progress span{
+ height:4px!important;background:#45516b!important;border-radius:6px!important;
+}
+body #profileModalOverlay .crm-profile-progress span.active{
+ background:var(--cx-modal-accent)!important;
+}
+body #profileModalOverlay .crm-profile-modal .ev-ilabel{
+ display:block!important;margin:13px 0 5px!important;
+ color:#dce4f1!important;letter-spacing:0!important;
+ text-transform:none!important;font-size:12px!important;font-weight:650!important;
+}
+body #profileModalOverlay .crm-profile-modal :is(.ev-ifield,input[type="file"],input[type="text"],input[type="url"],input[type="tel"],input[type="email"],select,textarea){
+ min-height:42px!important;max-width:100%!important;width:100%!important;
+ box-sizing:border-box!important;margin:0!important;padding:10px 12px!important;
+ color:var(--cx-modal-text)!important;
+ background:var(--cx-modal-field)!important;
+ border:1px solid #52627b!important;border-radius:9px!important;
+ font-family:inherit!important;font-size:13px!important;box-shadow:none!important;
+}
+body #profileModalOverlay .crm-profile-modal textarea{min-height:82px!important;resize:vertical!important}
+body #profileModalOverlay .crm-profile-modal input[type="checkbox"],
+body #profileModalOverlay .crm-profile-modal input[type="radio"]{
+ appearance:auto!important;width:auto!important;min-width:16px!important;
+ height:16px!important;min-height:0!important;margin:0!important;
+ accent-color:#ba95da!important;
+}
+body #profileModalOverlay .crm-profile-modal :is(input,select,textarea,button):focus-visible{
+ outline:2px solid #e2bef5!important;outline-offset:2px!important;
+}
+body #profileModalOverlay .crm-profile-two-cols,
+body #profileModalOverlay .crm-profile-contact-grid{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:15px!important;margin-top:12px!important;
+}
+body #profileModalOverlay .crm-profile-two-cols>div,
+body #profileModalOverlay .crm-profile-contact-grid>div{min-width:0!important}
+body #profileModalOverlay .crm-profile-chips{
+ display:flex!important;flex-wrap:wrap!important;gap:8px!important;
+ margin:4px 0 10px!important;padding:0!important;
+}
+body #profileModalOverlay .crm-profile-chips label{
+ display:inline-flex!important;align-items:center!important;
+ gap:7px!important;margin:0!important;min-height:34px!important;
+ padding:8px 11px!important;color:#d6def0!important;
+ background:#1b2940!important;border:1px solid #495977!important;
+ border-radius:9px!important;font-size:12px!important;font-weight:550!important;
+}
+body #profileModalOverlay .crm-profile-chips label:has(input:checked){
+ color:#ead5f7!important;background:#322542!important;border-color:#a579c1!important;
+}
+body #profileModalOverlay .crm-profile-chips label span{color:inherit!important}
+body #profileModalOverlay .crm-profile-avatar-row{
+ display:flex!important;align-items:center!important;gap:15px!important;
+ margin:0 0 14px!important;padding:12px!important;
+ border:1px solid #42516b!important;border-radius:11px!important;
+ background:#1a273b!important;
+}
+body #profileModalOverlay .crm-profile-avatar-row :is(img,.crm-profile-avatar-placeholder){
+ flex:0 0 52px!important;width:52px!important;height:52px!important;
+ border-radius:50%!important;object-fit:cover!important;
+ background:#322549!important;color:#edd7fb!important;
+ border:1px solid #73548b!important;
+}
+body #profileModalOverlay .crm-directory-visibility,
+body #profileModalOverlay .crm-profile-preview{
+ display:flex!important;gap:10px!important;align-items:flex-start!important;
+ padding:12px 14px!important;margin:10px 0!important;
+ background:#1b2940!important;border:1px solid #43526e!important;
+ border-radius:10px!important;color:#e6e9f5!important;
+}
+body #profileModalOverlay .crm-directory-visibility :is(strong,small,span){color:#dfe6f3!important}
+body #profileModalOverlay .crm-directory-visibility small{
+ display:block!important;margin:4px 0 0!important;color:#b7c4da!important;
+ font-size:11px!important;line-height:1.5!important;
+}
+body #profileModalOverlay .crm-profile-preview{
+ display:block!important;flex-direction:column!important;
+}
+body #profileModalOverlay .crm-profile-footer{
+ position:sticky!important;bottom:0!important;z-index:5!important;
+ display:flex!important;justify-content:flex-end!important;
+ flex-wrap:wrap!important;gap:9px!important;
+ margin:0!important;padding:15px clamp(18px,3vw,29px)!important;
+ background:#141d2e!important;border-top:1px solid #3b4c65!important;
+}
+body #profileModalOverlay .crm-profile-footer .crm-button{
+ flex:0 1 auto!important;width:auto!important;min-width:126px!important;
+ min-height:41px!important;margin:0!important;padding:10px 17px!important;
+ background:var(--cx-modal-accent)!important;color:var(--cx-modal-dark)!important;
+ border:1px solid var(--cx-modal-accent)!important;border-radius:9px!important;
+ font-size:12px!important;font-weight:750!important;letter-spacing:0!important;
+ text-transform:none!important;box-shadow:none!important;
+}
+body #profileModalOverlay .crm-profile-footer .crm-button.crm-outline{
+ background:transparent!important;color:#e9e9f5!important;border-color:#51617b!important;
+}
+body #profileModalOverlay .crm-profile-status{
+ margin:8px clamp(18px,3vw,29px)!important;
+ color:#f0b4c5!important;font-size:12px!important;
+}
+body #profileModalOverlay :is(.cx-profile-action,.crm-profile-modal .crm-button:not(.crm-outline):not(.crm-profile-footer .crm-button)){
+ background:#332547!important;color:#ebd1f7!important;
+ border:1px solid #8264a3!important;border-radius:9px!important;
+ box-shadow:none!important;
+}
+body #profileModalOverlay :is(.cx-profile-tab-panel,.crm-profile-modal) :is(h3,strong,label,span,p,small){
+ text-shadow:none!important;
+}
+/* Freelancers and Match resume: both are real follow-on profile editors. */
+body :is(#flEditOverlay,#crmMatchResumeOverlay){
+ position:fixed!important;inset:0!important;
+ z-index:14600!important;overflow-y:auto!important;
+ padding:12px!important;box-sizing:border-box!important;
+ background:rgba(3,9,21,.78)!important;backdrop-filter:blur(5px)!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) .ev-modal-box{
+ width:min(590px,100%)!important;max-width:590px!important;
+ max-height:calc(100dvh - 24px)!important;overflow:auto!important;
+ margin:auto!important;padding:22px!important;box-sizing:border-box!important;
+ background:var(--cx-modal-bg)!important;color:var(--cx-modal-text)!important;
+ border:1px solid var(--cx-modal-border)!important;border-radius:14px!important;
+ box-shadow:0 24px 70px rgba(0,0,0,.48)!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) :is(h2,h3,label){
+ color:#f4f2fc!important;font-weight:650!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) :is(input:not([type="checkbox"]),textarea,select){
+ box-sizing:border-box!important;max-width:100%!important;width:100%!important;
+ min-height:42px!important;background:var(--cx-modal-field)!important;
+ color:#f2f2fa!important;border:1px solid #50617a!important;
+ border-radius:9px!important;padding:10px 12px!important;
+ font-size:13px!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) input[type="checkbox"]{
+ appearance:auto!important;accent-color:#b98bce!important;
+ width:16px!important;height:16px!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) :is(.ev-modal-btn-save,.crm-button){
+ background:var(--cx-modal-accent)!important;color:var(--cx-modal-dark)!important;
+ border:1px solid var(--cx-modal-accent)!important;
+ border-radius:9px!important;padding:10px 14px!important;min-height:41px!important;
+}
+body :is(#flEditOverlay,#crmMatchResumeOverlay) .ev-modal-btn-cancel{
+ background:transparent!important;color:#e8e9f6!important;
+ border:1px solid #52607b!important;border-radius:9px!important;
+ padding:10px 14px!important;min-height:41px!important;
+}
+/* Verification dialog: only its look changes, not the server-issued challenge. */
+dialog.crm-join-dialog.crm-submission-dialog{
+ position:fixed!important;inset:0!important;box-sizing:border-box!important;
+ width:min(455px,calc(100vw - 28px))!important;
+ max-width:455px!important;max-height:min(92dvh,700px)!important;
+ overflow:auto!important;overscroll-behavior:contain!important;
+ margin:auto!important;padding:0!important;
+ border:1px solid #465572!important;border-radius:16px!important;
+ background:var(--cx-modal-bg)!important;color:var(--cx-modal-text)!important;
+ box-shadow:0 25px 75px rgba(0,0,0,.48)!important;
+}
+dialog.crm-join-dialog.crm-submission-dialog::backdrop{
+ background:rgba(3,9,21,.78)!important;backdrop-filter:blur(5px)!important;
+}
+dialog.crm-submission-dialog form{
+ display:flex!important;flex-direction:column!important;gap:13px!important;
+ margin:0!important;padding:25px!important;
+}
+dialog.crm-submission-dialog h2{
+ margin:0!important;color:#f4f2fc!important;
+ font-size:clamp(21px,2.4vw,25px)!important;line-height:1.2!important;
+ font-weight:750!important;letter-spacing:-.025em!important;
+}
+dialog.crm-submission-dialog p{
+ margin:0!important;color:#bcc8d9!important;
+ font-size:13px!important;line-height:1.55!important;
+}
+dialog.crm-submission-dialog .crm-field{
+ display:flex!important;flex-direction:column!important;
+ gap:8px!important;margin:4px 0 0!important;
+ color:#f2f2fa!important;font-size:13px!important;font-weight:650!important;
+ text-transform:none!important;letter-spacing:0!important;
+}
+dialog.crm-submission-dialog .crm-field input[name="answer"]{
+ width:100%!important;min-width:0!important;box-sizing:border-box!important;
+ margin:0!important;min-height:44px!important;padding:10px 12px!important;
+ color:#f4f2fc!important;background:var(--cx-modal-field)!important;
+ border:1px solid #556783!important;border-radius:9px!important;
+ font-size:14px!important;box-shadow:none!important;
+}
+dialog.crm-submission-dialog .crm-field input[name="answer"]:focus-visible{
+ outline:2px solid #dab9f0!important;outline-offset:2px!important;
+}
+dialog.crm-submission-dialog .crm-submission-actions{
+ display:grid!important;grid-template-columns:1fr 1fr!important;
+ gap:10px!important;margin:2px 0 0!important;
+}
+dialog.crm-submission-dialog .crm-submission-actions .crm-button{
+ min-width:0!important;width:100%!important;min-height:42px!important;
+ margin:0!important;padding:10px 11px!important;
+ background:var(--cx-modal-accent)!important;color:var(--cx-modal-dark)!important;
+ border:1px solid var(--cx-modal-accent)!important;border-radius:9px!important;
+ font-size:12px!important;font-weight:740!important;letter-spacing:0!important;
+ text-transform:none!important;box-shadow:none!important;
+}
+dialog.crm-submission-dialog .crm-submission-actions .crm-outline{
+ background:transparent!important;border-color:#52617b!important;
+ color:#e6eaf5!important;
+}
+dialog.crm-submission-dialog [role="status"]{
+ margin:0!important;color:#f4b8c8!important;font-size:12px!important;
+}
+dialog.crm-submission-dialog [role="status"]:empty{display:none!important}
+dialog.crm-submission-dialog small{
+ display:block!important;margin:0!important;padding-top:11px!important;
+ border-top:1px solid #3d4c64!important;
+ color:#b3c1d3!important;font-size:11px!important;line-height:1.55!important;
+}
+/* Work pages already have the left navigation; no need to duplicate Trabalho
+   as a horizontal bar above their content on wide screens. */
+@media(min-width:901px){
+ #view-logada #pageFreelancers .crm-topic-nav[data-crm-generated="1"]{
+  display:none!important;
+ }
+}
+@media(max-width:720px){
+ body #profileModalOverlay.crm-profile-overlay{padding:7px!important}
+ body #profileModalOverlay.crm-profile-overlay>.crm-profile-modal{
+  max-height:calc(100dvh - 14px)!important;border-radius:12px!important;
+ }
+ body #profileModalOverlay .crm-profile-modal-head{
+  padding:15px!important;gap:8px!important;
+ }
+ body #profileModalOverlay .cx-profile-tabs{
+  top:var(--cx-modal-sticky-top,79px)!important;
+  padding:10px 15px!important;gap:5px!important;
+ }
+ body #profileModalOverlay .cx-profile-tab{flex:1 1 auto!important;padding:8px 10px!important}
+ body #profileModalOverlay .crm-profile-modal section[data-pf-step],
+ body #profileModalOverlay .cx-profile-tab-panel{padding:15px!important}
+ body #profileModalOverlay .crm-profile-two-cols,
+ body #profileModalOverlay .crm-profile-contact-grid{
+  grid-template-columns:minmax(0,1fr)!important;gap:8px!important;
+ }
+ body #profileModalOverlay .crm-profile-footer{padding:12px 15px!important}
+ body :is(#flEditOverlay,#crmMatchResumeOverlay) .ev-modal-box{padding:17px!important}
+}
+@media(max-width:420px){
+ dialog.crm-submission-dialog form{padding:19px 15px!important}
+ dialog.crm-submission-dialog .crm-submission-actions{grid-template-columns:1fr!important}
+ body #profileModalOverlay .crm-profile-footer .crm-button{
+  flex:1 1 calc(50% - 6px)!important;min-width:0!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ dialog.crm-submission-dialog,body #profileModalOverlay.crm-profile-overlay,
+ body #profileModalOverlay *,dialog.crm-submission-dialog *{
+  transition:none!important;
+ }
+}

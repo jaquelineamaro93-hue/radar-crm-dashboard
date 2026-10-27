@@ -89,6 +89,55 @@ async function run(){
        await page.keyboard.press('Escape');
       }
       if(item.cards===0)item.notes.push('API cards not rendered in capture; no imaginary test records added');
+      if(process.env.GITHUB_EVENT_NAME!=='pull_request'){
+       assert(await page.locator('#cx-profile-modal-unified').count()>0,
+        'New unified modal style missing from production head');
+       // Public smoke cannot log in to a private user account. Inject inert
+       // replicas with real production classes and verify computed visual styles.
+       // Never submit, read or modify any member data.
+       const painted=await page.evaluate(()=>{
+        const overlay=document.createElement('div');
+        overlay.id='profileModalOverlay';overlay.className='ev-modal-overlay crm-profile-overlay';
+        overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+        overlay.innerHTML='<div class="ev-mbox crm-profile-modal"><div class="crm-profile-modal-head"><div><p class="crm-eyebrow">MEU PERFIL / CONEXÃO CRM</p><h2>Editar meu perfil</h2><p>Atualize suas informações quando precisar.</p></div><button class="crm-profile-close">Fechar</button></div><div class="cx-profile-tabs"><button class="cx-profile-tab is-active" aria-selected="true">Perfil geral</button><button class="cx-profile-tab">Freelancer</button><button class="cx-profile-tab">Open to Work</button></div><section data-pf-step="1"><div class="crm-profile-step-title"><span>01</span><div><h3>Como a comunidade vai te conhecer</h3><p>Comece pelo básico.</p></div></div><label class="ev-ilabel">Nome completo</label><input class="ev-ifield" type="text" placeholder="Nome Sobrenome"><div class="crm-profile-chips"><label><input type="checkbox" checked><span>Híbrido</span></label></div></section><div class="crm-profile-footer"><button class="crm-button crm-outline">Cancelar</button><button class="crm-button">Salvar alterações</button></div></div>';
+        document.body.append(overlay);
+        const inner=overlay.querySelector('.crm-profile-modal');
+        const primary=overlay.querySelector('.crm-profile-footer .crm-button:not(.crm-outline)');
+        const read=el=>getComputedStyle(el).backgroundColor;
+        const result={surface:read(inner),button:read(primary),
+          badge:read(overlay.querySelector('.crm-profile-step-title>span')),
+          panelWidth:inner.getBoundingClientRect().width,
+          bodyWidth:document.documentElement.clientWidth,
+          modalHeight:inner.getBoundingClientRect().height,
+          viewportHeight:innerHeight};
+        return result;
+       });
+       assert(painted.surface==='rgb(22, 32, 51)','Profile modal old background: '+JSON.stringify(painted));
+       assert(painted.button==='rgb(216, 181, 239)','Profile save button old orange: '+JSON.stringify(painted));
+       assert(painted.panelWidth<=painted.bodyWidth+2,'Profile modal overflows viewport');
+       assert(painted.modalHeight<=painted.viewportHeight+1,'Profile editor height not bounded');
+       await page.screenshot({path:path.join(artifacts,'profile-editor-'+view.name+'.png'),animations:'disabled',timeout:10000});
+       await page.locator('#profileModalOverlay').evaluate(el=>el.remove());
+       const verify=await page.evaluate(()=>{
+         const dlg=document.createElement('dialog');
+         dlg.className='crm-join-dialog crm-submission-dialog';
+         dlg.innerHTML='<form><h2>Confirme seu envio</h2><p>Responda à verificação para continuar.</p><label class="crm-field">Quanto é 3 + 13?<input name="answer" inputmode="numeric" value=""></label><p role="status"></p><div class="crm-submission-actions"><button type="submit" class="crm-button">Confirmar e enviar</button><button type="button" class="crm-button crm-outline">Cancelar</button></div><small>Até 5 envios por conta em 24 horas.</small></form>';
+         document.body.append(dlg);dlg.showModal();
+         const color=el=>getComputedStyle(el).backgroundColor;
+         const bounds=dlg.getBoundingClientRect();
+         return {surface:color(dlg),
+           button:color(dlg.querySelector('button[type="submit"]')),
+           left:bounds.left,right:bounds.right,
+           top:bounds.top,bottom:bounds.bottom,
+           screen:innerWidth,height:innerHeight};
+       });
+       assert(verify.surface==='rgb(22, 32, 51)','Verification old dark brown modal: '+JSON.stringify(verify));
+       assert(verify.button==='rgb(216, 181, 239)','Verification old orange submit button: '+JSON.stringify(verify));
+       assert(verify.left>=-1&&verify.right<=verify.screen+1&&verify.top>=-1&&verify.bottom<=verify.height+1,
+         'Verification dialog overflow at '+view.name+': '+JSON.stringify(verify));
+       await page.screenshot({path:path.join(artifacts,'submission-dialog-'+view.name+'.png'),animations:'disabled',timeout:10000});
+       await page.locator('dialog.crm-submission-dialog').evaluate(el=>{el.close();el.remove();});
+      }
      }
      if(route.path==='vagas'){
       // Pull-request runs inspect production, which still serves the previous
