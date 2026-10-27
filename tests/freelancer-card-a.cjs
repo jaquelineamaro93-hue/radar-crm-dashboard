@@ -15,7 +15,7 @@ assert(html.includes("CXConnections.request('+index+')"));
 assert(!html.includes("CXConnections.request('+index+',true)"),'No legacy claim link in cards');
 assert(!html.includes('Este perfil é meu</button>'),'Owner claim is removed from public cards');
 assert(!hub.includes("b=button('Editar meu perfil',openOwnFreelancer)"),'No duplicate owner-edit button injected into cards');
-assert(hub.includes('Editar em Meu perfil'));
+assert(hub.includes('Editar meu perfil freelancer'));
 assert(html.includes('Novo na comunidade'),'No fabricated ratings');
 assert(html.includes("Number(f.valor_hora)"),'Optional hourly rate supported only when available');
 assert(html.includes("String(f.foto_url||'')"),'Optional avatar supported only when available');

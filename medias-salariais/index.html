@@ -1361,6 +1361,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
 <link rel="stylesheet" href="/assets/freelancer-card-a-20261026.css?v=20261027-selected-a2">
 <link id="cx-structural-release" rel="stylesheet" href="/assets/figma-structure-release-20261027.css?v=20261027-struct1">
+<link rel="stylesheet" id="cx-freelancer-ux-repair" href="/assets/freelancer-ux-repair-20261027.css?v=20261027-owner1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -3371,52 +3372,24 @@ crmShowSurveyReminder();
     </div>
   </div>
 
-  <!-- MODAL: ANUNCIAR PERFIL FREELANCER -->
-  <div id="freelancerModal" class="ev-modal-overlay" role="dialog" aria-modal="true">
-    <div class="ev-mbox">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-        <div>
-          <h2 class="fd" style="color:var(--text);font-size:16px;font-weight:700;">Anunciar ou editar meu perfil</h2>
-          <p style="color:var(--muted);font-size:14px;margin-top:2px;">Aparece na lista de freelancers e na aba Conteúdo</p>
-        </div>
-        <button id="freelancerModalClose" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">Fechar</button>
+  <!-- Cadastro de freelancer: edição autenticada em Meu perfil > Freelancer -->
+  <div id="freelancerModal" class="ev-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="fl-modal-title">
+    <div class="ev-mbox cx-fl-modal-card">
+      <header class="cx-fl-modal-header">
+        <div><h2 id="fl-modal-title">Cadastrar perfil freelancer</h2><p>Envie seus serviços para aprovação. Para editar um perfil existente, acesse Meu perfil &gt; Freelancer.</p></div>
+        <button type="button" id="freelancerModalClose" class="cx-fl-modal-close" aria-label="Fechar formulário">Fechar</button>
+      </header>
+      <div class="cx-fl-modal-fields">
+        <div class="cx-fl-field"><label class="ev-ilabel" for="fl_nome">Nome profissional *</label><input id="fl_nome" type="text" class="ev-ifield" autocomplete="name" maxlength="150" placeholder="Como você deseja ser encontrado" required></div>
+        <div class="cx-fl-field"><label class="ev-ilabel" for="fl_email">E-mail da sua conta *</label><input id="fl_email" type="email" class="ev-ifield" autocomplete="email" maxlength="254" placeholder="voce@exemplo.com" required></div>
+        <div class="cx-fl-field cx-fl-wide"><label class="ev-ilabel" for="fl_categoria">Especialidade *</label><select id="fl_categoria" class="ev-ifield" required><option value="">Selecione uma categoria</option><option>Copy</option><option>Design</option><option>Estratégia</option><option>Implementação</option><option>Analytics</option><option>Automação</option><option>Consultoria</option></select></div>
+        <div class="cx-fl-field cx-fl-wide"><label class="ev-ilabel" for="fl_bio">Sobre seus serviços e experiência</label><textarea id="fl_bio" class="ev-ifield" maxlength="1200" rows="4" placeholder="O que você entrega, ferramentas e experiência"></textarea></div>
+        <div class="cx-fl-field"><label class="ev-ilabel" for="fl_portfolio">Portfólio ou site (opcional)</label><input id="fl_portfolio" type="url" class="ev-ifield" placeholder="https://"></div>
+        <div class="cx-fl-field"><label class="ev-ilabel" for="fl_linkedin">LinkedIn (opcional)</label><input id="fl_linkedin" type="url" class="ev-ifield" placeholder="https://linkedin.com/in/"></div>
+        <div class="cx-fl-field cx-fl-wide"><label class="ev-ilabel" for="fl_contato">Contato profissional (opcional)</label><input id="fl_contato" type="text" class="ev-ifield" maxlength="120" placeholder="WhatsApp ou canal de contato"></div>
+        <input type="hidden" id="fl_conteudo" value=""><div id="fl_status" class="cx-fl-modal-status form-status" aria-live="polite"></div>
       </div>
-
-      <div style="padding:12px; background:#f0f9ff; border-radius:8px; border:1px solid #bfdbfe; margin-bottom:16px;">
-        <p style="font-size:14px; color:#1e40af; margin:0 0 8px 0; font-weight:500;">Já tem perfil? Carregue aqui para editar:</p>
-        <div style="display:flex; gap:8px;">
-          <input id="fl_nome_load" type="text" class="ev-ifield" placeholder="Seu nome" maxlength="80" style="flex:1; margin:0;">
-          <button onclick="loadFreelancerProfile()" style="background:#1d4ed8; color:#fff; border:none; border-radius:6px; padding:8px 14px; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap;">Carregar</button>
-        </div>
-        <div id="fl_load_status" style="font-size:14px; margin-top:6px;"></div>
-      </div>
-
-      <label class="ev-ilabel" for="fl_nome">Seu nome *</label>
-      <input id="fl_nome" type="text" class="ev-ifield" placeholder="Ex: Jaqueline Amaro" maxlength="80" style="margin-bottom:12px;">
-      <label class="ev-ilabel" for="fl_email">Seu e-mail *</label>
-      <input id="fl_email" type="email" class="ev-ifield" placeholder="seu@email.com" maxlength="120" style="margin-bottom:12px;">
-      <label class="ev-ilabel" for="fl_categoria">Categoria *</label>
-      <select id="fl_categoria" class="ev-ifield" style="margin-bottom:12px;">
-        <option value="Copy">Copy</option>
-        <option value="Design">Design</option>
-        <option value="Estratégia">Estratégia</option>
-        <option value="Implementação">Implementação</option>
-      </select>
-      <label class="ev-ilabel" for="fl_bio">Sobre você (o que você faz, ferramentas, experiência)</label>
-      <textarea id="fl_bio" class="ev-ifield" rows="3" placeholder="Ex: Especialista em copy para automações de CRM, 4 anos de experiência com RD Station e HubSpot." maxlength="400" style="margin-bottom:12px;resize:none;"></textarea>
-      <label class="ev-ilabel" for="fl_portfolio">Link do portfólio ou site (opcional)</label>
-      <input id="fl_portfolio" type="url" class="ev-ifield" placeholder="https://" maxlength="300" style="margin-bottom:12px;">
-      <label class="ev-ilabel" for="fl_linkedin">LinkedIn</label>
-      <input id="fl_linkedin" type="url" class="ev-ifield" placeholder="https://linkedin.com/in/seu-perfil" maxlength="300" style="margin-bottom:12px;">
-      <label class="ev-ilabel" for="fl_conteudo">Artigo ou Post (opcional)</label>
-      <textarea id="fl_conteudo" class="ev-ifield" placeholder="Compartilhe um artigo, case de sucesso, dica ou reflexão sobre CRM..." maxlength="3000" style="margin-bottom:20px; resize:vertical; height:150px;"></textarea>
-      <label class="ev-ilabel" for="fl_contato">WhatsApp ou e-mail de contato</label>
-      <input id="fl_contato" type="text" class="ev-ifield" placeholder="Ex: (11) 99999-9999" maxlength="120" style="margin-bottom:20px;">
-      <div style="display:flex;gap:10px;">
-        <button class="ev-modal-btn-cancel" id="freelancerModalCancel">Cancelar</button>
-        <button class="ev-modal-btn-save" id="fl_submit">Enviar para aprovação</button>
-      </div>
-      <div class="form-status" id="fl_status" style="margin-top:10px;"></div>
+      <footer class="cx-fl-modal-footer"><button type="button" class="ev-modal-btn-cancel" id="freelancerModalCancel">Cancelar</button><button type="button" class="ev-modal-btn-save" id="fl_submit">Enviar para aprovação</button></footer>
     </div>
   </div>
 
@@ -6089,7 +6062,7 @@ function initFreelancersTab(){
 }
 function closeFreelancerModal(){ 
   document.getElementById('freelancerModal').classList.remove('open');
-  ['fl_nome','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo','fl_nome_load'].forEach(id=>{
+  ['fl_nome','fl_email','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value='';
   });
@@ -6097,40 +6070,6 @@ function closeFreelancerModal(){
   if(statusEl) statusEl.textContent='';
   const loadStatus = document.getElementById('fl_load_status');
   if(loadStatus) loadStatus.textContent='';
-}
-
-async function loadFreelancerProfile(){
-  const nome = document.getElementById('fl_nome_load').value.trim();
-  const loadStatus = document.getElementById('fl_load_status');
-  if(!nome){ loadStatus.className='form-status err'; loadStatus.textContent='Digite seu nome para carregar.'; return; }
-  if(!flSb){ loadStatus.className='form-status err'; loadStatus.textContent='Conexão indisponível.'; return; }
-
-  try{
-    const {data, error} = await flSb.from('freelancers_sugeridos').select('*').eq('nome', nome).maybeSingle();
-    if(error) throw error;
-    if(!data){ loadStatus.className='form-status err'; loadStatus.textContent='Perfil não encontrado com esse nome.'; return; }
-
-    document.getElementById('fl_nome').value = data.nome || '';
-    document.getElementById('fl_email').value = data.email_autor || '';
-    document.getElementById('fl_categoria').value = data.categoria || '';
-    document.getElementById('fl_bio').value = data.bio || '';
-    document.getElementById('fl_portfolio').value = data.portfolio || '';
-    document.getElementById('fl_linkedin').value = data.linkedin || '';
-    document.getElementById('fl_contato').value = data.contato || '';
-
-    // Carregar conteúdo se existir
-    try{
-      const {data: cont} = await flSb.from('conteudos_comunidade').select('corpo').eq('autor_nome', nome).maybeSingle();
-      if(cont && cont.corpo) document.getElementById('fl_conteudo').value = cont.corpo;
-    }catch(e) {
-      console.warn('Conteúdo não encontrado');
-    }
-
-    loadStatus.className='form-status ok'; loadStatus.textContent=' Perfil carregado. Edite o que quiser e clique em "Enviar para aprovação".';
-  }catch(e) {
-    console.error(e);
-    loadStatus.className='form-status err'; loadStatus.textContent='Erro ao carregar. Tente de novo.';
-  }
 }
 
 async function submitFreelancer(){
@@ -6145,6 +6084,9 @@ async function submitFreelancer(){
   const statusEl = document.getElementById('fl_status');
   if(!nome){ statusEl.className='form-status err'; statusEl.textContent='Preencha ao menos o nome.'; return; }
   if(!email){ statusEl.className='form-status err'; statusEl.textContent='Preencha seu e-mail.'; return; }
+  const category=document.getElementById('fl_categoria').value;
+  if(!category){statusEl.className='form-status err';statusEl.textContent='Selecione sua especialidade.';return;}
+  if(!/^\S+@\S+\.\S+$/.test(email)){statusEl.className='form-status err';statusEl.textContent='Informe um e-mail válido.';return;}
   if(!flSb){ statusEl.className='form-status err'; statusEl.textContent='Conexão indisponível. Recarregue a página.'; return; }
 
   // Sanitizar todos os campos antes de salvar
@@ -6173,7 +6115,7 @@ async function submitFreelancer(){
     evToastMsg('Perfil enviado para aprovação.','');
     btn.disabled = false; btn.textContent = 'Enviar para aprovação';
     statusEl.className=''; statusEl.textContent='';
-    ['fl_nome','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo','fl_nome_load'].forEach(id=>{
+    ['fl_nome','fl_email','fl_bio','fl_portfolio','fl_linkedin','fl_contato','fl_categoria','fl_conteudo'].forEach(id=>{
       const el = document.getElementById(id);
       if(el) el.value='';
     });
@@ -6392,7 +6334,7 @@ function openFreelancerEditModal(id, nome){
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
   if(flSb){
-    flSb.from('freelancers_sugeridos').select('bio,linkedin,portfolio,contato,categoria').eq('id', id).maybeSingle().then(({data})=>{
+    flSb.from('freelancers_sugeridos').select('bio,linkedin,portfolio,contato,categoria,valor_hora').eq('id', id).maybeSingle().then(({data})=>{
       if(data){
         if(data.categoria){
           const cats = data.categoria.split(',').map(s=>s.trim());
@@ -10316,7 +10258,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 </script><script src="/assets/xp-shell.js?v=20261018-nested-fix"></script>
 <script src="/assets/portal-hardening.js?v=20261026-audit2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-public-repair1"></script>
-<script defer src="/assets/share-everything.js?v=20261015-linkedin2"></script>
+<script defer src="/assets/share-everything.js?v=20261027-visible1"></script>
 <link rel="stylesheet" href="/assets/push-preferences.css?v=20261026-navy-help-2">
 <script defer src="/assets/push-preferences.js?v=20261026-watermark-1"></script>
 <style id="crm-survey-mobile-fix-20261015">
@@ -10333,7 +10275,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261026-goals4"></script>
 <script defer src="/assets/conexao-ux-refinement.js?v=20261026-ui1"></script>
-<script defer src="/assets/profile-hub-unified.js?v=20261026-profhub1"></script>
+<script defer src="/assets/profile-hub-unified.js?v=20261027-owner1"></script>
 <script id="cx-site-i18n-script" defer src="/assets/site-i18n.js?v=20261026-topnav-1"></script>
 <script defer src="/assets/figma-structure-release-20261027.js?v=20261027-struct1"></script>
 </body>

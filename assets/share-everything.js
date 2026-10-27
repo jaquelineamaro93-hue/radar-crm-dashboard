@@ -136,9 +136,15 @@ function showPanel(button,info){
  const box=button.getBoundingClientRect();
  const width=Math.min(270,innerWidth-20);
  const left=Math.max(10,Math.min(box.right-width,innerWidth-width-10));
- const top=box.bottom+10+Math.min(245,innerHeight-box.bottom-20)>innerHeight
-   ?Math.max(10,box.top-235):box.bottom+8;
- panel.style.left=left+'px';panel.style.top=top+'px';panel.style.width=width+'px';
+ panel.style.left=left+'px';panel.style.width=width+'px';
+ // Use the panel's measured height to keep every option inside the viewport.
+ // A fixed 235px estimate left the last actions clipped at 100% zoom.
+ const viewportHeight=window.visualViewport?.height||innerHeight;
+ const height=Math.min(panel.getBoundingClientRect().height,viewportHeight-20);
+ const below=box.bottom+8;
+ const above=box.top-height-8;
+ const top=below+height<=viewportHeight-10?below:(above>=10?above:Math.max(10,viewportHeight-height-10));
+ panel.style.top=Math.max(10,top)+'px';
  panel.querySelector('button')?.focus();
 }
 function createButton(label,info,cls){
@@ -178,6 +184,11 @@ function installCards(){
    const holder=document.createElement('div');holder.className='cx-share-holder';holder.append(btn);
    if(list.route==='vagas'){
     (card.querySelector('.crm-job-clean-footer')||card).append(holder);
+   }else if(list.route==='freelancers'&&card.matches('.cx-freelancer-card-a')){
+    // Share belongs in the visible card header, not below a long profile:
+    // at 100% browser zoom it must be reachable without scrolling to card end.
+    const head=card.querySelector('.cx-fc-head');
+    (head||card).append(holder);
    }else{
     card.append(holder);
    }
