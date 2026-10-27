@@ -314,7 +314,7 @@
     document.head.appendChild(style);
   }
   // Um único final de sidebar, estável e sem mudanças repetitivas no DOM.
-  // Posição final: Gestão Freelancer, Conexão XP (incluindo Rankings), Compartilhar.
+  // Posição final: Gestão Freelancer e Compartilhar.
   function placeSidebarTail(nav,nodes){
     const tail=nodes.filter(Boolean);
     if(!tail.length)return;
@@ -322,29 +322,13 @@
     if(consecutive&&nav.lastElementChild===tail[tail.length-1])return;
     nav.append(...tail);
   }
-  // Conexão XP is for the member's Avatar, Rankings and XP features, never institutional team editing.
+  // Sidebar tail keeps freelancer management and sharing after team navigation.
   function syncXpLinks(){
     const nav=document.querySelector('#view-logada .crm-nav-items')||document.querySelector('.crm-nav-items');
     if(!nav)return;
     syncTeamNavigation(nav);
-    let section=document.getElementById('crmXpSection')||
-      [...nav.children].find(x=>x.classList?.contains('crm-nav-section')&&x.textContent.trim()==='Conexão XP');
-    if(!section){section=document.createElement('span');section.className='crm-nav-section';section.textContent='Conexão XP';}
-    section.id='crmXpSection';
-    let avatar=document.getElementById('crmAvatarStudioLink');
-    if(!avatar){
-      avatar=document.createElement('a');avatar.id='crmAvatarStudioLink';avatar.href='/#xp-avatar';
-      avatar.dataset.crmRoute='xp-avatar';avatar.className='tab-btn';avatar.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
-      avatar.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Meu Avatar';
-    }
-    let ranking=document.getElementById('crmXpRankingLink');
-    if(!ranking){
-      ranking=document.createElement('a');ranking.id='crmXpRankingLink';
-      ranking.href='/#xp-rankings';ranking.dataset.crmRoute='xp-rankings';ranking.className='tab-btn';
-      ranking.style.cssText='display:flex;align-items:center;gap:10px;text-decoration:none;box-sizing:border-box;max-width:100%';
-      ranking.innerHTML='<span class="crm-nav-glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4h4v4a5 5 0 0 1-5 5h-1v3h4M8 20h8M10 17h4M8 8H4v4a5 5 0 0 0 5 5h1V4"/></svg></span>Rankings';
-    }
-    const replay=document.getElementById('cxXpReplay');
+    // XP was retired from the frontend. Clean stale nodes without touching stored data.
+    for(const id of ['crmXpSection','crmAvatarStudioLink','crmXpRankingLink','cxXpReplay'])document.getElementById(id)?.remove();
     const adminNav=document.getElementById('crmAdminNav');
     const verified=(typeof crmAdminVerified!=='undefined'&&crmAdminVerified===true);
     const admin=verified&&adminNav&&!adminNav.hidden&&adminNav.parentElement===nav;
@@ -353,13 +337,11 @@
       const hasTeam=teamNav&&teamNav.parentElement===nav&&!teamNav.hidden;
       if(hasTeam&&adminNav.nextElementSibling!==teamNav)adminNav.after(teamNav);
     }
-    // Gestão Freelancer permanece imediatamente antes de XP, e Compartilhar
-    // permanece sempre por último. Não altera pontos ou os links existentes.
+    // Gestão Freelancer e Compartilhar permanecem ao final do menu.
     const freelancer=document.getElementById('cxFreelancerManagementNav');
     const share=document.getElementById('cx-share-portal');
     const tail=[
       ...(freelancer?.parentElement===nav?[freelancer]:[]),
-      section,avatar,...(replay?[replay]:[]),ranking,
       ...(share?.parentElement===nav?[share]:[])
     ];
     placeSidebarTail(nav,tail);
@@ -405,29 +387,8 @@
   document.addEventListener('crm:admin-ready',syncReportsAndIcons);
   document.addEventListener('crm:role-resolved',syncReportsAndIcons);
 
-  // O atalho do Hall acompanha o texto explicativo de Buscar profissional.
-  // Sem bloco adicional nem alteração na estrutura dos cards.
-  function openToWorkRankShortcut(){
-    const page=document.getElementById('pageSearch');
-    if(!page)return;
-    const desc=page.querySelector('.section-desc');
-    if(!desc)return;
-    let link=document.getElementById('crmSkillRecommendationLink');
-    if(!link){
-      link=document.createElement('a');
-      link.id='crmSkillRecommendationLink';
-      link.href='/#xp-rankings';
-      link.dataset.crmRoute='xp-rankings';
-      link.textContent='Recomendar habilidades de profissionais no Hall da Comunidade';
-    }
-    // Link textual inline, após a descrição. Não cria espaçamento vertical.
-    link.style.cssText='display:inline;color:#f2b889;font-size:inherit;text-decoration:underline;text-underline-offset:3px;border:0;background:transparent;padding:0;margin:0;white-space:normal';
-    desc.append(' ',link);
-    desc.parentElement?.classList.remove('crm-open-work-compact-head');
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openToWorkRankShortcut,{once:true});
-  else openToWorkRankShortcut();
-
+  // The retired Hall shortcut must not be recreated in Open to Work.
+  document.getElementById('crmSkillRecommendationLink')?.remove();
 
   // Evita skeleton infinito caso a leitura de "Meus Eventos" demore ou falhe.
   // Não altera a consulta do membro nem grava informações em outro usuário.
@@ -468,22 +429,6 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',guardMyEventsLoading,{once:true});
   else guardMyEventsLoading();
-
-  // Onboarding in the signed-in workspace, scoped to one viewing per member.
-  if(!document.getElementById('cx-xp-onboarding-style')){
-    const link=document.createElement('link');
-    link.id='cx-xp-onboarding-style';
-    link.rel='stylesheet';
-    link.href='/assets/xp-onboarding.css?v=20261015-1';
-    document.head.appendChild(link);
-  }
-  if(!document.getElementById('cx-xp-onboarding-runtime')){
-    const script=document.createElement('script');
-    script.id='cx-xp-onboarding-runtime';
-    script.src='/assets/xp-onboarding.js?v=20261015-7';
-    script.defer=true;
-    document.head.appendChild(script);
-  }
 
   const state={
     version:'2026-10-03.2',

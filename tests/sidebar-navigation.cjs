@@ -11,7 +11,7 @@ const team=read('quem-faz/index.html');
 new vm.Script(nav,{filename:'assets/portal-hardening.js'});
 
 // O shell usa a versão atual, evitando scripts obsoletos por cache.
-assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261026-audit2/);
+assert.match(shell,/\/assets\/portal-hardening\.js\?v=20261027-no-xp1/);
 assert.match(shell,/id="view-logada"/);
 assert.match(shell,/id="crmPages"/);
 
@@ -28,7 +28,8 @@ assert.match(team,/html\.crm-team-embedded \.top\{display:none\}/);
 assert.match(team,/html\.crm-team-embedded \.cx-return-bar\{display:none!important\}/);
 assert.match(nav,/frame\.removeAttribute\('src'\)/);
 
-// A última seção é Compartilhar; XP e Rankings são a penúltima.
+// The retired XP links and onboarding are no longer created in the frontend.
+assert.doesNotMatch(nav,/avatar=document\.createElement|ranking=document\.createElement|section\.textContent='Conexão XP'|xp-onboarding\.js|Recomendar habilidades de profissionais/);
 const freelancer=read('assets/workspace.js');
 const sharing=read('assets/share-everything.js');
 new vm.Script(freelancer,{filename:'assets/workspace.js'});
@@ -44,7 +45,7 @@ assert.match(sharing,/if\(nav\.lastElementChild!==btn\)nav\.append\(btn\)/);
 
 // Executa o algoritmo real de ordenação usando DOM mínimo simulado.
 const start=nav.indexOf('function placeSidebarTail(nav,nodes){');
-const stop=nav.indexOf('  // Conexão XP is',start);
+const stop=nav.indexOf('  // Sidebar tail keeps',start);
 assert(start>=0&&stop>start,'sidebar ordering helper must remain testable');
 const place=vm.runInNewContext('(function(){'+nav.slice(start,stop)+'return placeSidebarTail})()');
 const el=id=>({id,parentElement:null,nextElementSibling:null});
