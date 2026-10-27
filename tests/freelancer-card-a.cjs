@@ -6,7 +6,7 @@ const css=fs.readFileSync('assets/freelancer-card-a-20261026.css','utf8');
 const hub=fs.readFileSync('assets/profile-hub-unified.js','utf8');
 assert(html.includes('freelancer-card-a-20261026.css?v=20261027-selected-a2'));
 assert.equal((html.match(/function freelancerCardHtml\(f\)/g)||[]).length,1);
-for(const term of ['cx-freelancer-card-a','cx-fc-bio','cx-fc-actions','cx-fc-category','cx-fc-meta','cx-fc-review-summary','cx-fc-contact-compact','crmOpenFreelancerReview(this)','crmFreelancerTags(f)','crmLoadMoreFreelancers()']){
+for(const term of ['cx-freelancer-card-a','cx-fc-bio','cx-fc-actions','cx-fc-category','cx-fc-meta','cx-fc-review-summary','cx-fc-contact-compact','crmOpenFreelancerReview(this)','crmFreelancerTags(f)']){
  assert(html.includes(term),'Missing live component '+term);
 }
 assert(html.includes('crmToggleFreelancerDetails(this)'));
@@ -22,6 +22,14 @@ assert(html.includes("String(f.foto_url||'')"),'Optional avatar supported only w
 assert(html.includes("String(f.disponibilidade||'')"),'Availability must derive from public record');
 assert(!html.includes('Valor sob consulta</span>'),'Do not invent missing prices');
 assert(html.includes('const filtered=FREELANCERS.filter'),'All filters rely on real records');
+assert(!html.includes('<!-- ============ FAQ FREELANCERS ============ -->'),'Freelancer FAQ should be removed from this page');
+assert(!html.includes('class="crm-freelancer-faq"'),'No duplicate Freelancer FAQ section');
+assert(!html.includes('crmLoadMoreFreelancers()'),'Full freelancer directory must load without a manual more button');
+assert(!html.includes('Carregar mais freelancers</button>'),'Old pagination CTA should be gone');
+assert(html.includes('<option value="most_reviewed">Mais avaliados</option>'),'More reviewed dropdown option missing');
+assert(html.includes('<option value="new">Novos na comunidade</option>'),'New/unreviewed dropdown option missing');
+assert(html.includes('const totals=crmFreelancerReviewTotals()'),'Sorting must use real public review counts');
+
 assert(css.includes('-webkit-line-clamp:3'),'Bio must be three lines');
 assert(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'Desktop grid');
 assert(css.includes('@media(max-width:720px)'),'Mobile layout');
