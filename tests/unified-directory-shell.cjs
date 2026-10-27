@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8'),style=fs.readFileSync('assets/unified-directory-shell-20261026.css','utf8');
 const script=fs.readFileSync('assets/workspace.js','utf8');
-assert(html.includes('/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2'), 'new styles must be available before paint');
+assert(html.includes('/assets/unified-directory-shell-20261026.css?v=20261027-focus-audit1'), 'new styles must be available before paint');
 const firstPaint=html.indexOf('/assets/unified-directory-shell-20261026.css?v=');
 assert(firstPaint<html.indexOf('</head>'), 'directory styles must be linked in head');
 assert.equal((html.match(/id="btnOpenFreelancerModal"/g)||[]).length,1,'freelancer CTA is unique');
