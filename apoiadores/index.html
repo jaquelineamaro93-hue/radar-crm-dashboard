@@ -6491,7 +6491,7 @@ function flReviewAt(index){const f=FREELANCERS[index];if(f)flSubmitReview(f.nome
 function crmFreelancerTags(f){
  const tools=String(f.ferramentas||'').split(/[,;\n]/).map(x=>x.trim()).filter(Boolean);
  const cats=String(f.categoria||'').split(',').map(x=>x.trim()).filter(Boolean);
- return [...new Set((tools.length?tools:cats))].slice(0,12);
+ return [...new Set((tools.length?tools:cats.slice(1)))].slice(0,12);
 }
 function freelancerCardHtml(f){
  const index=FREELANCERS.findIndex(x=>String(x.id)===String(f.id));
