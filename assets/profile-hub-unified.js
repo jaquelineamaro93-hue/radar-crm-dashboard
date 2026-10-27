@@ -92,32 +92,38 @@ function mountEditor(){
  // Re-evaluate the action once ownership has been checked.
  overlay.addEventListener('cx:ownership-checked',()=>{if(!freelancer.hidden)select('freelancer');});
 }
+let ownerPromise=null;
 async function refreshOwner(){
  const current=user();const identity=current?.id||'';
  if(!signed()||!current?.email_confirmed_at||!current?.email){
   own.userId='';own.id=null;own.name='';renderOwn();return;
  }
  if(own.userId===identity&&own.id!=null)return;
+ // A click during initial fetch must wait, never open a duplicate register form.
+ if(own.userId===identity&&ownerPromise)return ownerPromise;
  own.userId=identity;own.id=null;own.name='';
- try{
-  const db=(typeof authSb!=='undefined'&&authSb)||null;
-  if(!db){own.userId='';return;}
-  // The authenticated submitter relation is stronger than a matching email.
-  const primary=await db.from('freelancers_sugeridos').select('id,nome,submitted_by')
-    .eq('submitted_by',identity).order('created_at',{ascending:false}).limit(1);
-  if(user()?.id!==identity)return;
-  let match=!primary.error?primary.data?.[0]:null;
-  // Legacy profiles may predate submitted_by; email is only used to propose
-  // moderated edits through the existing approval flow, never direct updates.
-  if(!match){
-   const fallback=await db.from('freelancers_sugeridos').select('id,nome,email_autor')
-    .ilike('email_autor',String(current.email)).eq('aprovado',true).limit(2);
+ ownerPromise=(async()=>{
+  try{
+   const db=(typeof authSb!=='undefined'&&authSb)||null;
+   if(!db)return;
+   const primary=await db.from('freelancers_sugeridos').select('id,nome,submitted_by')
+     .eq('submitted_by',identity).order('created_at',{ascending:false}).limit(1);
    if(user()?.id!==identity)return;
-   match=!fallback.error?(fallback.data||[]).find(v=>String(v.email_autor||'').toLocaleLowerCase('pt-BR')===String(current.email).toLocaleLowerCase('pt-BR')):null;
-  }
-  if(match){own.id=match.id;own.name=String(match.nome||'');}
- }catch{}
- renderOwn();
+   let match=!primary.error?primary.data?.[0]:null;
+   // Exact, verified account email is a legacy-only fallback. A name or shared
+   // URL is never proof of ownership, and all changes still require moderation.
+   if(!match){
+    const fallback=await db.from('freelancers_sugeridos').select('id,nome,email_autor')
+     .ilike('email_autor',String(current.email)).eq('aprovado',true).limit(2);
+    if(user()?.id!==identity)return;
+    match=!fallback.error?(fallback.data||[]).find(v=>
+      String(v.email_autor||'').toLocaleLowerCase('pt-BR')===String(current.email).toLocaleLowerCase('pt-BR')):null;
+   }
+   if(match){own.id=match.id;own.name=String(match.nome||'');}
+  }catch{}
+  finally{ownerPromise=null;renderOwn();}
+ })();
+ return ownerPromise;
 }
 function renderOwn(){
  const page=document.getElementById('pageFreelancers');
