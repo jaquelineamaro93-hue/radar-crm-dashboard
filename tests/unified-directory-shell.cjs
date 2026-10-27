@@ -14,7 +14,7 @@ assert.match(html, /href="\/open-to-work\/\?cadastro=1"/, 'Open to Work registra
 assert.match(html,/id="freelancerResults" aria-live="polite" aria-busy="true"/,'initial results must expose loading status');
 assert(html.includes('container.setAttribute(\'aria-busy\',\'false\')'),'results must stop being busy');
 assert(html.includes('freelancerHost.setAttribute(\'aria-busy\',\'true\')'),'loading a directory must indicate busy');
-assert(html.includes('crm-freelancer-faq'),'FAQ is in unified design');
+assert(!html.includes('crm-freelancer-faq'),'Freelancers no longer repeats help questions below the directory');
 assert(script.includes("const topTab=document.querySelector('.crm-public-tabs [data-crm-route="),'duplicate contextual navigation must be skipped in public pages');
 assert(style.includes('#crmPublicWorkspace .crm-public-pagebar'),'new public navigation shell');
 assert(style.includes('#crmPublicPages #pageFreelancers'),'catalog layout');
