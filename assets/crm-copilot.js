@@ -113,13 +113,14 @@ function conversationalFallback(question){
 function classify(question){
   const s=normalize(question);
   if(!s)return {intent:'help'};
-  if(/open.?to.?work|opentowork/.test(s))return {intent:'action',action:'otw'};
+  if(/(?:abrir|acessar|cadastrar|inscrever|ir para|entrar em).{0,28}(?:open.?to.?work|opentowork)/.test(s))return {intent:'action',action:'otw'};
+  if(/(?:open.?to.?work|opentowork)/.test(s))return {intent:'analyze'};
   // A pergunta completa define a intenção, não a palavra isolada "perfil".
   if(/\b(como|porque|por que|dica|orienta|aconselh|me ajuda|me explique|qual a melhor|vale a pena)\b/.test(s)&&/(vaga|match|perfil|curriculo|carreira|entrevista)/.test(s))
     return {intent:'analyze'};
   if(/(vaga|oportunidade|emprego|radar|match|aderencia)/.test(s)&&/(meu perfil|meus dados|com base no meu perfil|para mim)/.test(s))
     return {intent:'action',action:'match'};
-  if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s))
+  if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s)&&!/(curriculo|cv|melhor|dica|avaliar|ideal|forte|entrevista)/.test(s))
     return {intent:'profile-status'};
   // Descrições longas de vagas têm prioridade sobre palavras como salário ou evento.
   if(s.length>=150&&/(requisitos|atribuicoes|responsabilidades|experiencia|qualificacoes|descricao de vaga|sobre a vaga)/.test(s))
@@ -132,6 +133,7 @@ function classify(question){
   if(/(pesquis|consult|buscar|busca|procura|procure).{0,25}(internet|web|online|fontes publicas)|na internet|fonte externa|dados atuais do mercado/.test(s)||
     /(?:salari|remuner|mercado|tendenc|notici|pesquis|estudo).{0,50}(?:atual|recent|hoje|esta semana|ultim|2026)/.test(s))
     return {intent:'analyze'};
+  if(/(?:robert half|michael page|fox tech|guia salarial|comparar fontes|outras fontes)/.test(s))return {intent:'analyze'};
   if(/(salari|remuner|faixa salarial|media salarial|quanto ganha)/.test(s))
     return {intent:'action',action:'salary'};
   if(/(mercado de trabalho|relatorio de mercado|dados do mercado)/.test(s))
@@ -196,7 +198,7 @@ function confirmExternal(question){
  pendingDescription=question;
  if(aiConsentSaved()){void analyze();return;}
  const card=document.createElement('div');card.className='cx-copilot-consent';
- const label=document.createElement('p');label.textContent=cxT("Seu cadastro não será anexado. Não inclua dados pessoais.");
+ const label=document.createElement('p');label.textContent=cxT("O Brasa não acessa seu perfil ou currículo. Apenas o texto que você escrever será enviado à IA. Não inclua dados pessoais.");
  const yes=document.createElement('button');yes.type='button';yes.textContent=cxT("Aceitar e continuar");
  const no=document.createElement('button');no.type='button';no.textContent='Cancelar';
  yes.addEventListener('click',()=>{saveAiConsent();card.remove();void analyze();});
@@ -207,7 +209,7 @@ async function analyze(){
  const question=pendingDescription;pendingDescription='';if(!question||busy||!signed())return;
  const memberId=getUser()?.id;
  const sb=(()=>{try{return typeof authSb!=='undefined'?authSb:null}catch{return null}})();
- if(!sb?.functions?.invoke){addMessage('assistant','O serviço está indisponível. Tente novamente em instantes.');return;}
+ if(!sb?.functions?.invoke){addMessage('assistant',conversationalFallback(question));return;}
  const activeRoot=root,activeHistory=history;
  busy=true;activeRoot.dataset.state='thinking';activeHistory.setAttribute('aria-busy','true');
  const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent=cxT("Brasa está pensando…");activeRoot.querySelector('form').before(waiting);
@@ -222,7 +224,7 @@ async function analyze(){
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
   else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai'});
   else throw Error('empty');
- }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant','Não consegui consultar a IA agora. Você pode tentar novamente. As orientações e consultas locais continuam disponíveis.');}
+ }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant',conversationalFallback(question));}
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
 }
 function salaryAnswer(question){
@@ -352,7 +354,8 @@ function process(question){
   if(found.intent==='analyze'){
     confirmExternal(question);return;
   }
-  if(/^(oi|ola|bom dia|boa tarde|boa noite|obrigad[oa]|pode me ajudar)[?.! ]*$/.test(normalize(question))){addMessage('assistant','Olá. Posso ajudar com CRM, carreira e recursos do portal. O que você precisa?');return;}
+  if(/^(oi|ola|bom dia|boa tarde|boa noite|obrigad[oa]|pode me ajudar)[?.! ]*$/.test(normalize(question))){addMessage('assistant','Oi. Podemos falar de carreira, CRM ou dúvidas do portal. O que está pensando?');return;}
+  if(/^(curriculo|cv|entrevista|carreira|recolocacao)[?.! ]*$/.test(normalize(question))){addMessage('assistant',conversationalFallback(question));return;}
   confirmExternal(question);
 }
 function clearOnAccountChange(){
@@ -382,9 +385,9 @@ function mount(){
      '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<div class="cx-copilot-quick" data-cx-quick></div>'+
-     '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Como posso ajudar?</label>'+
-     '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Ex.: encontre vagas remotas de CRM" data-ph-no-capture="true"></textarea>'+
-     '<div class="cx-copilot-bottom"><small>Não inclua dados pessoais.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
+     '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Sua mensagem</label>'+
+     '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Escreva sua dúvida..." data-ph-no-capture="true"></textarea>'+
+     '<div class="cx-copilot-bottom"><small>Não envie dados pessoais nem informações de terceiros.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
     '</section>';
   document.body.append(root);
   drawer=root.querySelector('[data-cx-open]')?.nextElementSibling;
