@@ -1358,7 +1358,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/profile-hub-unified.css?v=20261026-profhub1">
 <link id="cx-catalog-refinement-20261026" rel="stylesheet" href="/assets/catalog-refinement-20261026.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
-<link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-final1">
+<link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -2081,22 +2081,8 @@ crmShowSurveyReminder();
       <div class="section-head"><span class="section-num"></span><h2>Buscar profissional</h2></div>
       <p class="section-desc">Encontre talentos por experiência e ferramentas ou use a IA para comparar perfis com sua vaga.</p>
 
-      <!-- ABAS INTERNAS DE BUSCA -->
-      <div class="search-tabs-container">
-        <div class="search-tabs" role="group" aria-label="Modo de busca de profissionais">
-<button class="search-tab-btn active" id="searchTabDir" type="button" aria-pressed="true" onclick="switchSearchTab('directory')">
-
-            Profissionais Open to Work
-          </button>
-<button class="search-tab-btn" id="searchTabAI" type="button" aria-pressed="false" onclick="switchSearchTab('ai')">
-
-            Match por IA
-          </button>
-</div>
-      </div>
-
-      <!-- SUB-PÁGINA 1: MATCH POR IA -->
-      <!-- SUB-PÁGINA 2: DIRETÓRIO COMPLETO -->
+      <!-- O menu superior Trabalho já oferece Open to Work e Match por IA.
+           Abaixo fica somente a busca e o cadastro de profissionais. -->
       <section id="searchDirPanel" style="display:block">
         <section class="crm-otw-signup" aria-labelledby="crmOtwSignupTitle" style="margin:20px 0 24px;padding:24px;border:1px solid #f97316;border-radius:14px;background:linear-gradient(115deg,rgba(249,115,22,.19),rgba(249,115,22,.04));display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
           <div style="flex:1 1 260px">
@@ -2427,13 +2413,17 @@ crmShowSurveyReminder();
   </div><div class="tab-page" id="pageFreelancers">
     <section>
       <div class="section-head"><span class="section-num"></span><h2>Freelancers de CRM</h2></div>
-      <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+      <div class="crm-freelancer-briefing">
+        <p class="section-desc">Profissionais disponíveis para projetos freelance, organizados por especialidade.</p>
+        <div class="crm-freelancer-briefing-actions">
+          <button class="ev-btn-suggest" type="button" id="btnOpenFreelancerModal">Cadastrar perfil freelancer</button>
+        </div>
+      </div>
       <div class="crm-freelancer-toolbar">
       <nav class="crm-freelancer-subnav" aria-label="Navegação de Freelancers">
         <button type="button" id="crmFreelancerTabDirectory" class="crm-freelancer-tab is-active" aria-controls="crmFreelancerDirectoryView" aria-pressed="true" onclick="crmSelectFreelancerView('directory')">Profissionais</button>
         <button type="button" id="crmFreelancerTabAI" class="crm-freelancer-tab" aria-controls="crmFreelancerAIView" aria-pressed="false" onclick="crmSelectFreelancerView('ai')">Encontrar com IA</button>
       </nav>
-      <button class="ev-btn-suggest" id="btnOpenFreelancerModal">Anunciar meu perfil</button>
       </div>
       <div id="crmFreelancerDirectoryView" aria-labelledby="crmFreelancerTabDirectory">
       
