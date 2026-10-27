@@ -25,6 +25,19 @@ assert(html.includes('const filtered=FREELANCERS.filter'),'All filters rely on r
 assert(css.includes('-webkit-line-clamp:3'),'Bio must be three lines');
 assert(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'Desktop grid');
 assert(css.includes('@media(max-width:720px)'),'Mobile layout');
+const compact=fs.readFileSync('assets/freelancer-ux-repair-20261027.css','utf8');
+assert(html.includes('payload.valor_hora=Math.round(rate*100)/100'),
+ 'Rate from edit form must be included in moderated JSON payload');
+assert(html.includes('type="number" min="0" max="999999.99" step="0.01"'),
+ 'Hourly rate input must accept numeric decimal values');
+assert(html.includes('class="cx-fc-rate"'),
+ 'Confirmed hourly price must appear on public freelancer cards');
+assert(compact.includes('align-items:start!important;grid-auto-rows:max-content!important'),
+ 'Freelancer grid cannot stretch short cards to an artificial equal height');
+assert(compact.includes('margin-top:3px!important;align-items:start!important'),
+ 'Actions cannot be pushed away with margin-top:auto');
+assert(html.includes('freelancer-ux-repair-20261027.css?v=20261027-compact-rate2'),
+ 'The updated layout must bust HTML stylesheet cache');
 for(const path of ['404.html','freelancers/index.html','open-to-work/index.html','dashboard/index.html'])
  assert.equal(fs.readFileSync(path,'utf8'),html,'Synchronized route '+path);
 let depth=0;for(const char of css){if(char==='{')depth++;if(char==='}')depth--;assert(depth>=0,'CSS nesting');}assert.equal(depth,0);
