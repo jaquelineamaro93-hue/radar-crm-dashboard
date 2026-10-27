@@ -418,6 +418,7 @@ function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
   lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];lastAssistantReply='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  root?.querySelector('[data-cx-view=chat]')?.click();
   showIntro();updateAiConsentControl();
 }
 function open(){
@@ -438,13 +439,14 @@ function mount(){
   root.innerHTML=
     '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa</span></button>'+
     '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
-     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
+     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-new" data-cx-new type="button" aria-label="Nova conversa" title="Nova conversa">+</button><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa" title="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
-     '<div class="cx-copilot-quick" data-cx-quick></div>'+
+     '<section class="cx-copilot-support" data-cx-support hidden></section>'+
+     '<details class="cx-copilot-suggestions"><summary>Sugestões para começar</summary><div class="cx-copilot-quick" data-cx-quick></div></details>'+
      '<form class="cx-copilot-form" data-cx-form><label class="cx-copilot-label" for="cxCopilotInput">Sua mensagem</label>'+
      '<textarea id="cxCopilotInput" data-cx-input aria-label="Digite sua mensagem para o Brasa Copilot" rows="2" maxlength="2200" autocomplete="off" spellcheck="false" placeholder="Escreva sua dúvida..." data-ph-no-capture="true"></textarea>'+
      '<div class="cx-copilot-bottom"><small>Não envie dados pessoais nem informações de terceiros.</small><button class="cx-copilot-privacy-settings" data-cx-privacy-settings type="button" hidden>Privacidade</button><button data-cx-send type="submit">Enviar</button></div></form>'+
-    '</section>';
+    '<nav class="cx-copilot-nav" aria-label="Navegação do Brasa"><button type="button" data-cx-view="chat" aria-pressed="true">Conversar</button><button type="button" data-cx-view="help" aria-pressed="false">Ajuda</button><button type="button" data-cx-view="history" aria-pressed="false">Histórico</button></nav></section>';
   document.body.append(root);
   drawer=root.querySelector('[data-cx-open]')?.nextElementSibling;
   history=root.querySelector('[data-cx-history]');
@@ -456,8 +458,37 @@ function mount(){
     const expanded=root.classList.toggle('cx-expanded');
     const button=root.querySelector('[data-cx-expand]');
     button.textContent=expanded?'Reduzir':'Expandir';
+    button.title=expanded?'Reduzir conversa':'Expandir conversa';
     button.setAttribute('aria-pressed',String(expanded));
     button.setAttribute('aria-label',expanded?'Reduzir conversa':'Expandir conversa');
+  });
+  function showView(view){
+    const support=root.querySelector('[data-cx-support]');
+    const chat=view==='chat';
+    history.hidden=!chat;
+    root.querySelector('.cx-copilot-suggestions').hidden=!chat;
+    root.querySelector('[data-cx-form]').hidden=!chat;
+    support.hidden=chat;support.replaceChildren();
+    root.querySelectorAll('[data-cx-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cxView===view)));
+    if(view==='help'){
+      const title=document.createElement('h2');title.textContent='Como usar o Brasa';support.append(title);
+      const text=document.createElement('p');text.textContent='Converse sobre carreira, CRM e recursos do portal. Use as sugestões para começar. Consultas externas pedem sua autorização. Não envie dados pessoais ou informações de terceiros.';support.append(text);
+      const link=document.createElement('a');link.href='/ajuda/';link.textContent='Central de Ajuda';support.append(link);
+    }
+    if(view==='history'){
+      const title=document.createElement('h2');title.textContent='Histórico desta conversa';support.append(title);
+      const note=document.createElement('p');note.textContent='Disponível apenas nesta sessão. O histórico é apagado ao sair da conta ou recarregar a página.';support.append(note);
+      history.querySelectorAll('.cx-copilot-message').forEach(message=>{
+        const b=document.createElement('button');b.type='button';b.textContent=(message.classList.contains('cx-copilot-user')?'Você: ':'Brasa: ')+message.textContent.slice(0,160);
+        b.addEventListener('click',()=>{showView('chat');message.scrollIntoView({block:'nearest'});entry.focus();});support.append(b);
+      });
+    }
+  }
+  root.querySelectorAll('[data-cx-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.cxView)));
+  root.querySelector('[data-cx-new]').addEventListener('click',()=>{
+    if(busy)return;
+    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];lastAssistantReply='';
+    history.replaceChildren();entry.value='';entry.style.height='auto';showIntro();showView('chat');entry.focus();
   });
   root.querySelector('[data-cx-form]').addEventListener('submit',event=>{
     event.preventDefault();if(busy)return;const question=String(entry.value||'').trim();

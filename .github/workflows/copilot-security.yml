@@ -54,3 +54,9 @@ jobs:
 
       - name: Validate 18 conversational examples, privacy and clean UI
         run: node tests/brasa-dialogue-20261026.mjs
+
+      - name: Install isolated DOM test runtime
+        run: npm install --prefix "$RUNNER_TEMP/brasa-dom" happy-dom@20.8.4 --ignore-scripts --no-audit --no-fund
+
+      - name: Validate Brasa workspace and account isolation
+        run: HAPPY_DOM_MODULE="$RUNNER_TEMP/brasa-dom/node_modules/happy-dom/lib/index.js" node tests/brasa-workspace.cjs
