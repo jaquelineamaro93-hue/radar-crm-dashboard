@@ -151,3 +151,56 @@
  #cxCopilot.cx-expanded .cx-copilot-panel{inset:10px 8px 10px 8px!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 20px)!important}
 }
 @media(prefers-reduced-motion:reduce){#cxCopilot *{animation:none!important;transition:none!important}}
+
+/* 27 Oct Brasa conversation rhythm: content-led height, no empty block above composer.
+   These styles are scoped to the assistant; landing-page animations are unaffected. */
+#cxCopilot .cx-copilot-panel:not([hidden]){
+ height:auto!important;min-height:0!important;
+ max-height:min(690px,calc(100dvh - 96px))!important;
+ width:min(460px,calc(100vw - 24px))!important;
+}
+#cxCopilot .cx-copilot-history{
+ flex:0 1 auto!important;min-height:0!important;
+ max-height:min(478px,calc(100dvh - 230px))!important;
+ overflow-y:auto!important;padding:14px 17px 10px!important;gap:9px!important;
+}
+#cxCopilot .cx-copilot-message.cx-copilot-assistant{
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ max-width:100%!important;padding:4px 2px!important;border-radius:0!important;
+ font-size:13px!important;line-height:1.6!important;
+}
+#cxCopilot .cx-copilot-message.cx-copilot-user{
+ max-width:90%!important;padding:9px 12px!important;
+}
+#cxCopilot .cx-copilot-feedback{margin-top:3px!important;padding-top:1px!important}
+#cxCopilot .cx-copilot-feedback-actions{min-height:26px!important}
+#cxCopilot .cx-copilot-feedback-actions button{
+ width:28px!important;min-width:28px!important;height:28px!important;
+}
+#cxCopilot .cx-copilot-sources{margin-top:8px!important;padding-top:8px!important}
+#cxCopilot .cx-copilot-typing{
+ flex:0 0 auto!important;align-self:flex-start!important;
+ padding:4px 2px!important;margin:0!important;
+ color:#b9c5d7!important;font-size:12px!important;
+}
+#cxCopilot .cx-copilot-quick:not(:has(>button)){display:none!important}
+#cxCopilot .cx-copilot-form{padding:10px 13px 11px!important}
+#cxCopilot.cx-expanded .cx-copilot-panel:not([hidden]){
+ height:calc(100dvh - 40px)!important;max-height:calc(100dvh - 40px)!important;
+}
+#cxCopilot.cx-expanded .cx-copilot-history{
+ flex:1 1 auto!important;max-height:none!important;
+}
+@media(max-width:600px){
+ #cxCopilot .cx-copilot-panel:not([hidden]){
+   height:auto!important;max-height:calc(100dvh - 82px)!important;
+   width:calc(100vw - 16px)!important;
+ }
+ #cxCopilot .cx-copilot-history{max-height:calc(100dvh - 226px)!important;padding:11px 12px!important}
+ #cxCopilot.cx-expanded .cx-copilot-panel:not([hidden]){
+   height:calc(100dvh - 20px)!important;max-height:calc(100dvh - 20px)!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #cxCopilot .cx-copilot-history{scroll-behavior:auto!important}
+}

@@ -34,7 +34,7 @@ function canShow(){
     return signed()&&!!workspace&&!workspace.hidden&&workspace.getAttribute('aria-hidden')!=='true';
   }catch{return false;}
 }
-let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={},recentQuestions=[];
+let root,drawer,history,entry,pendingDescription='',busy=false,lastUserId='',lastTopic='',salaryContext={},recentQuestions=[],lastAssistantReply='';
 const aiConsentName=()=>{
  const uid=String(getUser()?.id||'');if(!uid||!signed())return '';
  let n=2166136261;for(let i=0;i<uid.length;i++)n=Math.imul(n^uid.charCodeAt(i),16777619);
@@ -76,7 +76,10 @@ function addMessage(type,message,action,sources=[],options={}){
     b.className='cx-copilot-action';b.addEventListener('click',()=>runAction(action));
     item.append(b);
   }
-  if(type==='assistant'&&options.feedback!==false)window.CRMBrasaFeedback?.attach(item,{kind:options.replyKind||'assistant',userId:getUser()?.id});
+  if(type==='assistant'&&options.feedback!==false){
+    lastAssistantReply=copy.slice(0,240);
+    window.CRMBrasaFeedback?.attach(item,{kind:options.replyKind||'assistant',userId:getUser()?.id});
+  }
   history.append(item);
   while(history.children.length>18)history.firstElementChild.remove();
   history.scrollTop=history.scrollHeight;
@@ -109,7 +112,7 @@ function conversationalFallback(question){
  if(/carreira|transicao|promocao|recolocacao/.test(q))return 'Podemos comparar caminhos e organizar um próximo passo. O que está mais difícil de decidir agora?';
  if(/salari|remuner|pretensao/.test(q))return 'Posso ajudar a comparar remuneração e fontes. Qual cargo ou nível quer consultar?';
  if(/vaga|emprego|oportunidade/.test(q))return 'Podemos afinar sua busca de vagas. Qual cargo procura e prefere remoto, híbrido ou presencial?';
- return 'Podemos explorar isso juntos. O que você quer resolver primeiro?';
+ return 'Não consegui concluir a análise agora. Me diga qual decisão você precisa tomar e posso ajudar a organizar o próximo passo com as informações disponíveis.';
 }
 function classify(question){
   const s=normalize(question);
@@ -214,10 +217,15 @@ async function analyze(){
  if(!sb?.functions?.invoke){addMessage('assistant',conversationalFallback(question));return;}
  const activeRoot=root,activeHistory=history;
  busy=true;activeRoot.dataset.state='thinking';activeHistory.setAttribute('aria-busy','true');
- const waiting=document.createElement('p');waiting.className='cx-copilot-status';waiting.setAttribute('role','status');waiting.textContent=cxT("Brasa está pensando…");activeRoot.querySelector('form').before(waiting);
+ const waiting=document.createElement('div');waiting.className='cx-copilot-status cx-copilot-typing';waiting.setAttribute('role','status');waiting.textContent=cxT("Brasa está escrevendo…");activeHistory.append(waiting);activeHistory.scrollTop=activeHistory.scrollHeight;
  activeRoot.querySelector('[data-cx-send]').disabled=true;
  try{
-  const context=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question).map(x=>x.slice(0,320));
+  // Contexto mínimo e efêmero, com a resposta anterior para que perguntas
+  // como "e os próximos passos?" não sejam tratadas como assunto novo.
+  const previous=recentQuestions.slice(0,-1).slice(-2).filter(x=>x!==question);
+  const context=previous.map((q,i)=>i===previous.length-1&&lastAssistantReply
+    ?('Pergunta anterior: '+q.slice(0,100)+'\nResposta anterior do Brasa: '+lastAssistantReply.slice(0,175)).slice(0,320)
+    :q.slice(0,320));
   const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error)throw Error('unavailable');
@@ -335,6 +343,17 @@ function process(question){
     const status=currentProfileStatus();addMessage('assistant',status.message,status.action);return;
   }
   if(found.intent==='action'){
+    // Intenção de assunto não é ordem de navegação: orientação vem da IA.
+    // Ações e números públicos continuam locais apenas quando foram pedidos.
+    const explicitNavigation=/\b(?:abrir|abre|acessar|acesse|ir para|me leve|navegar|entre na|mostre a pagina|mostrar a pagina|quero ver a pagina|ver painel)\b/.test(normalized);
+    const directSalaryQuery=/(?:salari|remuner|quanto ganha|mediana|faixa salarial|media salarial)/.test(normalized)
+      ||(lastTopic==='salary'&&/^(?:e |qual |quanto |mais )?(?:junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj|mensal|por mes|anual|sao paulo|sp)\b/.test(normalized));
+    if(!['jobs','remote','hybrid'].includes(found.action)&&found.action!=='salary'&&!explicitNavigation){
+      confirmExternal(question);return;
+    }
+    if(found.action==='salary'&&!directSalaryQuery){
+      confirmExternal(question);return;
+    }
     lastTopic=found.action;
     if(['jobs','remote','hybrid'].includes(found.action)){
       const member=getUser()?.id;
@@ -371,7 +390,7 @@ function process(question){
 function clearOnAccountChange(){
   const current=getUser()?.id||'';
   if(current===lastUserId)return;
-  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
+  lastUserId=current;if(root)delete root.dataset.started;lastTopic='';salaryContext={};recentQuestions=[];lastAssistantReply='';pendingDescription='';busy=false;if(root){root.querySelector('[data-cx-send]').disabled=false;root.dataset.state='idle';root.querySelectorAll('.cx-copilot-status').forEach(el=>el.remove());}if(entry)entry.value='';if(history)history.replaceChildren();
   showIntro();updateAiConsentControl();
 }
 function open(){
@@ -435,7 +454,7 @@ function mount(){
 // One mounted instance per authenticated session. Route visibility never clears messages.
 function reconcile(){
   if(!signed()){
-    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];busy=false;lastUserId='';
+    pendingDescription='';lastTopic='';salaryContext={};recentQuestions=[];lastAssistantReply='';busy=false;lastUserId='';
     if(root)root.remove();
     root=null;drawer=null;history=null;entry=null;
     return;

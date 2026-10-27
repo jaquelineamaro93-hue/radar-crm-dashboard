@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
+const js=fs.readFileSync('assets/crm-copilot.js','utf8');
+const css=fs.readFileSync('assets/brasa-clean-20261026.css','utf8');
+const loader=fs.readFileSync('assets/crm-runtime-integrations.js','utf8');
+new vm.Script(js);
+assert(css.includes('#cxCopilot .cx-copilot-panel:not([hidden])'),'panel is content sized');
+assert(css.includes('height:auto!important'),'natural height, no fixed blank chat');
+assert(css.includes('#cxCopilot.cx-expanded .cx-copilot-history'),'expanded panel can scroll');
+assert(css.includes('.cx-copilot-message.cx-copilot-assistant'),'plain assistant messages');
+assert(js.includes('Resposta anterior do Brasa:'),'previous answer included in follow-up context');
+assert(js.includes("if(found.action==='salary'&&!directSalaryQuery)"),'ambiguous salary follow-up stays conversational');
+assert(js.includes('cx-copilot-typing'),'typing belongs inside the conversation');
+assert(!js.includes('localStorage')&&!js.includes('sessionStorage'),'no private local persistence');
+assert(loader.includes('crm-copilot.js?v=20261027-conversation3'),'new code version loaded');
+assert(loader.includes('brasa-clean-20261026.css?v=20261027-conversation3'),'new CSS loaded');
+console.log('PASS: Brasa compact conversation and contextual followups');
