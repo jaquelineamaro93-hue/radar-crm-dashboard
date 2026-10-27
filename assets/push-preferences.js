@@ -1,3 +1,4 @@
+/* The former web-push integration is retired. Keep only consent text and help/news navigation. */
 /* Profile communication consent (not browser push). Help/navigation lives in crm-help-workspace.js. */
 (()=>{'use strict';
 const copy={
@@ -19,7 +20,21 @@ function mount(){
  const strong=document.createElement('strong'),small=document.createElement('small');
  strong.textContent=t.heading;small.textContent=t.description;span.replaceChildren(strong,small);
 }
+function retireLegacyWebPush(){
+ if(!('serviceWorker' in navigator))return;
+ navigator.serviceWorker.getRegistrations().then(async registrations=>{
+  for(const registration of registrations){
+   let url='';
+   try{url=registration.active?.scriptURL||registration.waiting?.scriptURL||registration.installing?.scriptURL||'';}catch{}
+   let legacy=false;try{legacy=new URL(url).pathname==='/sw.js'}catch{}
+   if(!legacy)continue;
+   try{const subscription=await registration.pushManager?.getSubscription();await subscription?.unsubscribe();}catch{}
+   try{await registration.unregister()}catch{}
+  }
+ }).catch(()=>{});
+}
 function init(){
+ retireLegacyWebPush();
  mount();
  // Only respond when the profile form is inserted, never to arbitrary sidebar changes.
  new MutationObserver(records=>{
