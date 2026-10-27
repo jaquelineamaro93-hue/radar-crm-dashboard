@@ -30,6 +30,7 @@ jobs:
           node tests/catalog-pages-clean.cjs
           node tests/first-paint-layout.cjs
           node tests/unified-directory-shell.cjs
+          node tests/saved-jobs-unsave.cjs
           node tests/header-ui-kit.cjs
           node tests/profile-hub-unified.cjs
           node tests/events-chronology.cjs
