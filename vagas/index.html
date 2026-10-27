@@ -8682,6 +8682,67 @@ async function crmRenderSavedProfile(){
 }
 
 
+async function crmLoadSavedJobs(preserve=false){
+ const host=document.getElementById('membroVagasSalvas');
+ const owner=CURRENT_USER?.id,epoch=crmAuthEpoch;
+ if(!host||!owner||!authSb)return;
+ if(!preserve||!host.querySelector('.crm-saved-entry'))crmSkeleton(host);
+ else host.setAttribute('aria-busy','true');
+ try{
+  const {data,error}=await authSb.from('saved_scraped_jobs')
+   .select('id,vaga_title,vaga_company,vaga_url,created_at')
+   .eq('user_id',owner).order('created_at',{ascending:false}).limit(10);
+  if(error)throw error;
+  if(epoch!==crmAuthEpoch||CURRENT_USER?.id!==owner)return;
+  const rows=data||[];
+  host.innerHTML=rows.length?rows.map(j=>{
+   const id=String(j.id??''),url=crmSafeUrl(j.vaga_url);
+   return '<div class="crm-saved-entry" data-saved-job-id="'+escapeHtml(id)+'">'+
+    '<div class="crm-saved-entry-title">'+escapeHtml(j.vaga_title||'Vaga salva')+'</div>'+
+    '<div class="crm-saved-entry-company">'+escapeHtml(j.vaga_company||'Empresa não informada')+'</div>'+
+    '<div class="crm-saved-entry-actions">'+
+     (url?'<a href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer">Ver vaga</a>':'')+
+     (/^\d+$/.test(id)?'<button type="button" class="crm-saved-remove" onclick="crmRemoveSavedJob(this)" aria-label="Remover '+escapeHtml(j.vaga_title||'vaga')+' dos salvos">Remover dos salvos</button>':'')+
+    '</div></div>';
+  }).join(''):'<p class="crm-saved-empty">Você ainda não salvou nenhuma vaga.</p>';
+ }catch(e){
+  console.error('crmLoadSavedJobs',e);
+  if(epoch===crmAuthEpoch&&CURRENT_USER?.id===owner){
+   if(!preserve)host.innerHTML='<p class="crm-saved-empty">Não foi possível carregar suas vagas. Atualize a página para tentar novamente.</p>';
+   else if(typeof evToastMsg==='function')evToastMsg('Não foi possível atualizar a lista agora.','');
+  }
+ }finally{
+  if(epoch===crmAuthEpoch&&CURRENT_USER?.id===owner)host.removeAttribute('aria-busy');
+ }
+}
+async function crmRemoveSavedJob(button){
+ const entry=button?.closest('.crm-saved-entry'),id=entry?.dataset.savedJobId;
+ if(!entry||!button||!id||!/^\d+$/.test(id)||!CURRENT_USER?.id||!authSb)return;
+ if(!window.confirm('Remover esta vaga dos salvos?'))return;
+ const owner=CURRENT_USER.id,epoch=crmAuthEpoch;
+ button.disabled=true;button.textContent='Removendo...';
+ try{
+  const session=await crmRequireSession('Faça login para gerenciar suas vagas salvas.');
+  if(!session||session.user.id!==owner||epoch!==crmAuthEpoch||CURRENT_USER?.id!==owner)return;
+  const {data,error}=await authSb.from('saved_scraped_jobs')
+   .delete().eq('id',id).eq('user_id',owner).select('id');
+  if(error)throw error;
+  if(!Array.isArray(data)||data.length!==1)throw Error('A vaga não foi encontrada entre seus salvos.');
+  if(epoch!==crmAuthEpoch||CURRENT_USER?.id!==owner)return;
+  entry.remove();
+  const host=document.getElementById('membroVagasSalvas');
+  if(host&&!host.querySelector('.crm-saved-entry'))host.innerHTML='<p class="crm-saved-empty">Você ainda não salvou nenhuma vaga.</p>';
+  if(typeof evToastMsg==='function')evToastMsg('Vaga removida dos salvos.','');
+  await crmLoadSavedJobs(true);
+ }catch(e){
+  console.error('crmRemoveSavedJob',e);
+  if(epoch===crmAuthEpoch&&CURRENT_USER?.id===owner&&typeof evToastMsg==='function')
+   evToastMsg('Não foi possível remover a vaga. Tente novamente.','');
+ }finally{
+  if(button.isConnected){button.disabled=false;button.textContent='Remover dos salvos';}
+ }
+}
+
 async function loadMembroPanel(){
   if(!CURRENT_USER || !authSb) return; const epoch=crmAuthEpoch;
 
@@ -8698,23 +8759,8 @@ async function loadMembroPanel(){
     if(headlineEl) headlineEl.textContent = perfil.headline || CURRENT_USER.email;
   }
 
-  // Vagas salvas
-  const salvEl = document.getElementById('membroVagasSalvas');crmSkeleton(salvEl);salvEl.removeAttribute('aria-busy');
-  try{
-    const { data } = await authSb.from('saved_scraped_jobs')
-      .select('*').eq('user_id', CURRENT_USER.id).order('created_at', {ascending:false}).limit(10);
-    if(epoch!==crmAuthEpoch)return;
-    if(data && data.length){
-      salvEl.innerHTML = data.map(j=>`
-        <div style="padding:8px 0;border-bottom:1px solid var(--line);last-child:border-none;">
-          <div style="font-size:12px;font-weight:600;color:var(--text);">${escapeHtml(j.vaga_title||'Vaga salva')}</div>
-          <div style="font-size:11px;color:var(--muted);">${escapeHtml(j.vaga_company||'')}</div>
-          <a href="${escapeHtml(j.vaga_url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--accent);">Ver vaga </a>
-        </div>`).join('');
-    } else {
-      salvEl.innerHTML = '<span style="font-size:12px;color:var(--muted);">Nenhuma vaga salva ainda.</span>';
-    }
-  }catch(e) { salvEl.innerHTML = 'Erro ao carregar.'; }
+  // Vagas salvas: leitura e exclusão estão isoladas para não recarregar todo o perfil.
+  await crmLoadSavedJobs();
 
   await crmLoadMatchResume();
   const matchEl=document.getElementById('membroVagasMatch');
