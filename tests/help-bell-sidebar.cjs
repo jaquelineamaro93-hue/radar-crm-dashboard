@@ -38,7 +38,7 @@ for(const code of ['pt-BR','en','es-419'])assert(shell.includes(code));
 for(const filename of ['index.html','404.html']){
  const html=read(filename);
  assert.match(html,/\/assets\/push-preferences\.js\?v=20261026-watermark-1/,'updated JS cache key: '+filename);
- assert.match(html,/\/assets\/push-preferences\.css\?v=20261026-navy-help-2/,'updated CSS cache key: '+filename);
+ assert.match(html,/\/assets\/push-preferences\.css\?v=20261027-focus-audit1/,'updated CSS cache key: '+filename);
  assert.doesNotMatch(html,/\/assets\/push-preferences\.(?:js|css)\?v=20261023-header-2/,'stale cache key: '+filename);
 }
 const legacyCss=read('assets/push-preferences.css');

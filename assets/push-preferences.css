@@ -2,7 +2,7 @@
 .crm-push-header-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;min-height:44px;min-width:44px;padding:8px 10px;background:transparent;border:1px solid #50463d;border-radius:8px;color:#d8d4cc;font:inherit;font-size:13px;cursor:pointer}
 .crm-push-header-button:hover{color:#ff9b54;border-color:#ff8a3d}
 .crm-push-header-button svg{width:18px;height:18px}
-.crm-push-header-button:focus-visible,.crm-push-invite button:focus-visible,.crm-push-dialog button:focus-visible,.crm-push-dialog input:focus-visible{outline:2px solid #f97316;outline-offset:3px}
+.crm-push-header-button:focus-visible,.crm-push-invite button:focus-visible,.crm-push-dialog button:focus-visible,.crm-push-dialog input:focus-visible{outline:2px solid #cda6e3;outline-offset:3px}
 .crm-push-invite{position:absolute;right:26px;top:calc(100% + 8px);width:min(330px,calc(100vw - 36px));box-sizing:border-box;padding:16px;background:#1c1a19;border:1px solid #52483e;border-radius:12px;box-shadow:0 12px 36px #0006;color:#f5f2ef}
 .crm-push-invite[hidden]{display:none}
 .crm-push-invite p{margin:0 0 12px;font-size:14px;line-height:1.5}

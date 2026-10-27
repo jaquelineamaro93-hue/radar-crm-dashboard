@@ -10,7 +10,7 @@
  border-color:#f97316;background:rgba(249,115,22,.085);color:#f6a36d
 }
 .cx-share-nav:focus-visible,.cx-share-mobile:focus-visible,.cx-share-card:focus-visible,
-.cx-share-choice:focus-visible{outline:2px solid #fb923c;outline-offset:2px}
+.cx-share-choice:focus-visible{outline:2px solid #cda6e3;outline-offset:2px}
 .cx-share-nav{width:calc(100% - 20px);margin:14px 10px 5px;justify-content:flex-start;padding:10px 12px}
 .cx-share-nav svg{flex:0 0 16px}
 .cx-share-holder{display:flex;justify-content:flex-end;align-items:center;margin-top:10px;gap:6px}
