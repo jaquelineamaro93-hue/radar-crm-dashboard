@@ -7,7 +7,7 @@ const html=read('index.html'),hub=read('assets/profile-hub-unified.js'),css=read
 assert.equal(read('404.html'),html,'SPA 404 must match index');
 for(const pathname of ['freelancers/index.html','dashboard/index.html','open-to-work/index.html'])
  assert.equal(read(pathname),html,'SPA route must use new shell: '+pathname);
-for(const asset of ['profile-hub-unified.css?v=20261026-profhub1','profile-hub-unified.js?v=20261026-profhub1'])
+for(const asset of ['profile-hub-unified.css?v=20261026-profhub1','profile-hub-unified.js?v=20261027-owner1'])
  assert(html.includes(asset),'versioned integration missing: '+asset);
 assert(html.includes('id="pf_preferred_name"'),'optional form nickname is missing');
 assert(html.includes('preferred_name:preferredName||null'),'nickname must be saved only as a private profile field');
@@ -20,7 +20,7 @@ for(const part of ['Perfil geral','Freelancer','Open to Work','searchTabRegistra
  assert(hub.includes(part),'profile hub missing '+part);
 assert(hub.includes('current.email_confirmed_at')||hub.includes('current?.email_confirmed_at'),'ownership check must require verified identity');
 assert(hub.includes('email_autor'),'freelancer ownership must compare the confirmed author address');
-assert(hub.includes('Editar em Meu perfil'),'freelancer editing remains available from the member profile');
+assert(hub.includes('Editar meu perfil freelancer'),'owner editing remains available via verified member account');
 assert(!hub.includes("b=button('Editar meu perfil',openOwnFreelancer)"),'do not duplicate editing controls inside public cards');
 assert(!brasa.includes('getProfile(')&&!brasa.includes('CURRENT_PROFILE'),'Brasa does not read even nickname from a private profile; name preference remains available in the member editor');
 assert(brasa.includes("type==='assistant'"),'only assistant messages are normalized');
