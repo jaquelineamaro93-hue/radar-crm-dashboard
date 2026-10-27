@@ -63,6 +63,9 @@ async function run(){
        await share.waitFor({state:'visible',timeout:5000});
        const placement=await share.boundingBox();
        assert(placement&&placement.width>15,'share control missing from the freelancer card header');
+       const avatar=await first.locator('.cx-fc-head .pro-avatar').boundingBox();
+       assert(avatar&&Math.abs(avatar.y-placement.y)<=45,
+        'share action must align with name/avatar (no old vertical dead zone): '+JSON.stringify({avatar,placement}));
        await share.click();
        const popup=page.locator('.cx-share-panel');
        await popup.waitFor({state:'visible',timeout:3000});
