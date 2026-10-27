@@ -66,6 +66,18 @@ async function run(){
        const avatar=await first.locator('.cx-fc-head .pro-avatar').boundingBox();
        assert(avatar&&Math.abs(avatar.y-placement.y)<=45,
         'share action must align with name/avatar (no old vertical dead zone): '+JSON.stringify({avatar,placement}));
+       const density=await first.evaluate(card=>{
+        const actions=card.querySelector('.cx-fc-actions');
+        const bio=card.querySelector('.cx-fc-bio');
+        const rect=el=>el?.getBoundingClientRect();
+        const a=rect(actions),b=rect(bio);
+        return {margin:getComputedStyle(actions).marginTop,
+          gap:a&&b?Math.round(a.top-b.bottom):null,
+          alignSelf:getComputedStyle(card).alignSelf};
+       });
+       assert(density.margin!=='auto','Action buttons have an unwanted auto margin');
+       assert(density.gap==null||density.gap<85,
+        'Card still has a giant void before buttons: '+JSON.stringify(density));
        await share.click();
        const popup=page.locator('.cx-share-panel');
        await popup.waitFor({state:'visible',timeout:3000});
