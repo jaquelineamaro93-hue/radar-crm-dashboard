@@ -45,7 +45,7 @@ assert(shell.includes("if(route==='inicio'&&crmSignedIn())route='dashboard'"),'S
 assert(shell.includes('>Atualizar o Match</button>'),'Saved jobs must offer refresh not initial search');
 assert(shell.includes('saved-jobs-figma.js?v=20261026-auto-match-columns1'));
 assert(shell.includes('saved-jobs-figma.css?v=20261026-auto-match-columns1'));
-assert(shell.includes('conexao-figma-unified-pages.css?v=20261026-auto-match-columns1'));
+assert(shell.includes('conexao-figma-unified-pages.css?v=20261026-workspace-spacing1'));
 assert(shell.includes('member-home-reference.js?v=20261026-home-avatar1'));
 const home=fs.readFileSync('assets/member-home-reference.js','utf8');
 new vm.Script(home,{filename:'assets/member-home-reference.js'});

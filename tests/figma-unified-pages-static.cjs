@@ -46,7 +46,7 @@ test('workbench, public counters and notices use accessible card surfaces',()=>{
  assert(css.includes('focus-visible'));
 });
 test('new source references load with cache refresh',()=>{
- assert(html.includes('conexao-figma-unified-pages.css?v=20261026-auto-match-columns1'));
+ assert(html.includes('conexao-figma-unified-pages.css?v=20261026-workspace-spacing1'));
  assert(html.includes('saved-jobs-figma.js?v=20261026-auto-match-columns1'));
  assert(savedJs.includes("page.classList.contains('cx-saved-dashboard')"));
  assert(savedJs.includes('matchObserver.observe(match,{childList:true})'));
