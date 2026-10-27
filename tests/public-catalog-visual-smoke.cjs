@@ -62,12 +62,12 @@ async function run(){
        const values=await dropdown.locator('option').evaluateAll(options=>options.map(el=>el.value));
        assert(values.includes('most_reviewed')&&values.includes('new'),'More reviewed and new options missing from dropdown');
        const raw=await page.locator('#freelancerCount').textContent();
-       const total=Number((raw||'').match(/\\d+/)?.[0]||0);
+       const total=Number((raw||'').match(/\d+/)?.[0]||0);
        assert(total===item.cards,'Not all actual freelancers shown initially: '+JSON.stringify({total,shown:item.cards}));
        await dropdown.selectOption('most_reviewed');
        const ratedCounts=await page.locator('#freelancerResults .cx-freelancer-card-a').evaluateAll(cards=>cards.map(card=>{
         const label=card.querySelector('.cx-fc-rating small')?.textContent||'';
-        return Number(label.match(/\\d+/)?.[0]||0);
+        return Number(label.match(/\d+/)?.[0]||0);
        }));
        assert.equal(ratedCounts.length,total,'Review order must not hide records');
        assert(ratedCounts.every((n,i)=>i===0||ratedCounts[i-1]>=n),
