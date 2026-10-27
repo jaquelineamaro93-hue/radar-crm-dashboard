@@ -16,7 +16,7 @@ if(!document.getElementById('crm-otw-excerpts-css')){
   const css=document.createElement('link');
   css.id='crm-otw-excerpts-css';
   css.rel='stylesheet';
-  css.href='/assets/open-to-work-excerpts.css?v=20261021-1';
+  css.href='/assets/open-to-work-excerpts.css?v=20261027-purplefocus1';
   document.head.appendChild(css);
 }
 addScript('/assets/open-to-work-excerpts.js?v=20261021-1','crm-otw-excerpts-runtime');
