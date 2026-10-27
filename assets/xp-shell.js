@@ -3,7 +3,6 @@
 'use strict';
 if(window.CXXPShell)return;
 const specs={
- 'xp-avatar':{id:'pageXpAvatar',label:'Meu Avatar',path:'/avatar-studio/index.html?embedded=1'},
  'xp-rankings':{id:'pageXpRankings',label:'Rankings',path:'/rankings/index.html?embedded=1'}
 };
 function register(){
@@ -12,7 +11,7 @@ function register(){
  if(!pages)return false;
  for(const [route,sp] of Object.entries(specs)){
   crmRoutes[route]=[sp.id,sp.label];
-  crmRoutePaths[route]=route==='xp-avatar'?'/painel/avatar/':'/painel/rankings/';
+  crmRoutePaths[route]='/painel/rankings/';
   if(typeof crmPathRoutes!=='undefined')crmPathRoutes[crmRoutePaths[route].replace(/\/$/,'')]=route;
   let pane=document.getElementById(sp.id);
   if(pane)continue;
@@ -27,7 +26,7 @@ function register(){
   frame.className='cx-xp-embedded-frame';
   const target=new URLSearchParams(location.search).get('xp_recommend')||'';
   const validTarget=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(target);
-  frame.dataset.src=sp.path+(route==='xp-rankings'&&validTarget?'&recommend='+encodeURIComponent(target):'');
+  frame.dataset.src=sp.path+(validTarget?'&recommend='+encodeURIComponent(target):'');
   frame.title='Conexão XP: '+sp.label;
   frame.loading='eager';frame.referrerPolicy='same-origin';
   // Keep the embedded page invisible until its actual document passes validation.
@@ -37,7 +36,7 @@ function register(){
    let valid=false;
    try{
      const doc=frame.contentDocument;
-     valid=Boolean(doc&&doc.getElementById(route==='xp-rankings'?'rankMain':'studio'));
+     valid=Boolean(doc&&doc.getElementById('rankMain'));
      const expectedPath=new URL(sp.path,location.origin).pathname;
      const actualPath=frame.contentWindow?.location.pathname;
      if(actualPath!==expectedPath||doc?.querySelector('#crmSidebar,#crmNavSlot,#view-logada,#crmPages,.crm-nav-items'))valid=false;
@@ -76,7 +75,7 @@ function handleMessage(e){
  if(!frame)return;
  if(e.data.type==='cx-xp-navigation'){
   const route=String(e.data.route||'');
-  if(!['xp-avatar','xp-rankings','membro','membros','comunidade','admin'].includes(route))return;
+  if(!['xp-rankings','membro','membros','comunidade','admin'].includes(route))return;
   if(typeof crmNavigate==='function')crmNavigate(route);
  }
  if(e.data.type==='cx-xp-height'){
@@ -123,11 +122,11 @@ function syncRoute(){
 window.addEventListener('hashchange',()=>requestAnimationFrame(syncRoute));
 window.addEventListener('popstate',()=>requestAnimationFrame(syncRoute));
 document.addEventListener('click',e=>{
- const link=e.target.closest?.('a[data-crm-route="xp-avatar"],a[data-crm-route="xp-rankings"]');
+ const link=e.target.closest?.('a[data-crm-route="xp-rankings"]');
  if(!link)return;
  const route=link.dataset.crmRoute;
  e.preventDefault();
- if(typeof crmNavigate==='function')crmNavigate(route);else location.assign(route==='xp-avatar'?'/painel/avatar/':'/painel/rankings/');
+ if(typeof crmNavigate==='function')crmNavigate(route);else location.assign('/painel/rankings/');
  requestAnimationFrame(syncRoute);
 });
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncRoute,{once:true});
