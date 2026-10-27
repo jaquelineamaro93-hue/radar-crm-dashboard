@@ -26,7 +26,7 @@ addScript('/assets/open-to-work-excerpts.js?v=20261021-1','crm-otw-excerpts-runt
 if(!document.getElementById('crm-copilot-css')){
   const css=document.createElement('link');
   css.id='crm-copilot-css';css.rel='stylesheet';
-  css.href='/assets/crm-copilot.css?v=20261027-workspace1';
+  css.href='/assets/crm-copilot.css?v=20261027-name-focus1';
   document.head.appendChild(css);
 }
 if(!document.getElementById('crm-brasa-clean-style')){

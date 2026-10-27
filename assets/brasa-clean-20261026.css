@@ -208,7 +208,7 @@
 
 /* Brasa workspace: a full conversation area with a persistent composer. */
 #cxCopilot .cx-copilot-head .cx-copilot-new{width:36px;height:36px;flex:0 0 36px;border:0;border-radius:8px;background:transparent;color:var(--brasa-muted);font-size:24px}
-#cxCopilot .cx-copilot-head .cx-copilot-expand{font-size:24px!important;padding:0!important}
+#cxCopilot .cx-copilot-head .cx-copilot-expand{font-size:0!important;padding:0!important}
 #cxCopilot .cx-copilot-suggestions{flex:0 0 auto;border-top:1px solid var(--brasa-border);font-size:13px}
 #cxCopilot .cx-copilot-suggestions summary{padding:12px 16px;cursor:pointer;color:var(--brasa-accent)}
 #cxCopilot .cx-copilot-nav{display:flex;flex:0 0 auto;border-top:1px solid var(--brasa-border)}
@@ -233,5 +233,3 @@
  #cxCopilot.cx-expanded .cx-copilot-history{padding:16px!important}
  #cxCopilot .cx-copilot-head{gap:5px!important;padding:9px!important}
 }
-
-#cxCopilot .cx-copilot-expand::after{content:none!important}

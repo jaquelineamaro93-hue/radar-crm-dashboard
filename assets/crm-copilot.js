@@ -439,7 +439,7 @@ function mount(){
   root.innerHTML=
     '<button class="cx-copilot-launch" type="button" data-cx-open aria-expanded="false" aria-controls="cxCopilotPanel">'+FOX+'<span>Brasa</span></button>'+
     '<section class="cx-copilot-panel" id="cxCopilotPanel" aria-label="Copiloto Brasa Copilot" hidden>'+
-     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-new" data-cx-new type="button" aria-label="Nova conversa" title="Nova conversa">+</button><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa" title="Expandir conversa">⤢</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
+     '<div class="cx-copilot-head">'+FOX+'<div><strong>Brasa Copilot</strong></div><button class="cx-copilot-new" data-cx-new type="button" aria-label="Nova conversa" title="Nova conversa">+</button><button class="cx-copilot-expand" data-cx-expand type="button" aria-pressed="false" aria-label="Expandir conversa" title="Expandir conversa">Expandir</button><button class="cx-copilot-close" data-cx-close type="button" aria-label="Fechar copiloto">×</button></div>'+
      '<div class="cx-copilot-history" data-cx-history role="log" aria-live="polite" aria-label="Conversa"></div>'+
      '<section class="cx-copilot-support" data-cx-support hidden></section>'+
      '<details class="cx-copilot-suggestions"><summary>Sugestões para começar</summary><div class="cx-copilot-quick" data-cx-quick></div></details>'+
@@ -457,7 +457,7 @@ function mount(){
   root.querySelector('[data-cx-expand]').addEventListener('click',()=>{
     const expanded=root.classList.toggle('cx-expanded');
     const button=root.querySelector('[data-cx-expand]');
-    button.textContent=expanded?'⤡':'⤢';
+    button.textContent=expanded?'Reduzir':'Expandir';
     button.title=expanded?'Reduzir conversa':'Expandir conversa';
     button.setAttribute('aria-pressed',String(expanded));
     button.setAttribute('aria-label',expanded?'Reduzir conversa':'Expandir conversa');
