@@ -1,0 +1,40 @@
+name: Open to Work production visual focus smoke
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/otw-focus-production-smoke.cjs'
+      - '.github/workflows/otw-focus-production-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/otw-focus-production-smoke.cjs'
+      - '.github/workflows/otw-focus-production-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  focus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Install pinned browser
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.64.1
+          npx playwright install --with-deps chromium
+      - name: Check production OTW input focus in four viewports
+        run: node tests/otw-focus-production-smoke.cjs
+      - name: Retain screenshots and computed style evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: otw-focus-evidence
+          path: visual-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
