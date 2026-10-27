@@ -10,15 +10,20 @@ function closeEditor(){
  const overlay=profileOverlay();
  if(overlay)overlay.remove();
 }
-function openOwnFreelancer(){
+async function openOwnFreelancer(){
+ if(!signed())return;
+ // The authenticated account, never a share URL or an unverified name,
+ // determines which freelancer record can enter the edit flow.
+ await refreshOwner();
  if(!signed())return;
  const id=own.userId===user()?.id?own.id:null;
  closeEditor();
+ if(typeof crmNavigate==='function')crmNavigate('freelancers');
  if(id!=null&&typeof openFreelancerEditModal==='function'){
   openFreelancerEditModal(id,own.name);
  }else{
-  if(typeof crmNavigate==='function')crmNavigate('freelancers');
-  document.getElementById('btnOpenFreelancerModal')?.click();
+  const dialog=document.getElementById('freelancerModal');
+  if(dialog){dialog.classList.add('open');dialog.querySelector('#fl_nome')?.focus();}
  }
 }
 function openOTW(){
@@ -92,14 +97,14 @@ async function refreshOwner(){
  if(!signed()||!current?.email_confirmed_at||!current?.email){
   own.userId='';own.id=null;own.name='';renderOwn();return;
  }
- if(own.userId===identity)return;
+ if(own.userId===identity&&own.id!=null)return;
  own.userId=identity;own.id=null;own.name='';
  try{
   const db=(typeof authSb!=='undefined'&&authSb)||null;
   if(!db){own.userId='';return;}
   // The authenticated submitter relation is stronger than a matching email.
   const primary=await db.from('freelancers_sugeridos').select('id,nome,submitted_by')
-    .eq('submitted_by',identity).eq('aprovado',true).limit(1);
+    .eq('submitted_by',identity).order('created_at',{ascending:false}).limit(1);
   if(user()?.id!==identity)return;
   let match=!primary.error?primary.data?.[0]:null;
   // Legacy profiles may predate submitted_by; email is only used to propose
@@ -119,18 +124,15 @@ function renderOwn(){
  const cta=page?.querySelector('#btnOpenFreelancerModal');
  const mine=signed()&&own.userId===user()?.id&&own.id!=null;
  if(cta){
-  cta.textContent=mine?'Editar em Meu perfil':'Cadastrar meu perfil';
+  cta.textContent=mine?'Editar meu perfil freelancer':'Cadastrar meu perfil';
   if(!cta.dataset.cxOwnedAction){
    cta.dataset.cxOwnedAction='1';
+   // Intercept all authenticated clicks, even while ownership is still loading:
+   // prevents the unsafe legacy "find by name" form from flashing.
    cta.addEventListener('click',e=>{
-    if(!(signed()&&own.userId===user()?.id&&own.id!=null))return;
+    if(!signed())return;
     e.preventDefault();e.stopImmediatePropagation();
-    if(typeof openProfileModal==='function'){
-     openProfileModal();
-     const tab=document.getElementById('cx-profile-tab-freelancer');
-     if(tab)tab.click();
-     else if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById('cx-profile-tab-freelancer')?.click());
-    }
+    void openOwnFreelancer();
    },true);
   }
  }
