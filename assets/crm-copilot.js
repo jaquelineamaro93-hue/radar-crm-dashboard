@@ -1,7 +1,7 @@
 /* BRASA COPILOT — copiloto seguro, módulo isolado.
  * Ações locais: navegação, abertura do próprio perfil e filtros visuais.
  * Jev classifica no servidor antes de qualquer chamada ao modelo de linguagem.
- * Nunca consulta diretórios privados, altera tabelas ou envia CURRENT_PROFILE à IA.
+ * Não consulta dados de perfis, diretórios privados ou currículos.
  */
 (()=>{'use strict';
 if(window.CXCopilot)return;
@@ -24,7 +24,6 @@ const ACTIONS=Object.freeze({
 });
 const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const getUser=()=>{try{return typeof CURRENT_USER!=='undefined'?CURRENT_USER:null}catch{return null}};
-const getProfile=()=>{try{return typeof CURRENT_PROFILE!=='undefined'?CURRENT_PROFILE:null}catch{return null}};
 const signed=()=>{try{return typeof crmSignedIn==='function'&&crmSignedIn()&&!!getUser()?.id&&!getUser()?.is_anonymous}catch{return false}};
 function canShow(){
   // A sessão e a área logada precisam estar ativas ao mesmo tempo.
@@ -83,15 +82,11 @@ function addMessage(type,message,action,sources=[],options={}){
 }
 function showIntro(){
   if(!history)return;
-  // The name stays in the browser; it is never attached to external AI requests.
-  const source=String(getProfile()?.preferred_name||getProfile()?.full_name||getUser()?.user_metadata?.full_name||getUser()?.user_metadata?.name||'').trim();
-  const first=(source.split(/\s+/)[0]||'').slice(0,35);
+  // Deliberately do not read any member profile fields, even for greetings.
   const locale=window.CXLanguage?.getLocale?.()||'pt-BR';
-  const greeting=locale==='en'
-    ?'Hi'+(first?', '+first:'')+'. What can I help you with?'
-    :locale==='es-419'
-    ?'Hola'+(first?', '+first:'')+'. ¿En qué puedo ayudarte?'
-    :'Oi'+(first?', '+first:'')+'. Em que posso ajudar?';
+  const greeting=locale==='en'?'Hi. How can I help today?'
+    :locale==='es-419'?'Hola. ¿En qué puedo ayudarte hoy?'
+    :'Oi. Em que posso ajudar hoje?';
   const previous=history.firstElementChild;
   if(history.children.length===1&&previous?.dataset.cxWelcome==='true'){
     const content=previous.querySelector('p');if(content)content.textContent=greeting;
@@ -102,17 +97,18 @@ function showIntro(){
   history.lastElementChild.dataset.cxWelcome='true';
 }
 function currentProfileStatus(){
-  if(!signed())return {message:'Entre com Google para consultar seu próprio cadastro. Nenhum dado de perfil será enviado para a IA.',action:'login'};
-  const p=getProfile();
-  if(!p)return {message:'Seu perfil ainda não foi iniciado ou não terminou de carregar. Posso abrir o formulário para você.',action:'profile'};
-  const missing=[];
-  if(!String(p.full_name||'').trim())missing.push('nome');
-  if(!String(p.headline||'').trim())missing.push('cargo ou área');
-  if(!String(p.seniority||'').trim())missing.push('senioridade');
-  if(!Array.isArray(p.tools)||!p.tools.length)missing.push('ferramentas');
-  if(p.guided_onboarding_completed!==true)missing.push('finalização do onboarding');
-  if(!missing.length)return {message:'Seu cadastro essencial está completo. Você pode revisar suas informações quando quiser.',action:'profile'};
-  return {message:'Encontrei estas etapas pendentes no seu perfil: '+missing.join(', ')+'. Posso abrir o formulário para completar. Essa verificação aconteceu somente no seu navegador.',action:'profile'};
+  // Never inspect private member data in an assistant response.
+  if(!signed())return {message:'Para conferir o cadastro, entre na sua conta. Posso explicar os campos sem consultar seus dados.',action:'login'};
+  return {message:'Você pode revisar e atualizar as informações em Meu perfil. Eu não leio seu cadastro, mas posso ajudar a melhorar o que escolher compartilhar aqui.',action:'profile'};
+}
+function conversationalFallback(question){
+ const q=normalize(question);
+ if(/curriculo|cv/.test(q))return 'Um currículo forte mostra o que você fez, como fez e qual foi o resultado. Se quiser, cole um trecho sem nome, telefone ou dados de terceiros e diga o cargo que procura. Posso sugerir melhorias concretas.';
+ if(/entrevista/.test(q))return 'Para preparar uma entrevista, vale relacionar sua experiência aos desafios do cargo. Qual posição você está considerando?';
+ if(/carreira|transicao|promocao|recolocacao/.test(q))return 'Podemos comparar caminhos e organizar um próximo passo. O que está mais difícil de decidir agora?';
+ if(/salari|remuner|pretensao/.test(q))return 'Posso ajudar a comparar remuneração e fontes. Qual cargo ou nível quer consultar?';
+ if(/vaga|emprego|oportunidade/.test(q))return 'Podemos afinar sua busca de vagas. Qual cargo procura e prefere remoto, híbrido ou presencial?';
+ return 'Podemos explorar isso juntos. O que você quer resolver primeiro?';
 }
 function classify(question){
   const s=normalize(question);
