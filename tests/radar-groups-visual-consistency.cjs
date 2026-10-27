@@ -21,6 +21,10 @@ assert(radar.includes('crm-radar-filter-disclosure'),'filter disclosure must rem
 for(const bp of ['max-width:1100px','max-width:760px','max-width:670px','max-width:480px'])
  assert(radar.includes(bp),'missing responsive breakpoint '+bp);
 assert(radar.includes('prefers-reduced-motion'),'motion preference missing');
+assert(radar.includes('#pageVagas #btn-buscar'),'Search action must use the unified palette');
+assert(radar.includes('#pageVagas .crm-add-community-job'),'Community add action must use the unified palette');
+assert(groups.includes('#pageCourses #btnGoToCourseForm'),'Course suggestion must use scoped portal palette');
+assert(groups.includes('background:#312842!important'),'Course action must not inherit orange event CTA');
 for(const selector of ['.cx-group-list','.cx-group-row','.cx-group-links a'])
  assert(groups.includes(selector),'group structure missing: '+selector);
 assert(groups.includes('grid-template-columns:repeat(2,minmax(0,1fr))'),'desktop group layout missing');
