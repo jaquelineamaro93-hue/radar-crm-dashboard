@@ -27,7 +27,7 @@ assert(css.includes('.cx-work>.cx-status:empty{display:none!important}'),'empty 
 assert(css.includes('.cx-work>.cx-status:not(:empty)'),'loading and error messages stay visible');
 assert(css.includes('[data-content]>[data-portal-summary]'),'bring summary closer to navigation');
 // Workspace subroutes are handled by SPA routing, not physical HTML folders.
-assert(html.includes("'workspace-studio'"),'workspace-studio route must remain registered');
+assert(ws.includes("studio:'Meu negócio'"),'workspace-studio mode remains registered');
 for(const route of ['404.html','dashboard/index.html','vagas-salvas/index.html']){
  assert.equal(fs.readFileSync(route,'utf8'),html,'stale routed HTML: '+route);
 }
