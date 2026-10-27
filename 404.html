@@ -1360,6 +1360,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 <link rel="stylesheet" href="/assets/portal-first-paint.css?v=20261026-audit2">
 <link rel="stylesheet" href="/assets/unified-directory-shell-20261026.css?v=20261026-worktopbar2">
 <link rel="stylesheet" href="/assets/freelancer-card-a-20261027.css?v=20261027-a1">
+<link rel="stylesheet" href="/assets/catalog-work-20261027.css?v=20261027-a1">
 </head>
 <body>
 <aside id="crmSurveyReminder" class="crm-survey-modern" aria-labelledby="crmSurveyReminderTitle">
@@ -5023,9 +5024,10 @@ function populateCourseFilters(){
 }
 
 function priceTagClass(p){
-  const v=String(p||'');
-  if(v.startsWith('Gratuito')) return 'free';
-  if(v==='Pago') return 'paid';
+  const v=String(p||'').trim().toLocaleLowerCase('pt-BR');
+  if(v.startsWith('gratuito'))return 'free';
+  if(v.includes('teste grátis')||v.includes('teste gratis'))return 'trial';
+  if(v.startsWith('pago'))return 'paid';
   return 'unk';
 }
 
@@ -5035,8 +5037,13 @@ function courseCardHtml(c){
   const price=String(c.preco_estimado||'').trim();
   const certificate=String(c.certificado||'Não informado').trim()||'Não informado';
   const source=String(c.origem||'').trim();
+  const status=priceTagClass(c.gratuito_pago);
+  const priceSummary=status==='free'?''
+    :status==='trial'?'<div class="cx-course-price-note">Grátis no início, depois pago. Verifique as condições na instituição.</div>'
+    :status==='paid'?'<div class="cx-course-price-note"><strong>Valor:</strong> '+(price&&!/consultar|não informado/i.test(price)?escapeHtml(price):'consultar instituição')+'</div>'
+    :'';
   return `
-    <div class="course-card">
+    <div class="course-card cx-course-refined" data-price-type="${status}">
       <div class="c-name">${escapeHtml(c.nome)}</div>
       <div class="c-inst">${escapeHtml(c.instituicao)||'Instituição não informada'}${c.disciplina ? ' · '+escapeHtml(c.disciplina) : ''}</div>
       <div class="course-tags">
@@ -5045,8 +5052,8 @@ function courseCardHtml(c){
         <span class="c-tag unk">${escapeHtml(c.formato||'Não informado')}</span>
       </div>
       <div class="course-meta">
-        ${price ? '<div><strong>Valor estimado:</strong> '+escapeHtml(price)+'</div>' : '<div><strong>Valor estimado:</strong> consultar instituição</div>'}
         <div><strong>Certificado:</strong> ${escapeHtml(certificate)}</div>
+        ${priceSummary}
       </div>
       ${source==='pesquisa_web'?'<div class="course-source">Informações verificadas em fonte oficial · 04/10/2026</div>':''}
       <a class="c-link ${hasLink?'':'disabled'}" href="${hasLink?url:'#'}" target="_blank" rel="noopener noreferrer">${hasLink?'Acessar curso':'Link indisponível'}</a>
@@ -9628,6 +9635,7 @@ async function crmSubmitReviewForm(event){
 </script>
 <script src="/assets/google-login.js?v=20261026-feedback1"></script>
 <script src="/assets/workspace.js?v=20261025-audit14"></script>
+<script src="/assets/catalog-work-20261027.js?v=20261027-a1"></script>
 <script src="/assets/freelancer-fields-20261027.js?v=20261027-a1"></script>
 <script src="/assets/freelancer-card-a-20261027.js?v=20261027-a1"></script>
 <script src="/assets/connections.js?v=20261003-1"></script>
