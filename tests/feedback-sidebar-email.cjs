@@ -27,7 +27,7 @@ assert(!sql.includes('question_text')&&!sql.includes('answer_text'),'no full mes
 const loader=r('assets/google-login.js'),runtime=r('assets/crm-runtime-integrations.js');
 assert(loader.includes('crm-runtime-integrations.js?v=20261027-focus-audit1'));
 assert(runtime.includes('crm-copilot.js?v=20261027-retry4'));
-assert(runtime.includes('crm-copilot.css?v=20261026-clean2'));
+assert(runtime.includes('crm-copilot.css?v=20261027-focus-audit1'));
 assert(runtime.includes('brasa-feedback.js?v=20261026-feedback2'));
 assert(js.includes('dataset.cxWelcome'), 'first-name greeting updates when profile becomes available');
 assert(help.includes('showReleaseNotice'), 'one-time news notice uses authenticated dashboard');
