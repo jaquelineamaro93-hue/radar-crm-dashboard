@@ -8,7 +8,7 @@ export async function handleRequest(req:Request){
   const user=privateMode||resource==='members'?await userFor(req):null;
   if((privateMode||resource==='members')&&!user)return respond({error:'Faça login para continuar.'},401);
   if(resource==='talents')return respond({authenticated:!!user,items:(await talents()).map((p:any)=>({id:p.id,nome:p.nome,senioridade:p.senioridade,area:p.area,ferramentas:p.ferramentas,condicao:p.condicao,local:p.local,exp:p.exp,linkedin:p.linkedin,whatsapp:p.whatsapp,email_contato:p.email_contato,...(user?{idioma:p.idioma,muda:p.muda}:{})}))});
-  if(resource==='freelancers')return respond({authenticated:!!user,items:(await freelancers()).map((p:any)=>user?p:{id:p.id,nome:p.nome,categoria:text(p.categoria),bio:text(p.bio),portfolio:p.portfolio,linkedin:p.linkedin})});
+  if(resource==='freelancers')return respond({authenticated:!!user,items:(await freelancers()).map((p:any)=>user?p:{id:p.id,nome:p.nome,categoria:text(p.categoria),bio:text(p.bio),portfolio:p.portfolio,linkedin:p.linkedin,titulo:text(p.titulo),ferramentas:text(p.ferramentas),anos_experiencia:p.anos_experiencia,localidade:text(p.localidade),idiomas:text(p.idiomas),modalidade:text(p.modalidade),disponibilidade:text(p.disponibilidade),valor_hora:p.valor_hora,foto_url:p.foto_url})});
   const rows=await database('diretorio_membros','select=id,nome,area,email,senioridade,ferramentas,linkedin,foto_url,cargo,empresa,bio,instagram,website,whatsapp,contact_channels&order=id&limit=500');
   const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   const {data:profiles}=await client.from('profiles').select('full_name,avatar_path').not('avatar_path','is',null).limit(1000);
