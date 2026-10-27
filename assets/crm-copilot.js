@@ -17,6 +17,7 @@ const ACTIONS=Object.freeze({
   events:{label:'Ver agenda de eventos',route:'eventos'},
   members:{label:'Conhecer membros',route:'membros'},
   salary:{label:'Ver pesquisa completa (opcional)',route:'cargos'},
+  saved:{label:'Abrir Vagas Salvas',route:'vagas-salvas'},
   market:{label:'Ver dados do mercado',route:'mercado'},
   match:{label:'Ver Match de Vagas',route:'vagas'},
   avatar:{label:'Abrir meu Avatar',route:'xp-avatar'},
@@ -118,6 +119,7 @@ function classify(question){
   // A pergunta completa define a intenção, não a palavra isolada "perfil".
   if(/\b(como|porque|por que|dica|orienta|aconselh|me ajuda|me explique|qual a melhor|vale a pena)\b/.test(s)&&/(vaga|match|perfil|curriculo|carreira|entrevista)/.test(s))
     return {intent:'analyze'};
+  if(/(vagas?.{0,24}(?:salv|guard)|(?:salv|guard).{0,24}vagas?)/.test(s))return {intent:'action',action:'saved'};
   if(/(vaga|oportunidade|emprego|radar|match|aderencia)/.test(s)&&/(meu perfil|meus dados|com base no meu perfil|para mim)/.test(s))
     return {intent:'action',action:'match'};
   if(/(cadastro|meu perfil|meus dados|onboarding|completar perfil|finalizar perfil)/.test(s)&&!/(curriculo|cv|melhor|dica|avaliar|ideal|forte|entrevista)/.test(s))
@@ -304,6 +306,7 @@ function localAnswer(action,question){
     remote:'Para buscar trabalho remoto, selecione Remoto no Radar e confira a modalidade no anúncio original. Qual cargo ou senioridade você procura?',
     hybrid:'Em vagas híbridas, confira a cidade e a frequência presencial no anúncio. Qual cidade e senioridade você procura?',
     events:'A agenda reúne eventos da comunidade. Você pode consultar os detalhes e salvar os que interessam. Quer encontrar um evento ou publicar uma proposta?',
+    saved:'As vagas que você guardou ficam na página Vagas Salvas. Posso abrir essa área para você.',
     members:'No diretório você encontra profissionais da comunidade e os contatos que cada pessoa escolheu compartilhar. Você busca uma especialidade ou quer atualizar seu próprio perfil?',
     rankings:'Os Rankings ficam na área Conexão XP. Eles mostram a participação na comunidade. Seu avatar também pode ser personalizado nessa área.',
     avatar:'Você pode personalizar seu avatar na área Conexão XP. As escolhas são feitas por você no editor; esta conversa não altera seu perfil.',
@@ -319,6 +322,13 @@ function process(question){
   root.dataset.started='true';
   recentQuestions.push(question.slice(0,320));if(recentQuestions.length>4)recentQuestions.shift();
   addMessage('user',question);
+  const normalized=normalize(question);
+  if(/^(?:era isso|obrigad|valeu|ate mais|tchau)/.test(normalized)){
+    addMessage('assistant','Por nada. Até a próxima.');return;
+  }
+  if(/^(?:tem|ha|existe).{0,30}(?:vaga|oportunidade)/.test(normalized)&&!/\b(?:crm|cx|cs|analista|especialista|coorden|geren|diretor|head|junior|pleno|senior)\b/.test(normalized)){
+    lastTopic='jobs';addMessage('assistant','Boa para qual próximo passo? Você quer continuar na sua área ou está pensando em mudar?');return;
+  }
   let found=classify(question);
   if(lastTopic==='salary'&&found.intent==='help'&&/junior|pleno|senior|especialista|coorden|geren|remot|hibrid|sudeste|nordeste|presencial|clt|pj|mensal|por mes|anual|periodicidade|sao paulo|\bsp\b/.test(normalize(question)))found={intent:'action',action:'salary'};
   if(found.intent==='profile-status'){
