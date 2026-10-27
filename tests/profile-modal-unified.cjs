@@ -21,6 +21,8 @@ assert(css.includes('@media(max-width:720px)')&&css.includes('@media(max-width:4
 assert(!css.includes('#f97316'),'Legacy orange must not appear in new modal stylesheet');
 assert(css.includes('max-height:calc(100dvh - 36px)'),'Main editor must scroll on short screens');
 assert(css.includes('body #profileModalOverlay .crm-profile-chips label:has(input:checked)'),'Selected tags need new palette');
+assert(css.includes('.crm-profile-chips input:checked+span'),'Selected label must override retired orange child span');
+assert(css.includes('position:relative!important;top:auto!important'),'Tabs must not overlap a wrapped sticky header');
 let depth=0;for(const c of css){if(c==='{')depth++;else if(c==='}')depth--;assert(depth>=0,'premature CSS brace');}
 assert.equal(depth,0,'Unclosed CSS braces');
 console.log('PASS profile editor General/Freelancer/Open to Work, verified submission modal visual unification and unchanged security');
