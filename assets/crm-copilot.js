@@ -250,7 +250,11 @@ async function analyze(){
   const context=previous.map((q,i)=>i===previous.length-1&&lastAssistantReply
     ?('Pergunta anterior: '+q.slice(0,100)+'\nResposta anterior do Brasa: '+lastAssistantReply.slice(0,175)).slice(0,320)
     :q.slice(0,320));
-  const name=preferredName();if(name)context.unshift('Preferência de nome confirmada: trate esta pessoa por '+name+'.');
+  const name=preferredName();if(name){
+    const hint='Preferência de tratamento: '+name+'.';
+    if(context.length>=2)context[0]=(hint+' '+context[0]).slice(0,320);
+    else context.unshift(hint);
+  }
   const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
   if(result.error||result.data?.error){
@@ -274,7 +278,7 @@ async function analyze(){
       :code==='CLASSIFIER_NOT_CONFIGURED'
       ?'A interpretação das perguntas está indisponível agora. Não vou inventar uma resposta.'
       :'Não consegui concluir essa resposta com a IA agora. Sua pergunta continua aqui. Você pode tentar novamente.';
-    addMessage('assistant',message,null,[],{feedback:false,retryQuestion:question});
+    addMessage('assistant',message,null,[],{feedback:false,...(!['MODEL_NOT_CONFIGURED','CLASSIFIER_NOT_CONFIGURED'].includes(code)?{retryQuestion:question}:{})});
   }
  }
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
