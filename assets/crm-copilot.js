@@ -76,6 +76,12 @@ function addMessage(type,message,action,sources=[],options={}){
     b.className='cx-copilot-action';b.addEventListener('click',()=>runAction(action));
     item.append(b);
   }
+  if(type==='assistant'&&options.retryQuestion){
+    const again=document.createElement('button');again.type='button';again.className='cx-copilot-action';
+    again.textContent='Tentar novamente';
+    again.addEventListener('click',()=>{again.disabled=true;process(options.retryQuestion);});
+    item.append(again);
+  }
   if(type==='assistant'&&options.feedback!==false){
     lastAssistantReply=copy.slice(0,240);
     window.CRMBrasaFeedback?.attach(item,{kind:options.replyKind||'assistant',userId:getUser()?.id});
@@ -228,13 +234,30 @@ async function analyze(){
     :q.slice(0,320));
   const result=await sb.functions.invoke('brasa-copilot',{body:{prompt:question,context,consent:aiConsentSaved(),locale:window.CXLanguage?.getLocale?.()||'pt-BR'}});
   if(getUser()?.id!==memberId||root!==activeRoot)return;
-  if(result.error||result.data?.error)throw Error('unavailable');
+  if(result.error||result.data?.error){
+    let reason=String(result.data?.error||'SERVICE_UNAVAILABLE');
+    try{
+      const details=await result.error?.context?.json?.();
+      if(details&&typeof details.error==='string')reason=details.error;
+    }catch{}
+    throw Error(reason);
+  }
   const action=result.data?.action;
   if(action==='profile'){const status=currentProfileStatus();addMessage('assistant',status.message,status.action);}
   else if(action&&Object.prototype.hasOwnProperty.call(ACTIONS,action)){lastTopic=action;addMessage('assistant',localAnswer(action,question),action);}
   else if(result.data?.resposta)addMessage('assistant',result.data.resposta,null,result.data.sources,{replyKind:'ai'});
   else throw Error('empty');
- }catch{if(getUser()?.id===memberId&&root===activeRoot)addMessage('assistant',conversationalFallback(question));}
+ }catch(e){
+  if(getUser()?.id===memberId&&root===activeRoot){
+    const code=String(e?.message||'');
+    const message=code==='MODEL_NOT_CONFIGURED'
+      ?'A parte conversacional do Brasa está indisponível por configuração. As ferramentas do portal continuam funcionando, mas não vou simular uma resposta da IA.'
+      :code==='CLASSIFIER_NOT_CONFIGURED'
+      ?'A interpretação das perguntas está indisponível agora. Não vou inventar uma resposta.'
+      :'Não consegui concluir essa resposta com a IA agora. Sua pergunta continua aqui. Você pode tentar novamente.';
+    addMessage('assistant',message,null,[],{feedback:false,retryQuestion:question});
+  }
+ }
  finally{waiting.remove();if(root===activeRoot&&getUser()?.id===memberId){busy=false;activeRoot.dataset.state='idle';activeHistory.setAttribute('aria-busy','false');activeRoot.querySelector('[data-cx-send]').disabled=false;}}
 }
 function salaryAnswer(question){

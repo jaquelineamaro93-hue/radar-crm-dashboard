@@ -43,6 +43,9 @@ jobs:
       - name: Validate JS syntax, privacy boundaries and intent routing
         run: node tests/copilot-security.cjs
 
+      - name: Validate transparent errors and retry
+        run: node tests/brasa-service-fallback.cjs
+
       - name: Validate Brasa content-sized layout and context
         run: node tests/brasa-natural-ui.cjs
 

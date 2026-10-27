@@ -38,10 +38,10 @@ if(!document.getElementById('crm-brasa-clean-style')){
 if(!document.getElementById('crm-brasa-feedback-runtime')){
  const feedback=document.createElement('script');feedback.id='crm-brasa-feedback-runtime';
  feedback.src='/assets/brasa-feedback.js?v=20261026-feedback2';feedback.async=true;
- feedback.addEventListener('load',()=>addScript('/assets/crm-copilot.js?v=20261027-conversation3','crm-copilot-runtime'),{once:true});
- feedback.addEventListener('error',()=>addScript('/assets/crm-copilot.js?v=20261027-conversation3','crm-copilot-runtime'),{once:true});
+ feedback.addEventListener('load',()=>addScript('/assets/crm-copilot.js?v=20261027-retry4','crm-copilot-runtime'),{once:true});
+ feedback.addEventListener('error',()=>addScript('/assets/crm-copilot.js?v=20261027-retry4','crm-copilot-runtime'),{once:true});
  document.head.appendChild(feedback);
-}else{addScript('/assets/crm-copilot.js?v=20261027-conversation3','crm-copilot-runtime')}
+}else{addScript('/assets/crm-copilot.js?v=20261027-retry4','crm-copilot-runtime')}
 
 
 // O SDK gerencia o Service Worker depois do opt-in. Não registrar push no carregamento.

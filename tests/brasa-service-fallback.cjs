@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const client=fs.readFileSync('assets/crm-copilot.js','utf8');
+const server=fs.readFileSync('supabase/functions/brasa-copilot/engine.ts','utf8');
+new vm.Script(client);
+assert(client.includes("options.retryQuestion"),'failed generation keeps bounded retry');
+assert(client.includes("again.textContent='Tentar novamente'"),'a real retry action is displayed');
+assert(client.includes("process(options.retryQuestion)"),'retry resubmits original question');
+assert(client.includes("details=await result.error?.context?.json?.()"),'server error is parsed when available');
+assert(client.includes("code==='MODEL_NOT_CONFIGURED'"),'missing model reported transparently');
+assert(client.includes("feedback:false,retryQuestion:question"),'failures are not rated as answers');
+assert(server.includes("BRASA_CLASSIFIER_HTTP_"),'classifier status logged without prompts');
+assert(server.includes("BRASA_MODEL_HTTP_"),'model status logged without prompts');
+assert(server.includes("BRASA_WEB_HTTP_"),'web status logged without prompts');
+assert(!server.includes("console.warn(prompt"),'no personal content in diagnostics');
+console.log('PASS: Brasa exposes honest service failure with retry and safe diagnostics');
