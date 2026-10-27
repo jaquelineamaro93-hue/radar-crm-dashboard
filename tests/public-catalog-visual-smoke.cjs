@@ -99,7 +99,7 @@ async function run(){
         const overlay=document.createElement('div');
         overlay.id='profileModalOverlay';overlay.className='ev-modal-overlay crm-profile-overlay';
         overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
-        overlay.innerHTML='<div class="ev-mbox crm-profile-modal"><div class="crm-profile-modal-head"><div><p class="crm-eyebrow">MEU PERFIL / CONEXÃO CRM</p><h2>Editar meu perfil</h2><p>Atualize suas informações quando precisar.</p></div><button class="crm-profile-close">Fechar</button></div><div class="cx-profile-tabs"><button class="cx-profile-tab is-active" aria-selected="true">Perfil geral</button><button class="cx-profile-tab">Freelancer</button><button class="cx-profile-tab">Open to Work</button></div><section data-pf-step="1"><div class="crm-profile-step-title"><span>01</span><div><h3>Como a comunidade vai te conhecer</h3><p>Comece pelo básico.</p></div></div><label class="ev-ilabel">Nome completo</label><input class="ev-ifield" type="text" placeholder="Nome Sobrenome"><div class="crm-profile-chips"><label><input type="checkbox" checked><span>Híbrido</span></label></div></section><div class="crm-profile-footer"><button class="crm-button crm-outline">Cancelar</button><button class="crm-button">Salvar alterações</button></div></div>';
+        overlay.innerHTML='<div class="ev-mbox crm-profile-modal"><div class="crm-profile-modal-head"><div><p class="crm-eyebrow">MEU PERFIL / CONEXÃO CRM</p><h2>Editar meu perfil</h2><p>Atualize suas informações quando precisar.</p></div><button class="crm-profile-close">Fechar</button></div><section data-pf-step="1"><div class="crm-profile-step-title"><span>01</span><div><h3>Como a comunidade vai te conhecer</h3><p>Comece pelo básico.</p></div></div><label class="ev-ilabel">Nome completo</label><input class="ev-ifield" type="text" placeholder="Nome Sobrenome"><div class="crm-profile-chips"><label><input type="checkbox" checked><span>Híbrido</span></label></div></section><div class="crm-profile-footer"><button class="crm-button crm-outline">Cancelar</button><button class="crm-button">Salvar alterações</button></div></div>';
         document.body.append(overlay);
         const inner=overlay.querySelector('.crm-profile-modal');
         const primary=overlay.querySelector('.crm-profile-footer .crm-button:not(.crm-outline)');
@@ -112,6 +112,13 @@ async function run(){
           viewportHeight:innerHeight};
         return result;
        });
+       // The real connected profile hub injects the tab strip, not the fixture.
+       await page.waitForTimeout(350);
+       const strips=await page.locator('#profileModalOverlay .cx-profile-tabs').count();
+       assert.equal(strips,1,'Profile tabs should render once: '+strips);
+       const selectedColor=await page.locator('#profileModalOverlay .crm-profile-chips label:has(input:checked) span')
+        .first().evaluate(el=>getComputedStyle(el).color);
+       assert(!selectedColor.includes('253, 186, 116'),'Old orange selected-chip text remains: '+selectedColor);
        assert(painted.surface==='rgb(22, 32, 51)','Profile modal old background: '+JSON.stringify(painted));
        assert(painted.button==='rgb(216, 181, 239)','Profile save button old orange: '+JSON.stringify(painted));
        assert(painted.panelWidth<=painted.bodyWidth+2,'Profile modal overflows viewport');
