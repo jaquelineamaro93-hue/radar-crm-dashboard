@@ -546,7 +546,7 @@
   .ev-pres-row{display:inline-flex;align-items:center;gap:2px;width:auto;max-width:100%;padding:3px;margin:10px 0 0;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px}
   .ev-btn-pres{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:6px 9px;border:0;border-radius:7px;cursor:pointer;background:transparent;color:var(--muted);font-family:inherit;font-size:10px;font-weight:700;line-height:1;white-space:nowrap;transition:background .16s ease,color .16s ease,box-shadow .16s ease}
   .ev-btn-pres:hover{background:rgba(255,255,255,.055);color:var(--text)}
-  .ev-btn-pres:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ev-btn-pres:focus-visible{outline:2px solid #cda6e3;outline-offset:2px}
   .ev-btn-g.on{color:#fff;background:var(--accent);box-shadow:0 1px 8px rgba(249,115,22,.18)}
   .ev-btn-m.on{color:var(--text);background:rgba(242,193,78,.14)}
   .ev-btn-nao.on{color:var(--text);background:rgba(255,255,255,.08)}
@@ -1091,7 +1091,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #cda6e3;outline-offset:3p
 .crm-brand-mark{position:relative;width:42px;height:42px;min-width:42px;border-radius:10px;display:grid;place-items:center;overflow:hidden;border:1px solid #4b4540;color:#fff;font-size:12px;font-weight:800;letter-spacing:.02em}
 .crm-brand-mark img{position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;object-fit:contain;padding:5px;background:#f7f7f5;border-radius:9px}
 .crm-logo-action{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;min-height:32px;padding:6px 9px;border:1px solid #5a5149;border-radius:7px;background:transparent;color:#cfc8c1;font-family:inherit;font-size:11px;font-weight:700;line-height:1;cursor:pointer}
-.crm-logo-action:hover,.crm-logo-action:focus-visible{border-color:#ff8a3d;color:#ff9b54;background:#ff8a3d0d}
+.crm-logo-action:hover{border-color:#ff8a3d;color:#ff9b54;background:#ff8a3d0d}.crm-logo-action:focus-visible{outline:2px solid #cda6e3;outline-offset:3px;border-color:#cda6e3}
 .crm-logo-modal-preview{display:grid;place-items:center;width:78px;height:78px;margin:10px 0 16px;border:1px dashed #61584f;border-radius:12px;background:#111;overflow:hidden;color:#999;font-size:11px;text-align:center}
 .crm-logo-modal-preview img{width:100%;height:100%;object-fit:contain;background:#f7f7f5;padding:7px;box-sizing:border-box}
 
@@ -1106,7 +1106,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #cda6e3;outline-offset:3p
 body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]) #crmSurveyReminder{display:none!important}
 @media(max-width:700px){.crm-review-form{padding:12px}.pf-grid,.result-grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
-<link rel="stylesheet" href="/assets/workspace.css?v=20261025-layout-final">
+<link rel="stylesheet" href="/assets/workspace.css?v=20261027-focus-audit1">
 <style id="crm-profile-directory-v3">
 .crm-profile-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
 .crm-profile-top-actions{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}.crm-profile-top-actions .crm-button{min-height:44px}
@@ -1338,7 +1338,7 @@ body.crm-profile-prompt-visible #crmSurveyReminder{bottom:245px}
 #vagasContainerHub .crm-job-details p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
 </style><link rel="stylesheet" href="/assets/radar-ux.css?v=20261025-figma2">
 <link rel="stylesheet" href="/assets/freelancers-subnav.css?v=20261014-1">
-<link rel="stylesheet" href="/assets/share-everything.css?v=20261015-og1">
+<link rel="stylesheet" href="/assets/share-everything.css?v=20261027-focus-audit1">
 <style id="cx-xp-shell-style">
 .crm-xp-native-pane{padding:0!important;background:transparent!important;max-width:none!important}
 .crm-xp-native-pane .cx-xp-loading{padding:18px 20px;color:var(--muted);font-size:13px}
@@ -9704,7 +9704,7 @@ function analyticsCss(){if(document.getElementById("crmAdminAnalyticsCss"))retur
 #crmAdminApprovals .crm-field:nth-child(2){width:min(170px,100%)}
 #crmAdminApprovals .crm-field select{height:36px;min-height:36px;padding:0 32px 0 11px;border-radius:8px;font-size:12px}
 #crmModerationRefresh{all:unset!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;height:34px!important;min-height:34px!important;width:auto!important;min-width:0!important;padding:0 12px!important;margin:0 0 1px!important;border:1px solid #51473f!important;border-radius:8px!important;background:#181614!important;color:#d9d4ce!important;font-family:inherit!important;font-size:11px!important;font-weight:700!important;line-height:1!important;cursor:pointer!important;box-shadow:none!important}
-#crmModerationRefresh:hover,#crmModerationRefresh:focus-visible{border-color:#ff8a3d!important;color:#ff9b54!important;background:rgba(255,138,61,.08)!important}
+#crmModerationRefresh:hover{border-color:#ff8a3d!important;color:#ff9b54!important;background:rgba(255,138,61,.08)!important}#crmModerationRefresh:focus-visible{outline:2px solid #cda6e3!important;outline-offset:3px;border-color:#cda6e3!important;color:#e8c9f8!important}
 #crmModerationRefresh:disabled{opacity:.55!important;cursor:wait!important}
 .crm-admin-tab{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 13px;border:1px solid #3a3733!important;border-radius:8px!important;background:#151412!important;color:#bcb8b0!important;font-size:12px!important;font-weight:700!important;box-shadow:none!important}
 .crm-admin-tab:hover{border-color:#65584c!important;color:#fff!important;background:#1d1a17!important}
@@ -10277,7 +10277,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script src="/assets/portal-hardening.js?v=20261026-audit2"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-public-repair1"></script>
 <script defer src="/assets/share-everything.js?v=20261027-visible1"></script>
-<link rel="stylesheet" href="/assets/push-preferences.css?v=20261026-navy-help-2">
+<link rel="stylesheet" href="/assets/push-preferences.css?v=20261027-focus-audit1">
 <script defer src="/assets/push-preferences.js?v=20261026-watermark-1"></script>
 <style id="crm-survey-mobile-fix-20261015">
 .crm-experience-save-status{font-size:12px;line-height:1.4;color:#d4e6f8;margin:8px 0}
