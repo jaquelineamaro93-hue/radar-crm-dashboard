@@ -4,7 +4,7 @@ const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),head=html.slice(0,html.indexOf('</head>'));
 assert(head.includes('id="cx-catalog-refinement-20261026" rel="stylesheet"'),'catalog CSS must load statically');
 assert(head.includes('/assets/portal-first-paint.css?v=20261026-audit2'),'first-paint guard must load statically');
-assert(html.includes('/assets/portal-hardening.js?v=20261027-radar-filters1'),'new runtime cache key missing');
+assert(html.includes('/assets/portal-hardening.js?v=20261028-match-mobile1'),'new runtime cache key missing');
 assert(html.includes('id="cx-site-i18n-script" defer src="/assets/site-i18n.js'),'language control must load before portal starts');
 for(const path of ['404.html','dashboard/index.html','vagas/index.html','vagas-salvas/index.html','open-to-work/index.html','plataformas/index.html','freelancers/index.html'])
  assert.equal(read(path),html,'outdated route shell '+path);
