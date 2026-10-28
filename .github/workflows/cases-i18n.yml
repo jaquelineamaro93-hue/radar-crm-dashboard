@@ -7,6 +7,10 @@ on:
       - 'assets/crm-copilot.js'
       - 'cases/**'
       - 'tests/cases-i18n.cjs'
+      - 'tests/cases-mobile-brand.cjs'
+      - 'favicon.svg'
+      - 'favicon.ico'
+      - 'apple-touch-icon.png'
       - '.github/workflows/cases-i18n.yml'
   push:
     branches: [main]
@@ -14,6 +18,10 @@ on:
       - 'assets/site-i18n.js'
       - 'cases/**'
       - 'tests/cases-i18n.cjs'
+      - 'tests/cases-mobile-brand.cjs'
+      - 'favicon.svg'
+      - 'favicon.ico'
+      - 'apple-touch-icon.png'
 permissions:
   contents: read
 jobs:
@@ -23,4 +31,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - run: node tests/cases-i18n.cjs
+      - run: |
+          node tests/cases-i18n.cjs
+          node tests/cases-mobile-brand.cjs
