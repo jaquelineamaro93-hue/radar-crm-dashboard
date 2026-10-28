@@ -5,7 +5,7 @@ const between=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b,html.indexOf(a)))
 const host={innerHTML:'',querySelectorAll:()=>[]};
 const resume={profile:{seniority:'Especialista',primary_area:'CRM',professional_summary:'customer marketing salesforce analytics'},skills:[{skill_name:'Salesforce',evidence_status:'confirmed'}],preferences:{target_roles:['CRM'],job_scope:'Nacional'}};
 const job=(title,scope,category)=>({title,abrangencia:scope,category,description:'Salesforce customer marketing analytics',url:'https://example.org/job',company:'Fixture'});
-const context=vm.createContext({console,document:{getElementById:()=>host},CURRENT_MATCH_RESUME:resume,VAGAS:[job('Especialista CRM Brasil','Nacional','crm'),job('Especialista CRM Paris','Internacional','crm'),job('Senior Android Developer','Nacional','tech'),job('Account Executive','Nacional','sales'),job('CRM desconhecida','','crm')],escapeHtml:x=>String(x??''),crmSafeUrl:x=>x});
+const context=vm.createContext({console,document:{getElementById:()=>host},CURRENT_MATCH_RESUME:resume,VAGAS:[job('Especialista CRM Brasil','Nacional','crm'),job('Especialista CRM Paris','Internacional','crm'),job('Senior Android Developer','Nacional','tech'),job('Account Executive','Nacional','crm'),job('CRM desconhecida','','crm')],escapeHtml:x=>String(x??''),crmSafeUrl:x=>x});
 vm.runInContext(between('function crmRadarNormalized','function crmRadarLevelMatches'),context);
 vm.runInContext(between('function crmRadarScopeMatches','function crmRadarPublishedMillis'),context);
 vm.runInContext(between('function crmMatchScope','function openAnunciarVagaModal'),context);

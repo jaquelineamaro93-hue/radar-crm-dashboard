@@ -8844,7 +8844,7 @@ function crmMatchAreaMatches(job,roles,primaryArea){
  if(!selected.length)return true;
  const title=' '+norm(job.title||job.cargo)+' ';
  const category=norm(job.category||job.categoria_slug);
- const hay=title+' '+category+' ';
+ const hay=title.trim()?title:' '+category+' ';
  return selected.some(role=>(aliases[norm(role)]||[norm(role)]).some(term=>hay.includes(' '+term+' ')));
 }
 async function crmSetMatchScope(value){
