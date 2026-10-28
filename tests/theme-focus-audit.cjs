@@ -17,7 +17,7 @@ for(const marker of [
  'unified-directory-shell-20261026.css?v=20261027-focus-audit1',
  'share-everything.css?v=20261027-focus-audit1',
  'workspace.css?v=20261027-focus-audit1',
- 'push-preferences.css?v=20261027-focus-audit1'
+ 'push-preferences.css?v=20261028-match-mobile1'
 ])assert(index.includes(marker),'missing current theme/cache marker: '+marker);
 const src=read('tests/portal-shell-route-sync.cjs');
 const arr=src.match(/const routes=\s*(\[[\s\S]*?\]);/);
