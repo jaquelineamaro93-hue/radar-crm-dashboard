@@ -3101,6 +3101,7 @@ crmShowSurveyReminder();
    </div>
    <p>Baseado no seu Currículo para Match: competências, experiência, senioridade e preferências.</p>
    <p class="cx-saved-score-note">As porcentagens são estimativas de aderência, não previsões de contratação. Confira a disponibilidade na vaga original.</p>
+   <label for="crmMatchJobScope" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0">Onde buscar vagas<select id="crmMatchJobScope" class="ev-ifield" style="width:auto;max-width:100%" onchange="crmSetMatchScope(this.value)"><option value="Nacional">Somente Brasil</option><option value="Internacional">Somente internacionais</option><option value="Todos">Brasil e internacionais</option></select></label>
    <div id="membroVagasMatch" aria-live="polite"><p class="cx-saved-empty">Complete seu Currículo para Match para visualizar recomendações de vagas automaticamente.</p></div>
   </section>
   <section class="cx-saved-panel cx-saved-communities">
@@ -8824,6 +8825,40 @@ async function crmSetMatchSkill(skill,status){
  if(res.error){console.error('match skill update',res.error);alert('Não foi possível atualizar esta competência.');return;}
  await crmLoadMatchResume();runMembroMatch();
 }
+function crmMatchScope(pref){return ['Nacional','Internacional','Todos'].includes(pref?.job_scope)?pref.job_scope:'Nacional';}
+function crmMatchAreaMatches(job,roles,primaryArea){
+ const norm=crmRadarNormalized;
+ const aliases={
+  'crm':['crm','customer relationship','relacionamento com cliente','relacionamento com o cliente'],
+  'customer experience cx':['customer experience','experiencia do cliente','cx'],
+  'customer success cs':['customer success','sucesso do cliente','cs'],
+  'growth':['growth','crescimento'],
+  'lifecycle marketing':['lifecycle','ciclo de vida','retencao'],
+  'customer insights':['customer insights','consumer insights','inteligencia de cliente'],
+  'marketing automation':['marketing automation','automacao de marketing','marketing cloud'],
+  'product marketing':['product marketing','marketing de produto'],
+  'data analytics':['data','dados','analytics','analitica'],
+  'revops':['revops','revenue operations','salesops']
+ };
+ const selected=roles.length?roles:String(primaryArea||'').split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);
+ if(!selected.length)return true;
+ const title=' '+norm(job.title||job.cargo)+' ';
+ const category=norm(job.category||job.categoria_slug);
+ const hay=title+' '+category+' ';
+ return selected.some(role=>(aliases[norm(role)]||[norm(role)]).some(term=>hay.includes(' '+term+' ')));
+}
+async function crmSetMatchScope(value){
+ if(!['Nacional','Internacional','Todos'].includes(value)||!CURRENT_USER?.id||!CURRENT_MATCH_RESUME)return;
+ const owner=CURRENT_USER.id,epoch=crmAuthEpoch,old=crmMatchScope(CURRENT_MATCH_RESUME.preferences);
+ const select=crmById('crmMatchJobScope');if(select)select.disabled=true;
+ try{
+  const prefs={...(CURRENT_MATCH_RESUME.preferences||{}),user_id:owner,job_scope:value,updated_at:new Date().toISOString()};
+  const {error}=await authSb.from('match_preferences').upsert(prefs,{onConflict:'user_id'});if(error)throw error;
+  if(epoch!==crmAuthEpoch||CURRENT_USER?.id!==owner)return;
+  CURRENT_MATCH_RESUME.preferences=prefs;await crmRunMatch();
+ }catch(e){if(epoch===crmAuthEpoch&&CURRENT_USER?.id===owner){if(select)select.value=old;const result=crmById('membroVagasMatch');if(result)result.textContent='Não foi possível salvar a abrangência. Tente novamente.';}}
+ finally{if(select&&epoch===crmAuthEpoch)select.disabled=false;}
+}
 function runMembroMatch(){
   const matchEl=document.getElementById('membroVagasMatch');if(!matchEl)return;
   const r=CURRENT_MATCH_RESUME,p=r?.profile,skills=r?.skills||[],pref=r?.preferences;
@@ -8835,14 +8870,15 @@ function runMembroMatch(){
   if(typeof VAGAS==='undefined'||!VAGAS.length){matchEl.textContent='Carregando vagas...';if(typeof loadVagas==='function')loadVagas();setTimeout(runMembroMatch,2500);return;}
   const seniority=(p.seniority||'').toLowerCase(),summary=(p.cv_full_text||p.professional_summary||'').toLowerCase(),roles=pref?.target_roles||[],locations=pref?.preferred_locations||[],models=pref?.work_models||[],types=pref?.employment_types||[];
   const srMap={'gestão':'gerente,gestor,head,coordenador,liderança','diretoria':'diretor,diretora,head','sênior':'sênior,senior,sr','pleno':'pleno','júnior':'júnior,junior,jr','especialista':'especialista','coordenação':'coordenador,coordenadora'};
-  const scored=VAGAS.map(v=>{
+  const scope=crmMatchScope(pref);
+  const scored=VAGAS.filter(v=>(scope==='Todos'||crmRadarScopeMatches(v,scope))&&crmMatchAreaMatches(v,roles,p.primary_area)).map(v=>{
     const text=((v.title||'')+' '+(v.description||'')+' '+(v.location||'')).toLowerCase();let score=0;
     const strengths=confirmed.filter(s=>text.includes(s.toLowerCase()));
     const explicitGaps=absent.filter(s=>text.includes(s.toLowerCase()));
     if(confirmed.length)score+=(strengths.length/confirmed.length)*45;
     if(seniority){const kws=(srMap[seniority]||seniority).split(',');if(kws.some(k=>text.includes(k.trim())))score+=20;}
     if(roles.length&&roles.some(x=>text.includes(x.toLowerCase())))score+=15;
-    const jobModel=String(v.modelo||'').toLowerCase(),jobType=String(v.tipo_contrato||'').toLowerCase();
+    const jobModel=String(v.modalidade_normalizada||v.modelo||'').toLowerCase(),jobType=String(v.tipo_contrato||'').toLowerCase();
     const prelimRemote=jobModel.includes('remoto')||/\bremot[oa]\b/.test(text);
     if(!prelimRemote&&locations.length&&locations.some(x=>text.includes(x.toLowerCase())))score+=10;
     const modelHit=models.find(x=>jobModel.includes(x.toLowerCase())||text.includes(x.toLowerCase()));if(modelHit)score+=8;
@@ -9377,6 +9413,7 @@ async function crmOpenMatchResume(){
    <label class="ev-ilabel" style="margin-top:12px">Competências que você explicitamente NÃO possui<textarea class="ev-ifield" name="absent" rows="2" placeholder="Opcional. Ex.: Adobe Campaign, Braze">${escapeHtml(absent)}</textarea><small style="color:var(--muted)">O que não estiver aqui nem acima continuará como <strong>não informado</strong>.</small></label>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
     <div class="ev-ilabel">Cargos/áreas de interesse<div class="crm-match-chip-group" data-name="roles" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['CRM','Customer Experience (CX)','Customer Success (CS)','Growth','Lifecycle Marketing','Customer Insights','Marketing Automation','Product Marketing','Data / Analytics','RevOps'].map(x=>'<button type="button" class="crm-match-chip'+((pref.target_roles||[]).includes(x)?' is-selected':'')+'" data-value="'+escapeHtml(x)+'" aria-pressed="'+((pref.target_roles||[]).includes(x)?'true':'false')+'">'+escapeHtml(x)+'</button>').join('')}</div><small style="color:var(--muted)">Toque para marcar ou desmarcar. Você pode escolher vários.</small></div>
+    <label class="ev-ilabel">Onde buscar vagas<select class="ev-ifield" name="job_scope">${[['Nacional','Somente Brasil'],['Internacional','Somente internacionais'],['Todos','Brasil e internacionais']].map(([value,label])=>'<option value="'+value+'" '+(crmMatchScope(pref)===value?'selected':'')+'>'+label+'</option>').join('')}</select></label>
     <label class="ev-ilabel">Localidades de interesse<input class="ev-ifield" name="locations" value="${escapeHtml((pref.preferred_locations||[]).join(', '))}" placeholder="Ex.: São Paulo, Campinas"></label>
     <div class="ev-ilabel">Modelo de trabalho<div class="crm-match-chip-group" data-name="models" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['Remoto','Híbrido','Presencial'].map(x=>'<button type="button" class="crm-match-chip'+((pref.work_models||[]).includes(x)?' is-selected':'')+'" data-value="'+x+'" aria-pressed="'+((pref.work_models||[]).includes(x)?'true':'false')+'">'+x+'</button>').join('')}</div><small style="color:var(--muted)">Pode selecionar mais de um.</small></div>
     <div class="ev-ilabel">Tipo de contratação<div class="crm-match-chip-group" data-name="types" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">${['CLT','PJ','Temporário','Freelancer'].map(x=>'<button type="button" class="crm-match-chip'+((pref.employment_types||[]).includes(x)?' is-selected':'')+'" data-value="'+x+'" aria-pressed="'+((pref.employment_types||[]).includes(x)?'true':'false')+'">'+x+'</button>').join('')}</div><small style="color:var(--muted)">Pode selecionar mais de um.</small></div>
@@ -9422,7 +9459,7 @@ async function crmSaveMatchResume(ev){
   const fd=new FormData(form),uid=CURRENT_USER.id;
   const profile={user_id:uid,professional_headline:String(fd.get('headline')||'').trim()||null,cv_full_text:String(fd.get('cv')||fd.get('summary')||'').trim()||null,primary_area:String(fd.get('area')||'').trim()||null,seniority:String(fd.get('seniority')||'').trim()||null,years_experience:fd.get('years')?Number(fd.get('years')):null,availability:String(fd.get('availability')||'').trim()||null,updated_at:new Date().toISOString()};
   const selected=name=>Array.from(form.querySelectorAll('.crm-match-chip-group[data-name="'+name+'"] .crm-match-chip.is-selected')).map(b=>b.dataset.value).filter(Boolean);
-  const prefs={user_id:uid,target_roles:selected('roles'),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
+  const prefs={user_id:uid,target_roles:selected('roles'),job_scope:crmMatchScope({job_scope:fd.get('job_scope')}),preferred_locations:crmCsvList(fd.get('locations')),work_models:selected('models'),employment_types:selected('types'),salary_min:fd.get('salary')?Number(fd.get('salary')):null,updated_at:new Date().toISOString()};
   const yes=crmCsvList(fd.get('skills')),no=crmCsvList(fd.get('absent')).filter(x=>!yes.some(y=>y.toLowerCase()===x.toLowerCase()));
   profile.completeness=crmMatchCompleteness(profile,yes,prefs);
   let res=await authSb.from('match_profiles').upsert(profile,{onConflict:'user_id'});if(res.error)throw res.error;
@@ -9434,6 +9471,7 @@ async function crmSaveMatchResume(ev){
   await crmLoadMatchResume();status.textContent='Currículo salvo.';setTimeout(()=>{crmById('crmMatchResumeOverlay')?.remove();runMembroMatch();},450);
  }catch(e){console.error(e);status.textContent='Não foi possível salvar: '+(e.message||'erro inesperado');btn.disabled=false;}
 }
+let crmMatchSearchSequence=0;
 async function crmRunMatch(){
  if(typeof CURRENT_USER==='undefined'||!CURRENT_USER){openLoginModal();return;}
  const result=crmById('membroVagasMatch');
@@ -9441,7 +9479,13 @@ async function crmRunMatch(){
  try{
   result.textContent='Buscando oportunidades compatíveis…';
   initVagasSupabase();
-  const {data,error}=await vagasSb.from('vagas_crm').select('*').neq('availability_status','closed').order('last_seen_at',{ascending:false,nullsFirst:false}).limit(300);
+  const owner=CURRENT_USER.id,epoch=crmAuthEpoch,sequence=++crmMatchSearchSequence;
+  const scope=crmMatchScope(CURRENT_MATCH_RESUME?.preferences);
+  const control=crmById('crmMatchJobScope');if(control)control.value=scope;
+  let query=vagasSb.from('crm_radar_jobs_public').select('*').neq('availability_status','closed');
+  if(scope!=='Todos')query=query.eq('abrangencia',scope);
+  const {data,error}=await query.order('last_seen_at',{ascending:false,nullsFirst:false}).limit(1000);
+  if(epoch!==crmAuthEpoch||CURRENT_USER?.id!==owner||sequence!==crmMatchSearchSequence)return;
   if(error)throw error;
   VAGAS=data||[];
   if(!VAGAS.length){result.textContent='Nenhuma vaga disponível para comparar agora.';return;}
@@ -10265,7 +10309,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script src="/assets/portal-hardening.js?v=20261027-radar-filters1"></script>\n<script defer src="/assets/community-job-publish.js?v=20261014-freeze2"></script>
 <script defer src="/assets/radar-ux.js?v=20261025-public-repair1"></script>
 <script defer src="/assets/share-everything.js?v=20261027-visible1"></script>
-<link rel="stylesheet" href="/assets/push-preferences.css?v=20261027-focus-audit1">
+<link rel="stylesheet" href="/assets/push-preferences.css?v=20261028-match-mobile1">
 <script defer src="/assets/push-preferences.js?v=20261026-watermark-1"></script>
 <style id="crm-survey-mobile-fix-20261015">
 .crm-experience-save-status{font-size:12px;line-height:1.4;color:#d4e6f8;margin:8px 0}
@@ -10282,7 +10326,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
 <script defer src="/assets/first-access-interests.js?v=20261026-goals4"></script>
 <script defer src="/assets/conexao-ux-refinement.js?v=20261026-ui1"></script>
 <script defer src="/assets/profile-hub-unified.js?v=20261027-owner1"></script>
-<script id="cx-site-i18n-script" defer src="/assets/site-i18n.js?v=20261026-topnav-1"></script>
+<script id="cx-site-i18n-script" defer src="/assets/site-i18n.js?v=20261028-match-mobile1"></script>
 <script defer src="/assets/figma-structure-release-20261027.js?v=20261027-struct1"></script>
 </body>
 </html>

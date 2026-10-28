@@ -235,7 +235,7 @@
  if(!document.getElementById('cx-site-i18n-script')){
    const script=document.createElement('script');
    script.id='cx-site-i18n-script';
-   script.src='/assets/site-i18n.js?v=20261026-topnav-1';
+   script.src='/assets/site-i18n.js?v=20261028-match-mobile1';
    script.defer=true;
    document.head.append(script);
  }

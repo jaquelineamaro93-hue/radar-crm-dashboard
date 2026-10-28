@@ -1,6 +1,6 @@
 /* Acesso permanente no cabeçalho e convite discreto, dispensável. */
 .crm-push-header-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;min-height:44px;min-width:44px;padding:8px 10px;background:transparent;border:1px solid #50463d;border-radius:8px;color:#d8d4cc;font:inherit;font-size:13px;cursor:pointer}
-.crm-push-header-button:hover{color:#ff9b54;border-color:#ff8a3d}
+.crm-push-header-button:hover{color:#cda6e3;border-color:#cda6e3}
 .crm-push-header-button svg{width:18px;height:18px}
 .crm-push-header-button:focus-visible,.crm-push-invite button:focus-visible,.crm-push-dialog button:focus-visible,.crm-push-dialog input:focus-visible{outline:2px solid #cda6e3;outline-offset:3px}
 .crm-push-invite{position:absolute;right:26px;top:calc(100% + 8px);width:min(330px,calc(100vw - 36px));box-sizing:border-box;padding:16px;background:#1c1a19;border:1px solid #52483e;border-radius:12px;box-shadow:0 12px 36px #0006;color:#f5f2ef}
@@ -8,7 +8,7 @@
 .crm-push-invite p{margin:0 0 12px;font-size:14px;line-height:1.5}
 .crm-push-invite>div{display:flex;gap:8px}
 .crm-push-invite button{min-height:44px;border:1px solid #64584c;border-radius:8px;background:transparent;color:#eee;font:inherit;font-size:13px;padding:8px 12px;cursor:pointer}
-.crm-push-invite .crm-push-invite-open{background:#f97316;border-color:#f97316;color:#17120e;font-weight:700}
+.crm-push-invite .crm-push-invite-open{background:#7f40b1;border-color:#7f40b1;color:#ffffff;font-weight:700}
 @media(max-width:900px){.crm-push-header-button{margin-left:auto}.crm-push-header-button>span{display:none}.crm-workbar #crmBreadcrumb{min-width:0;white-space:normal}.crm-push-invite{right:18px}}
 .crm-push-dialog{width:min(430px,calc(100vw - 26px));max-height:min(85vh,690px);overflow-y:auto;box-sizing:border-box;border:1px solid #52483e;border-radius:15px;padding:22px;background:#1c1a19;color:#f5f2ef;box-shadow:0 18px 65px #000a}
 .crm-push-dialog::backdrop{background:rgba(0,0,0,.64)}
@@ -18,15 +18,15 @@
 .crm-push-close{border:0;background:transparent;color:#eee;font-size:24px;line-height:1;cursor:pointer}
 .crm-push-options{display:grid;gap:9px;margin-bottom:13px}
 .crm-push-option{display:flex;align-items:center;gap:12px;border:1px solid #48413d;border-radius:9px;padding:13px;cursor:pointer;font-size:14px}
-.crm-push-option:has(input:checked){border-color:#f97316;background:#302319}
-.crm-push-option input{width:18px;height:18px;accent-color:#f97316;flex:none}
+.crm-push-option:has(input:checked){border-color:#7f40b1;background:#352941}
+.crm-push-option input{width:18px;height:18px;accent-color:#7f40b1;flex:none}
 .crm-push-help{font-size:11px;margin:0 0 10px}
 .crm-push-status{color:#d6e8d4;font-size:12px;line-height:1.4;min-height:0;margin:0 0 8px}
 .crm-push-status:empty{display:none}
 .crm-push-actions{display:flex;justify-content:flex-end;gap:10px;align-items:center;flex-wrap:wrap}
 .crm-push-actions button{min-height:38px;border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer}
 .crm-push-dismiss{background:transparent;color:#d6cfc7;border:1px solid #5c5249}
-.crm-push-save{background:#f97316;color:#17120e;border:1px solid #f97316;font-weight:700!important}
+.crm-push-save{background:#7f40b1;color:#ffffff;border:1px solid #7f40b1;font-weight:700!important}
 .crm-push-save:disabled{opacity:.6;cursor:wait}
 @media(max-width:500px){.crm-push-dialog{padding:18px}.crm-push-actions{justify-content:stretch}.crm-push-actions button{flex:1}}
 @media(max-width:600px){.crm-push-dialog{position:fixed;inset:auto 0 0;width:100%;max-width:100%;margin:0;max-height:85dvh;border-radius:18px 18px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}.crm-push-close{min-width:44px;min-height:44px}.crm-push-actions button{min-height:44px}}

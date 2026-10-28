@@ -27,6 +27,7 @@ jobs:
         run: |
           node tests/portal-quality.cjs
           node tests/radar-filter-regression.cjs
+          node tests/match-scope-relevance.cjs
           node --test tests/new-member-goals-onboarding.cjs
           node tests/catalog-pages-clean.cjs
           node tests/first-paint-layout.cjs
