@@ -135,10 +135,12 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert(shared.includes('email_contato:r.portal_published?text(r.email_contato):null'));
   assert(html.includes("['Disponibilidade para mudança',person.muda_publica]"));
   assert(html.includes("['Última empresa',person.ultima_empresa]"));
-  assert(html.includes("['Área de atuação',person.area]"));
-  assert(html.includes("['Ferramentas e conhecimentos',person.ferramentas]"));
-  assert(html.includes("['Localização',person.local]"));
-  assert(html.includes("['Idiomas e nível',person.idioma]"));
+  assert(html.includes("['Experiência',person.exp]"));
+  assert(html.includes("['Idiomas',person.idioma]"));
+  assert(html.includes("crmTalentModalities(p.condicao)"));
+  assert(html.includes("'<p>'+escapeHtml(p.area)+'</p>'"),'area remains a compact headline');
+  assert(html.includes("'<p class=\"crm-muted\">'+escapeHtml(p.ferramentas)+'</p>'"),'tools remain in the compact summary');
+  assert(html.includes("'<p>'+escapeHtml(p.local)+'</p>'"),'location remains below modality');
   assert(html.includes("crmHttpUrl(p.curriculo)"),'resume uses only safe http URLs');
   assert(html.includes('>Currículo</a>'));
   assert(!html.includes("['Disponibilidade para mudança',person.muda]"),'no private legacy value in public cards');
@@ -152,14 +154,22 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   const formatted=helpers.crmTalentHighlights({area:'CRM',exp:'6 anos',local:'SP',
    ferramentas:'HubSpot',muda_publica:'Sim',ultima_empresa:'Volvo',
    idioma:'Inglês B2',faixa_clt:'R$ 18.000',faixa_pj:'R$ 17.000'});
-  for(const required of ['CRM','6 anos','SP','HubSpot','Sim','Volvo','Inglês B2','R$ 18.000','R$ 17.000'])
+  for(const required of ['6 anos','Sim','Volvo','Inglês B2','R$ 18.000','R$ 17.000'])
    assert(formatted.includes(required), 'card dropped '+required);
   assert(!helpers.crmTalentHighlights({ultima_empresa:'',muda_publica:'',faixa_clt:''}).includes('Última empresa'));
-  assert(!helpers.crmTalentHighlights({muda:'Não',muda_publica:'',ultima_empresa:''}).includes('Mudança'));
+  assert(!helpers.crmTalentHighlights({muda:'Não',muda_publica:'',ultima_empresa:''}).includes('mudança'));
   assert(!helpers.crmTalentHighlights({area:'<script>alert(1)</script>'}).includes('<script>'),'card escapes stored HTML');
  }
 
- assert(html.includes('otw-registration.js?v=20261029-full-card2'),'all SPA routes must load the complete-card script');
+
+ // Required choices are deliberate: optional fields cannot force legacy data into cards.
+ const registration=fs.readFileSync('assets/otw-registration.js','utf8');
+ for(const name of ['nome','area_atuacao','senioridade','localizacao','condicao_trabalho','publish_consent'])
+  assert(registration.includes('name=\\"'+name+'\\" required'),'form required field missing: '+name);
+ for(const name of ['ferramentas','tempo_experiencia','ultima_empresa','idioma','faixa_clt','faixa_pj','mudar_cidade','curriculo','linkedin','whatsapp','email_contato'])
+  assert(!registration.includes('name=\\"'+name+'\\" required'),'do not make optional sensitive details mandatory: '+name);
+
+ assert(html.includes('otw-registration.js?v=20261029-compact-card3'),'all SPA routes must load the complete-card script');
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
  assert(viewCss.includes('@media(max-width:1100px)'));
  assert(viewCss.includes('#pageSearch #searchResults .result-grid'));
