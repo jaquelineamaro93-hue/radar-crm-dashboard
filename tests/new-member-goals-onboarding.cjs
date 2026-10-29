@@ -88,3 +88,37 @@ test('Mobile and desktop visual styles are included without stale orange control
  assert.equal(braces,0);assert.equal(min,0);
  assert.doesNotThrow(()=>new Function(script));
 });
+
+// Behavioral regressions for stale profile state and concurrent saves.
+{
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const vm=require('node:vm');
+const fs=require('node:fs');
+const source=fs.readFileSync(process.env.INTERESTS_SOURCE||'assets/first-access-interests.js','utf8');
+const persist=source.slice(source.indexOf('async function persist('),source.indexOf('\nfunction show('));
+async function run({responses,profile=null,skip=false,switchOnWrite=false}){
+ const calls=[],status={textContent:''};let closed=false,navigated=false;
+ const ctx={busy:false,subjectId:'member-a',selection:['trabalho','pesquisa'],editing:false,CURRENT_USER:{id:'member-a'},CURRENT_PROFILE:profile,
+ root:()=>({querySelector:()=>status}),update:()=>{},t:x=>x,
+ close:()=>{closed=true;},window:{crmNavigate:()=>{navigated=true;}}};
+ ctx.authSb={auth:{getSession:async()=>({data:{session:{access_token:'test'}}}),getUser:async()=>({data:{user:{id:'member-a'}}})},from:table=>{
+  const call={table};calls.push(call);
+  const chain={update:value=>{call.kind='update';call.value=value;return chain;},insert:value=>{call.kind='insert';call.value=value;return chain;},eq:(key,value)=>{call.filter=[key,value];return chain;},select:()=>chain};
+  chain.single=chain.maybeSingle=async()=>{if(switchOnWrite)ctx.CURRENT_USER={id:'member-b'};return responses.shift();};return chain;
+ }};
+ vm.createContext(ctx);await vm.runInContext(persist+';persist('+skip+')',ctx);
+ return {calls,status,closed,navigated,profile:ctx.CURRENT_PROFILE};
+}
+const saved={data:{id:'member-a',onboarding_goals:['trabalho','pesquisa'],directory_visible:true},error:null};
+test('existing profile saves even when the memory cache is empty',async()=>{
+ const r=await run({responses:[saved]});assert(r.closed);assert(r.navigated);assert.equal(r.calls.length,1);assert.equal(r.calls[0].kind,'update');assert.deepEqual(r.calls[0].filter,['id','member-a']);assert.deepEqual(Object.keys(r.calls[0].value),['onboarding_goals']);assert.equal(r.profile.directory_visible,true);
+});
+test('missing profile is created privately',async()=>{const r=await run({responses:[{data:null,error:null},{data:{...saved.data,directory_visible:false},error:null}]});assert(r.closed);assert.equal(r.calls[1].kind,'insert');assert.equal(r.calls[1].value.directory_visible,false);});
+test('concurrent profile creation retries only goals update',async()=>{const r=await run({responses:[{data:null,error:null},{error:{code:'23505'}},saved]});assert(r.closed);assert.deepEqual(r.calls.map(c=>c.kind),['update','insert','update']);assert.deepEqual(Object.keys(r.calls[2].value),['onboarding_goals']);});
+test('permission errors do not cause inserts or false success',async()=>{const r=await run({responses:[{error:{code:'42501'}}]});assert.equal(r.closed,false);assert.equal(r.calls.length,1);assert.equal(r.status.textContent,'error');});
+test('skip saves an explicit empty preference',async()=>{const r=await run({skip:true,responses:[{data:{...saved.data,onboarding_goals:[]},error:null}]});assert(r.closed);assert.equal(r.calls[0].value.onboarding_goals.length,0);});
+test('account switch while saving does not update another account cache',async()=>{const r=await run({switchOnWrite:true,responses:[saved]});assert.equal(r.closed,false);assert.equal(r.navigated,false);assert.equal(r.profile,null);});
+test('a successful HTTP response without a saved row is not reported as saved',async()=>{const r=await run({responses:[{data:null,error:null},{error:{code:'23505'}},{data:null,error:null}]});assert.equal(r.closed,false);assert.equal(r.status.textContent,'error');});
+
+}

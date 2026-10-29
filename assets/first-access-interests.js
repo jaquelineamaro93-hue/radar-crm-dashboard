@@ -205,11 +205,23 @@ async function persist(skipped){
   if(!skipped&&!goals.length){if(status)status.textContent=t('choose');return;}
   // Updating an existing profile never changes its visibility, role or
   // consent. A first-time profile is created as directory-private by default.
-  const hasProfile=typeof CURRENT_PROFILE!=='undefined'&&CURRENT_PROFILE?.id===id;
-  const operation=hasProfile
-    ?authSb.from('profiles').update({onboarding_goals:goals}).eq('id',id)
-    :authSb.from('profiles').insert({id,onboarding_goals:goals,directory_visible:false});
-  const {data,error}=await operation.select('id,onboarding_goals,directory_visible').single();
+  // The in-memory profile can be absent or stale after a profile wizard save.
+  // Let the authenticated database operation determine whether a row exists.
+  const fields='id,onboarding_goals,directory_visible';
+  const sameAccount=()=>typeof CURRENT_USER!=='undefined'&&CURRENT_USER?.id===id&&subjectId===id;
+  const updateGoals=()=>authSb.from('profiles').update({onboarding_goals:goals}).eq('id',id).select(fields).maybeSingle();
+  let result=await updateGoals();
+  if(!sameAccount())return;
+  if(result.error)throw result.error;
+  if(!result.data){
+    result=await authSb.from('profiles').insert({id,onboarding_goals:goals,directory_visible:false}).select(fields).single();
+    if(!sameAccount())return;
+    // Another tab or the profile wizard may create the row between requests.
+    // Retry only a uniqueness conflict, and never overwrite profile visibility.
+    if(result.error?.code==='23505')result=await updateGoals();
+  }
+  if(!sameAccount())return;
+  const {data,error}=result;
   if(error||data?.id!==id||!Array.isArray(data.onboarding_goals))throw Error('save failed');
   if(typeof CURRENT_PROFILE!=='undefined')
     CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id,onboarding_goals:data.onboarding_goals,directory_visible:data.directory_visible};
