@@ -4569,7 +4569,17 @@ function crmWorkModel(value){
 function crmWorkModels(value){return [...new Set(String(value||'').split(/[,;|]/).map(x=>crmWorkModel(x)).filter(Boolean))];}
 function crmOtwSalary(value){const v=String(value||'').trim();return /^\\d{3,8}$/.test(v)?'R$ '+Number(v).toLocaleString('pt-BR'):v;}
 function crmTalentHighlights(person){
- const entries=[['Experiência',person.exp],['Idiomas',person.idioma],['Pretensão CLT',crmOtwSalary(person.faixa_clt)],['Pretensão PJ',crmOtwSalary(person.faixa_pj)]].filter(x=>String(x[1]||'').trim());
+ const entries=[
+  ['Área de atuação',person.area],
+  ['Localização',person.local],
+  ['Experiência',person.exp],
+  ['Ferramentas e conhecimentos',person.ferramentas],
+  ['Última empresa',person.ultima_empresa],
+  ['Disponibilidade para mudança',person.muda_publica],
+  ['Idiomas e nível',person.idioma],
+  ['Pretensão CLT',crmOtwSalary(person.faixa_clt)],
+  ['Pretensão PJ',crmOtwSalary(person.faixa_pj)]
+ ].filter(([,value])=>String(value||'').trim());
  return entries.length?'<dl class="cx-otw-facts">'+entries.map(([label,value])=>'<div class="cx-otw-fact"><dt>'+escapeHtml(label)+':</dt><dd>'+escapeHtml(value)+'</dd></div>').join('')+'</dl>':'';
 }
 function crmTalentModalities(value){const models=crmWorkModels(value);return models.length?'<div class="cx-otw-modes" aria-label="Modalidades de trabalho">'+models.map(x=>'<span class="cx-otw-pill">'+escapeHtml(x)+'</span>').join('')+'</div>':'';}
@@ -4829,7 +4839,7 @@ function renderSearch(){
  crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
    const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
    const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!=='Não especificado'?' · '+x.level:'')).join(' | '))+'</p>':'';
-   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p>'+crmTalentModalities(p.condicao)+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+crmTalentHighlights(p)+languageWhy+crmPublicContacts(p)+crmXpSearchAction(p)+'</article>';
+   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span>'+crmTalentModalities(p.condicao)+crmTalentHighlights(p)+languageWhy+crmPublicContacts(p)+crmXpSearchAction(p)+'</article>';
  }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
 function escapeHtml(s){
@@ -9503,7 +9513,7 @@ let crmJobSearchSequence=0;
 
 
 function crmHttpUrl(value){try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:'';}catch{return '';}}
-function crmPublicContacts(p){const linkedin=crmHttpUrl(p.linkedin),phone=String(p.whatsapp||'').replace(/\D/g,'');return '<div class="p-actions">'+(linkedin?'<a class="p-btn linkedin" href="'+escapeHtml(linkedin)+'" target="_blank" rel="noopener noreferrer">LinkedIn</a>':'')+(/^\d{10,15}$/.test(phone)?'<a class="p-btn whatsapp" href="https://wa.me/'+phone+'" target="_blank" rel="noopener noreferrer">WhatsApp</a>':'')+'</div>';}
+function crmPublicContacts(p){const linkedin=crmHttpUrl(p.linkedin),phone=String(p.whatsapp||'').replace(/\D/g,''),curriculo=crmHttpUrl(p.curriculo);return '<div class="p-actions">'+(linkedin?'<a class="p-btn linkedin" href="'+escapeHtml(linkedin)+'" target="_blank" rel="noopener noreferrer">LinkedIn</a>':'')+(/^\d{10,15}$/.test(phone)?'<a class="p-btn whatsapp" href="https://wa.me/'+phone+'" target="_blank" rel="noopener noreferrer">WhatsApp</a>':'')+(curriculo?'<a class="p-btn cx-otw-resume" href="'+escapeHtml(curriculo)+'" target="_blank" rel="noopener noreferrer">Currículo</a>':'')+'</div>';}
 function crmSkeleton(container){container.setAttribute('aria-busy','true');container.innerHTML='<span class="crm-sr-only" role="status">Carregando...</span><div class="crm-skeleton-grid" aria-hidden="true">'+Array.from({length:6},()=>'<div class="crm-skeleton-card"><div class="crm-skeleton-avatar"></div><div class="crm-skeleton-line"></div><div class="crm-skeleton-line short"></div><div class="crm-skeleton-line"></div></div>').join('')+'</div>';}
 
 function crmRenderProfileMatch(data){const el=crmById('aiMatchResults');if(data.needsProfile){el.innerHTML='<p>Complete suas ferramentas e especialidades para comparar com a vaga.</p><button class="crm-button" onclick="openProfileModal()">Completar meu perfil</button>';return;}el.innerHTML='<article class="ai-match-card"><div class="ai-match-score">'+escapeHtml(String(data.matchScore))+'%</div><div class="ai-match-content"><h3>Aderência por competências</h3><p>'+escapeHtml(data.matchReason)+'</p><p><strong>Competências encontradas:</strong> '+escapeHtml((data.matchedSkills||[]).join(', ')||'Nenhuma')+'</p><p><strong>Não encontradas no cadastro:</strong> '+escapeHtml((data.missingSkills||[]).join(', ')||'Nenhuma')+'</p></div></article>';}
@@ -10327,7 +10337,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
  #crmProfilePrompt{bottom:14px}
 }
 </style>
-<script src="/assets/otw-registration.js?v=20261029-rich-otw1"></script>
+<script src="/assets/otw-registration.js?v=20261029-full-card2"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261026-auto-match-columns1"></script>
 <script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261029-goals-saved2"></script>
