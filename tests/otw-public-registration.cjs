@@ -13,7 +13,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   vm.runInContext(fs.readFileSync('assets/otw-registration.js','utf8'),context);
   document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise(resolve=>setTimeout(resolve,0));
-  assert(document.head.querySelector('link[href*="otw-registration.css?v=20261029-privacy-mobile2"]'));
+  assert(document.head.querySelector('link[href*="otw-registration.css?v=20261029-full-card2"]'));
   const panel=document.getElementById('otwRegistrationPanel');
   assert(panel,'registration mounts without removed legacy subtab');
   assert.equal(panel.hidden,!query);
@@ -118,6 +118,45 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   const clean=helpers.otwTalentDisplay({portal_published:true,idioma:'Inglês B2',faixa_clt:'18000'});
   assert.equal(clean.idioma,'Inglês B2');
   assert.equal(clean.faixa_clt,'R$ 18.000');
+ }
+
+
+ // All professional and explicitly public contact fields from the native OTW form
+ // are included in the directory projection. Private flags and login emails are not.
+ {
+  const api=fs.readFileSync('supabase/functions/crm-portal/index.ts','utf8');
+  const shared=fs.readFileSync('supabase/functions/_shared/portal.ts','utf8');
+  const html=fs.readFileSync('index.html','utf8');
+  const expected=['muda_publica','ultima_empresa','curriculo','faixa_clt','faixa_pj','email_contato'];
+  expected.forEach(key=>assert(api.includes(key+':p.'+key),'missing API field '+key));
+  assert(shared.includes('muda_publica:r.portal_published?text(r.mudar_cidade)'));
+  assert(shared.includes("ultima_empresa:r.portal_published?text(r.ultima_empresa):''"));
+  assert(shared.includes("curriculo:r.portal_published?safeUrl(r.curriculo):''"));
+  assert(shared.includes('email_contato:r.portal_published?text(r.email_contato):null'));
+  assert(html.includes("['Disponibilidade para mudança',person.muda_publica]"));
+  assert(html.includes("['Última empresa',person.ultima_empresa]"));
+  assert(html.includes("['Área de atuação',person.area]"));
+  assert(html.includes("['Ferramentas e conhecimentos',person.ferramentas]"));
+  assert(html.includes("['Localização',person.local]"));
+  assert(html.includes("['Idiomas e nível',person.idioma]"));
+  assert(html.includes("crmHttpUrl(p.curriculo)"),'resume uses only safe http URLs');
+  assert(html.includes('>Currículo</a>'));
+  assert(!html.includes("['Disponibilidade para mudança',person.muda]"),'no private legacy value in public cards');
+  const start=html.indexOf('function crmTalentHighlights(');
+  const end=html.indexOf('function populateSearchFilters()',start);
+  const helpers=vm.runInNewContext(
+    html.slice(start,end)+';({crmTalentHighlights,crmTalentModalities})',
+    {escapeHtml:s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'),crmOtwSalary:s=>s,
+     crmWorkModels:s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean)}
+  );
+  const formatted=helpers.crmTalentHighlights({area:'CRM',exp:'6 anos',local:'SP',
+   ferramentas:'HubSpot',muda_publica:'Sim',ultima_empresa:'Volvo',
+   idioma:'Inglês B2',faixa_clt:'R$ 18.000',faixa_pj:'R$ 17.000'});
+  for(const required of ['CRM','6 anos','SP','HubSpot','Sim','Volvo','Inglês B2','R$ 18.000','R$ 17.000'])
+   assert(formatted.includes(required), 'card dropped '+required);
+  assert(!helpers.crmTalentHighlights({ultima_empresa:'',muda_publica:'',faixa_clt:''}).includes('Última empresa'));
+  assert(!helpers.crmTalentHighlights({muda:'Não',muda_publica:'',ultima_empresa:''}).includes('Mudança'));
+  assert(!helpers.crmTalentHighlights({area:'<script>alert(1)</script>'}).includes('<script>'),'card escapes stored HTML');
  }
 
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
