@@ -121,7 +121,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  }
 
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
- assert(viewCss.includes('@media(max-width:950px)'));
+ assert(viewCss.includes('@media(max-width:1100px)'));
  assert(viewCss.includes('#pageSearch #searchResults .result-grid'));
  assert(viewCss.includes('grid-template-columns:minmax(0,1fr)!important'));
  assert(viewCss.includes('.crm-otw-signup>a'));
