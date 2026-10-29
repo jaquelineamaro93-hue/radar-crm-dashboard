@@ -46,6 +46,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert.equal(document.querySelector('#otwRegistrationTitle').textContent,'Meu perfil Open to Work');
   const form=document.getElementById('otw-form');
   assert.equal(form.querySelectorAll('.cx-otw-options').length,2,'multiselect controls mount');
+  assert.equal(form.querySelectorAll('label label').length,0,'no nested labels in dropdown options');
+  assert.equal(form.querySelectorAll('.cx-otw-field-group').length,2,'accessibility groups are present');
   assert.equal(form.elements.condicao_trabalho.value,'Remoto');
   assert.equal(form.querySelector('.cx-otw-years')?.tagName,'SELECT');
   form.elements.publish_consent.checked=true;
