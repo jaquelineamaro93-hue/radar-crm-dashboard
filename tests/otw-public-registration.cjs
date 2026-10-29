@@ -31,12 +31,12 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  {
   const window=new Window({url:'https://conexaocrm.com/open-to-work/?cadastro=1'}),document=window.document;
   document.body.innerHTML='<section id="pageSearch"><div class="section-head"><h2>Buscar profissional</h2></div><p class="section-desc">Diretório</p><div id="searchDirPanel"><a href="/open-to-work/?cadastro=1">Cadastrar meu perfil gratuitamente</a><button id="btnRefresh">Atualizar</button></div></section>';
-  let refreshes=0,saves=0;
+  let refreshes=0,saves=0,savedPayload=null;
   document.getElementById('btnRefresh').onclick=()=>refreshes++;
   const sb={auth:{onAuthStateChange:()=>{},getUser:async()=>({data:{user:{id:'own-test-account'}}})},rpc:async(name,args)=>{
    assert.equal(name,'crm_otw_registration');
-   if(args){saves++;return {data:{mode:'updated'}};}
-   return {data:{mode:'update',email:'test@example.invalid',data:{nome:'Pessoa Teste',area_atuacao:'CRM',senioridade:'Especialista',localizacao:'São Paulo, SP',condicao_trabalho:'Remoto'}}};
+   if(args){saves++;savedPayload=args.p_data;return {data:{mode:'updated'}};}
+   return {data:{mode:'update',email:'test@example.invalid',data:{nome:'Pessoa Teste',area_atuacao:'CRM',senioridade:'Especialista',localizacao:'São Paulo, SP',condicao_trabalho:'Hibrido, remoto',tempo_experiencia:'entre 5 a 6 anos',idioma:'Inglês B2, Árabe C1'}}};
   }};
   const context=vm.createContext({window,document,location:window.location,history:window.history,URLSearchParams,FormData:window.FormData,authSb:sb,authInitSB:()=>{},crmJoin:()=>{},setTimeout,crmNavigate:()=>window.history.pushState(null,'','/open-to-work/')});window.crmNavigate=context.crmNavigate;
   vm.runInContext(fs.readFileSync('assets/otw-registration.js','utf8'),context);
@@ -44,9 +44,33 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert.equal(document.querySelector('.section-head').hidden,true);
   assert.equal(document.getElementById('otw-form').hidden,false);
   assert.equal(document.querySelector('#otwRegistrationTitle').textContent,'Meu perfil Open to Work');
-  const form=document.getElementById('otw-form');form.elements.publish_consent.checked=true;
+  const form=document.getElementById('otw-form');
+  assert.equal(form.querySelectorAll('.cx-otw-options').length,2,'multiselect controls mount');
+  assert.equal(form.querySelectorAll('label label').length,0,'no nested labels in dropdown options');
+  assert.equal(form.querySelectorAll('.cx-otw-field-group').length,2,'accessibility groups are present');
+  assert.equal(form.elements.condicao_trabalho.value,'Hibrido, remoto');
+  const models=[...form.querySelectorAll('.cx-otw-field-group[aria-label="Modalidades desejadas"] input[type=checkbox]')];
+  assert.equal(models.filter(x=>x.checked).length,2,'case and accent independent hydration');
+  models.find(x=>x.value==='Presencial').checked=true;
+  models.find(x=>x.value==='Presencial').dispatchEvent(new window.Event('change'));
+  assert.match(form.elements.condicao_trabalho.value,/Presencial/);
+  assert.match(form.elements.condicao_trabalho.value,/Híbrido/);
+  const languageRows=[...form.querySelectorAll('.cx-otw-language-row')];
+  const english=languageRows.find(x=>x.textContent.includes('Inglês'));
+  assert.equal(english.querySelector('select').value,'B2','keep CEFR legacy levels');
+  const customLanguage=form.querySelector('.cx-otw-custom-language input');
+  assert.equal(customLanguage.value,'Árabe C1','keep non-listed languages');
+  const spanish=languageRows.find(x=>x.textContent.includes('Espanhol'));
+  spanish.querySelector('input[type=checkbox]').checked=true;
+  spanish.querySelector('input[type=checkbox]').dispatchEvent(new window.Event('change'));
+  assert.match(form.elements.idioma.value,/Inglês B2/);
+  assert.match(form.elements.idioma.value,/Árabe C1/);
+  assert.match(form.elements.idioma.value,/Espanhol/);
+  assert.equal(form.querySelector('.cx-otw-years')?.tagName,'SELECT');
+  assert.equal(form.querySelector('.cx-otw-years')?.value,'entre 5 a 6 anos','legacy experience choice retained');
+  form.elements.publish_consent.checked=true;
   form.dispatchEvent(new window.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,0));
-  assert.equal(saves,1);assert.match(document.getElementById('otw-status').textContent,/Cadastro atualizado/);
+  assert.equal(saves,1);assert.match(savedPayload.idioma,/Árabe C1/);assert.match(savedPayload.idioma,/Inglês B2/);assert.match(savedPayload.condicao_trabalho,/Presencial/);assert.match(document.getElementById('otw-status').textContent,/Cadastro atualizado/);
   const next=document.querySelector('.otw-return');assert.equal(next.hidden,false);next.click();
   assert.equal(document.getElementById('otwRegistrationPanel').hidden,true);
   assert.equal(document.querySelector('.section-head').hidden,false);

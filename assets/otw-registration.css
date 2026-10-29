@@ -1,3 +1,26 @@
 #otwRegistrationPanel{max-width:900px;margin:26px auto 36px;color:var(--text,#eef1f8)}#otwRegistrationPanel[hidden],#otwRegistrationPanel [hidden]{display:none!important}#otwRegistrationPanel .otw-eyebrow{color:#cda6e3;font-size:11px;letter-spacing:2px;font-weight:800}#otwRegistrationPanel h3{font-size:clamp(25px,4vw,34px);margin:12px 0}#otwRegistrationPanel .intro{color:#b3bfd1;line-height:1.7;max-width:700px}#otwRegistrationPanel .account{border-left:3px solid #a96acb;padding:4px 20px;margin:25px 0}#otwRegistrationPanel fieldset{min-width:0;border:1px solid #3b4961;border-radius:12px;padding:25px;background:#172133;margin:26px 0}#otwRegistrationPanel legend{font-size:18px;font-weight:700;padding:0 10px}#otwRegistrationPanel .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}#otwRegistrationPanel .wide{grid-column:1/-1}#otwRegistrationPanel label{display:flex;flex-direction:column;gap:9px;font-size:14px;font-weight:600}#otwRegistrationPanel input,#otwRegistrationPanel textarea{box-sizing:border-box;font:inherit;font-weight:400;border:1px solid #3b4961;border-radius:6px;padding:13px 15px;background:#101929;color:#eef1f8;width:100%;min-width:0;min-height:46px}#otwRegistrationPanel textarea{resize:vertical}#otwRegistrationPanel input:focus,#otwRegistrationPanel textarea:focus{outline:2px solid #cda6e3;outline-offset:2px}#otwRegistrationPanel .hint{font-size:13px;color:#b3bfd1;line-height:1.6;margin:0 0 20px}#otwRegistrationPanel .check{flex-direction:row;align-items:flex-start;font-weight:400;line-height:1.6;margin:0 0 20px}#otwRegistrationPanel .check input{width:20px;min-width:20px;min-height:20px;margin-top:2px;accent-color:#a96acb}#otwRegistrationPanel .button{display:inline-block;border:0;border-radius:8px;padding:15px 23px;background:#a96acb;color:#151023;font:inherit;font-weight:750;cursor:pointer}#otwRegistrationPanel .button:disabled{opacity:.5;cursor:wait}#otw-status{line-height:1.6;color:#a3d9ae}#otw-status[data-error=true]{color:#ffaaa0}@media(max-width:580px){#otwRegistrationPanel .grid{grid-template-columns:1fr}#otwRegistrationPanel fieldset{padding:20px 16px}#otwRegistrationPanel legend{font-size:16px}#otwRegistrationPanel .button{width:100%;text-align:center}.search-tabs{flex-wrap:wrap}}
 
 #otwRegistrationPanel .otw-return{margin:12px 0 0 12px;background:transparent;color:#ddbef0;border:1px solid #88629e}#otwRegistrationPanel .account{border-left-width:1px}#otwRegistrationPanel{scroll-margin-top:85px}#otw-status:focus{outline:1px solid #cda6e3;outline-offset:4px}@media(max-width:580px){#otwRegistrationPanel .otw-return{margin:12px 0 0}}
+
+/* Open to Work richer selection and public card details, 2026-10-29 */
+#otwRegistrationPanel .cx-otw-field-group{display:flex;flex-direction:column;gap:9px;font-size:14px;font-weight:600;min-width:0}
+#otwRegistrationPanel input[type=hidden]{display:none!important}
+#otwRegistrationPanel select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid #42506c;border-radius:7px;padding:10px 12px;background:#101929;color:#eef1f8;font:inherit;font-weight:400}
+#otwRegistrationPanel select:focus-visible,#otwRegistrationPanel summary:focus-visible{outline:2px solid #cda6e3;outline-offset:2px}
+#otwRegistrationPanel .cx-otw-options{width:100%;min-width:0;border:1px solid #45516c;border-radius:8px;background:#101929}
+#otwRegistrationPanel .cx-otw-options summary{list-style:none;cursor:pointer;padding:13px 14px;min-height:46px;box-sizing:border-box;color:#d6c3e8;font-size:14px;font-weight:500;overflow-wrap:anywhere}
+#otwRegistrationPanel .cx-otw-options summary::-webkit-details-marker{display:none}
+#otwRegistrationPanel .cx-otw-options summary:after{content:'⌄';float:right;color:#cda6e3;margin-left:8px}
+#otwRegistrationPanel .cx-otw-options[open] summary{border-bottom:1px solid #36435b}
+#otwRegistrationPanel .cx-otw-choice{display:flex;flex-direction:row;align-items:center;gap:10px;font-size:14px;font-weight:400;min-height:38px;padding:7px 12px;cursor:pointer}
+#otwRegistrationPanel .cx-otw-choice input{width:17px;min-width:17px;min-height:17px;height:17px;padding:0;accent-color:#ab79d1}
+#otwRegistrationPanel .cx-otw-language-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,1fr);align-items:center;gap:8px;padding:4px 8px}
+#otwRegistrationPanel .cx-otw-language-row select{min-height:38px;padding:7px 10px}
+#otwRegistrationPanel .cx-otw-language-row select:disabled{opacity:.45}
+#pageSearch .p-card .cx-otw-modes{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}
+#pageSearch .p-card .cx-otw-pill{display:inline-flex;padding:4px 9px;border-radius:999px;border:1px solid #5d4679;background:#312544;color:#e5c2f2;font-size:12px;line-height:1.35}
+#pageSearch .p-card .cx-otw-facts{margin:12px 0 14px;padding:9px 0;border-top:1px solid #3d485f;display:grid;gap:7px}
+#pageSearch .p-card .cx-otw-fact{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap;font-size:13px;line-height:1.4}
+#pageSearch .p-card .cx-otw-fact dt{color:#b6c3d5;font-weight:400}
+#pageSearch .p-card .cx-otw-fact dd{margin:0;color:#f2e4f8;font-weight:600;overflow-wrap:anywhere}
+@media(max-width:580px){#otwRegistrationPanel .cx-otw-language-row{grid-template-columns:minmax(0,1fr) minmax(108px,1fr);gap:4px}#pageSearch .p-card .cx-otw-fact{font-size:12px}}
