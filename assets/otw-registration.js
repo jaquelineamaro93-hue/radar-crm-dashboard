@@ -64,6 +64,9 @@ function enhanceOtwSelections(){
  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  const model=form.elements.namedItem('condicao_trabalho');
  const modelLabel=model.closest('label');model.type='hidden';model.required=false;
+ const modelGroup=document.createElement('div');modelGroup.className='cx-otw-field-group';modelGroup.setAttribute('role','group');modelGroup.setAttribute('aria-label','Modalidades desejadas');
+ const modelTitle=document.createElement('span');modelTitle.textContent='Modalidades desejadas *';
+ modelLabel.replaceWith(modelGroup);modelGroup.append(modelTitle,model);
  const modelMenu=document.createElement('details');modelMenu.className='cx-otw-options';
  const modelSummary=document.createElement('summary');modelSummary.textContent='Selecionar modalidades';modelMenu.append(modelSummary);
  const models=['Remoto','Híbrido','Presencial','Flexível / a combinar'];
@@ -74,7 +77,7 @@ function enhanceOtwSelections(){
   cb.addEventListener('change',()=>{model.value=modelBoxes.filter(x=>x.cb.checked).map(x=>x.label).join(', ');renderModelSummary();});
   return {label,cb};
  });
- modelLabel.append(modelMenu);
+ modelGroup.append(modelMenu);
  function renderModelSummary(){modelSummary.textContent=model.value||'Selecionar uma ou mais modalidades';}
  const years=form.elements.namedItem('tempo_experiencia');years.type='hidden';
  const yearsSelect=document.createElement('select');yearsSelect.className='cx-otw-years';yearsSelect.setAttribute('aria-label','Anos de experiência');
@@ -99,7 +102,9 @@ function enhanceOtwSelections(){
   select.addEventListener('change',saveLanguages);
   return {label,cb,select};
  });
- language.closest('label').append(languageMenu);
+ const languageLabel=language.closest('label');const languageGroup=document.createElement('div');languageGroup.className='cx-otw-field-group';languageGroup.setAttribute('role','group');languageGroup.setAttribute('aria-label','Idiomas e nível');
+ const languageTitle=document.createElement('span');languageTitle.textContent='Idiomas e nível';
+ languageLabel.replaceWith(languageGroup);languageGroup.append(languageTitle,language,languageMenu);
  function saveLanguages(){
   language.value=languageRows.filter(x=>x.cb.checked).map(x=>x.label+(x.select.value==='Não especificado'?'':' '+x.select.value)).join(', ');
   languageSummary.textContent=language.value||'Selecionar idiomas e níveis';
