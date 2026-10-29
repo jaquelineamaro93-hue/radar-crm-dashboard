@@ -12,6 +12,35 @@ export const phone=(v:unknown)=>{let p=text(v).replace(/\D/g,'');if(p.length>=10
 export const safeUrl=(v:unknown)=>{const s=text(v);if(!s)return '';try{const u=new URL(/^https?:\/\//i.test(s)?s:'https://'+s);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch{return '';}};
 export async function database(table:string,params:string){const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`,{headers:{apikey:SERVICE_KEY,Authorization:`Bearer ${SERVICE_KEY}`},signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error('DIRECTORY_STORAGE_HTTP_'+r.status);return r.json();}
 export async function userFor(req:Request){const authorization=req.headers.get('Authorization')||'';if(!/^Bearer \S+$/.test(authorization))return null;const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:ANON_KEY,Authorization:authorization},signal:AbortSignal.timeout(10000)});if(!r.ok)return null;const user=await r.json();return user?.id&&!user.is_anonymous?user:null;}
+// Directory display normalization begin. Read-only: never rewrite imported profile data.
+function otwIsSalaryLike(value){
+ const s=String(value??'').trim();
+ return /r\$\s*\d/i.test(s)||/\b\d{1,3}(?:\.\d{3})+(?:,\d{2})?\b|\b\d{4,8}\b|\b\d+(?:[.,]\d+)?\s*(?:k|mil)\b/i.test(s);
+}
+function otwDisplaySalary(value){
+ const s=String(value??'').trim();
+ if(!otwIsSalaryLike(s))return s;
+ return s.replace(/(?:r\$\s*)?(\d{1,3}(?:\.\d{3})+(?:,\d{2})?|\d{4,8}|\d+(?:[.,]\d+)?\s*(?:k|mil)\b)/gi,(_match,amount)=>{
+  const v=amount.trim().replace(/\s+/g,' ');
+  return 'R$ '+(/^\d{4,8}$/.test(v)?Number(v).toLocaleString('pt-BR'):v);
+ });
+}
+function otwTalentDisplay(row){
+ const rawLanguage=String(row.idioma??'').trim();
+ const suspicious=otwIsSalaryLike(rawLanguage);
+ const hasLanguageName=/\b(?:ingl[eê]s|english|espanhol|spanish|portugu[eê]s|franc[eê]s|french|alem[aã]o|german|italiano|mandarim|chin[eê]s|japon[eê]s|japanese|coreano|korean|[aá]rabe|arabic|russo|russian)\b/i.test(rawLanguage);
+ const language=suspicious?'':rawLanguage;
+ // Only reclassify a legacy salary when no actual language appears and CLT is absent.
+ const recoveredClt=suspicious&&!hasLanguageName&&!String(row.faixa_clt??'').trim()?rawLanguage:row.faixa_clt;
+ return {
+  idioma:language,
+  public_idioma:row.portal_published?language:'',
+  faixa_clt:row.portal_published?otwDisplaySalary(recoveredClt):'',
+  faixa_pj:row.portal_published?otwDisplaySalary(row.faixa_pj):''
+ };
+}
+// Directory display normalization end.
+
 export async function talents(){
  const source=[];
  for(let offset=0;;offset+=500){
@@ -23,7 +52,7 @@ export async function talents(){
  return source.map((r:any)=>{
   const id=r.sheet_source_key?'csv-'+encodeURIComponent(text(r.nome)+'|'+text(r.linkedin)):'db-'+r.id;
   const edit:any=overrides.get(id);
-  return {id,email_contato:r.email_contato||null,nome:r.nome,senioridade:r.senioridade,area:r.area_atuacao,ferramentas:r.ferramentas,condicao:r.condicao_trabalho,local:r.localizacao,exp:r.tempo_experiencia,linkedin:linkedinLink(edit?.linkedin??r.linkedin),whatsapp:whatsappNumber(edit?.whatsapp??r.whatsapp),idioma:r.idioma,public_idioma:r.portal_published?text(r.idioma):'',faixa_clt:r.portal_published?text(r.faixa_clt):'',faixa_pj:r.portal_published?text(r.faixa_pj):'',muda:r.mudar_cidade};
+  return {id,email_contato:r.email_contato||null,nome:r.nome,senioridade:r.senioridade,area:r.area_atuacao,ferramentas:r.ferramentas,condicao:r.condicao_trabalho,local:r.localizacao,exp:r.tempo_experiencia,linkedin:linkedinLink(edit?.linkedin??r.linkedin),whatsapp:whatsappNumber(edit?.whatsapp??r.whatsapp),...otwTalentDisplay(r),muda:r.mudar_cidade};
  });
 }
 export async function freelancers(){const rows=await database('freelancers_sugeridos','select=id,nome,categoria,bio,portfolio,contato,linkedin,titulo,ferramentas,anos_experiencia,localidade,idiomas,modalidade,disponibilidade,valor_hora,foto_url&aprovado=eq.true&order=created_at.desc&limit=500');return rows.map((p:any)=>({...p,linkedin:safeUrl(p.linkedin),portfolio:safeUrl(p.portfolio),foto_url:safeUrl(p.foto_url),contato:phone(p.contato)}));}
