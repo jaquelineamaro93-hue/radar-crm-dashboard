@@ -27,6 +27,13 @@ test('Survey is retried when a native dialog closes and is cleared on account ch
  assert(script.includes("attributeFilter:['open']"),'the observer watches modal state, not every DOM mutation');
 });
 
+test('Saved onboarding is checked in the authenticated database before showing a prompt',()=>{
+ assert(script.includes("authSb.from('profiles').select('id,onboarding_goals').eq('id',user.id).maybeSingle()"));
+ assert(script.includes("if(Array.isArray(data?.onboarding_goals))"));
+ assert(script.includes("confirmedAnsweredId=user.id"));
+ assert(script.includes("profileLookupId===user.id"));
+ assert(script.includes("if(error||"),'failed reads must not prompt or overwrite consent');
+});
 test('The five screenshot choices have deterministic keys and priority support',()=>{
  for(const key of ['trabalho','projetos','aprender','networking','pesquisa'])
   assert(script.includes("id:'"+key+"'"));
