@@ -24,3 +24,42 @@
 #pageSearch .p-card .cx-otw-fact dt{color:#b6c3d5;font-weight:400}
 #pageSearch .p-card .cx-otw-fact dd{margin:0;color:#f2e4f8;font-weight:600;overflow-wrap:anywhere}
 @media(max-width:580px){#otwRegistrationPanel .cx-otw-language-row{grid-template-columns:minmax(0,1fr) minmax(108px,1fr);gap:4px}#pageSearch .p-card .cx-otw-fact{font-size:12px}}
+
+/* Directory-only compact layout, including browsers requesting desktop width on phones.
+ * Keep content readable instead of clipping a second talent card or the signup CTA. */
+:is(#crmPublicPages,#crmPages) #pageSearch,
+:is(#crmPublicPages,#crmPages) #pageSearch #searchDirPanel,
+:is(#crmPublicPages,#crmPages) #pageSearch #searchResults {
+ box-sizing:border-box;max-width:100%;min-width:0;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch #searchResults .result-grid{
+ min-width:0;max-width:100%;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch #searchResults .p-card{
+ min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch .crm-otw-signup{
+ box-sizing:border-box;min-width:0;max-width:100%;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch .crm-otw-signup>*{
+ min-width:0;max-width:100%;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch .crm-otw-signup>a{
+ white-space:normal;overflow-wrap:anywhere;text-align:center;box-sizing:border-box;
+}
+:is(#crmPublicPages,#crmPages) #pageSearch .cx-otw-salary-privacy{
+ font-size:12px;line-height:1.5;color:#b7c3d5;margin:8px 0 18px;
+ overflow-wrap:anywhere;
+}
+@media(max-width:950px){
+ :is(#crmPublicPages,#crmPages) #pageSearch #searchResults .result-grid{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;
+ }
+ :is(#crmPublicPages,#crmPages) #pageSearch .crm-otw-signup{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  padding:16px!important;gap:12px!important;
+ }
+ :is(#crmPublicPages,#crmPages) #pageSearch .crm-otw-signup>a{
+  width:100%;max-width:100%;min-height:44px;
+ }
+}
