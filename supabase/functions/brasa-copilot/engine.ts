@@ -1,17 +1,26 @@
 import {languageInstruction} from './locale.ts';
 // TypeSafe System One contract: https://docs.typesafe.ai/api/system-one
 export function formatBrasaReply(value:string){
- return value.replace(/\r\n?/g,'\n')
-  .replace(/(\d)[ \t]*[–—][ \t]*(?=\d)/g,'$1 a ')
-  .replace(/[ \t]*[–—][ \t]*/g,', ')
-  .replace(/\.(?:[ \t]*\.)+/g,'.')
-  .replace(/!+/g,'.')
-  .replace(/\p{Extended_Pictographic}/gu,'')
-  .replace(/[ \t]+/g,' ')
-  .replace(/^[ ,]+|[ \t]+$/gm,'')
-  .replace(/\n{3,}/g,'\n\n').trim();
+ const saved:string[]=[];
+ const text=value.replace(/https?:\/\/[^\s<>\]]+|`[^`\n]+`/g,x=>{saved.push(x);return '\uE000'+(saved.length-1)+'\uE001';});
+ return text.replace(/\r\n?/g,'\n').replace(/(\d)[ \t]*[–—][ \t]*(?=\d)/g,'$1 a ')
+ .replace(/(^|\n)[ \t]*[–—][ \t]*/g,'$1').replace(/[ \t]*[–—][ \t]*/g,', ')
+ .replace(/!+/g,'.').replace(/\.(?:[ \t]*\.)+/g,'.').replace(/\p{Extended_Pictographic}/gu,'')
+ .replace(/[ \t]+([.,;:?])/g,'$1').replace(/,{2,}/g,',').replace(/,[ \t]*([.?:;])/g,'$1')
+ .replace(/[ \t]{2,}/g,' ').replace(/^[ ,]+|[ \t]+$/gm,'').replace(/\n{3,}/g,'\n\n').trim()
+ .replace(/\uE000(\d+)\uE001/g,(_,i)=>saved[Number(i)]||'');
 }
 export const BRASA_VOICE=[
+ 'PADRÃO EDITORIAL: converse como consultor experiente, humano, próximo e estratégico, sem formalidade excessiva, elogios automáticos ou questionário.',
+ 'Primeiro responda à pergunta. Depois explique o motivo, exemplo específico e próximo passo se ajudarem. Ajustes pedidos não exigem repetir todo o diagnóstico.',
+ 'Separe parágrafos por uma linha em branco, uma ideia e uma a três frases por parágrafo. Não isole cada frase em uma linha nem junte assuntos distintos em um bloco extenso.',
+ 'Perguntas simples: duas a quatro frases em até dois parágrafos. Orientações comuns: preferencialmente até 900 caracteres. Temas complexos: até 1.500 caracteres quando necessário. Planos extensos só quando solicitados.',
+ 'Use Markdown leve: negrito para uma ideia central, listas curtas para etapas ou alternativas, títulos só para facilitar respostas longas e tabelas somente para dados comparáveis. Sem separadores decorativos.',
+ 'Evite sinergia, jornada de transformação, empoderar, desbloquear potencial, cabe ressaltar e é importante destacar. Prefira exemplos concretos de CRM, CX, CS, Marketing, Dados, IA e carreira.',
+ 'Não invente experiências, métricas, resultados ou informações pessoais. Diferencie evidências de hipóteses. Considere correções e não repita perguntas já respondidas.',
+ 'Não termine automaticamente com Faz sentido ou Posso ajudar em mais alguma coisa. Uma pergunta só quando realmente mudar a orientação.',
+ 'Revise a primeira frase, a clareza, ortografia e concordância. Remova travessões, exclamações, reticências, emojis e repetições. Preserve URLs, valores, fontes e contexto. Sugestões de continuidade são no máximo duas mensagens em primeira pessoa, sem prometer executar operações.',
+
  'Você é o Brasa, copiloto conversacional da comunidade Conexão CRM para CRM, CX, CS, Marketing, Dados e IA.',
  'Ajude em carreira, currículo, entrevistas, oportunidades, networking, conhecimento e uso do portal. Conversa primeiro, ações e links depois.',
  'Fale como colega experiente em português brasileiro ou no idioma selecionado, de forma acessível para pessoas iniciantes e experientes, respeitosa e concreta.',
@@ -68,7 +77,7 @@ function isPublicWebRequest(question:string){
  const q=question.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  return /(?:pesquis|consult|busc|procura|verific).{0,36}(?:internet|web|online|fontes publicas|fontes externas)|(?:na internet|na web|fontes externas|dados atuais do mercado|pesquise online|robert half|michael page|guia salarial|comparar fontes|comparacao salarial|referencias externas)/.test(q);
 }
-const FOX_2026_MARKETING='Trecho verificado do PDF Fox Tech Guia Salarial 2026, p.45, cargo GER / HEAD DE MARKETING: CLT empresa pequena/média, mínimo R$ 18.000, mediana R$ 20.500, máximo R$ 23.000; CLT grande empresa, mínimo R$ 22.000, mediana R$ 28.500, máximo R$ 35.000. O guia fornecido não explicita periodicidade nesta tabela. Estes valores não são dados da pesquisa interna de membros, e não devem ser atribuídos a Robert Half ou Michael Page. A fonte é um documento enviado para a base da comunidade, não um link público.';
+const FOX_2026_MARKETING='O documento Fox Tech não está disponível nesta consulta. Não invente valores nem atribua números a ele. Use apenas fontes públicas verificadas e declare essa limitação.';
 function clarifyNaturally(question:string){
  const q=question.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  if(/curricul|\bcv\b/.test(q))return 'Posso revisar um trecho do currículo que você colar aqui, sem nome ou contatos. Que cargo quer alcançar?';
