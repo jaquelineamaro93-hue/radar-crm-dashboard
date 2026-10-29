@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import {formatBrasaReply,BRASA_VOICE} from '../supabase/functions/brasa-copilot/engine.ts';
+const {Window}=await import(process.env.HAPPY_DOM_MODULE||'happy-dom');const w=new Window(),document=w.document;
+const src=fs.readFileSync('assets/crm-copilot.js','utf8'),ctx=vm.createContext({document});
+vm.runInContext(src.slice(src.indexOf('function formatBrasaCopy'),src.indexOf('function addMessage')),ctx);
+for(const text of ['Olá! — vamos...\n\nPróximo passo: 8–13 vagas.','Pós-graduação.\n- Primeiro\n- Segundo','https://example.com/a!b?x=8–13'])assert.equal(ctx.formatBrasaCopy(text),formatBrasaReply(text));
+const el=document.createElement('div');ctx.renderBrasaCopy(el,'Comece por **uma prioridade**.\n\nDepois, pratique.\n\n- Um\n- Dois\n\n1. Primeiro\n2. Segundo');assert.equal(el.querySelectorAll('p').length,2);assert.equal(el.querySelector('strong').textContent,'uma prioridade');assert.equal(el.querySelectorAll('li').length,4);
+const x=document.createElement('div');ctx.renderBrasaCopy(x,'<img src=x onerror=alert(1)>\n\n<script>alert(1)</script>');assert.equal(x.querySelector('img,script'),null);
+const t=document.createElement('div');ctx.renderBrasaCopy(t,'| Item | Valor |\n| --- | --- |\n| A | 10 |');assert.equal(t.querySelectorAll('th').length,2);assert.equal(t.querySelectorAll('td').length,2);
+for(const rule of ['900 caracteres','1.500 caracteres','linha em branco','Primeiro responda'])assert(BRASA_VOICE.includes(rule));
+await w.happyDOM.close();console.log('PASS editorial voice, server/client parity, paragraphs, bold, lists, tables and HTML injection isolation');

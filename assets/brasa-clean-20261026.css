@@ -233,3 +233,16 @@
  #cxCopilot.cx-expanded .cx-copilot-history{padding:16px!important}
  #cxCopilot .cx-copilot-head{gap:5px!important;padding:9px!important}
 }
+
+/* Structured assistant writing, preserving literal user messages. */
+#cxCopilot .cx-copilot-copy{white-space:normal;overflow-wrap:anywhere}
+#cxCopilot .cx-copilot-user .cx-copilot-copy{white-space:pre-wrap}
+#cxCopilot .cx-copilot-copy>p{margin:0!important;white-space:normal!important}
+#cxCopilot .cx-copilot-copy>:not(:first-child){margin-top:12px!important}
+#cxCopilot .cx-copilot-copy :is(ul,ol){padding-left:22px;margin-bottom:0;line-height:1.65}
+#cxCopilot .cx-copilot-copy li+li{margin-top:6px}
+#cxCopilot .cx-copilot-copy strong{font-weight:700;color:inherit}
+#cxCopilot .cx-copilot-copy h3{font-size:1em;line-height:1.5;color:inherit}
+#cxCopilot .cx-copilot-table{overflow-x:auto;max-width:100%}
+#cxCopilot .cx-copilot-table table{border-collapse:collapse;width:100%;color:inherit;font-size:inherit}
+#cxCopilot .cx-copilot-table :is(th,td){border:1px solid var(--brasa-border);padding:8px;text-align:left;vertical-align:top}

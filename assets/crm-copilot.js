@@ -45,17 +45,48 @@ function updateAiConsentControl(){const button=root?.querySelector('[data-cx-pri
 function saveAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=1; Max-Age=15552000; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 function revokeAiConsent(){const name=aiConsentName();if(!name)return;document.cookie=name+'=; Max-Age=0; Path=/; Secure; SameSite=Lax';updateAiConsentControl();}
 const FOX='<svg class="brasa-fox" viewBox="0 0 96 96" aria-hidden="true"><path fill="#bd4c28" d="M55 72C78 78 92 58 81 42c-2 16-21 12-26 30"/><path fill="#fff0d5" d="M81 42c5 8 6 15 2 22l-12-5c5-3 9-9 10-17"/><ellipse cx="43" cy="68" rx="23" ry="22" fill="#d96736"/><path fill="#fff0d5" d="M29 62q14-10 28 0v13q-14 18-28 0"/><path fill="#df7240" d="M17 35 13 8 36 23q10-4 21 0L77 8 74 38Q71 62 46 64 18 62 17 35"/><path fill="#73301e" d="m20 19 3 17 10-9m35-8-3 17-9-9"/><path fill="#fff0d5" d="M19 39q14-3 27 10 13-13 27-10-3 20-27 22-23-2-27-22"/><g fill="none" stroke="#47281f" stroke-width="3.5" stroke-linecap="round"><path d="M28 40q5-7 10 0m15 0q5-7 10 0m-22 13q5 4 10 0"/></g><path fill="#47281f" d="m41 47 5 5 5-5z"/><path class="brasa-ember" fill="#ffd36c" stroke="#ad451f" stroke-width="2" d="M45 65c0 7-8 8-7 14 1 9 15 9 16 0 0-5-4-7-4-9-1 4-3 4-3 4z"/></svg>';
-const CTA=[['jobs','Buscar vagas'],['salary','Médias salariais']];
+const CTA=[['jobs','Quero buscar vagas'],['salary','Quero consultar médias salariais']];
+function formatBrasaCopy(value){
+ const saved=[];
+ const text=value.replace(/https?:\/\/[^\s<>\]]+|`[^`\n]+`/g,x=>{saved.push(x);return '\uE000'+(saved.length-1)+'\uE001';});
+ return text.replace(/\r\n?/g,'\n').replace(/(\d)[ \t]*[–—][ \t]*(?=\d)/g,'$1 a ')
+ .replace(/(^|\n)[ \t]*[–—][ \t]*/g,'$1').replace(/[ \t]*[–—][ \t]*/g,', ')
+ .replace(/!+/g,'.').replace(/\.(?:[ \t]*\.)+/g,'.').replace(/\p{Extended_Pictographic}/gu,'')
+ .replace(/[ \t]+([.,;:?])/g,'$1').replace(/,{2,}/g,',').replace(/,[ \t]*([.?:;])/g,'$1')
+ .replace(/[ \t]{2,}/g,' ').replace(/^[ ,]+|[ \t]+$/gm,'').replace(/\n{3,}/g,'\n\n').trim()
+ .replace(/\uE000(\d+)\uE001/g,(_,i)=>saved[Number(i)]||'');
+}
+function renderBrasaCopy(host,value){
+ function inline(parent,text){
+  const re=/\*\*([^*\n]+)\*\*|`([^`\n]+)`/g;let m,last=0;
+  while((m=re.exec(text))){parent.append(document.createTextNode(text.slice(last,m.index)));const e=document.createElement(m[1]?'strong':'code');e.textContent=m[1]||m[2];parent.append(e);last=re.lastIndex;}
+  parent.append(document.createTextNode(text.slice(last)));
+ }
+ let paragraph=[],list=null;
+ const flush=()=>{if(paragraph.length){const p=document.createElement('p');inline(p,paragraph.join(' '));host.append(p);paragraph=[];}};
+ const lines=formatBrasaCopy(value).split('\n'),cells=x=>x.trim().replace(/^\||\|$/g,'').split('|').map(v=>v.trim());
+ for(let i=0;i<lines.length;i++){
+  const text=lines[i].trim();if(!text){flush();list=null;continue;}
+  if(text.includes('|')&&/^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?$/.test((lines[i+1]||'').trim())){
+   flush();list=null;const wrap=document.createElement('div');wrap.className='cx-copilot-table';wrap.tabIndex=0;
+   const table=document.createElement('table'),head=document.createElement('thead'),tr=document.createElement('tr'),headers=cells(text).slice(0,6);
+   headers.forEach(v=>{const th=document.createElement('th');th.scope='col';inline(th,v);tr.append(th);});head.append(tr);table.append(head);i++;
+   const body=document.createElement('tbody');while(i+1<lines.length&&lines[i+1].includes('|')){const values=cells(lines[++i]),row=document.createElement('tr');headers.forEach((_,n)=>{const td=document.createElement('td');inline(td,values[n]||'');row.append(td);});body.append(row);}table.append(body);wrap.append(table);host.append(wrap);continue;
+  }
+  const bullet=text.match(/^(?:[-*] |(\d+)\. )(.*)$/);
+  if(bullet){flush();const tag=bullet[1]?'ol':'ul';if(!list||list.tagName.toLowerCase()!==tag){list=document.createElement(tag);if(bullet[1])list.start=Number(bullet[1]);host.append(list);}const li=document.createElement('li');inline(li,bullet[2]);list.append(li);continue;}
+  list=null;if(/^#{1,3}\s/.test(text)){flush();const h=document.createElement('h3');inline(h,text.replace(/^#{1,3}\s+/,''));host.append(h);continue;}
+  paragraph.push(text);
+ }
+ flush();
+}
 function addMessage(type,message,action,sources=[],options={}){
   if(!history)return;
   const item=document.createElement('div');
   item.className='cx-copilot-message cx-copilot-'+type;
-  const text=document.createElement('p');
-  // Presentation only. Preserve user messages and evidence; keep assistant copy conversational.
+  const text=document.createElement(type==='assistant'?'div':'p');text.className='cx-copilot-copy';
   const copy=String(message||'').slice(0,2800);
-  text.textContent=type==='assistant'
-    ?copy.replace(/[\u2013\u2014]/g,',').replace(/!+/g,'.').replace(/\p{Extended_Pictographic}/gu,'').replace(/[ \t]{2,}/g,' ')
-    :copy;
+  if(type==='assistant')renderBrasaCopy(text,copy);else text.textContent=copy;
   item.append(text);
   if(type==='assistant'&&Array.isArray(sources)&&sources.length){
     const references=document.createElement('div');references.className='cx-copilot-sources';
