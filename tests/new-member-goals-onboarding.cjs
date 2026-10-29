@@ -74,7 +74,7 @@ test('All 35 published SPA routes share the same onboarding and UX version',()=>
  assert.equal(copies.length,35);
  for(const doc of copies){
   assert.equal(doc,copies[0],'stale shell or different HTML route');
-  assert(doc.includes('first-access-interests.js?v=20261026-goals4'));
+  assert(doc.includes('first-access-interests.js?v=20261029-goals-saved2'));
   assert(doc.includes('conexao-ux-refinement.css?v=20261026-ui1'));
   assert(doc.includes('conexao-ux-refinement.js?v=20261026-ui1'));
  }
