@@ -130,7 +130,7 @@ function enhanceOtwSelections(){
   languageRows.forEach(x=>{
    const matched=chunks.find(chunk=>norm(chunk).includes(norm(x.label)));
    x.original=matched||'';x.cb.checked=!!matched;
-   const level=matched&&levels.slice(1).find(l=>new RegExp('(?:^|\\\\s)'+norm(l)+'(?:$|\\\\s)','i').test(norm(matched)));
+   const level=matched&&levels.slice(1).find(l=>norm(matched).split(/\s+/).includes(norm(l)));
    x.previousLevel=level||'Não especificado';x.select.value=x.previousLevel;x.select.disabled=!matched;
   });
   custom.value=chunks.filter(chunk=>!languageRows.some(x=>x.original===chunk)).join(', ');
