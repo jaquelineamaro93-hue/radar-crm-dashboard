@@ -159,13 +159,13 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert(!helpers.crmTalentHighlights({area:'<script>alert(1)</script>'}).includes('<script>'),'card escapes stored HTML');
  }
 
+ assert(html.includes('otw-registration.js?v=20261029-full-card2'),'all SPA routes must load the complete-card script');
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
  assert(viewCss.includes('@media(max-width:1100px)'));
  assert(viewCss.includes('#pageSearch #searchResults .result-grid'));
  assert(viewCss.includes('grid-template-columns:minmax(0,1fr)!important'));
  assert(viewCss.includes('.crm-otw-signup>a'));
  const viewJs=fs.readFileSync('assets/otw-registration.js','utf8');
- assert(viewJs.includes('directory.querySelector(\'#searchResults\')?.before(salaryPrivacyNote)'));
- assert(viewJs.includes('somente quando a pessoa autoriza sua publicação'));
+ assert(!viewJs.includes('salaryPrivacyNote'),'directory should avoid repetitive disclaimer blocks');
  console.log('PASS: public signup, own-account save, return to directory and login destination');
 })().catch(e=>{console.error(e);process.exitCode=1});
