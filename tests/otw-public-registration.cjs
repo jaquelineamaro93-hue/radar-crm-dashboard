@@ -87,5 +87,37 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
    assert.deepEqual(calls,[expected]);
   }
  }
+
+ // Read-only legacy normalization must not change saved records or expose unpublished salaries.
+ {
+  const source=fs.readFileSync('supabase/functions/_shared/portal.ts','utf8');
+  const start=source.indexOf('// Directory display normalization begin.');
+  const end=source.indexOf('// Directory display normalization end.');
+  assert(start>=0&&end>start,'directory display normalization must exist in the shared API helper');
+  const helpers=vm.runInNewContext(source.slice(start,end)+';({otwIsSalaryLike,otwDisplaySalary,otwTalentDisplay})');
+  assert.equal(helpers.otwDisplaySalary('18000'),'R$ 18.000');
+  assert.equal(helpers.otwDisplaySalary('17000'),'R$ 17.000');
+  assert.equal(helpers.otwDisplaySalary('7k a 9k'),'R$ 7k a R$ 9k');
+  assert.equal(helpers.otwDisplaySalary('R$ 7k a R$ 9k'),'R$ 7k a R$ 9k');
+  assert.equal(helpers.otwIsSalaryLike('Inglês B2'),false);
+  assert.equal(helpers.otwIsSalaryLike('Árabe C1'),false);
+  const legacy={portal_published:true,idioma:'R$ 7k a R$ 9k',faixa_clt:'',faixa_pj:'17000'};
+  const displayed=helpers.otwTalentDisplay(legacy);
+  assert.equal(displayed.idioma,'');
+  assert.equal(displayed.public_idioma,'');
+  assert.equal(displayed.faixa_clt,'R$ 7k a R$ 9k');
+  assert.equal(displayed.faixa_pj,'R$ 17.000');
+  assert.equal(legacy.idioma,'R$ 7k a R$ 9k','source record must not be mutated');
+  const mixed=helpers.otwTalentDisplay({portal_published:true,idioma:'Inglês B2 e R$ 8k',faixa_clt:''});
+  assert.equal(mixed.idioma,'');
+  assert.equal(mixed.faixa_clt,'','never misattribute a mixed legacy field');
+  const hidden=helpers.otwTalentDisplay({portal_published:false,idioma:'R$ 10k',faixa_clt:'18000'});
+  assert.equal(hidden.faixa_clt,'','do not publish amounts without consent');
+  assert.equal(hidden.public_idioma,'');
+  const clean=helpers.otwTalentDisplay({portal_published:true,idioma:'Inglês B2',faixa_clt:'18000'});
+  assert.equal(clean.idioma,'Inglês B2');
+  assert.equal(clean.faixa_clt,'R$ 18.000');
+ }
+
  console.log('PASS: public signup, own-account save, return to directory and login destination');
 })().catch(e=>{console.error(e);process.exitCode=1});
