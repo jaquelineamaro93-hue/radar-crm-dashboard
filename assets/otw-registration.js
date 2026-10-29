@@ -89,7 +89,7 @@ function enhanceOtwSelections(){
  const languageMenu=document.createElement('details');languageMenu.className='cx-otw-options cx-otw-languages';
  const languageSummary=document.createElement('summary');languageSummary.textContent='Selecionar idiomas e níveis';languageMenu.append(languageSummary);
  const langs=['Português','Inglês','Espanhol','Francês','Alemão','Italiano','Mandarim','Japonês','Libras'];
- const levels=['Não especificado','Básico','Intermediário','Avançado','Fluente','Nativo'];
+ const levels=['Não especificado','A1','A2','B1','B2','C1','C2','Básico','Intermediário','Avançado','Fluente','Nativo'];
  const languageRows=langs.map(label=>{
   const row=document.createElement('div');row.className='cx-otw-language-row';
   const item=document.createElement('label');item.className='cx-otw-choice';
@@ -105,8 +105,15 @@ function enhanceOtwSelections(){
  const languageLabel=language.closest('label');const languageGroup=document.createElement('div');languageGroup.className='cx-otw-field-group';languageGroup.setAttribute('role','group');languageGroup.setAttribute('aria-label','Idiomas e nível');
  const languageTitle=document.createElement('span');languageTitle.textContent='Idiomas e nível';
  languageLabel.replaceWith(languageGroup);languageGroup.append(languageTitle,language,languageMenu);
+ const customLabel=document.createElement('label');customLabel.className='cx-otw-custom-language';
+ const customCaption=document.createElement('span');customCaption.textContent='Outro idioma e nível (opcional)';
+ const custom=document.createElement('input');custom.type='text';custom.maxLength=250;custom.placeholder='Ex.: Árabe C1';
+ customLabel.append(customCaption,custom);languageMenu.append(customLabel);
+ custom.addEventListener('input',saveLanguages);
  function saveLanguages(){
-  language.value=languageRows.filter(x=>x.cb.checked).map(x=>x.label+(x.select.value==='Não especificado'?'':' '+x.select.value)).join(', ');
+  const chosen=languageRows.filter(x=>x.cb.checked).map(x=>x.original&&x.select.value===x.previousLevel?x.original:x.label+(x.select.value==='Não especificado'?'':' '+x.select.value));
+  const extras=custom.value.split(/[,;]/).map(x=>x.trim()).filter(Boolean);
+  language.value=[...chosen,...extras].join(', ');
   languageSummary.textContent=language.value||'Selecionar idiomas e níveis';
  }
  function hydrate(){
@@ -119,13 +126,14 @@ function enhanceOtwSelections(){
   }
   yearsSelect.value=yearValue;
   const previous=String(language.value||'');
-  const chunks=previous.split(/[,;]|\s+e\s+(?=(?:portugu[eê]s|ingl[eê]s|espanhol|franc[eê]s|alem[aã]o|italiano|mandarim|japon[eê]s|libras))/i);
+  const chunks=previous.split(/[,;]|\s+e\s+/i).map(x=>x.trim()).filter(Boolean);
   languageRows.forEach(x=>{
    const matched=chunks.find(chunk=>norm(chunk).includes(norm(x.label)));
-   x.cb.checked=!!matched;
-   const level=matched&&levels.slice(1).find(l=>norm(matched).includes(norm(l)));
-   x.select.value=level||'Não especificado';x.select.disabled=!matched;
+   x.original=matched||'';x.cb.checked=!!matched;
+   const level=matched&&levels.slice(1).find(l=>new RegExp('(?:^|\\\\s)'+norm(l)+'(?:$|\\\\s)','i').test(norm(matched)));
+   x.previousLevel=level||'Não especificado';x.select.value=x.previousLevel;x.select.disabled=!matched;
   });
+  custom.value=chunks.filter(chunk=>!languageRows.some(x=>x.original===chunk)).join(', ');
   languageSummary.textContent=previous||'Selecionar idiomas e níveis';
  }
  hydrate();
