@@ -14,7 +14,7 @@ if(!dirTab){
  dirTab.addEventListener('click',()=>returnToDirectory());
 const publicContacts=window.crmPublicContacts;
 if(typeof publicContacts==='function')window.crmPublicContacts=function(p){const html=publicContacts(p),email=String(p.email_contato||'').trim();if(!email||email.length>254||!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))return html;const link=document.createElement('a');link.className='p-btn';link.href='mailto:'+encodeURIComponent(email);link.textContent='E-mail';return html.replace('</div>',link.outerHTML+'</div>');};
-const css=document.createElement('link');css.rel='stylesheet';css.href='/assets/otw-registration.css?v=20261029-privacy-mobile2';document.head.append(css);
+const css=document.createElement('link');css.rel='stylesheet';css.href='/assets/otw-registration.css?v=20261029-full-card2';document.head.append(css);
 // The legacy import can contain salary-looking text under the language column.
 // Do not expose that content as salary without an explicit publication consent.
 const salaryPrivacyNote=document.createElement('p');
