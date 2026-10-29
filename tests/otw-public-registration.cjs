@@ -13,6 +13,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   vm.runInContext(fs.readFileSync('assets/otw-registration.js','utf8'),context);
   document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise(resolve=>setTimeout(resolve,0));
+  assert(document.head.querySelector('link[href*="otw-registration.css?v=20261029-privacy-mobile2"]'));
   const panel=document.getElementById('otwRegistrationPanel');
   assert(panel,'registration mounts without removed legacy subtab');
   assert.equal(panel.hidden,!query);
@@ -119,5 +120,13 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert.equal(clean.faixa_clt,'R$ 18.000');
  }
 
+ const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
+ assert(viewCss.includes('@media(max-width:950px)'));
+ assert(viewCss.includes('#pageSearch #searchResults .result-grid'));
+ assert(viewCss.includes('grid-template-columns:minmax(0,1fr)!important'));
+ assert(viewCss.includes('.crm-otw-signup>a'));
+ const viewJs=fs.readFileSync('assets/otw-registration.js','utf8');
+ assert(viewJs.includes('directory.querySelector(\'#searchResults\')?.before(salaryPrivacyNote)'));
+ assert(viewJs.includes('somente quando a pessoa autoriza sua publicação'));
  console.log('PASS: public signup, own-account save, return to directory and login destination');
 })().catch(e=>{console.error(e);process.exitCode=1});
