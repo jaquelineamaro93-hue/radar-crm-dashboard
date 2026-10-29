@@ -3,6 +3,7 @@
 #otwRegistrationPanel .otw-return{margin:12px 0 0 12px;background:transparent;color:#ddbef0;border:1px solid #88629e}#otwRegistrationPanel .account{border-left-width:1px}#otwRegistrationPanel{scroll-margin-top:85px}#otw-status:focus{outline:1px solid #cda6e3;outline-offset:4px}@media(max-width:580px){#otwRegistrationPanel .otw-return{margin:12px 0 0}}
 
 /* Open to Work richer selection and public card details, 2026-10-29 */
+#otwRegistrationPanel .cx-otw-field-group{display:flex;flex-direction:column;gap:9px;font-size:14px;font-weight:600;min-width:0}
 #otwRegistrationPanel input[type=hidden]{display:none!important}
 #otwRegistrationPanel select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid #42506c;border-radius:7px;padding:10px 12px;background:#101929;color:#eef1f8;font:inherit;font-weight:400}
 #otwRegistrationPanel select:focus-visible,#otwRegistrationPanel summary:focus-visible{outline:2px solid #cda6e3;outline-offset:2px}
