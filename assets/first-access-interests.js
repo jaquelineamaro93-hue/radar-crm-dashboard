@@ -225,6 +225,7 @@ async function persist(skipped){
   if(error||data?.id!==id||!Array.isArray(data.onboarding_goals))throw Error('save failed');
   if(typeof CURRENT_PROFILE!=='undefined')
     CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id,onboarding_goals:data.onboarding_goals,directory_visible:data.directory_visible};
+  confirmedAnsweredId=id;
   const shouldNavigate=!editing;
   close();
   window.CXMemberHomeReference?.refresh?.();
@@ -245,7 +246,27 @@ function show(user,profile,isEdit){
  update();overlay.querySelector('input[name="crm_onboarding_goal"]')?.focus();
  return true;
 }
-function offer(user,profile){return canOffer(user,profile)?show(user,profile,false):false;}
+let confirmedAnsweredId=null,profileLookupId=null;
+async function offer(user,profile){
+ if(!canOffer(user,profile))return false;
+ if(confirmedAnsweredId===user.id||profileLookupId===user.id)return false;
+ if(typeof authSb==='undefined'||!authSb)return false;
+ // A missing/stale CURRENT_PROFILE is not proof that the member has never replied.
+ // Check the authenticated row before opening the first-access dialog.
+ profileLookupId=user.id;
+ try{
+  const {data,error}=await authSb.from('profiles').select('id,onboarding_goals').eq('id',user.id).maybeSingle();
+  if(error||typeof CURRENT_USER==='undefined'||CURRENT_USER?.id!==user.id||!window.crmSignedIn?.())return false;
+  if(Array.isArray(data?.onboarding_goals)){
+   confirmedAnsweredId=user.id;
+   if(typeof CURRENT_PROFILE!=='undefined'&&(!CURRENT_PROFILE||CURRENT_PROFILE.id===user.id))
+    CURRENT_PROFILE={...(CURRENT_PROFILE||{}),id:user.id,onboarding_goals:data.onboarding_goals};
+   return false;
+  }
+  return show(user,data||profile,false);
+ }catch{return false;}
+ finally{if(profileLookupId===user.id)profileLookupId=null;}
+}
 function edit(){
  if(!window.crmSignedIn?.()||typeof CURRENT_USER==='undefined'||!CURRENT_USER?.id)return false;
  return show(CURRENT_USER,typeof CURRENT_PROFILE==='undefined'?null:CURRENT_PROFILE,true);
