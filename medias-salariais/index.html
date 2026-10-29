@@ -4566,6 +4566,13 @@ function crmWorkModel(value){
  if(key==='presencial')return 'Presencial';
  return raw;
 }
+function crmWorkModels(value){return [...new Set(String(value||'').split(/[,;|]/).map(x=>crmWorkModel(x)).filter(Boolean))];}
+function crmOtwSalary(value){const v=String(value||'').trim();return /^\\d{3,8}$/.test(v)?'R$ '+Number(v).toLocaleString('pt-BR'):v;}
+function crmTalentHighlights(person){
+ const entries=[['Experiência',person.exp],['Idiomas',person.idioma],['Pretensão CLT',crmOtwSalary(person.faixa_clt)],['Pretensão PJ',crmOtwSalary(person.faixa_pj)]].filter(x=>String(x[1]||'').trim());
+ return entries.length?'<dl class="cx-otw-facts">'+entries.map(([label,value])=>'<div class="cx-otw-fact"><dt>'+escapeHtml(label)+':</dt><dd>'+escapeHtml(value)+'</dd></div>').join('')+'</dl>':'';
+}
+function crmTalentModalities(value){const models=crmWorkModels(value);return models.length?'<div class="cx-otw-modes" aria-label="Modalidades de trabalho">'+models.map(x=>'<span class="cx-otw-pill">'+escapeHtml(x)+'</span>').join('')+'</div>':'';}
 function populateSearchFilters(){
   const fill = (id, values) => {
     const sel = document.getElementById(id);
@@ -4577,7 +4584,7 @@ function populateSearchFilters(){
     });
   };
   fill('sSeniority', SENIORITY_ORDER.filter(s=>PEOPLE.some(p=>p.senioridade===s)));
-  fill('sCondicao', [...new Set(PEOPLE.map(p=>p.condicao).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
+  fill('sCondicao', [...new Set(PEOPLE.flatMap(p=>crmWorkModels(p.condicao)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
   canonicalizeCityAccents();
   fill('sCidade', [...new Set(PEOPLE.map(p=>p.cidadeNorm).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')));
   fill('sEstado', [...new Set(PEOPLE.map(p=>p.estadoNorm).filter(Boolean))].sort());
@@ -4817,12 +4824,12 @@ document.getElementById('searchResults')?.addEventListener('click',event=>{
 function renderSearch(){
  const q=(crmById('searchText').value||'').toLowerCase().trim(),sen=crmById('sSeniority').value,cond=crmById('sCondicao').value,cid=crmById('sCidade').value,estado=crmById('sEstado').value,muda=crmById('sMuda').value,idioma=crmById('sIdioma').value,nivel=crmById('sNivel').value;
  const rows=PEOPLE.map(p=>({p,langs:extractIdiomaNivelPairs(p.idioma)}));
- const results=rows.filter(({p,langs})=>(!sen||p.senioridade===sen)&&(!cond||p.condicao===cond)&&(!cid||p.cidadeNorm===cid)&&(!estado||p.estadoNorm===estado)&&(!muda||p.muda===muda)&&((!idioma&&!nivel)||langs.some(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel)))&&(!q||[p.nome,p.area,p.ferramentas,p.empresa,p.local].join(' ').toLowerCase().includes(q)));
+ const results=rows.filter(({p,langs})=>(!sen||p.senioridade===sen)&&(!cond||crmWorkModels(p.condicao).includes(cond))&&(!cid||p.cidadeNorm===cid)&&(!estado||p.estadoNorm===estado)&&(!muda||p.muda===muda)&&((!idioma&&!nivel)||langs.some(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel)))&&(!q||[p.nome,p.area,p.ferramentas,p.empresa,p.local].join(' ').toLowerCase().includes(q)));
  crmById('searchCount').textContent=results.length+' profissionais';
  crmById('searchResults').innerHTML=results.length?'<div class="result-grid">'+results.map(({p,langs})=>{
    const matchingLangs=langs.filter(x=>(!idioma||x.lang===idioma)&&(!nivel||x.level===nivel));
    const languageWhy=(idioma||nivel)&&matchingLangs.length?'<p class="crm-search-language-match">Idioma: '+escapeHtml(matchingLangs.map(x=>x.lang+(x.level&&x.level!=='Não especificado'?' · '+x.level:'')).join(' | '))+'</p>':'';
-   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p><p>'+escapeHtml(p.condicao)+'</p>'+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+languageWhy+crmPublicContacts(p)+crmXpSearchAction(p)+'</article>';
+   return '<article class="p-card"><div class="p-name">'+escapeHtml(p.nome)+'</div><span class="p-role">'+escapeHtml(p.senioridade)+'</span><p>'+escapeHtml(p.area)+'</p><p class="crm-muted">'+escapeHtml(p.ferramentas)+'</p>'+crmTalentModalities(p.condicao)+(p.local?'<p>'+escapeHtml(p.local)+'</p>':'')+crmTalentHighlights(p)+languageWhy+crmPublicContacts(p)+crmXpSearchAction(p)+'</article>';
  }).join('')+'</div>':'<p class="empty-state">Nenhum profissional encontrado com esses filtros.</p>';
 }
 function escapeHtml(s){
@@ -10320,7 +10327,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(crmRenderFloatingPro
  #crmProfilePrompt{bottom:14px}
 }
 </style>
-<script src="/assets/otw-registration.js?v=20261027-journey1"></script>
+<script src="/assets/otw-registration.js?v=20261029-rich-otw1"></script>
 <script defer src="/assets/saved-jobs-figma.js?v=20261026-auto-match-columns1"></script>
 <script defer src="/assets/member-home-reference.js?v=20261026-home-avatar1"></script>
 <script defer src="/assets/first-access-interests.js?v=20261026-goals4"></script>
