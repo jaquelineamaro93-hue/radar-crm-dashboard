@@ -1,11 +1,14 @@
 /* Hide unnormalized legacy page structures only during initial hydration.
    The public landing stays visible; script failure falls back after 6 seconds. */
 html:not(.cx-portal-layout-ready) #view-logada:not([hidden]) > .crm-sidebar,
-html:not(.cx-portal-layout-ready) #view-logada:not([hidden]) > .crm-workspace,
-html:not(.cx-portal-layout-ready) #crmPublicWorkspace:not([hidden]){visibility:hidden!important;}
+html:not(.cx-portal-layout-ready) #view-logada:not([hidden]) > .crm-workspace{visibility:hidden!important;}
 html:not(.cx-portal-layout-ready) #view-logada:not([hidden])::after{
  content:'Preparando seu espaço';display:flex;align-items:center;justify-content:center;
  position:fixed;inset:0;z-index:999;background:#0d1324;color:#b8c5da;
  font:500 14px/1.5 system-ui,-apple-system,sans-serif;pointer-events:none;
 }
 @media(prefers-reduced-motion:reduce){#view-logada,#crmPublicWorkspace{scroll-behavior:auto!important}}
+
+/* Deep links must not paint the landing page before the router starts. */
+html.cx-route-boot #view-publica > :not(.crm-navbar){display:none!important}
+html.cx-route-boot #view-publica::after{content:'Carregando página…';display:block;padding:48px 24px;text-align:center;color:#b8c5da;font:500 14px/1.5 system-ui,sans-serif}

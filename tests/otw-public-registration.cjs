@@ -82,9 +82,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  {
   const shell=fs.readFileSync('index.html','utf8');
   const sync=shell.slice(shell.indexOf('function crmSyncAuth(){'),shell.indexOf('function crmSetLanding(show){'));
-  for(const [route,pending,expected] of [['search',null,'search'],['inicio',null,'dashboard'],['vagas',null,'dashboard'],['search','vagas-salvas','vagas-salvas']]){
+  for(const [route,pending,expected] of [['search',null,'search'],['inicio',null,'dashboard'],['vagas',null,'vagas'],['conteudos',null,'conteudos'],['courses',null,'courses'],['search','vagas-salvas','vagas-salvas']]){
    const calls=[],host={append:()=>{}},elements={'view-publica':{hidden:false},'view-logada':{hidden:true},crmPages:host,crmJoinDialog:{close:()=>{}},pageSearch:{parentElement:host}};
-   vm.runInNewContext(sync+';crmSyncAuth();',{crmSignedIn:()=>true,crmWasSignedIn:false,crmPendingRoute:pending,crmRoutes:{search:['pageSearch','Open to Work']},crmPublicRoutes:new Set(['search','vagas']),crmById:id=>elements[id],crmSetLanding:()=>{},crmRouteFromLocation:()=>route,crmNavigate:(r)=>calls.push(r),window:{}});
+   vm.runInNewContext(sync+';crmSyncAuth();',{crmSignedIn:()=>true,crmWasSignedIn:false,crmPendingRoute:pending,crmRoutes:{search:['pageSearch','Open to Work'],vagas:['pageSearch','Vagas'],conteudos:['pageSearch','Conteúdos'],courses:['pageSearch','Cursos']},crmPublicRoutes:new Set(['search','vagas']),crmById:id=>elements[id],crmSetLanding:()=>{},crmRouteFromLocation:()=>route,crmNavigate:(r)=>calls.push(r),window:{}});
    assert.deepEqual(calls,[expected]);
   }
  }

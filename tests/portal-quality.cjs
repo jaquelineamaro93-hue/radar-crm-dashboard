@@ -111,8 +111,8 @@ for(const [label,route] of [['Explorar vagas','vagas'],['Publicar vaga','publica
  assert(index.includes('data-crm-route="'+route+'">'+label+'</a>'),'CTA ausente ou destino errado: '+label);
 }
 // Usuário autenticado nunca deve ser reenviado à home pública vazia.
-assert(index.includes("const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]&&(current==='search'||!crmPublicRoutes.has(current))?current:'dashboard');"),
- 'Restauração da sessão deve abrir Visão Geral por padrão e preservar links privados solicitados e o fluxo Open to Work');
+assert(index.includes("const destination=requested||(current&&current!=='inicio'&&crmRoutes[current]?current:'dashboard');"),
+ 'Restauração da sessão deve abrir Visão Geral por padrão e preservar todas as páginas solicitadas');
 assert(index.includes("if(route==='inicio'&&crmSignedIn())route='dashboard';"),
  'Navegação para home autenticada deve redirecionar para Visão Geral');
 assert(index.includes("if(location.hash.includes('access_token'))history.replaceState(null,'','/dashboard');"),
