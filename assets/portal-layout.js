@@ -81,19 +81,28 @@
  }
  function normalizeCoursesSuggestion(page){
   if(page.id!=='pageCourses')return;
-  const suggestion=page.querySelector('#btnGoToCourseForm');
-  const heading=[...page.querySelectorAll('h1,h2,h3')].find(el=>/cursos para a comunidade/i.test(el.textContent||''));
-  if(!suggestion||!heading)return;
-  // The CTA belongs to the introduction, not inside the featured course.
-  const anchor=heading.closest('.section-head')||heading.parentElement;
-  if(!anchor)return;
-  const original=suggestion.parentElement;
-  const item=original&&original!==page&&original.childElementCount===1&&original.textContent.trim()===suggestion.textContent.trim()?original:suggestion;
+  const button=page.querySelector('#btnGoToCourseForm');
+  const heading=[...page.querySelectorAll('.section-head h2')].find(el=>el.textContent.trim()==='Cursos para a comunidade');
+  const head=heading?.closest('.section-head');
+  const description=head?.nextElementSibling;
+  if(!button||!head||!description?.classList.contains('section-desc'))return;
+  const section=head.parentElement;
+  // Keep both introductory lines together and the original button to their right.
+  let row=section.querySelector(':scope > .cx-course-intro-row');
+  if(!row){
+   row=document.createElement('div');row.className='cx-course-intro-row';
+   const copy=document.createElement('div');copy.className='cx-course-intro-copy';
+   head.before(row);row.append(copy);
+   copy.append(head,description);
+  }
+  const original=button.parentElement;
+  // Discard only the empty row where the CTA originally lived.
+  if(original?.classList.contains('ev-header-row')){
+   row.append(button);
+   if(!original.children.length)original.remove();
+  }else if(button.parentElement!==row)row.append(button);
+  button.classList.add('cx-course-intro-cta');
   page.querySelectorAll('.cx-course-feature-with-suggestion').forEach(el=>el.classList.remove('cx-course-feature-with-suggestion'));
-  item.classList.remove('cx-course-suggest-inline');
-  anchor.classList.add('cx-course-heading-with-suggestion');
-  item.classList.add('cx-course-suggest-heading');
-  if(item.parentElement!==anchor)anchor.append(item);
  }
  function normalize(page){
   if(!page)return;
