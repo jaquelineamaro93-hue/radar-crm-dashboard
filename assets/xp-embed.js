@@ -5,7 +5,7 @@
  const params=new URLSearchParams(location.search);
  if(params.get('embedded')!=='1'){
    // Canonical logged-in destination keeps the original sidebar, login and navigation.
-   if(window.top===window.self)location.replace('/#'+route);
+   if(window.top===window.self)location.replace((route==='xp-avatar'?'/painel/avatar/':'/painel/rankings/')+location.search);
    return;
  }
  document.body.classList.add('cx-xp-embedded');

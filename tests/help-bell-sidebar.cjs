@@ -28,7 +28,7 @@ for(const [slug,title] of [['ajuda','Central de Dúvidas'],['boas-praticas','Boa
  const doc=read(slug+'/index.html'),gateway=read('painel/'+slug+'/index.html');
  assert(doc.includes('data-crm-help-page'),slug+': page must be identifiable');
  assert(doc.includes('/assets/help-center-i18n.js'),slug+': existing language translations must load');
- assert(gateway.includes('/#'+slug),slug+': direct link must enter existing portal shell');
+ assert(gateway===read('index.html'),slug+': direct link must enter existing portal shell');
  assert(shell.includes("'"+slug+"'")||shell.includes(slug+':'),slug+': internal route missing');
 }
 assert.match(shell,/const locales=/);
