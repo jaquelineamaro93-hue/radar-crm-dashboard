@@ -620,3 +620,8 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 #pageConteudos .cx-hub{gap:10px!important}
 #pageConteudos .cx-hub-hero{margin-bottom:0!important;padding-bottom:12px!important}
 #pageConteudos .cx-library{margin-top:0!important;padding-top:0!important;gap:10px!important}
+
+/* Courses: suggestion aligns with the featured course copy, not a standalone row. */
+#pageCourses .cx-course-feature-with-suggestion{position:relative!important;}
+#pageCourses .cx-course-feature-with-suggestion .cx-course-suggest-inline{position:absolute!important;top:22px!important;right:22px!important;width:auto!important;margin:0!important;z-index:2!important;}
+@media(max-width:760px){#pageCourses .cx-course-feature-with-suggestion .cx-course-suggest-inline{position:static!important;margin:12px 0 0!important;}}
