@@ -625,3 +625,8 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 #pageCourses .cx-course-feature-with-suggestion{position:relative!important;}
 #pageCourses .cx-course-feature-with-suggestion .cx-course-suggest-inline{position:absolute!important;top:22px!important;right:22px!important;width:auto!important;margin:0!important;z-index:2!important;}
 @media(max-width:760px){#pageCourses .cx-course-feature-with-suggestion .cx-course-suggest-inline{position:static!important;margin:12px 0 0!important;}}
+
+/* Keep the course suggestion beside the introduction; never inside Imersão CRM. */
+#pageCourses .cx-course-heading-with-suggestion{position:relative!important;padding-right:185px!important;min-height:48px!important}
+#pageCourses .cx-course-heading-with-suggestion .cx-course-suggest-heading{position:absolute!important;right:0!important;top:0!important;margin:0!important;z-index:2!important}
+@media(max-width:760px){#pageCourses .cx-course-heading-with-suggestion{padding-right:0!important}#pageCourses .cx-course-heading-with-suggestion .cx-course-suggest-heading{position:static!important;margin:12px 0 0!important}}
