@@ -53,9 +53,36 @@
    if(recurring)ranking.prepend(recurring);
   }
  }
+ function normalizeContentHub(page){
+  if(page.id!=='pageConteudos')return;
+  // The top 'Sugerir conteúdo' button already offers recommendations.
+  page.querySelectorAll('.cx-curation-note').forEach(note=>note.remove());
+  // Keep the original featured nodes in place: renderCxGrid accesses both IDs.
+  // Hide their presentation because each article also exists in the library.
+  const featured=page.querySelector('#cxFeaturedWrap');
+  if(featured)featured.style.setProperty('display','none','important');
+  // Do not show decorative emoji in the library access links.
+  page.querySelectorAll('a,button').forEach(button=>{
+   const label=(button.textContent||'').trim();
+   if(/^Acessar\s*(?:↗️?|🔗|🚀|\u2197\uFE0F?)$/u.test(label))button.textContent='Acessar';
+  });
+ }
+ function normalizeCoursesSuggestion(page){
+  if(page.id!=='pageCourses')return;
+  const suggestion=page.querySelector('#btnGoToCourseForm');
+  const featureLink=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]');
+  const featurePanel=featureLink?.closest('div[style*="linear-gradient"],.crm-course-feature');
+  if(!suggestion||!featurePanel||featurePanel.contains(suggestion))return;
+  // Move, never clone: the original action and its listeners remain intact.
+  const current=suggestion.parentElement;
+  const item=current&&current!==page&&current.childElementCount===1&&current.textContent.trim()===suggestion.textContent.trim()?current:suggestion;
+  if(item.nextElementSibling!==featurePanel)featurePanel.before(item);
+ }
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  normalizeContentHub(page);
+  normalizeCoursesSuggestion(page);
   normalizeCatalog(page);
   if(page.id==='pagePesquisa')page.querySelectorAll('iframe').forEach(frame=>{
    if(frame.closest('.crm-survey-form'))return;
