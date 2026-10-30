@@ -13,7 +13,7 @@ for(const match of html.matchAll(/(?:src|href)="(\/assets\/reports\/[^"?]+)(?:\?
 (async()=>{
 const {Window}=await import(process.env.HAPPY_DOM_MODULE||'happy-dom');
 for(const reduce of [false,true]){
- const window=new Window({url:'https://conexaocrm.com/conteudos/implementacao-crm-2026/',settings:{disableCSSFileLoading:true,disableJavaScriptFileLoading:true,disableComputedStyleRendering:true}});
+ const window=new Window({url:'https://conexaocrm.com/conteudos/implementacao-crm-2026/?embedded=1',settings:{disableCSSFileLoading:true,disableJavaScriptFileLoading:true,disableComputedStyleRendering:true}});
  const doc=window.document;doc.write(html);window.matchMedia=()=>({matches:reduce});let scrolled=0,printed=0;window.HTMLElement.prototype.scrollIntoView=function(){scrolled++};window.print=()=>printed++;
  window.eval(js);
  assert.equal(doc.querySelectorAll('h1').length,1);assert.equal(doc.querySelectorAll('.time-column').length,5);assert.equal(doc.querySelectorAll('.dot-matrix i.filled').length,18);assert.equal(doc.querySelectorAll('.dot-matrix i').length,29);

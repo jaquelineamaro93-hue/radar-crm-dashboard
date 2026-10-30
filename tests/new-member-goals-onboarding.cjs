@@ -67,11 +67,11 @@ test('Dashboard honors priority without rewriting real profile or match data',()
  assert(home.includes("recruiter?'membros'"));
  assert(home.includes("CXFirstAccessInterests?.edit?.()"));
 });
-test('All 38 published SPA routes share the same onboarding and UX version',()=>{
+test('All 39 published SPA routes share the same onboarding and UX version',()=>{
  const {execFileSync}=require('node:child_process');
  const files=execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\n').filter(name=>name==='404.html'||name==='index.html'||(name.endsWith('/index.html')&&read(name).length>1000000));
  const copies=files.map(read);
- assert.equal(copies.length,38);
+ assert.equal(copies.length,39);
  for(const doc of copies){
   assert.equal(doc,copies[0],'stale shell or different HTML route');
   assert(doc.includes('first-access-interests.js?v=20261029-goals-saved2'));

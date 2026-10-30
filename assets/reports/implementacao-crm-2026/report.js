@@ -1,4 +1,6 @@
 (()=>{'use strict';
+ const embedded=new URLSearchParams(location.search).get('embedded')==='1';
+ if(embedded&&window.parent!==window){document.querySelector('a[href="/pesquisas-censo/"]')?.addEventListener('click',event=>{event.preventDefault();window.parent.postMessage({type:'crm:report-navigate',route:'pesquisa'},location.origin);});}
  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  document.querySelectorAll('[data-scroll]').forEach(button=>button.addEventListener('click',()=>{
   const target=document.getElementById(button.dataset.scroll);if(!target)return;

@@ -4,6 +4,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const shell=fs.readFileSync('index.html','utf8');
 const routes=[
+  "reports/implementacao-crm/index.html",
   "admin/index.html",
   "agencias/index.html",
   "apoiadores/index.html",
