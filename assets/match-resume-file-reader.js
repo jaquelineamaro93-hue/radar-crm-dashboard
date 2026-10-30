@@ -82,20 +82,21 @@ function mount(overlay){
  const summary=document.createElement('summary');summary.textContent='Prévia do texto reconhecido';
  const pre=document.createElement('pre');pre.className='cx-resume-import-preview';
  preview.append(summary,pre);
- let candidate=null;
- input.addEventListener('change',()=>{candidate=null;apply.disabled=true;preview.hidden=true;status.textContent='';});
+ let candidate=null,selectionVersion=0;
+ input.addEventListener('change',()=>{selectionVersion++;candidate=null;apply.disabled=true;preview.hidden=true;status.textContent='';});
  read.addEventListener('click',async()=>{
   if(!input.files?.[0]){status.textContent='Escolha um arquivo para iniciar.';return;}
+  const chosen=input.files[0],readVersion=selectionVersion;
   read.disabled=true;apply.disabled=true;candidate=null;status.textContent='Lendo arquivo no seu dispositivo...';
   try{
-   const parsed=await extractText(input.files[0]);
-   if(!overlay.isConnected)return;
+   const parsed=await extractText(chosen);
+   if(!overlay.isConnected||readVersion!==selectionVersion)return;
    candidate=parsed;
    pre.textContent=parsed.slice(0,900)+'\n[...]';
    preview.hidden=false;
    apply.disabled=false;
    status.textContent='Texto extraído: '+new Intl.NumberFormat('pt-BR').format(parsed.length)+' caracteres. Confira a prévia antes de aplicar.';
-  }catch(error){status.textContent=error.message||'Não foi possível ler o arquivo. Você pode colar o texto manualmente.';}
+  }catch(error){if(readVersion===selectionVersion)status.textContent=error.message||'Não foi possível ler o arquivo. Você pode colar o texto manualmente.';}
   finally{read.disabled=false;}
  });
  apply.addEventListener('click',()=>{
