@@ -7,7 +7,7 @@ const html=read('index.html'),hub=read('assets/profile-hub-unified.js'),css=read
 assert.equal(read('404.html'),html,'SPA 404 must match index');
 for(const pathname of ['freelancers/index.html','dashboard/index.html','open-to-work/index.html'])
  assert.equal(read(pathname),html,'SPA route must use new shell: '+pathname);
-for(const asset of ['profile-hub-unified.css?v=20261026-profhub1','profile-hub-unified.js?v=20261027-owner1'])
+for(const asset of ['profile-hub-unified.css?v=20261030-matchhub2','profile-hub-unified.js?v=20261030-matchhub2'])
  assert(html.includes(asset),'versioned integration missing: '+asset);
 assert(html.includes('id="pf_preferred_name"'),'optional form nickname is missing');
 assert(html.includes('preferred_name:preferredName||null'),'nickname must be saved only as a private profile field');
