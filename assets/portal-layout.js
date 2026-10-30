@@ -67,7 +67,6 @@
   if(section&&section!==page&&!section.querySelector('#cxGrid,.cx-library')&&section.textContent.includes('2026'))section.remove();
   // No decorative emoji or external-link glyph in the reading CTA.
   page.querySelectorAll('a,button').forEach(button=>{
-   if(button.children.length)return;
    const label=(button.textContent||'').trim();
    if(/^Acessar\s*(?:↗️?|🔗|🚀|\u2197\uFE0F?)$/u.test(label))button.textContent='Acessar';
   });
