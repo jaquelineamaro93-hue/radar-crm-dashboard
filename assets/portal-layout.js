@@ -59,7 +59,7 @@
   // Formato é metadado do material, não um filtro necessário à descoberta.
   page.querySelectorAll('.cx-filter-group').forEach(group=>{
    const label=group.querySelector('.cx-filter-label');
-   if(label&&/^formato$/i.test(label.textContent.trim()))group.hidden=true;
+   if(label&&/formato/i.test(label.textContent.trim())){group.hidden=true;group.style.setProperty('display','none','important');}
   });
   // Preserve search and theme controls. Remove the legacy overlay styles in CSS.
   // The top 'Sugerir conteúdo' button already offers recommendations.
