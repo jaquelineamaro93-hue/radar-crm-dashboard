@@ -1,0 +1,29 @@
+﻿dimensao;resposta;quantidade;base;percentual
+area;Administrador / Gestor de CRM in-house (na empresa);13;29;44,8
+area;Usuário estratégico / Gestor de Negócios / Outros;8;29;27,6
+area;Implementador / Consultor Parceiro de Ecossistemas;6;29;20,7
+area;Desenvolvedor / Integrador técnico / Arquiteto;2;29;6,9
+execucao;Modelo misto (Parceiro + Equipe interna);16;29;55,2
+execucao;Equipe interna da própria empresa (In-house);7;29;24,1
+execucao;Agência ou Consultoria parceira especializada;4;29;13,8
+execucao;Equipe de serviços profissionais da própria ferramenta (Vendor professional services);2;29;6,9
+plataforma;Outro / Sistema Próprio / Customizado;11;29;37,9
+plataforma;Salesforce (Sales / Service / Marketing / Data Cloud);10;29;34,5
+plataforma;Insider One;3;29;10,3
+plataforma;HubSpot;2;29;6,9
+plataforma;RD Station (Marketing / CRM);2;29;6,9
+plataforma;Braze;1;29;3,4
+porte;Corporação Global / Enterprise Avançada (Mais de 1.000 funcionários);11;29;37,9
+porte;Grande Empresa / Enterprise (De 251 a 1.000 funcionários);11;29;37,9
+porte;Empresa de Médio Porte (De 51 a 250 funcionários);5;29;17,2
+porte;Startup / Pequena empresa (Até 50 funcionários);2;29;6,9
+tempo;De 3 a 6 meses;12;29;41,4
+tempo;De 7 a 12 meses;6;29;20,7
+tempo;De 1 a 3 meses;5;29;17,2
+tempo;Mais de 12 meses;5;29;17,2
+tempo;Menos de 1 mês;1;29;3,4
+gargalos_multiplos;Dados legados;18;29;62,1
+gargalos_multiplos;Escopo e requisitos;14;29;48,3
+gargalos_multiplos;Processos e resistência interna;14;29;48,3
+gargalos_multiplos;Customizações e integrações;11;29;37,9
+gargalos_multiplos;Outro;1;29;3,4

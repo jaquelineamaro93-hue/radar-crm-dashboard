@@ -1,0 +1,158 @@
+{
+  "gargalos": [
+    {
+      "n": 18,
+      "label": "Dados legados"
+    },
+    {
+      "n": 14,
+      "label": "Escopo e requisitos"
+    },
+    {
+      "n": 14,
+      "label": "Processos e resistência interna"
+    },
+    {
+      "n": 11,
+      "label": "Customizações e integrações"
+    },
+    {
+      "n": 1,
+      "label": "Outro"
+    }
+  ],
+  "dimensoes": [
+    {
+      "n": 13,
+      "dim": "area",
+      "valor": "Administrador / Gestor de CRM in-house (na empresa)"
+    },
+    {
+      "n": 8,
+      "dim": "area",
+      "valor": "Usuário estratégico / Gestor de Negócios / Outros"
+    },
+    {
+      "n": 6,
+      "dim": "area",
+      "valor": "Implementador / Consultor Parceiro de Ecossistemas"
+    },
+    {
+      "n": 2,
+      "dim": "area",
+      "valor": "Desenvolvedor / Integrador técnico / Arquiteto"
+    },
+    {
+      "n": 16,
+      "dim": "execucao",
+      "valor": "Modelo misto (Parceiro + Equipe interna)"
+    },
+    {
+      "n": 7,
+      "dim": "execucao",
+      "valor": "Equipe interna da própria empresa (In-house)"
+    },
+    {
+      "n": 4,
+      "dim": "execucao",
+      "valor": "Agência ou Consultoria parceira especializada"
+    },
+    {
+      "n": 2,
+      "dim": "execucao",
+      "valor": "Equipe de serviços profissionais da própria ferramenta (Vendor professional services)"
+    },
+    {
+      "n": 11,
+      "dim": "plataforma",
+      "valor": "Outro / Sistema Próprio / Customizado"
+    },
+    {
+      "n": 10,
+      "dim": "plataforma",
+      "valor": "Salesforce (Sales / Service / Marketing / Data Cloud)"
+    },
+    {
+      "n": 3,
+      "dim": "plataforma",
+      "valor": "Insider One"
+    },
+    {
+      "n": 2,
+      "dim": "plataforma",
+      "valor": "HubSpot"
+    },
+    {
+      "n": 2,
+      "dim": "plataforma",
+      "valor": "RD Station (Marketing / CRM)"
+    },
+    {
+      "n": 1,
+      "dim": "plataforma",
+      "valor": "Braze"
+    },
+    {
+      "n": 11,
+      "dim": "porte",
+      "valor": "Corporação Global / Enterprise Avançada (Mais de 1.000 funcionários)"
+    },
+    {
+      "n": 11,
+      "dim": "porte",
+      "valor": "Grande Empresa / Enterprise (De 251 a 1.000 funcionários)"
+    },
+    {
+      "n": 5,
+      "dim": "porte",
+      "valor": "Empresa de Médio Porte (De 51 a 250 funcionários)"
+    },
+    {
+      "n": 2,
+      "dim": "porte",
+      "valor": "Startup / Pequena empresa (Até 50 funcionários)"
+    },
+    {
+      "n": 12,
+      "dim": "tempo",
+      "valor": "De 3 a 6 meses"
+    },
+    {
+      "n": 6,
+      "dim": "tempo",
+      "valor": "De 7 a 12 meses"
+    },
+    {
+      "n": 5,
+      "dim": "tempo",
+      "valor": "De 1 a 3 meses"
+    },
+    {
+      "n": 5,
+      "dim": "tempo",
+      "valor": "Mais de 12 meses"
+    },
+    {
+      "n": 1,
+      "dim": "tempo",
+      "valor": "Menos de 1 mês"
+    }
+  ],
+  "total_bruto": 30,
+  "vazios_email": 5,
+  "ultima_resposta": "2026-10-01",
+  "primeira_resposta": "2026-09-17",
+  "total_consolidado": 29,
+  "gargalos_respondidos": 29,
+  "snapshot": "2026-10-30",
+  "source": "Pesquisa de implementação de CRMs · Conexão CRM",
+  "methodology": {
+    "unit": "respostas consolidadas, não pessoas únicas verificadas",
+    "deduplication": "Última resposta por e-mail normalizado. Cinco registros sem e-mail são preservados separadamente e não podem ser deduplicados por identidade.",
+    "removed_duplicate": 1,
+    "identified_responses": 24,
+    "anonymous_responses": 5,
+    "selection": "Amostra de conveniência, autoselecionada, sem representatividade estatística.",
+    "multiple_choice": "Gargalos aceita múltiplas marcações. Percentuais usam 29 como denominador e não somam 100%."
+  }
+}
