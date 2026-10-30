@@ -65,6 +65,30 @@
    frame.title=frame.closest('.subpage-content')?.querySelector('h3')?.textContent||'Formulário da comunidade';
   });
 
+  // Evita CTAs duplicados na vitrine de Conteúdos e reposiciona o CTA de Cursos.
+  if(page.id==='pageConteudos'||page.id==='pageConteudo'){
+   const title=[...page.querySelectorAll('h2,h3,h4')].find(el=>el.textContent.trim()==='Curadoria da comunidade');
+   if(title){
+    let block=title.parentElement;
+    while(block&&block!==page&&block.textContent.length<550){
+     if(block.querySelector('a,button')&&/Enviar recomendação/.test(block.textContent))break;
+     block=block.parentElement;
+    }
+    if(block&&block!==page&&block.textContent.length<550)block.remove();
+   }
+  }
+  if(page.id==='pageCourses'){
+   const recommend=[...page.querySelectorAll('a,button')].find(el=>el.textContent.trim()==='Sugerir cursos');
+   const learnMore=[...page.querySelectorAll('a,button')].find(el=>/^Saiba mais(?: sobre o curso)?$/i.test(el.textContent.trim()));
+   if(recommend&&learnMore&&!recommend.contains(learnMore)){
+    const wrapper=recommend.parentElement;
+    const target=learnMore.parentElement;
+    // Move o CTA original, preservando listeners, apenas em containers pequenos.
+    if(wrapper&&target&&wrapper!==target&&wrapper.textContent.trim()==='Sugerir cursos'&&wrapper.textContent.length<90){
+     if(wrapper.nextElementSibling!==target)target.before(wrapper);
+    }
+   }
+  }
   if(page.id==='pageCourses'){
    const feature=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]')?.closest('section')?.querySelector('div[style*="linear-gradient"]');
    if(feature)feature.classList.add('crm-course-feature');
