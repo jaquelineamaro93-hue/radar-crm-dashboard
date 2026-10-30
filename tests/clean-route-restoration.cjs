@@ -22,3 +22,5 @@ for(const [path,target] of [['/avatar-studio/','/painel/avatar/'],['/rankings/',
 }
 for(const slug of ['ajuda','boas-praticas','novidades'])assert.equal(fs.readFileSync('painel/'+slug+'/index.html','utf8'),html,'clean help URL serves the portal directly');
 console.log('PASS clean route boot, token refresh, direct help and XP redirects with preserved parameters');
+
+for(const file of ['quem-faz/index.html','cases/index.html','inngage-test.html'])assert(!fs.readFileSync(file,'utf8').includes('href="/#'),'legacy hash link in '+file);
