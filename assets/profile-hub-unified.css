@@ -233,7 +233,7 @@ body #crmMatchResumeOverlay .crm-match-chip:not(.is-selected){
  background:#1c263a!important;
  color:#d2d9e9!important;
  border:1px solid #52617b!important;
- font:600 12px/1.35 inherit!important;
+ font-size:12px!important;font-weight:600!important;line-height:1.35!important;font-family:inherit!important;
  border-radius:9px!important;
  padding:8px 11px!important;
  min-height:38px!important;
@@ -309,7 +309,7 @@ body #crmMatchResumeOverlay .cx-resume-import .cx-resume-import-actions button{
  color:#f4e3ff!important;
  min-height:40px!important;
  padding:8px 12px!important;
- font:600 12px/1.4 inherit!important;
+ font-size:12px!important;font-weight:600!important;line-height:1.4!important;font-family:inherit!important;
 }
 body #crmMatchResumeOverlay .cx-resume-import .cx-resume-import-actions button:disabled{
  opacity:.45!important;cursor:not-allowed!important;
@@ -328,4 +328,14 @@ body #crmMatchResumeOverlay .cx-resume-import [role=status]{color:#ddc1f4!import
  }
  body #crmMatchResumeOverlay .cx-resume-import{padding:12px!important}
  body #crmMatchResumeOverlay .ev-modal-box :is(input,textarea,select){font-size:14px!important}
+}
+
+body #crmMatchResumeOverlay .cx-resume-import-preview{
+ color:#f1eafa!important;background:#0b1424!important;border:1px solid #40526d!important;
+ border-radius:9px!important;line-height:1.6!important;max-height:210px!important;overflow:auto!important;
+ white-space:pre-wrap!important;overflow-wrap:anywhere!important;padding:12px!important;
+ font:400 12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+body #crmMatchResumeOverlay .cx-resume-import details summary{
+ color:#dfc4ef!important;cursor:pointer!important;padding:9px 0!important;
 }
