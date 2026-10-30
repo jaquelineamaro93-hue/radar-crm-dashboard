@@ -53,9 +53,41 @@
    if(recurring)ranking.prepend(recurring);
   }
  }
+ function normalizeContentHub(page){
+  if(page.id!=='pageConteudos')return;
+  // The top 'Sugerir conteúdo' button already provides this functionality.
+  page.querySelectorAll('.cx-curation-note').forEach(note=>note.remove());
+  // The report also appears as a normal library card. Do not repeat it as featured.
+  const grid=page.querySelector('.cx-featured-grid');
+  const featuredSection=grid?.closest('section');
+  if(featuredSection&&!featuredSection.querySelector('#cxGrid,.cx-library'))featuredSection.remove();
+  // Fallback for markup without a standalone featured-grid wrapper.
+  const heading=[...page.querySelectorAll('h2,h3')].find(el=>/^(?:Para começar por aqui|Start here|Para empezar por aquí)$/i.test(el.textContent.trim()));
+  const section=heading?.closest('section');
+  if(section&&section!==page&&!section.querySelector('#cxGrid,.cx-library')&&section.textContent.includes('2026'))section.remove();
+  // No decorative emoji or external-link glyph in the reading CTA.
+  page.querySelectorAll('a,button').forEach(button=>{
+   if(button.children.length)return;
+   const label=(button.textContent||'').trim();
+   if(/^Acessar\s*(?:↗️?|🔗|🚀|\u2197\uFE0F?)$/u.test(label))button.textContent='Acessar';
+  });
+ }
+ function normalizeCoursesSuggestion(page){
+  if(page.id!=='pageCourses')return;
+  const suggestion=page.querySelector('#btnGoToCourseForm');
+  const featureLink=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]');
+  const featureSection=featureLink?.closest('section');
+  if(!suggestion||!featureSection||featureSection.contains(suggestion))return;
+  // Move, never clone: the original action and its listeners remain intact.
+  const current=suggestion.parentElement;
+  const item=current&&current!==page&&current.childElementCount===1&&current.textContent.trim()===suggestion.textContent.trim()?current:suggestion;
+  if(item.nextElementSibling!==featureSection)featureSection.before(item);
+ }
  function normalize(page){
   if(!page)return;
   normalizeAnalytics(page);
+  normalizeContentHub(page);
+  normalizeCoursesSuggestion(page);
   normalizeCatalog(page);
   if(page.id==='pagePesquisa')page.querySelectorAll('iframe').forEach(frame=>{
    if(frame.closest('.crm-survey-form'))return;
