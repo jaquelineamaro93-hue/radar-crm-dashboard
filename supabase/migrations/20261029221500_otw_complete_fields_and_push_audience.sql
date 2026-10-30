@@ -124,15 +124,7 @@ where p.open_to_work is true
 revoke all on crm_private.otw_incomplete_webpush_audience from PUBLIC,anon,authenticated;
 grant select on crm_private.otw_incomplete_webpush_audience to service_role;
 
--- Prepared, never automatically activated. Sender must use the above
--- audience and recheck membership before each delivery.
-insert into public.crm_push_campaigns(id,title,body,route,active)
-values (
- 'otw_profile_incomplete_v1',
- 'Seu perfil Open to Work ainda precisa de informações',
- 'Complete os campos pendentes para apresentar seu perfil profissional com mais clareza na comunidade.',
- '/open-to-work/?cadastro=1',
- false
-)
-on conflict (id) do update
-set active=false, title=excluded.title,body=excluded.body,route=excluded.route;
+-- Web Push is not dispatched or scheduled by this migration.
+-- The legacy crm_push_claim() broadcasts to every subscription, so do not
+-- create a campaign in crm_push_campaigns here. A dedicated dispatcher must
+-- select only this private view and recheck exclusions immediately before send.
