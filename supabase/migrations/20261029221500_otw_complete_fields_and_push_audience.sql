@@ -84,7 +84,7 @@ begin
  values(uid,tid,'native_form_publish',jsonb_build_object('talent',previous,'previous_communications',current_consent,'publication_consent',true,'communications_consent',p_data->'receive_community_updates','consent_version','otw-2026-10-23'));
  return jsonb_build_object('ok',true,'talent_id',tid,'mode',case when previous is null then 'created' else 'updated' end);
 end;
-$function$
+$function$;
 
 
 
