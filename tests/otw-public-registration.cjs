@@ -37,7 +37,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   const sb={auth:{onAuthStateChange:()=>{},getUser:async()=>({data:{user:{id:'own-test-account'}}})},rpc:async(name,args)=>{
    assert.equal(name,'crm_otw_registration');
    if(args){saves++;savedPayload=args.p_data;return {data:{mode:'updated'}};}
-   return {data:{mode:'update',email:'test@example.invalid',data:{nome:'Pessoa Teste',area_atuacao:'CRM',senioridade:'Especialista',localizacao:'São Paulo, SP',condicao_trabalho:'Hibrido, remoto',tempo_experiencia:'entre 5 a 6 anos',idioma:'Inglês B2, Árabe C1'}}};
+   return {data:{mode:'update',email:'test@example.invalid',data:{nome:'Pessoa Teste',area_atuacao:'CRM',senioridade:'Especialista',localizacao:'São Paulo, SP',condicao_trabalho:'Hibrido, remoto',tempo_experiencia:'entre 5 a 6 anos',idioma:'Inglês B2, Árabe C1',ferramentas:'HubSpot, Salesforce',ultima_empresa:'Empresa Teste',faixa_clt:'R$ 12.000',faixa_pj:'R$ 15.000',mudar_cidade:'Não',email_contato:'contato@exemplo.invalid',linkedin:'https://linkedin.com/in/exemplo',whatsapp:'11999999999'}}};
   }};
   const context=vm.createContext({window,document,location:window.location,history:window.history,URLSearchParams,FormData:window.FormData,authSb:sb,authInitSB:()=>{},crmJoin:()=>{},setTimeout,crmNavigate:()=>window.history.pushState(null,'','/open-to-work/')});window.crmNavigate=context.crmNavigate;
   vm.runInContext(fs.readFileSync('assets/otw-registration.js','utf8'),context);
@@ -162,12 +162,14 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  }
 
 
- // Required choices are deliberate: optional fields cannot force legacy data into cards.
+ // Complete professional form: only curriculum and optional communication marketing consent remain optional.
  const registration=fs.readFileSync('assets/otw-registration.js','utf8');
- for(const name of ['nome','area_atuacao','senioridade','localizacao','condicao_trabalho','publish_consent'])
+ for(const name of ['nome','area_atuacao','senioridade','localizacao','condicao_trabalho','publish_consent','ferramentas','tempo_experiencia','ultima_empresa','idioma','faixa_clt','faixa_pj','mudar_cidade','linkedin','whatsapp','email_contato'])
   assert(registration.includes('name=\\"'+name+'\\" required'),'form required field missing: '+name);
- for(const name of ['ferramentas','tempo_experiencia','ultima_empresa','idioma','faixa_clt','faixa_pj','mudar_cidade','curriculo','linkedin','whatsapp','email_contato'])
-  assert(!registration.includes('name=\\"'+name+'\\" required'),'do not make optional sensitive details mandatory: '+name);
+ assert(!registration.includes('name=\\"curriculo\\" required'),'CV stays optional');
+ assert(!registration.includes('name=\\"receive_community_updates\\" required'),'marketing consent stays optional');
+ assert(registration.includes('function checkRequiredOtw()'));
+ assert(registration.includes('yearsSelect.required=true'));
 
  assert(html.includes('otw-registration.js?v=20261029-compact-card3'),'all SPA routes must load the complete-card script');
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
