@@ -55,17 +55,13 @@
  }
  function normalizeContentHub(page){
   if(page.id!=='pageConteudos')return;
-  // The top 'Sugerir conteúdo' button already provides this functionality.
+  // The top 'Sugerir conteúdo' button already offers recommendations.
   page.querySelectorAll('.cx-curation-note').forEach(note=>note.remove());
-  // The report also appears as a normal library card. Do not repeat it as featured.
-  const grid=page.querySelector('.cx-featured-grid');
-  const featuredSection=grid?.closest('section');
-  if(featuredSection&&!featuredSection.querySelector('#cxGrid,.cx-library'))featuredSection.remove();
-  // Fallback for markup without a standalone featured-grid wrapper.
-  const heading=[...page.querySelectorAll('h2,h3')].find(el=>/^(?:Para começar por aqui|Start here|Para empezar por aquí)$/i.test(el.textContent.trim()));
-  const section=heading?.closest('section');
-  if(section&&section!==page&&!section.querySelector('#cxGrid,.cx-library')&&section.textContent.includes('2026'))section.remove();
-  // No decorative emoji or external-link glyph in the reading CTA.
+  // Keep the original featured nodes in place: renderCxGrid accesses both IDs.
+  // Hide their presentation because each article also exists in the library.
+  const featured=page.querySelector('#cxFeaturedWrap');
+  if(featured)featured.style.setProperty('display','none','important');
+  // Do not show decorative emoji in the library access links.
   page.querySelectorAll('a,button').forEach(button=>{
    const label=(button.textContent||'').trim();
    if(/^Acessar\s*(?:↗️?|🔗|🚀|\u2197\uFE0F?)$/u.test(label))button.textContent='Acessar';
