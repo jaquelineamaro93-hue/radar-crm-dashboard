@@ -10,6 +10,8 @@ assert(src.includes("await file.arrayBuffer()"),'file is read locally');
 assert(src.includes("cv.dispatchEvent(new Event('input',{bubbles:true}))"),'draft reflects imported text');
 assert(src.includes("window.confirm('Substituir"),'existing CV is never overwritten silently');
 assert(src.includes("apply.disabled=true"),'review is required before inserting');
+assert(src.includes('readVersion!==selectionVersion'),'old import must not override a new file selection');
+assert(src.includes('let candidate=null,selectionVersion=0'),'selection is versioned');
 assert(!/\b(?:XMLHttpRequest|sendBeacon)\b/.test(src),'no upload channel');
 assert(!src.includes('fetch('),'the file contents are not posted to any endpoint');
 assert(src.includes('cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs'));
