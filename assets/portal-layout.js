@@ -55,6 +55,7 @@
  }
  function normalizeContentHub(page){
   if(page.id!=='pageConteudos')return;
+  page.querySelectorAll('.cx-format-links').forEach(group=>group.hidden=true);
   // Formato é metadado do material, não um filtro necessário à descoberta.
   page.querySelectorAll('.cx-filter-group').forEach(group=>{
    const label=group.querySelector('.cx-filter-label');
