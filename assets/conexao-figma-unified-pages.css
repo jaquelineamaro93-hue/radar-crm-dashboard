@@ -579,3 +579,9 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 }
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero-copy{min-height:0!important}
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-suggest-btn{margin-top:0!important}
+
+/* Compact hero layout: a 330px flex-basis previously created a large blank band. */
+@media(max-width:900px){
+ :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero{flex-direction:column!important;align-items:stretch!important}
+ :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero-copy{flex:0 0 auto!important;width:100%!important}
+}
