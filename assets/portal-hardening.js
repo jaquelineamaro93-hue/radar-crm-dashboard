@@ -14,7 +14,7 @@
   if(!document.getElementById('cx-portal-layout-runtime')){
     const script=document.createElement('script');
     script.id='cx-portal-layout-runtime';script.defer=true;
-    script.src='/assets/portal-layout.js?v=20261028-match-mobile1';
+    script.src='/assets/portal-layout.js?v=20261030-content-clean1';
     document.head.append(script);
   }
   // Fail open if the optional UI runtime could not load.
