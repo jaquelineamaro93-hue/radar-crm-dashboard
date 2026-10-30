@@ -20,6 +20,10 @@ function mount(){
  strong.textContent=t.heading;small.textContent=t.description;span.replaceChildren(strong,small);
 }
 function init(){
+ if(!document.getElementById('crm-webpush-optin-script')){
+  const script=document.createElement('script');script.id='crm-webpush-optin-script';
+  script.src='/assets/webpush-optin.js?v=20261030-1';script.defer=true;document.head.append(script);
+ }
  mount();
  // Only respond when the profile form is inserted, never to arbitrary sidebar changes.
  new MutationObserver(records=>{

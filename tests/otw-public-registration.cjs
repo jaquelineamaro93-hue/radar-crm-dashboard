@@ -179,7 +179,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert(registration.includes('function checkRequiredOtw()'));
  assert(registration.includes('yearsSelect.required=true'));
 
- assert(html.includes('otw-registration.js?v=20261029-compact-card3'),'all SPA routes must load the complete-card script');
+ assert(fs.readFileSync('index.html','utf8').includes('otw-registration.js?v=20261029-compact-card3'),'all SPA routes must load the complete-card script');
  const viewCss=fs.readFileSync('assets/otw-registration.css','utf8');
  assert(viewCss.includes('@media(max-width:1100px)'));
  assert(viewCss.includes('#pageSearch #searchResults .result-grid'));
