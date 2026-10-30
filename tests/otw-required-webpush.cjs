@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const src=fs.readFileSync('assets/otw-registration.js','utf8');
+const sql=fs.readFileSync('supabase/migrations/20261029221500_otw_complete_fields_and_push_audience.sql','utf8');
+const test=fs.readFileSync('tests/otw-public-registration.cjs','utf8');
+const shell=fs.readFileSync('index.html','utf8');
+const required=['nome','area_atuacao','senioridade','localizacao','condicao_trabalho','tempo_experiencia','ferramentas','ultima_empresa','idioma','faixa_clt','faixa_pj','mudar_cidade','email_contato','linkedin','whatsapp','publish_consent'];
+for(const field of required){
+ const literal='name=\\"'+field+'\\"',start=src.indexOf(literal);
+ assert(start>=0,'Field is present: '+field);
+ assert(/\brequired\b/.test(src.slice(start,src.indexOf('>',start))),'Required input: '+field);
+}
+const cv=src.indexOf('name=\\"curriculo\\"'),notifications=src.indexOf('name=\\"receive_community_updates\\"');
+assert(cv>0&&notifications>0);
+assert(!/\brequired\b/.test(src.slice(cv,src.indexOf('>',cv))),'CV remains optional');
+assert(!/\brequired\b/.test(src.slice(notifications,src.indexOf('>',notifications))),'Notification opt-in must remain optional');
+assert(src.includes('checkRequiredOtw()||!form.reportValidity()'),'custom hidden inputs are checked before save');
+assert(src.includes('yearsSelect.required=true'),'visible experience select required');
+assert(sql.includes("['tempo_experiencia','ferramentas','ultima_empresa'"),'SQL validates extras');
+assert(sql.includes("'email_contato'"),'SQL validates alternate contact email');
+assert(sql.includes("'linkedin','whatsapp'"),'SQL validates links and phones');
+assert(sql.includes("not exists (\n    select 1 from public.crm_experience_feedback survey"),'respondents never eligible');
+assert(sql.includes("p.receive_community_updates is true"),'message consent required');
+assert(sql.includes("s.consented_at is not null"),'subscription consent required');
+assert(sql.includes("t.id is null or t.portal_published is distinct from true"),'unlinked or unpublished registrations are incomplete');
+assert(sql.includes("nullif(btrim(t.whatsapp),'') is null"),'incomplete contact is eligible');
+assert(sql.includes("nullif(btrim(t.idioma),'') is null"),'incomplete languages eligible');
+assert(!sql.includes('insert into public.crm_push_campaigns('),'no unsafe global broadcast campaign');
+assert(shell.includes("otw-registration.js?v=20261029-compact-card3"),'restored reference layout stays active');
+assert(test.includes('function fieldTag(name)'),'full regression checks any attribute order');
+console.log('PASS OTW mandatory fields, privacy-safe webpush audience, compact cards');
