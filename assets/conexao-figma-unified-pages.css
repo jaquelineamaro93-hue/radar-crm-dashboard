@@ -585,3 +585,20 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
  :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero{flex-direction:column!important;align-items:stretch!important}
  :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero-copy{flex:0 0 auto!important;width:100%!important}
 }
+
+/* Content hub: one clean search field, theme-only filtering. */
+:is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-box{
+ display:flex!important;align-items:center!important;gap:10px!important;
+ box-sizing:border-box!important;background:#111a2b!important;
+ border:1px solid #43516b!important;border-radius:12px!important;
+ padding:0 14px!important;overflow:hidden!important;box-shadow:none!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-box input{
+ flex:1 1 auto!important;min-width:0!important;width:100%!important;
+ background:transparent!important;border:0!important;outline:0!important;
+ box-shadow:none!important;padding:14px 4px!important;min-height:48px!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-box:focus-within{
+ border-color:#ac79d8!important;box-shadow:0 0 0 2px rgba(172,121,216,.14)!important;
+}
+:is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-filter-group[hidden]{display:none!important}
