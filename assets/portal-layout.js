@@ -71,12 +71,12 @@
   if(page.id!=='pageCourses')return;
   const suggestion=page.querySelector('#btnGoToCourseForm');
   const featureLink=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]');
-  const featureSection=featureLink?.closest('section');
-  if(!suggestion||!featureSection||featureSection.contains(suggestion))return;
+  const featurePanel=featureLink?.closest('div[style*="linear-gradient"],.crm-course-feature');
+  if(!suggestion||!featurePanel||featurePanel.contains(suggestion))return;
   // Move, never clone: the original action and its listeners remain intact.
   const current=suggestion.parentElement;
   const item=current&&current!==page&&current.childElementCount===1&&current.textContent.trim()===suggestion.textContent.trim()?current:suggestion;
-  if(item.nextElementSibling!==featureSection)featureSection.before(item);
+  if(item.nextElementSibling!==featurePanel)featurePanel.before(item);
  }
  function normalize(page){
   if(!page)return;
