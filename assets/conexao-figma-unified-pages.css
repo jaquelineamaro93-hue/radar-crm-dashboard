@@ -612,3 +612,11 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-box input,
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-row input{border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;min-height:50px!important;max-width:100%!important;flex:1!important;padding:10px 0!important;}
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-search-box input:focus{border:0!important;outline:0!important;box-shadow:none!important;}
+
+/* 2026-10-30: format group is never a discovery filter. */
+
+#pageConteudos .cx-format-links{display:none!important}
+#pageConteudos .cx-filter-group:has(.cx-filter-label){margin-top:0!important}
+#pageConteudos .cx-hub{gap:10px!important}
+#pageConteudos .cx-hub-hero{margin-bottom:0!important;padding-bottom:12px!important}
+#pageConteudos .cx-library{margin-top:0!important;padding-top:0!important;gap:10px!important}
