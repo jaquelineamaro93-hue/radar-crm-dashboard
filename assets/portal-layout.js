@@ -79,11 +79,13 @@
   const suggestion=page.querySelector('#btnGoToCourseForm');
   const featureLink=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]');
   const featurePanel=featureLink?.closest('div[style*="linear-gradient"],.crm-course-feature');
-  if(!suggestion||!featurePanel||featurePanel.contains(suggestion))return;
-  // Move, never clone: the original action and its listeners remain intact.
+  if(!suggestion||!featurePanel)return;
+  // Keep the original button and handler, at text height inside the feature.
   const current=suggestion.parentElement;
   const item=current&&current!==page&&current.childElementCount===1&&current.textContent.trim()===suggestion.textContent.trim()?current:suggestion;
-  if(item.nextElementSibling!==featurePanel)featurePanel.before(item);
+  item.classList.add('cx-course-suggest-inline');
+  featurePanel.classList.add('cx-course-feature-with-suggestion');
+  if(item.parentElement!==featurePanel)featurePanel.append(item);
  }
  function normalize(page){
   if(!page)return;
