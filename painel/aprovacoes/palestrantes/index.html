@@ -1255,7 +1255,7 @@ body:has(.crm-review-form:focus-within) #crmSurveyReminder,body:has(dialog[open]
 .cx-card-source{margin-top:auto!important;color:#8f949b!important;font-size:11px!important}.cx-card-actions{display:flex;gap:8px;margin-top:5px}.cx-card-actions .crm-button{flex:1;min-height:38px!important;padding:8px 10px!important;font-size:12px!important;gap:6px!important}
 .cx-empty-library{grid-column:1/-1;padding:50px 22px;text-align:center;border:1px dashed #3f3f46;border-radius:14px;color:#a1a1aa}
 .cx-resource-modal{width:min(560px,calc(100vw - 28px));max-height:90dvh;overflow:auto;border:1px solid #48433e;border-radius:14px;background:#181716;color:#f8fafc;padding:0}.cx-resource-modal::backdrop{background:#000b;backdrop-filter:blur(4px)}.cx-resource-modal form{padding:24px}.cx-resource-modal-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:20px}.cx-resource-modal-head h2{margin:5px 0 0;font-size:24px}.cx-resource-modal-head button{background:none;border:0;color:#b6b1aa;font-size:13px}.cx-resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cx-resource-modal .crm-field{margin-bottom:12px}.cx-resource-modal textarea{min-height:100px}.cx-resource-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.cx-resource-footer .crm-button{min-height:42px;padding:10px 15px}
-@media(max-width:900px){.cx-format-links{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-featured-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){:is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub .cx-hub-hero-copy{flex-basis:auto!important;flex-grow:0!important}.cx-format-links{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-featured-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.cx-hub{gap:26px}.cx-hub-hero{align-items:flex-start;flex-direction:column}.cx-hub-hero p{font-size:15px}.cx-suggest-btn{width:100%}.cx-format-links{grid-template-columns:1fr 1fr}.cx-curation-note{grid-template-columns:1fr}.cx-curation-note button{width:100%}.cx-featured-grid{grid-template-columns:1fr}.cx-filter-group{display:block}.cx-filter-label{display:block;width:auto;padding:0;margin-bottom:8px}.cx-resource-grid{grid-template-columns:1fr}}
 </style><style id="crm-floating-prompts-style">
 .crm-float-prompt{position:fixed;z-index:1085;width:min(330px,calc(100vw - 32px));box-sizing:border-box;background:#191919;color:#f8fafc;border:1px solid #4c4945;border-radius:14px;padding:18px;box-shadow:0 14px 44px #0008;text-align:left}
@@ -2794,19 +2794,6 @@ crmShowSurveyReminder();
       <button type="button" data-cx-type="Artigo"><span><svg viewBox='0 0 24 24' width='19' height='19' fill='none' stroke='currentColor' stroke-width='1.65' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='4' y='3' width='16' height='18' rx='2'/><path d='M8 8h8M8 12h8M8 16h5'/></svg></span>Artigos</button>
       <button type="button" data-cx-type="Vídeo"><span><svg viewBox='0 0 24 24' width='19' height='19' fill='none' stroke='currentColor' stroke-width='1.65' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='3' y='5' width='18' height='14' rx='3'/><path d='m10 9 5 3-5 3z'/></svg></span>Vídeos</button>
       <button type="button" data-cx-type="Newsletter"><span><svg viewBox='0 0 24 24' width='19' height='19' fill='none' stroke='currentColor' stroke-width='1.65' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='3' y='5' width='18' height='14' rx='2'/><path d='m3 7 9 7 9-7'/></svg></span>Newsletters</button>
-    </div>
-
-    <div class="cx-curation-note">
-      <div><span><svg viewBox='0 0 24 24' width='19' height='19' fill='none' stroke='currentColor' stroke-width='1.65' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m12 3 2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z'/></svg></span><strong>Curadoria da comunidade</strong></div>
-      <p>Encontrou um material que deveria estar aqui? Envie o link. A equipe revisa antes de publicar na vitrine.</p>
-      <button type="button" onclick="openCxResourceModal()">Enviar recomendação</button>
-    </div>
-
-    <div id="cxFeaturedWrap" class="cx-featured-wrap" hidden>
-      <div class="cx-section-heading">
-        <div><span>DESTAQUES</span><h2>Para começar por aqui</h2></div>
-      </div>
-      <div id="cxFeatured" class="cx-featured-grid"></div>
     </div>
 
     <div class="cx-library">
@@ -7607,23 +7594,18 @@ function cxMatches(a){
  const hay=[a.titulo,a.subtitulo,a.corpo,a.autor_nome,a.fonte_nome,a.tipo,category,a.tags].filter(Boolean).join(' ').toLowerCase();
  return hay.includes(cxSearchTerm);
 }
-function cxContentCard(a,featured=false){
+function cxContentCard(a){
  const all=cxLoadedArticles,url=crmHttpUrl(a.material_url),image=cxMediaUrls.get(cxMediaPath(a.capa_storage_path))||crmHttpUrl(a.imagem_url),type=a.tipo||'Artigo',desc=a.subtitulo||(a.corpo||'').replace(/\s+/g,' ').slice(0,180),source=a.fonte_nome||a.autor_nome||'Comunidade Conexão CRM',tags=cxTags(a);
- const openAction=url?'<a class="crm-button" href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer">Acessar ↗</a>':'<button type="button" class="crm-button" onclick="cxReadArticle('+all.indexOf(a)+')">Ver conteúdo</button>';
- if(featured)return '<article class="cx-feature-card"><div class="cx-card-top"><span class="cx-card-type">'+escapeHtml(type)+'</span><span class="cx-card-language">'+cxLanguageLabel(a)+'</span></div><h3>'+escapeHtml(a.titulo)+'</h3><p class="cx-card-desc">'+escapeHtml(desc)+'</p><div class="cx-card-tags">'+tags.slice(0,3).map(t=>'<span class="cx-card-tag">'+escapeHtml(t)+'</span>').join('')+'</div><p class="cx-card-source">'+escapeHtml(source)+'</p><div class="cx-card-actions">'+openAction+'</div></article>';
+ const openAction=url?'<a class="crm-button" href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer">Acessar</a>':'<button type="button" class="crm-button" onclick="cxReadArticle('+all.indexOf(a)+')">Ver conteúdo</button>';
  return '<article class="crm-content-card"><div class="cx-card-media">'+(image?'<img src="'+escapeHtml(image)+'" alt="'+escapeHtml(a.imagem_alt||a.titulo||'')+'" loading="lazy" onerror="this.parentElement.innerHTML=\'<span class=&quot;cx-card-placeholder&quot;>'+cxTypeIcon(type)+'</span>\'">':'<span class="cx-card-placeholder">'+cxTypeIcon(type)+'</span>')+'</div><div class="crm-content-body"><div class="cx-card-top"><span class="cx-card-type">'+escapeHtml(type)+'</span><span class="cx-card-language">'+cxLanguageLabel(a)+'</span></div><h3>'+escapeHtml(a.titulo)+'</h3><p class="cx-card-desc">'+escapeHtml(desc)+'</p><div class="cx-card-tags">'+tags.map(t=>'<span class="cx-card-tag">'+escapeHtml(t)+'</span>').join('')+'</div><p class="cx-card-source">'+escapeHtml(source)+'</p><div class="cx-card-actions">'+openAction+'</div></div></article>';
 }
 function renderCxGrid(list){
  if(Array.isArray(list))cxLoadedArticles=list;
  const all=cxLoadedArticles,filtered=all.filter(cxMatches),grid=crmById('cxGrid');
  const count=crmById('cxResultCount');if(count)count.textContent=filtered.length+' '+(filtered.length===1?'conteúdo':'conteúdos');
- const featured=all.filter(a=>a.destaque).slice(0,3);
- const fallback=featured.length?featured:all.slice(0,Math.min(3,all.length));
- const featuredWrap=crmById('cxFeaturedWrap'),featuredGrid=crmById('cxFeatured');
- if(featuredWrap&&featuredGrid){featuredWrap.hidden=!fallback.length;featuredGrid.innerHTML=fallback.map(a=>cxContentCard(a,true)).join('');}
  if(!grid)return;
  if(!filtered.length){grid.innerHTML='<div class="cx-empty-library">'+(all.length?'Nenhum conteúdo encontrado com estes filtros.':'A curadoria ainda não tem conteúdos publicados.')+'</div>';return;}
- grid.innerHTML=filtered.map(a=>cxContentCard(a,false)).join('');
+ grid.innerHTML=filtered.map(a=>cxContentCard(a)).join('');
 }
 async function openCxResourceModal(){
  const session=await crmRequireSession('Entre para sugerir um conteúdo à comunidade.');if(!session)return;

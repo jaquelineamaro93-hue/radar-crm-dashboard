@@ -57,3 +57,9 @@ let depth=0;
 for(const char of css){if(char==='{')depth++;if(char==='}')depth--;assert(depth>=0,'unbalanced CSS');}
 assert.equal(depth,0,'all CSS rules are closed');
 console.log('PASS: catalog signup, selective legal notice removal, platform redesign and cache bust');
+
+const shell=read('index.html');
+assert(!shell.includes('class="cx-curation-note"'),'retired community curation block must be absent');
+assert(!shell.includes('id="cxFeaturedWrap"'),'duplicate featured study must be absent');
+assert(!shell.includes('Acessar ↗</a>'),'access buttons must use plain text');
+assert(shell.includes('cx-hub-hero-copy{flex-basis:auto!important;flex-grow:0!important}'),'mobile heading must not reserve empty vertical space');
