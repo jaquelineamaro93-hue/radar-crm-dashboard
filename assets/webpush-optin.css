@@ -1,0 +1,8 @@
+.crm-device-notifications{margin-top:16px;padding:16px;border:1px solid #45536c;border-radius:12px;background:#172131;color:#f4f5fb}
+.crm-device-notifications h4{margin:0 0 6px;font-size:15px;font-weight:600;color:inherit}
+.crm-device-notifications p{margin:0 0 12px;font-size:13px;line-height:1.5;color:#c8cede}
+.crm-device-notifications button{min-height:44px;padding:10px 16px;border:1px solid #cfa5e9;border-radius:9px;background:#cfa5e9;color:#172131;font:inherit;cursor:pointer}
+.crm-device-notifications button:focus-visible{outline:2px solid #e7cef7;outline-offset:3px}
+.crm-device-notifications button:disabled{opacity:.65;cursor:wait}
+.crm-device-notifications #crmWebPushStatus{margin:10px 0 0;color:#e7cef7}
+.crm-device-notifications #crmWebPushStatus:empty{display:none}
