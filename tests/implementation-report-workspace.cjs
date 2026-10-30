@@ -1,0 +1,26 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const shell=fs.readFileSync('index.html','utf8'),inner=fs.readFileSync('conteudos/implementacao-crm-2026/index.html','utf8');
+assert(shell.includes("'report-implementacao':['pageImplementationReport','Implementação de CRM — Report']"));
+assert(shell.includes("'report-implementacao':'/reports/implementacao-crm/'"));
+assert.equal(fs.readFileSync('reports/implementacao-crm/index.html','utf8'),shell);
+assert(inner.includes("location.replace('/reports/implementacao-crm/')"),'direct links must preserve portal navigation');
+(async()=>{
+const {Window}=await import(process.env.HAPPY_DOM_MODULE||'happy-dom');
+const window=new Window({url:'https://conexaocrm.com/reports/implementacao-crm/',settings:{disableCSSFileLoading:true,disableJavaScriptFileLoading:true,disableIframePageLoading:true,disableComputedStyleRendering:true}});
+const doc=window.document;doc.documentElement.innerHTML=shell.slice(shell.indexOf('<head>')).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+doc.getElementById('view-logada').hidden=false;doc.getElementById('view-publica').hidden=true;window.scrollTo=()=>{};
+const paths=[],context={document:doc,window,location:{origin:'https://conexaocrm.com',pathname:'/reports/implementacao-crm/'},history:{pushState:(a,b,p)=>paths.push(p)},CustomEvent:window.CustomEvent,crmActiveRoute:'inicio',crmRoutes:{'report-implementacao':['pageImplementationReport','Implementação de CRM — Report']},crmPublicRoutes:new Set(['report-implementacao']),crmSignedIn:()=>true,crmById:id=>doc.getElementById(id),crmRoutePath:()=>'/reports/implementacao-crm/',crmSyncRouteMeta:()=>{},crmTrackMemberActivity:()=>{},crmToggleMenu:()=>{},switchTab:()=>{throw Error('report must not open legacy tab')}};
+vm.createContext(context);
+const nav=shell.slice(shell.indexOf('function crmNavigate(route,updateHash=true){'),shell.indexOf('function crmInitPublicTools(){'));
+vm.runInContext(nav+';crmNavigate("report-implementacao");',context);
+assert.equal(doc.getElementById('view-logada').hidden,false,'signed-in workspace remains visible');assert.equal(doc.getElementById('view-publica').hidden,true,'do not replace member workspace with public layout');
+assert(doc.querySelector('#view-logada .crm-sidebar'),'sidebar remains mounted');assert(doc.getElementById('pageImplementationReport').classList.contains('active'));
+assert.equal(doc.getElementById('crmImplementationFrame').getAttribute('src'),'/conteudos/implementacao-crm-2026/?embedded=1');assert.deepEqual(paths,['/reports/implementacao-crm/']);
+assert(doc.getElementById('navImplementationReport').classList.contains('active'));
+const group=doc.getElementById('crmMarketReportsSection');assert.equal(group.nextElementSibling.id,'navCargos');assert.equal(group.nextElementSibling.nextElementSibling.id,'navMarketReport');assert.equal(group.nextElementSibling.nextElementSibling.nextElementSibling.id,'navImplementationReport');
+const messages=[],a=shell.indexOf("window.addEventListener('message',event=>{\n const frame=crmById('crmImplementationFrame');"),b=shell.indexOf("document.addEventListener('DOMContentLoaded',()=>{",a);assert(a>0);context.crmNavigate=r=>messages.push(r);vm.runInContext(shell.slice(a,b),context);
+const frame=doc.getElementById('crmImplementationFrame');window.dispatchEvent(new window.MessageEvent('message',{origin:'https://evil.example',source:frame.contentWindow,data:{type:'crm:report-navigate',route:'pesquisa'}}));assert.equal(messages.length,0);
+window.dispatchEvent(new window.MessageEvent('message',{origin:'https://conexaocrm.com',source:frame.contentWindow,data:{type:'crm:report-navigate',route:'pesquisa'}}));assert.deepEqual(messages,['pesquisa']);
+await window.happyDOM.close();console.log('PASS report workspace: signed-in sidebar, clean route, native reports group, lazy embedded content and origin-checked navigation');
+})().catch(e=>{console.error(e);process.exitCode=1});

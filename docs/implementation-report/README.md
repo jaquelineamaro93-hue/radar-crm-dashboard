@@ -1,6 +1,6 @@
 # Report de implementação de CRM 2026
 
-Report editorial público em `/conteudos/implementacao-crm-2026/`.
+Report editorial em `/reports/implementacao-crm/`, dentro do portal, com sidebar preservado para membros autenticados. A página editorial em `/conteudos/implementacao-crm-2026/?embedded=1` é o conteúdo do iframe. Acesso direto sem o parâmetro redireciona para a rota do portal, sem hash.
 
 ## Fonte e base
 
@@ -34,6 +34,6 @@ A aplicação usa HTML/CSS/JavaScript sem dependências de runtime. Fontes locai
 
 `HAPPY_DOM_MODULE=/caminho/happy-dom/lib/index.js node tests/implementation-report.cjs`
 
-Verificar agregados, denominadores, ausência de dados pessoais, alternância entre unidades, foco por capítulo, PDF, navegação sem hash e redução de movimento. Inspecionar a página publicada e seu card no hub após o deploy.
+Verificar agregados, denominadores, ausência de dados pessoais, alternância entre unidades, foco por capítulo, PDF, navegação sem hash e redução de movimento. Inspecionar a subpágina publicada, o menu Reports do mercado de trabalho e a navegação com sidebar após o deploy.
 
-A publicação adiciona apenas arquivos do report e uma entrada no hub. A reversão pode retirar essa entrada e reverter o commit, preservando os registros originais da pesquisa.
+A publicação acrescenta uma subpágina no grupo Reports do mercado de trabalho, ao lado de Cargos & Salários e Open to Work — Report. Não cria card em Conteúdos. A reversão pode reverter o commit, preservando os registros originais da pesquisa.

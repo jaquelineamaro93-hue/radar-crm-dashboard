@@ -1,5 +1,5 @@
 'use strict';
-// Visual contract: focus is lilac across Conexão CRM; 33 physical SPA paths
+// Visual contract: focus is lilac across Conexão CRM; 34 physical SPA paths
 // must use one current shell. Scope audit to focus only: orange may still be
 // intentional in editorial illustrations, badges or community branding.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
@@ -23,7 +23,7 @@ const src=read('tests/portal-shell-route-sync.cjs');
 const arr=src.match(/const routes=\s*(\[[\s\S]*?\]);/);
 assert(arr,'SPA route inventory missing');
 const routes=JSON.parse(arr[1]);
-assert.equal(routes.length,33,'expected current SPA route inventory');
+assert.equal(routes.length,34,'expected current SPA route inventory');
 for(const entry of routes)assert.equal(read(entry),index,'outdated or differently themed route: '+entry);
 const files=fs.readdirSync(path.join(__dirname,'../assets')).filter(x=>x.endsWith('.css')).map(x=>'assets/'+x);
 let rules=0;
@@ -50,4 +50,4 @@ assert(read('assets/crm-runtime-integrations.js').includes('crm-copilot.css?v=20
 assert(read('assets/google-login.js').includes('crm-runtime-integrations.js?v=20261027-name-focus1'));
 for(const p of ['rankings/index.html','avatar-studio/index.html','quem-faz/index.html'])assert(read(p).includes('cx-return-nav.css?v=20261027-focus1'));
 assert(!index.includes('google-login.js?v=20261026-feedback1'),'stale login script cache');
-console.log('PASS: '+(files.length+1)+' stylesheets/shell files scanned, '+rules+' focus rules checked, 33 routes synchronized, nested assets versioned');
+console.log('PASS: '+(files.length+1)+' stylesheets/shell files scanned, '+rules+' focus rules checked, 34 routes synchronized, nested assets versioned');
