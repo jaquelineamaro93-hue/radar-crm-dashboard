@@ -261,6 +261,9 @@
 "Atualize sua vitrine profissional e seu currículo privado para recomendações de vagas.":["Update your public professional listing and your private résumé for job recommendations.","Actualiza tu perfil profesional público y tu currículum privado para recibir recomendaciones de vacantes."],
 "Editar Open to Work":["Edit Open to Work","Editar Open to Work"],
 "Editar currículo do Match":["Edit Match résumé","Editar currículum de Match"],
+"Atualize sua vitrine pública para oportunidades profissionais.":["Update your public listing for career opportunities.","Actualiza tu perfil público para oportunidades profesionales."],
+"Currículo para Match IA":["Résumé for AI Match","Currículum para Match IA"],
+"Seu currículo e suas competências são privados. Somente você decide o que adicionar ou alterar.":["Your résumé and skills remain private. You decide what to add or change.","Tu currículum y tus competencias son privados. Tú decides qué agregar o modificar."],
 "Perfil geral":["General profile","Perfil general"]
  };
  const originals=new WeakMap();

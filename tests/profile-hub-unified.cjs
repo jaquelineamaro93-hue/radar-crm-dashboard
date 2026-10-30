@@ -7,7 +7,7 @@ const html=read('index.html'),hub=read('assets/profile-hub-unified.js'),css=read
 assert.equal(read('404.html'),html,'SPA 404 must match index');
 for(const pathname of ['freelancers/index.html','dashboard/index.html','open-to-work/index.html'])
  assert.equal(read(pathname),html,'SPA route must use new shell: '+pathname);
-for(const asset of ['profile-hub-unified.css?v=20261026-profhub1','profile-hub-unified.js?v=20261027-owner1'])
+for(const asset of ['profile-hub-unified.css?v=20261030-matchhub2','profile-hub-unified.js?v=20261030-matchhub2'])
  assert(html.includes(asset),'versioned integration missing: '+asset);
 assert(html.includes('id="pf_preferred_name"'),'optional form nickname is missing');
 assert(html.includes('preferred_name:preferredName||null'),'nickname must be saved only as a private profile field');
@@ -16,7 +16,14 @@ assert(!html.includes('Olá, '+String.fromCodePoint(0x1f604)),'no decorative gre
 assert(html.includes('data-cx-freelancer-id'),'a card must identify its record for own-profile editing');
 assert(html.includes('String(f.categoria||\'\').split(\',\')'),'multi-category freelancers must match filters');
 assert(hub.includes('role\',\'tablist'),'subtabs need semantics');
-for(const part of ['Perfil geral','Freelancer','Open to Work','searchTabRegistration','openFreelancerEditModal','crmOpenMatchResume'])
+assert(hub.includes("['match','Currículo para Match IA']"),'a fourth private resume tab must exist');
+assert(hub.includes("const resume=panel('cx-profile-tab-match'"),'private resume panel must be separate from Open to Work');
+assert(hub.includes("resume.hidden=which!=='match'"),'private resume tab can be selected');
+assert(hub.includes("resume.append(button('Editar currículo do Match',openResume))"),'existing owner-safe resume flow must remain available');
+assert(css.includes('#crmMatchResumeOverlay .crm-match-chip.is-selected'),'Match selected controls use lilac');
+assert(css.includes('color:#f2ddfc!important'),'Match selected controls must have readable contrast');
+assert(css.includes('cx-resume-import'),'local document reader must be styled');
+for(const part of ['Perfil geral','Freelancer','Open to Work','Currículo para Match IA','searchTabRegistration','openFreelancerEditModal','crmOpenMatchResume'])
  assert(hub.includes(part),'profile hub missing '+part);
 assert(hub.includes('current.email_confirmed_at')||hub.includes('current?.email_confirmed_at'),'ownership check must require verified identity');
 assert(hub.includes('email_autor'),'freelancer ownership must compare the confirmed author address');
@@ -32,7 +39,7 @@ assert(css.includes('crm-workbar>.crm-text-button')&&css.includes('border:1px so
 assert(css.includes('#profileModalOverlay .crm-profile-modal'));
 // The member editor translates its own static UI without touching profile fields.
 const language=read('assets/site-i18n.js');
-for(const key of ['Seu perfil freelancer','Perfil geral','Solicitar edição do meu perfil','Editar currículo do Match']){
+for(const key of ['Seu perfil freelancer','Perfil geral','Solicitar edição do meu perfil','Currículo para Match IA','Editar currículo do Match']){
  assert(language.includes(JSON.stringify(key)+':['),'Missing translated profile label: '+key);
 }
 assert(hub.includes("window.addEventListener('cx:locale-change',syncLocalized)"));

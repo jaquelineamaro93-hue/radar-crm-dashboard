@@ -66,9 +66,11 @@ function mountEditor(){
  const freelancer=panel('cx-profile-tab-freelancer','Seu perfil freelancer','Gerencie a apresentação usada na vitrine de profissionais. Edições podem exigir aprovação da comunidade.');
  const freelaAction=button('Editar meu perfil freelancer',openOwnFreelancer);
  freelancer.append(freelaAction);
- const otw=panel('cx-profile-tab-otw','Open to Work e currículo','Atualize sua vitrine profissional e seu currículo privado para recomendações de vagas.');
- otw.append(button('Editar Open to Work',openOTW),button('Editar currículo do Match',openResume));
- const tabs=[['geral','Perfil geral'],['freelancer','Freelancer'],['otw','Open to Work']];
+ const otw=panel('cx-profile-tab-otw','Open to Work','Atualize sua vitrine pública para oportunidades profissionais.');
+ otw.append(button('Editar Open to Work',openOTW));
+ const resume=panel('cx-profile-tab-match','Currículo para Match IA','Seu currículo e suas competências são privados. Somente você decide o que adicionar ou alterar.');
+ resume.append(button('Editar currículo do Match',openResume));
+ const tabs=[['geral','Perfil geral'],['freelancer','Freelancer'],['otw','Open to Work'],['match','Currículo para Match IA']];
  const controls={};
  function select(which){
   for(const [key] of tabs){
@@ -80,6 +82,7 @@ function mountEditor(){
   sections.forEach(el=>{el.hidden=which!=='geral';});
   freelancer.hidden=which!=='freelancer';
   otw.hidden=which!=='otw';
+  resume.hidden=which!=='match';
   if(status)status.hidden=which!=='geral';
   if(footer)footer.hidden=which!=='geral';
   const hasOwn=own.userId===user()?.id&&own.id!=null;
@@ -88,11 +91,11 @@ function mountEditor(){
  for(const [key,label] of tabs){
   const tab=document.createElement('button');tab.type='button';localizedNode(tab,label);
   tab.className='cx-profile-tab';tab.id='cx-profile-tab-'+key;
-  tab.setAttribute('role','tab');tab.setAttribute('aria-controls',key==='freelancer'?freelancer.id:key==='otw'?otw.id:'pf_nome');
+  tab.setAttribute('role','tab');tab.setAttribute('aria-controls',key==='freelancer'?freelancer.id:key==='otw'?otw.id:key==='match'?resume.id:'pf_nome');
   tab.addEventListener('click',()=>select(key));
   controls[key]=tab;nav.append(tab);
  }
- first.before(nav);if(status)status.before(freelancer,otw);else box.append(freelancer,otw);
+ first.before(nav);if(status)status.before(freelancer,otw,resume);else box.append(freelancer,otw,resume);
  select('geral');
  // Re-evaluate the action once ownership has been checked.
  overlay.addEventListener('cx:ownership-checked',()=>{if(!freelancer.hidden)select('freelancer');});
