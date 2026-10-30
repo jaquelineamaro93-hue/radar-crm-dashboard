@@ -55,6 +55,12 @@
  }
  function normalizeContentHub(page){
   if(page.id!=='pageConteudos')return;
+  // Formato é metadado do material, não um filtro necessário à descoberta.
+  page.querySelectorAll('.cx-filter-group').forEach(group=>{
+   const label=group.querySelector('.cx-filter-label');
+   if(label&&/^formato$/i.test(label.textContent.trim()))group.hidden=true;
+  });
+  // Preserve search and theme controls. Remove the legacy overlay styles in CSS.
   // The top 'Sugerir conteúdo' button already offers recommendations.
   page.querySelectorAll('.cx-curation-note').forEach(note=>note.remove());
   // Keep the original featured nodes in place: renderCxGrid accesses both IDs.
