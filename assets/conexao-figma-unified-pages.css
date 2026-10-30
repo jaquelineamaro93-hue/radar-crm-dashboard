@@ -630,3 +630,10 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 #pageCourses .cx-course-heading-with-suggestion{position:relative!important;padding-right:185px!important;min-height:48px!important}
 #pageCourses .cx-course-heading-with-suggestion .cx-course-suggest-heading{position:absolute!important;right:0!important;top:0!important;margin:0!important;z-index:2!important}
 @media(max-width:760px){#pageCourses .cx-course-heading-with-suggestion{padding-right:0!important}#pageCourses .cx-course-heading-with-suggestion .cx-course-suggest-heading{position:static!important;margin:12px 0 0!important}}
+
+/* Intro layout: text left, suggest CTA right, separate from featured course. */
+#pageCourses .cx-course-intro-row{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:24px!important;margin-bottom:16px!important}
+#pageCourses .cx-course-intro-copy{flex:1 1 auto!important;max-width:720px!important;min-width:0!important}
+#pageCourses .cx-course-intro-row .cx-course-intro-cta{flex:0 0 auto!important;align-self:flex-start!important;margin-top:0!important}
+#pageCourses .cx-course-intro-copy .section-head{padding-right:0!important}
+@media(max-width:700px){#pageCourses .cx-course-intro-row{flex-direction:column!important;gap:12px!important}#pageCourses .cx-course-intro-row .cx-course-intro-cta{align-self:flex-start!important}}
