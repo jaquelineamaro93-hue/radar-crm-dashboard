@@ -61,6 +61,11 @@
    const label=group.querySelector('.cx-filter-label');
    if(label&&/formato/i.test(label.textContent.trim())){group.hidden=true;group.style.setProperty('display','none','important');}
   });
+  // Keep the main hero as the single page title; preserve the library controls/count.
+  page.querySelectorAll('.cx-library-heading').forEach(heading=>{
+   heading.hidden=true;
+   heading.style.setProperty('display','none','important');
+  });
   // Preserve search and theme controls. Remove the legacy overlay styles in CSS.
   // The top 'Sugerir conteúdo' button already offers recommendations.
   page.querySelectorAll('.cx-curation-note').forEach(note=>note.remove());
