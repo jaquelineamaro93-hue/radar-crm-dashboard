@@ -162,12 +162,20 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  }
 
 
- // Complete professional form: only curriculum and optional communication marketing consent remain optional.
+ // The public form has escaped quotes in a JS template; attribute order varies.
  const registration=fs.readFileSync('assets/otw-registration.js','utf8');
+ function fieldTag(name){
+  const marker='name=\\"'+name+'\\"';
+  const start=registration.indexOf(marker);
+  assert(start>=0,'missing field '+name);
+  const end=registration.indexOf('>',start);
+  assert(end>start,'unterminated field '+name);
+  return registration.slice(start,end);
+ }
  for(const name of ['nome','area_atuacao','senioridade','localizacao','condicao_trabalho','publish_consent','ferramentas','tempo_experiencia','ultima_empresa','idioma','faixa_clt','faixa_pj','mudar_cidade','linkedin','whatsapp','email_contato'])
-  assert(registration.includes('name=\\"'+name+'\\" required'),'form required field missing: '+name);
- assert(!registration.includes('name=\\"curriculo\\" required'),'CV stays optional');
- assert(!registration.includes('name=\\"receive_community_updates\\" required'),'marketing consent stays optional');
+  assert(/\brequired\b/.test(fieldTag(name)),'form required field missing: '+name);
+ assert(!/\brequired\b/.test(fieldTag('curriculo')),'CV stays optional');
+ assert(!/\brequired\b/.test(fieldTag('receive_community_updates')),'marketing consent stays optional');
  assert(registration.includes('function checkRequiredOtw()'));
  assert(registration.includes('yearsSelect.required=true'));
 
