@@ -77,15 +77,18 @@
  function normalizeCoursesSuggestion(page){
   if(page.id!=='pageCourses')return;
   const suggestion=page.querySelector('#btnGoToCourseForm');
-  const featureLink=page.querySelector('a[href="https://lp.dtmcrm.com.br/imersao-crm"]');
-  const featurePanel=featureLink?.closest('div[style*="linear-gradient"],.crm-course-feature');
-  if(!suggestion||!featurePanel)return;
-  // Keep the original button and handler, at text height inside the feature.
-  const current=suggestion.parentElement;
-  const item=current&&current!==page&&current.childElementCount===1&&current.textContent.trim()===suggestion.textContent.trim()?current:suggestion;
-  item.classList.add('cx-course-suggest-inline');
-  featurePanel.classList.add('cx-course-feature-with-suggestion');
-  if(item.parentElement!==featurePanel)featurePanel.append(item);
+  const heading=[...page.querySelectorAll('h1,h2,h3')].find(el=>/cursos para a comunidade/i.test(el.textContent||''));
+  if(!suggestion||!heading)return;
+  // The CTA belongs to the introduction, not inside the featured course.
+  const anchor=heading.closest('.section-head')||heading.parentElement;
+  if(!anchor)return;
+  const original=suggestion.parentElement;
+  const item=original&&original!==page&&original.childElementCount===1&&original.textContent.trim()===suggestion.textContent.trim()?original:suggestion;
+  page.querySelectorAll('.cx-course-feature-with-suggestion').forEach(el=>el.classList.remove('cx-course-feature-with-suggestion'));
+  item.classList.remove('cx-course-suggest-inline');
+  anchor.classList.add('cx-course-heading-with-suggestion');
+  item.classList.add('cx-course-suggest-heading');
+  if(item.parentElement!==anchor)anchor.append(item);
  }
  function normalize(page){
   if(!page)return;
