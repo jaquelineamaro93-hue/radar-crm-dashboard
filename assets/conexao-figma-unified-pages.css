@@ -572,7 +572,7 @@ body #crmNewsletterPrompt :is(a,button):focus-visible{outline:2px solid #dab4ee!
 /* 2026-10-30: remove redundant curation and duplicate report spotlight.
    The report remains in the regular content library. */
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-curation-note{display:none!important}
-:is(#view-logada,#crmPublicWorkspace) #pageConteudos section:has(.cx-featured-grid):not(:has(#cxGrid)):not(:has(.cx-library)){display:none!important}
+:is(#view-logada,#crmPublicWorkspace) #pageConteudos #cxFeaturedWrap{display:none!important}
 /* The mobile hero should size itself to its copy and recommendation CTA. */
 :is(#view-logada,#crmPublicWorkspace) #pageConteudos .cx-hub-hero{
  min-height:0!important;height:auto!important;justify-content:flex-start!important;
