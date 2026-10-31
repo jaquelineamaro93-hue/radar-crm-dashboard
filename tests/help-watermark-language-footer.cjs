@@ -24,6 +24,8 @@ for(const path of ['docs/inngage-templates/revised2049.html','docs/inngage-templ
  const html=read(path);
  assert.equal((html.match(/<!-- CONEXAO_CRM_PARTNER_CREDIT_V1:/g)||[]).length,1,path+': one partner footer only');
  assert(html.includes('Essa comunicação é construída com apoio e tecnologia'));
+ assert(html.includes('https://conexaocrm.com/assets/crm-image-1.webp'),'partner image must use the existing Inngage logo shown on the supporter page');
+ assert(html.includes('alt="Logo Inngage"'),'must keep accessible logo alt text');
  assert(html.includes('https://inngage.com.br/'));
  assert(html.includes('Cancelar recebimento'),'existing unsubscribe action intact');
 }
