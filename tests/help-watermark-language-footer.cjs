@@ -20,14 +20,23 @@ const guide=read('assets/help-center.js');
 assert(guide.includes("copyrightText"),'localized notice must appear in the reader');
 assert(guide.includes("crm:help-watermark-exemption-response"),'owner response is checked');
 assert(!guide.includes('innerHTML'),'guide content must be rendered safely');
-for(const path of ['docs/inngage-templates/revised2049.html','docs/inngage-templates/revised2050.html']){
+const activeEmailTemplates=[
+ 'docs/inngage-templates/revised2049.html',
+ 'docs/inngage-templates/revised2050.html',
+ 'docs/inngage-templates/announcement-help-brasa-20261026.html',
+ 'docs/inngage-templates/boas-vindas-completo.html',
+ 'docs/inngage-templates/boas-vindas-cadastro-pendente.html',
+ 'docs/inngage-templates/open-to-work-cadastro-incompleto.html'
+];
+for(const path of activeEmailTemplates){
  const html=read(path);
- assert.equal((html.match(/<!-- CONEXAO_CRM_PARTNER_CREDIT_V1:/g)||[]).length,1,path+': one partner footer only');
+ if(!path.includes('announcement-help-brasa'))assert.equal((html.match(/<!-- CONEXAO_CRM_PARTNER_CREDIT_V1:/g)||[]).length,1,path+': one partner footer only');
  assert(html.includes('Essa comunicação é construída com apoio e tecnologia'));
  assert(html.includes('https://conexaocrm.com/assets/crm-image-1.webp'),'partner image must use the existing Inngage logo shown on the supporter page');
  assert(html.includes('alt="Logo Inngage"'),'must keep accessible logo alt text');
  assert(html.includes('https://inngage.com.br/'));
- assert(html.includes('Cancelar recebimento'),'existing unsubscribe action intact');
+ if(path.includes('revised20'))assert(html.includes('Cancelar recebimento'),'existing unsubscribe action intact');
+ else assert(/(PARAR|descadastro)/i.test(html),'communication preference or unsubscribe instructions must be present');
 }
 assert(read('docs/inngage-templates/revised2050.html').includes('{{VAGAS_HTML}}'),'keep dynamic cards');
 assert(read('docs/inngage-templates/revised2049.html').includes('{{cf.NOME}}'),'keep legacy first-name field');
